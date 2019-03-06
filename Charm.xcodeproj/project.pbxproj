@@ -10,8 +10,9 @@
 		440B49E3FFECF797577DDB57 /* Pods_Charm.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 16C20027951EB6711E199488 /* Pods_Charm.framework */; };
 		6572642222300640008D9ED4 /* MainMenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6572642122300640008D9ED4 /* MainMenuViewController.swift */; };
 		657264262230081B008D9ED4 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 657264252230081B008D9ED4 /* Constants.swift */; };
-		65B872A822302BE0001705B3 /* TestModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65B872A722302BE0001705B3 /* TestModel.swift */; };
+		65B872A822302BE0001705B3 /* CharmUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65B872A722302BE0001705B3 /* CharmUser.swift */; };
 		65B872AA22302CF2001705B3 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 65B872A922302CF1001705B3 /* GoogleService-Info.plist */; };
+		65EADDD522302FE900593F9D /* Protocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65EADDD422302FE900593F9D /* Protocols.swift */; };
 		65F5A022222FF8A8001262FB /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65F5A021222FF8A8001262FB /* AppDelegate.swift */; };
 		65F5A027222FF8A8001262FB /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 65F5A025222FF8A8001262FB /* Main.storyboard */; };
 		65F5A029222FF8A9001262FB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 65F5A028222FF8A9001262FB /* Assets.xcassets */; };
@@ -23,8 +24,9 @@
 		32AEF01E8A1AE05F8906832B /* Pods-Charm.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Charm.debug.xcconfig"; path = "Target Support Files/Pods-Charm/Pods-Charm.debug.xcconfig"; sourceTree = "<group>"; };
 		6572642122300640008D9ED4 /* MainMenuViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMenuViewController.swift; sourceTree = "<group>"; };
 		657264252230081B008D9ED4 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
-		65B872A722302BE0001705B3 /* TestModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestModel.swift; sourceTree = "<group>"; };
+		65B872A722302BE0001705B3 /* CharmUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CharmUser.swift; sourceTree = "<group>"; };
 		65B872A922302CF1001705B3 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		65EADDD422302FE900593F9D /* Protocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Protocols.swift; sourceTree = "<group>"; };
 		65F5A01E222FF8A8001262FB /* Charm.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Charm.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		65F5A021222FF8A8001262FB /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		65F5A026222FF8A8001262FB /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -83,6 +85,7 @@
 		65726423223007FE008D9ED4 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				65EADDD322302FC200593F9D /* Firebase */,
 				6572642422300808008D9ED4 /* App Specific */,
 			);
 			path = Model;
@@ -92,9 +95,17 @@
 			isa = PBXGroup;
 			children = (
 				657264252230081B008D9ED4 /* Constants.swift */,
-				65B872A722302BE0001705B3 /* TestModel.swift */,
+				65EADDD422302FE900593F9D /* Protocols.swift */,
 			);
 			path = "App Specific";
+			sourceTree = "<group>";
+		};
+		65EADDD322302FC200593F9D /* Firebase */ = {
+			isa = PBXGroup;
+			children = (
+				65B872A722302BE0001705B3 /* CharmUser.swift */,
+			);
+			path = Firebase;
 			sourceTree = "<group>";
 		};
 		65F5A015222FF8A8001262FB = {
@@ -149,6 +160,7 @@
 				65F5A01B222FF8A8001262FB /* Frameworks */,
 				65F5A01C222FF8A8001262FB /* Resources */,
 				15B75009746FBE11390C7DF8 /* [CP] Embed Pods Frameworks */,
+				4719971D28B07957EBABA813 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -239,6 +251,7 @@
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Charm/Pods-Charm-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/CodableFirebase/CodableFirebase.framework",
+				"${BUILT_PRODUCTS_DIR}/GTMSessionFetcher/GTMSessionFetcher.framework",
 				"${BUILT_PRODUCTS_DIR}/GoogleUtilities/GoogleUtilities.framework",
 				"${PODS_ROOT}/Highcharts/development/Highcharts.framework",
 				"${BUILT_PRODUCTS_DIR}/leveldb-library/leveldb.framework",
@@ -249,6 +262,7 @@
 			);
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CodableFirebase.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GTMSessionFetcher.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GoogleUtilities.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Highcharts.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/leveldb.framework",
@@ -259,6 +273,28 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Charm/Pods-Charm-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
+		4719971D28B07957EBABA813 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Charm/Pods-Charm-resources.sh",
+				"${PODS_CONFIGURATION_BUILD_DIR}/FirebaseUI/FirebaseAuthUI.bundle",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FirebaseAuthUI.bundle",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Charm/Pods-Charm-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -266,10 +302,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				65EADDD522302FE900593F9D /* Protocols.swift in Sources */,
 				6572642222300640008D9ED4 /* MainMenuViewController.swift in Sources */,
 				65F5A022222FF8A8001262FB /* AppDelegate.swift in Sources */,
 				657264262230081B008D9ED4 /* Constants.swift in Sources */,
-				65B872A822302BE0001705B3 /* TestModel.swift in Sources */,
+				65B872A822302BE0001705B3 /* CharmUser.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

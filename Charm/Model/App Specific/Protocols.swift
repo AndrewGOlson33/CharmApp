@@ -1,5 +1,5 @@
 //
-//  TestModel.swift
+//  Protocols.swift
 //  Charm
 //
 //  Created by Daniel Pratt on 3/6/19.
@@ -7,12 +7,7 @@
 //
 
 import Foundation
-import CodableFirebase
 
-struct User: Codable {
-    
-    let age: Int
-    let job: String
-    let name: String
-    
+protocol Identifiable {
+    var id: String? { get set }
 }

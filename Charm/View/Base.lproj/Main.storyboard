@@ -51,17 +51,14 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wdp-D1-bBg">
-                                <rect key="frame" x="65" y="289" width="245" height="55"/>
+                                <rect key="frame" x="60" y="289" width="255" height="55"/>
                                 <color key="backgroundColor" red="0.24177315830000001" green="0.2462340891" blue="0.29892447589999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="36"/>
                                 <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <state key="normal" title="Chat"/>
                                 <userDefinedRuntimeAttributes>
-                                    <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
-                                        <real key="value" value="0.0"/>
-                                    </userDefinedRuntimeAttribute>
                                     <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
-                                        <real key="value" value="5"/>
+                                        <integer key="value" value="6"/>
                                     </userDefinedRuntimeAttribute>
                                 </userDefinedRuntimeAttributes>
                                 <connections>
@@ -69,61 +66,56 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="l5e-K8-ms5">
-                                <rect key="frame" x="65" y="352" width="245" height="55"/>
+                                <rect key="frame" x="60" y="352" width="255" height="55"/>
                                 <color key="backgroundColor" red="0.24177315830000001" green="0.2462340891" blue="0.29892447589999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="36"/>
                                 <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <state key="normal" title="Review"/>
                                 <userDefinedRuntimeAttributes>
                                     <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
-                                        <real key="value" value="5"/>
+                                        <integer key="value" value="6"/>
                                     </userDefinedRuntimeAttribute>
                                 </userDefinedRuntimeAttributes>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="32R-gc-er0">
-                                <rect key="frame" x="65" y="415" width="245" height="55"/>
+                                <rect key="frame" x="60" y="415" width="255" height="55"/>
                                 <color key="backgroundColor" red="0.24177315830000001" green="0.2462340891" blue="0.29892447589999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="36"/>
                                 <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <state key="normal" title="Learn"/>
                                 <userDefinedRuntimeAttributes>
-                                    <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
-                                        <real key="value" value="0.0"/>
-                                    </userDefinedRuntimeAttribute>
                                     <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
-                                        <real key="value" value="5"/>
+                                        <integer key="value" value="6"/>
                                     </userDefinedRuntimeAttribute>
                                 </userDefinedRuntimeAttributes>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="mId-Li-edy">
-                                <rect key="frame" x="65" y="478" width="245" height="53"/>
+                                <rect key="frame" x="60" y="478" width="255" height="53"/>
                                 <color key="backgroundColor" red="0.24177315830000001" green="0.2462340891" blue="0.29892447589999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="34"/>
                                 <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <state key="normal" title="Train"/>
                                 <userDefinedRuntimeAttributes>
                                     <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
-                                        <real key="value" value="5"/>
+                                        <integer key="value" value="6"/>
                                     </userDefinedRuntimeAttribute>
                                 </userDefinedRuntimeAttributes>
                             </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
-                            <constraint firstItem="wdp-D1-bBg" firstAttribute="leading" secondItem="sT6-F8-q87" secondAttribute="leading" constant="65" id="1Pe-Nj-tb5"/>
-                            <constraint firstItem="sT6-F8-q87" firstAttribute="trailing" secondItem="wdp-D1-bBg" secondAttribute="trailing" constant="65" id="3tN-kB-ge4"/>
-                            <constraint firstItem="sT6-F8-q87" firstAttribute="trailing" secondItem="32R-gc-er0" secondAttribute="trailing" constant="65" id="82G-oQ-4MF"/>
-                            <constraint firstItem="mId-Li-edy" firstAttribute="leading" secondItem="sT6-F8-q87" secondAttribute="leading" constant="65" id="9VN-Hp-yjw"/>
+                            <constraint firstItem="wdp-D1-bBg" firstAttribute="leading" secondItem="sT6-F8-q87" secondAttribute="leading" constant="60" id="1Pe-Nj-tb5"/>
+                            <constraint firstItem="sT6-F8-q87" firstAttribute="trailing" secondItem="wdp-D1-bBg" secondAttribute="trailing" constant="60" id="3tN-kB-ge4"/>
+                            <constraint firstItem="sT6-F8-q87" firstAttribute="trailing" secondItem="32R-gc-er0" secondAttribute="trailing" constant="60" id="82G-oQ-4MF"/>
+                            <constraint firstItem="mId-Li-edy" firstAttribute="leading" secondItem="sT6-F8-q87" secondAttribute="leading" constant="60" id="9VN-Hp-yjw"/>
                             <constraint firstItem="lAz-86-fsB" firstAttribute="top" secondItem="sT6-F8-q87" secondAttribute="top" constant="134" id="CpH-FG-bOE"/>
-                            <constraint firstItem="sT6-F8-q87" firstAttribute="trailing" secondItem="mId-Li-edy" secondAttribute="trailing" constant="65" id="DbP-ZE-iUc"/>
+                            <constraint firstItem="sT6-F8-q87" firstAttribute="trailing" secondItem="mId-Li-edy" secondAttribute="trailing" constant="60" id="DbP-ZE-iUc"/>
                             <constraint firstItem="lAz-86-fsB" firstAttribute="leading" secondItem="sT6-F8-q87" secondAttribute="leading" constant="61" id="JFK-Yh-xTa"/>
                             <constraint firstItem="l5e-K8-ms5" firstAttribute="top" secondItem="wdp-D1-bBg" secondAttribute="bottom" constant="8" id="OOu-gY-9xN"/>
-                            <constraint firstItem="wdp-D1-bBg" firstAttribute="leading" secondItem="sT6-F8-q87" secondAttribute="leading" constant="65" id="PlS-pQ-evf"/>
                             <constraint firstItem="sT6-F8-q87" firstAttribute="bottom" secondItem="mId-Li-edy" secondAttribute="bottom" constant="20" id="VEH-5r-Jvd"/>
-                            <constraint firstItem="sT6-F8-q87" firstAttribute="trailing" secondItem="l5e-K8-ms5" secondAttribute="trailing" constant="65" id="a2z-gC-scY"/>
-                            <constraint firstItem="32R-gc-er0" firstAttribute="leading" secondItem="sT6-F8-q87" secondAttribute="leading" constant="65" id="eNI-YM-Lbu"/>
-                            <constraint firstItem="l5e-K8-ms5" firstAttribute="leading" secondItem="sT6-F8-q87" secondAttribute="leading" constant="65" id="ejB-w4-u4n"/>
-                            <constraint firstItem="sT6-F8-q87" firstAttribute="trailing" secondItem="wdp-D1-bBg" secondAttribute="trailing" constant="65" id="mk4-QW-NAI"/>
+                            <constraint firstItem="sT6-F8-q87" firstAttribute="trailing" secondItem="l5e-K8-ms5" secondAttribute="trailing" constant="60" id="a2z-gC-scY"/>
+                            <constraint firstItem="32R-gc-er0" firstAttribute="leading" secondItem="sT6-F8-q87" secondAttribute="leading" constant="60" id="eNI-YM-Lbu"/>
+                            <constraint firstItem="l5e-K8-ms5" firstAttribute="leading" secondItem="sT6-F8-q87" secondAttribute="leading" constant="60" id="ejB-w4-u4n"/>
                             <constraint firstItem="sT6-F8-q87" firstAttribute="trailing" secondItem="lAz-86-fsB" secondAttribute="trailing" constant="62" id="oOV-kD-59s"/>
                             <constraint firstItem="mId-Li-edy" firstAttribute="top" secondItem="32R-gc-er0" secondAttribute="bottom" constant="8" id="xAO-J9-H2y"/>
                             <constraint firstItem="32R-gc-er0" firstAttribute="top" secondItem="l5e-K8-ms5" secondAttribute="bottom" constant="8" id="zEv-gu-1kk"/>

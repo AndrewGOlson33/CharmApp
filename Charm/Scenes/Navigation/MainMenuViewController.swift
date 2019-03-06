@@ -18,21 +18,30 @@ class MainMenuViewController: UIViewController {
         // Do any additional setup after loading the view.
         
         // TODO: - Delete this test method
-        testFirebase()
+//        testFirebase()
     }
     
     // TODO: Delete this method
     
     private func testFirebase() {
-        Database.database().reference().child("setupTest").child("user").observeSingleEvent(of: .value, with: { snapshot in
-            guard let value = snapshot.value else { return }
-            do {
-                let user = try FirebaseDecoder().decode(User.self, from: value)
-                print(user)
-            } catch let error {
-                print("~>There was an error: \(error)")
-            }
-        })
+        // Saving new data
+        var newUser = CharmUser(first: "Daniel", last: "Pratt", email: "daniel@blaumagier.com")
+        let ref = Database.database().reference().child("testData").childByAutoId()
+        newUser.id = ref.key
+        let data = try! FirebaseEncoder().encode(newUser)
+        ref.setValue(data)
+        
+//        // Loading data
+//        Database.database().reference().child("testData").child("-L_IyB77EhS2XvC_AZCO").observeSingleEvent(of: .value) { (snapshot) in
+//            guard let value = snapshot.value else { return }
+//            do {
+//                let user = try FirebaseDecoder().decode(CharmUser.self, from: value)
+//                print(user)
+//            } catch let error {
+//                print("~>There was an error retreiving data: \(error)")
+//                print("~>Got value: \(value)")
+//            }
+//        }
     }
     
     // MARK: - Button Handling

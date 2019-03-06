@@ -9,8 +9,6 @@
 import Foundation
 
 enum SegueID {
-    
     static let FriendList = "sid_friendlist"
     static let VideoCall = "sid_videocall"
-    
 }
