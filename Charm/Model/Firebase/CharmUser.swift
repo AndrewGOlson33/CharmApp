@@ -13,12 +13,16 @@ struct CharmUser: Codable, Identifiable {
     
     var id: String? = nil
     var userProfile: UserProfile
+    var friendList: FriendList?
     
     init(first: String, last: String, email: String) {
         userProfile = UserProfile(first: first, last: last, email: email)
+        friendList = FriendList()
     }
     
 }
+
+// User Profile
 
 struct UserProfile: Codable {
     enum MembershipStatus: Int, Codable {
@@ -39,5 +43,29 @@ struct UserProfile: Codable {
         numCredits = 10
         renewDate = Date()
         membershipStatus = .unknown
+    }
+}
+
+// Friends List
+
+struct FriendList: Codable {
+    var currentFriends: [Friend] = []
+    var pendingSentApproval: [Friend] = []
+    var pendingReceivedApproval: [Friend] = []
+}
+
+// Friend Info
+
+struct Friend: Codable, Identifiable {
+    var id: String? = nil
+    var firstName: String
+    var lastName: String
+    var email: String
+    
+    init(id: String, first: String, last: String, email: String) {
+        self.id = id
+        firstName = first
+        lastName = last
+        self.email = email
     }
 }
