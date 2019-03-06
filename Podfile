@@ -7,7 +7,9 @@ target 'Charm' do
 
   # Pods for Charm
   pod 'OpenTok'
+  pod 'Highcharts'
   pod 'Firebase/Core'
+  pod 'Firebase/Database'
   pod 'CodableFirebase'
 
 end

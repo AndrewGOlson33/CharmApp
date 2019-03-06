@@ -8,9 +8,10 @@
 
 /* Begin PBXBuildFile section */
 		440B49E3FFECF797577DDB57 /* Pods_Charm.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 16C20027951EB6711E199488 /* Pods_Charm.framework */; };
-		65173D14222FFC990079BEF1 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 65173D13222FFC990079BEF1 /* GoogleService-Info.plist */; };
 		6572642222300640008D9ED4 /* MainMenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6572642122300640008D9ED4 /* MainMenuViewController.swift */; };
 		657264262230081B008D9ED4 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 657264252230081B008D9ED4 /* Constants.swift */; };
+		65B872A822302BE0001705B3 /* TestModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65B872A722302BE0001705B3 /* TestModel.swift */; };
+		65B872AA22302CF2001705B3 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 65B872A922302CF1001705B3 /* GoogleService-Info.plist */; };
 		65F5A022222FF8A8001262FB /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65F5A021222FF8A8001262FB /* AppDelegate.swift */; };
 		65F5A027222FF8A8001262FB /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 65F5A025222FF8A8001262FB /* Main.storyboard */; };
 		65F5A029222FF8A9001262FB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 65F5A028222FF8A9001262FB /* Assets.xcassets */; };
@@ -20,9 +21,10 @@
 /* Begin PBXFileReference section */
 		16C20027951EB6711E199488 /* Pods_Charm.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Charm.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		32AEF01E8A1AE05F8906832B /* Pods-Charm.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Charm.debug.xcconfig"; path = "Target Support Files/Pods-Charm/Pods-Charm.debug.xcconfig"; sourceTree = "<group>"; };
-		65173D13222FFC990079BEF1 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		6572642122300640008D9ED4 /* MainMenuViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMenuViewController.swift; sourceTree = "<group>"; };
 		657264252230081B008D9ED4 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		65B872A722302BE0001705B3 /* TestModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestModel.swift; sourceTree = "<group>"; };
+		65B872A922302CF1001705B3 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		65F5A01E222FF8A8001262FB /* Charm.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Charm.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		65F5A021222FF8A8001262FB /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		65F5A026222FF8A8001262FB /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -90,6 +92,7 @@
 			isa = PBXGroup;
 			children = (
 				657264252230081B008D9ED4 /* Constants.swift */,
+				65B872A722302BE0001705B3 /* TestModel.swift */,
 			);
 			path = "App Specific";
 			sourceTree = "<group>";
@@ -120,7 +123,7 @@
 				6572641E223004DD008D9ED4 /* View */,
 				65F5A021222FF8A8001262FB /* AppDelegate.swift */,
 				65F5A02D222FF8A9001262FB /* Info.plist */,
-				65173D13222FFC990079BEF1 /* GoogleService-Info.plist */,
+				65B872A922302CF1001705B3 /* GoogleService-Info.plist */,
 			);
 			path = Charm;
 			sourceTree = "<group>";
@@ -195,7 +198,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				65F5A02C222FF8A9001262FB /* LaunchScreen.storyboard in Resources */,
-				65173D14222FFC990079BEF1 /* GoogleService-Info.plist in Resources */,
+				65B872AA22302CF2001705B3 /* GoogleService-Info.plist in Resources */,
 				65F5A029222FF8A9001262FB /* Assets.xcassets in Resources */,
 				65F5A027222FF8A8001262FB /* Main.storyboard in Resources */,
 			);
@@ -237,6 +240,8 @@
 				"${PODS_ROOT}/Target Support Files/Pods-Charm/Pods-Charm-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/CodableFirebase/CodableFirebase.framework",
 				"${BUILT_PRODUCTS_DIR}/GoogleUtilities/GoogleUtilities.framework",
+				"${PODS_ROOT}/Highcharts/development/Highcharts.framework",
+				"${BUILT_PRODUCTS_DIR}/leveldb-library/leveldb.framework",
 				"${BUILT_PRODUCTS_DIR}/nanopb/nanopb.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
@@ -245,6 +250,8 @@
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CodableFirebase.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GoogleUtilities.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Highcharts.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/leveldb.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/nanopb.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -262,6 +269,7 @@
 				6572642222300640008D9ED4 /* MainMenuViewController.swift in Sources */,
 				65F5A022222FF8A8001262FB /* AppDelegate.swift in Sources */,
 				657264262230081B008D9ED4 /* Constants.swift in Sources */,
+				65B872A822302BE0001705B3 /* TestModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
