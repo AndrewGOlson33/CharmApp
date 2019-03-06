@@ -8,7 +8,18 @@
 
 import Foundation
 
+// MARK: - UI Related
 enum SegueID {
     static let FriendList = "sid_friendlist"
     static let VideoCall = "sid_videocall"
+}
+
+enum StoryboardID {
+    static let NavigationHome = "vc_navhome"
+}
+
+// MARK: - Firebase Related
+
+enum FirebaseStructure {
+    static let Users = "testUsers"
 }

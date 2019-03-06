@@ -11,6 +11,8 @@ target 'Charm' do
   pod 'Firebase/Core'
   pod 'Firebase/Database'
   pod 'FirebaseUI/Auth'
+  pod 'FirebaseUI/Email'
+  pod 'Firebase/DynamicLinks'
   pod 'CodableFirebase'
 
 end

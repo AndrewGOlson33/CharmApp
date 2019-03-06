@@ -13,6 +13,7 @@
 		65B872A822302BE0001705B3 /* CharmUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65B872A722302BE0001705B3 /* CharmUser.swift */; };
 		65B872AA22302CF2001705B3 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 65B872A922302CF1001705B3 /* GoogleService-Info.plist */; };
 		65EADDD522302FE900593F9D /* Protocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65EADDD422302FE900593F9D /* Protocols.swift */; };
+		65EADDD722303A1C00593F9D /* CharmSignInViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65EADDD622303A1C00593F9D /* CharmSignInViewController.swift */; };
 		65F5A022222FF8A8001262FB /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65F5A021222FF8A8001262FB /* AppDelegate.swift */; };
 		65F5A027222FF8A8001262FB /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 65F5A025222FF8A8001262FB /* Main.storyboard */; };
 		65F5A029222FF8A9001262FB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 65F5A028222FF8A9001262FB /* Assets.xcassets */; };
@@ -27,6 +28,7 @@
 		65B872A722302BE0001705B3 /* CharmUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CharmUser.swift; sourceTree = "<group>"; };
 		65B872A922302CF1001705B3 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		65EADDD422302FE900593F9D /* Protocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Protocols.swift; sourceTree = "<group>"; };
+		65EADDD622303A1C00593F9D /* CharmSignInViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CharmSignInViewController.swift; sourceTree = "<group>"; };
 		65F5A01E222FF8A8001262FB /* Charm.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Charm.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		65F5A021222FF8A8001262FB /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		65F5A026222FF8A8001262FB /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -78,6 +80,7 @@
 			isa = PBXGroup;
 			children = (
 				6572642122300640008D9ED4 /* MainMenuViewController.swift */,
+				65EADDD622303A1C00593F9D /* CharmSignInViewController.swift */,
 			);
 			path = Navigation;
 			sourceTree = "<group>";
@@ -283,12 +286,14 @@
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Charm/Pods-Charm-resources.sh",
 				"${PODS_CONFIGURATION_BUILD_DIR}/FirebaseUI/FirebaseAuthUI.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/FirebaseUI/FirebaseEmailAuthUI.bundle",
 			);
 			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
 			);
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FirebaseAuthUI.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FirebaseEmailAuthUI.bundle",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -302,6 +307,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				65EADDD722303A1C00593F9D /* CharmSignInViewController.swift in Sources */,
 				65EADDD522302FE900593F9D /* Protocols.swift in Sources */,
 				6572642222300640008D9ED4 /* MainMenuViewController.swift in Sources */,
 				65F5A022222FF8A8001262FB /* AppDelegate.swift in Sources */,
