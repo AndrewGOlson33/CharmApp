@@ -84,7 +84,7 @@ extension CharmSignInViewController: FUIAuthDelegate {
     
     private func loadUser(withUID uid: String) {
         // read user
-        Database.database().reference().child(FirebaseStructure.Users).child(uid).observeSingleEvent(of: .value) { (snapshot) in
+        Database.database().reference().child(FirebaseStructure.Users).child(uid).observeSingleEvent (of: .value) { (snapshot) in
             if snapshot.exists() {
                 // setup a user item
                 guard let value = snapshot.value else { fatalError("~>Unable to get value from snapshot") }

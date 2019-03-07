@@ -52,6 +52,10 @@ struct FriendList: Codable {
     var currentFriends: [Friend] = []
     var pendingSentApproval: [Friend] = []
     var pendingReceivedApproval: [Friend] = []
+    
+    var count: Int {
+        return currentFriends.count + pendingSentApproval.count + pendingReceivedApproval.count
+    }
 }
 
 // Friend Info

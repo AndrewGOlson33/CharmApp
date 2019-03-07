@@ -146,10 +146,70 @@
             </objects>
             <point key="canvasLocation" x="950" y="145"/>
         </scene>
+        <!--Table View Controller-->
+        <scene sceneID="SYg-d1-gd7">
+            <objects>
+                <tableViewController id="HGr-Mw-46F" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="pcJ-Pu-tGL">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="551"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <prototypes>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="cid_friendlist" id="dP4-Hr-yNV">
+                                <rect key="frame" x="0.0" y="28" width="375" height="44"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" ambiguous="YES" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="dP4-Hr-yNV" id="uQE-SI-8lP">
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="43.5"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Name" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rMA-PL-deH">
+                                            <rect key="frame" x="16" y="11" width="45" height="21"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                            <nil key="textColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Email" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="94c-QK-tLo">
+                                            <rect key="frame" x="16" y="40" width="31" height="14.5"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                            <nil key="textColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Detail" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="f2V-Rt-LNW">
+                                            <rect key="frame" x="16" y="62.5" width="33" height="14.5"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                            <nil key="textColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                    <constraints>
+                                        <constraint firstItem="rMA-PL-deH" firstAttribute="top" secondItem="uQE-SI-8lP" secondAttribute="topMargin" id="2T4-9D-QUR"/>
+                                        <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="rMA-PL-deH" secondAttribute="trailing" constant="20" symbolic="YES" id="7cg-6U-yPE"/>
+                                        <constraint firstAttribute="bottomMargin" secondItem="f2V-Rt-LNW" secondAttribute="bottom" constant="8" id="AUW-95-eSf"/>
+                                        <constraint firstItem="rMA-PL-deH" firstAttribute="leading" secondItem="uQE-SI-8lP" secondAttribute="leadingMargin" id="Fy3-9i-KPv"/>
+                                        <constraint firstItem="94c-QK-tLo" firstAttribute="leading" secondItem="uQE-SI-8lP" secondAttribute="leadingMargin" id="KYc-65-5nJ"/>
+                                        <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="f2V-Rt-LNW" secondAttribute="trailing" constant="20" symbolic="YES" id="gyp-G6-9Ig"/>
+                                        <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="94c-QK-tLo" secondAttribute="trailing" constant="20" symbolic="YES" id="nRZ-ck-22D"/>
+                                        <constraint firstItem="94c-QK-tLo" firstAttribute="top" secondItem="rMA-PL-deH" secondAttribute="bottom" constant="8" id="pX9-zA-cPZ"/>
+                                        <constraint firstItem="f2V-Rt-LNW" firstAttribute="top" secondItem="94c-QK-tLo" secondAttribute="bottom" constant="8" id="q5I-Gh-WCl"/>
+                                        <constraint firstItem="f2V-Rt-LNW" firstAttribute="leading" secondItem="uQE-SI-8lP" secondAttribute="leadingMargin" id="u1N-qG-XKq"/>
+                                    </constraints>
+                                </tableViewCellContentView>
+                            </tableViewCell>
+                        </prototypes>
+                        <connections>
+                            <outlet property="dataSource" destination="HGr-Mw-46F" id="Frd-gm-WCx"/>
+                            <outlet property="delegate" destination="HGr-Mw-46F" id="UYq-z5-NxK"/>
+                        </connections>
+                    </tableView>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="nD0-Vb-4Jn" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="949.60000000000002" y="-606.74662668665667"/>
+        </scene>
         <!--Chat-->
         <scene sceneID="5r8-Kl-SlV">
             <objects>
-                <tableViewController id="hps-G3-QtS" sceneMemberID="viewController">
+                <tableViewController id="hps-G3-QtS" customClass="ChatTableViewController" customModule="Charm" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="ZUk-je-8fF">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="551"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -160,9 +220,19 @@
                         </connections>
                     </tableView>
                     <navigationItem key="navigationItem" title="Chat" id="za4-yU-hpg">
-                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="Pqz-TD-Nxx">
-                            <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                        </barButtonItem>
+                        <rightBarButtonItems>
+                            <barButtonItem systemItem="add" id="Pqz-TD-Nxx">
+                                <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <connections>
+                                    <action selector="addFriendTapped:" destination="hps-G3-QtS" id="v4F-Rz-oSG"/>
+                                </connections>
+                            </barButtonItem>
+                            <barButtonItem title="Friends" id="EFf-2T-bja">
+                                <connections>
+                                    <segue destination="HGr-Mw-46F" kind="show" id="tbo-GU-nKp"/>
+                                </connections>
+                            </barButtonItem>
+                        </rightBarButtonItems>
                     </navigationItem>
                     <connections>
                         <segue destination="M8q-z3-gMC" kind="show" identifier="sid_videocall" id="lJa-O7-cLE"/>

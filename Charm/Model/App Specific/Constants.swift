@@ -22,4 +22,36 @@ enum StoryboardID {
 
 enum FirebaseStructure {
     static let Users = "testUsers"
+    
+    enum CharmUser {
+        static let ID = "id"
+        static let Profile = "userProfile"
+        enum UserProfile {
+            static let Email = "email"
+            static let FirstName = "firstName"
+            static let LastName = "lastName"
+            static let MembershipStatus = "membershipStatus"
+            static let NumCredits = "numCredits"
+            static let RenewDate = "renewDate"
+        }
+        static let Friends = "friendList"
+        enum FriendList {
+            static let CurrentFriends = "currentFriends"
+            static let PendingSentApproval = "pendingSentApproval"
+            static let PendingReceivedApproval = "pendingReceivedApproval"
+        }
+    }
+    
+    enum Friend {
+        static let ID = "id"
+        static let FirstName = "firstName"
+        static let LastName = "lastName"
+        static let Email = "email"
+    }
+}
+
+// MARK: - Notifications
+
+enum FirebaseNotification {
+    static let CharmUserDidUpdate = Notification.Name("notificationCharmUserDidUpdate")
 }

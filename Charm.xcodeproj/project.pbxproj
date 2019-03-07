@@ -12,6 +12,7 @@
 		657264262230081B008D9ED4 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 657264252230081B008D9ED4 /* Constants.swift */; };
 		65B872A822302BE0001705B3 /* CharmUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65B872A722302BE0001705B3 /* CharmUser.swift */; };
 		65B872AA22302CF2001705B3 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 65B872A922302CF1001705B3 /* GoogleService-Info.plist */; };
+		65C55C1A22314C7A00336243 /* ChatTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65C55C1922314C7A00336243 /* ChatTableViewController.swift */; };
 		65EADDD522302FE900593F9D /* Protocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65EADDD422302FE900593F9D /* Protocols.swift */; };
 		65EADDD722303A1C00593F9D /* CharmSignInViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65EADDD622303A1C00593F9D /* CharmSignInViewController.swift */; };
 		65F5A022222FF8A8001262FB /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65F5A021222FF8A8001262FB /* AppDelegate.swift */; };
@@ -27,6 +28,7 @@
 		657264252230081B008D9ED4 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		65B872A722302BE0001705B3 /* CharmUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CharmUser.swift; sourceTree = "<group>"; };
 		65B872A922302CF1001705B3 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		65C55C1922314C7A00336243 /* ChatTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatTableViewController.swift; sourceTree = "<group>"; };
 		65EADDD422302FE900593F9D /* Protocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Protocols.swift; sourceTree = "<group>"; };
 		65EADDD622303A1C00593F9D /* CharmSignInViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CharmSignInViewController.swift; sourceTree = "<group>"; };
 		65F5A01E222FF8A8001262FB /* Charm.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Charm.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -71,6 +73,7 @@
 		6572641F2230061D008D9ED4 /* Scenes */ = {
 			isa = PBXGroup;
 			children = (
+				65C55C1822314C5600336243 /* Social */,
 				6572642022300622008D9ED4 /* Navigation */,
 			);
 			path = Scenes;
@@ -101,6 +104,14 @@
 				65EADDD422302FE900593F9D /* Protocols.swift */,
 			);
 			path = "App Specific";
+			sourceTree = "<group>";
+		};
+		65C55C1822314C5600336243 /* Social */ = {
+			isa = PBXGroup;
+			children = (
+				65C55C1922314C7A00336243 /* ChatTableViewController.swift */,
+			);
+			path = Social;
 			sourceTree = "<group>";
 		};
 		65EADDD322302FC200593F9D /* Firebase */ = {
@@ -313,6 +324,7 @@
 				65F5A022222FF8A8001262FB /* AppDelegate.swift in Sources */,
 				657264262230081B008D9ED4 /* Constants.swift in Sources */,
 				65B872A822302BE0001705B3 /* CharmUser.swift in Sources */,
+				65C55C1A22314C7A00336243 /* ChatTableViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
