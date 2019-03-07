@@ -37,6 +37,7 @@ Pods/
 
 # Sensitive Data
 Charm/GoogleService-Info.plist
+Charm/Model/App Specific/API Keys.swift
 
 # Swift Package Manager
 #

@@ -177,11 +177,26 @@ class ChatTableViewController: UITableViewController {
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-//        let cell = tableView.dequeueReusableCell(withIdentifier: "reuseIdentifier", for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: CellID.ChatList, for: indexPath)
 
-        // Configure the cell...
+        guard let friend = friends?.currentFriends?[indexPath.row] else { return cell }
+        
+        cell.textLabel?.text = "\(friend.firstName) \(friend.lastName)"
+        cell.detailTextLabel?.text = friend.email
 
-        return UITableViewCell()
+        return cell
+    }
+    
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        guard let friend = friends?.currentFriends?[indexPath.row] else { return }
+        performSegue(withIdentifier: SegueID.VideoCall, sender: friend)
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == SegueID.VideoCall, let videoVC = segue.destination as? VideoCallViewController, let friend = sender as? Friend {
+            videoVC.friend = friend
+        }
     }
 
 }

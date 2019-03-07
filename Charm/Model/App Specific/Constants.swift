@@ -20,6 +20,7 @@ enum StoryboardID {
 
 enum CellID {
     static let FriendList = "cid_friendlist"
+    static let ChatList = "cid_chatlist"
 }
 
 // MARK: - Firebase Related
