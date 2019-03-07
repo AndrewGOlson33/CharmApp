@@ -14,16 +14,6 @@ class MainMenuViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
-        
-        // Test query existing user by email address
-        
-//        let ref = Database.database().reference()
-//        let emailQuery = ref.child(FirebaseStructure.Users).queryOrdered(byChild: "userProfile/email").queryEqual(toValue: "daniel@blaumagier.com")
-//        emailQuery.observeSingleEvent(of: .value) { (snapshot) in
-//            print("~>Did a query: \(String(describing: snapshot.value))")
-//        }
         
         // Setup user observer
         Database.database().reference().child(FirebaseStructure.Users).child(Auth.auth().currentUser!.uid).observe(.value) { (snapshot) in

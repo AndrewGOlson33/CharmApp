@@ -49,12 +49,16 @@ struct UserProfile: Codable {
 // Friends List
 
 struct FriendList: Codable {
-    var currentFriends: [Friend] = []
-    var pendingSentApproval: [Friend] = []
-    var pendingReceivedApproval: [Friend] = []
+    var currentFriends: [Friend]? = []
+    var pendingSentApproval: [Friend]? = []
+    var pendingReceivedApproval: [Friend]? = []
     
     var count: Int {
-        return currentFriends.count + pendingSentApproval.count + pendingReceivedApproval.count
+        var count = 0
+        if let current = currentFriends { count += current.count }
+        if let pendingSent = pendingSentApproval { count += pendingSent.count }
+        if let pendingReceived = pendingReceivedApproval { count += pendingReceived.count }
+        return count
     }
 }
 
