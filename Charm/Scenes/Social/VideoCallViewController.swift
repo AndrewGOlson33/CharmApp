@@ -37,7 +37,11 @@ class VideoCallViewController: UIViewController {
         
         let configuration = URLSessionConfiguration.default
         let session = URLSession(configuration: configuration)
-        let url = URL(string: "https://charmcharismaanalytics.herokuapp.com/session")
+        
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        guard let id = appDelegate.user.id else { return }
+        let room = ("\(id)+\(friend.id!)")
+        let url = URL(string: "https://charmcharismaanalytics.herokuapp.com/room/\(room)")
         let dataTask = session.dataTask(with: url!) {
             (data: Data?, response: URLResponse?, error: Error?) in
             
@@ -45,6 +49,8 @@ class VideoCallViewController: UIViewController {
                 print("~>Got an error: \(error!)")
                 return
             }
+            
+            print(data)
             
             let dict = try! JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [AnyHashable: Any]
             self.kApiKey = dict?["apiKey"] as? String ?? ""
@@ -59,7 +65,29 @@ class VideoCallViewController: UIViewController {
         session.finishTasksAndInvalidate()
     }
     
-    private func connectToAnOpenTokSession() {
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        endCallButtonTapped(self)
+    }
+
+    // MARK: - Button Handling
+    
+    @IBAction func endCallButtonTapped(_ sender: Any) {
+        var error: OTError? = nil
+        session?.disconnect(&error)
+        if let error = error {
+            print("~>There was an error: \(error)")
+            if let _ = sender as? UIButton {
+                navigationController?.popViewController(animated: true)
+            }
+        } else {
+            print("~>Successfully disconnected.")
+        }
+        
+        
+    }
+    
+    func connectToAnOpenTokSession() {
         session = OTSession(apiKey: kApiKey, sessionId: kSessionId, delegate: self)
         var error: OTError?
         session?.connect(withToken: kToken, error: &error)
@@ -68,11 +96,11 @@ class VideoCallViewController: UIViewController {
         }
     }
 
-
 }
 
 // MARK: - OTSessionDelegate callbacks
 extension VideoCallViewController: OTSessionDelegate {
+    
     func sessionDidConnect(_ session: OTSession) {
         print("~>The client connected to the OpenTok session.")
         let settings = OTPublisherSettings()
@@ -93,6 +121,9 @@ extension VideoCallViewController: OTSessionDelegate {
             return
         }
         
+        publisher.publishVideo = true
+        publisher.publishAudio = true
+        
         view.addSubview(publisherView)
         view.sendSubviewToBack(publisherView)
         
@@ -112,8 +143,8 @@ extension VideoCallViewController: OTSessionDelegate {
         print("The client failed to connect to the OpenTok session: \(error).")
     }
     func session(_ session: OTSession, streamCreated stream: OTStream) {
-        print("A stream was created in the session.")
-        subscriber = OTSubscriber(stream: stream, delegate: self as? OTSubscriberKitDelegate)
+        print("~>A stream was created in the session.")
+        subscriber = OTSubscriber(stream: stream, delegate: self)
         guard let subscriber = subscriber else {
             return
         }
@@ -121,13 +152,14 @@ extension VideoCallViewController: OTSessionDelegate {
         var error: OTError?
         session.subscribe(subscriber, error: &error)
         guard error == nil else {
-            print(error!)
+            print("~>Error subscribing to session: \(String(describing: error))")
             return
         }
         
         guard let subscriberView = subscriber.view else {
             return
         }
+        
         subscriberView.frame = UIScreen.main.bounds
         view.insertSubview(subscriberView, at: 0)
     }
@@ -135,4 +167,20 @@ extension VideoCallViewController: OTSessionDelegate {
     func session(_ session: OTSession, streamDestroyed stream: OTStream) {
         print("A stream was destroyed in the session.")
     }
+}
+
+extension VideoCallViewController: OTSubscriberKitDelegate {
+    
+    public func subscriberDidConnect(toStream subscriber: OTSubscriberKit) {
+        print("~>The subscriber did connect to the stream.")
+    }
+    
+    public func subscriber(_ subscriber: OTSubscriberKit, didFailWithError error: OTError) {
+        print("~>The subscriber failed to connect to the stream.")
+    }
+    
+    func subscriberDidDisconnect(fromStream subscriber: OTSubscriberKit) {
+        print("~>The subscriber did disconnect from the stream.")
+    }
+    
 }

@@ -299,6 +299,9 @@
                                     <constraint firstAttribute="width" secondItem="aHz-JH-29W" secondAttribute="height" multiplier="1:1" id="vpF-jZ-vho"/>
                                 </constraints>
                                 <state key="normal" image="icn_cancel"/>
+                                <connections>
+                                    <action selector="endCallButtonTapped:" destination="M8q-z3-gMC" eventType="touchUpInside" id="NCH-pA-bX9"/>
+                                </connections>
                             </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
