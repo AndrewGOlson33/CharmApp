@@ -146,10 +146,10 @@
             </objects>
             <point key="canvasLocation" x="950" y="145"/>
         </scene>
-        <!--Table View Controller-->
+        <!--Friend List Table View Controller-->
         <scene sceneID="SYg-d1-gd7">
             <objects>
-                <tableViewController id="HGr-Mw-46F" sceneMemberID="viewController">
+                <tableViewController id="HGr-Mw-46F" customClass="FriendListTableViewController" customModule="Charm" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="pcJ-Pu-tGL">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="551"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -169,17 +169,24 @@
                                             <nil key="highlightedColor"/>
                                         </label>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Email" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="94c-QK-tLo">
-                                            <rect key="frame" x="16" y="40" width="31" height="14.5"/>
+                                            <rect key="frame" x="16" y="40" width="31" height="15"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Detail" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="f2V-Rt-LNW">
-                                            <rect key="frame" x="16" y="62.5" width="33" height="14.5"/>
+                                            <rect key="frame" x="16" y="63" width="33" height="15"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
+                                        <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Iwx-Fc-7O1">
+                                            <rect key="frame" x="297" y="32.5" width="58" height="30"/>
+                                            <state key="normal" title="Approve"/>
+                                            <connections>
+                                                <action selector="approveButtonTapped:" destination="dP4-Hr-yNV" eventType="touchUpInside" id="Jdo-Cl-VnT"/>
+                                            </connections>
+                                        </button>
                                     </subviews>
                                     <constraints>
                                         <constraint firstItem="rMA-PL-deH" firstAttribute="top" secondItem="uQE-SI-8lP" secondAttribute="topMargin" id="2T4-9D-QUR"/>
@@ -187,7 +194,10 @@
                                         <constraint firstAttribute="bottomMargin" secondItem="f2V-Rt-LNW" secondAttribute="bottom" constant="8" id="AUW-95-eSf"/>
                                         <constraint firstItem="rMA-PL-deH" firstAttribute="leading" secondItem="uQE-SI-8lP" secondAttribute="leadingMargin" id="Fy3-9i-KPv"/>
                                         <constraint firstItem="94c-QK-tLo" firstAttribute="leading" secondItem="uQE-SI-8lP" secondAttribute="leadingMargin" id="KYc-65-5nJ"/>
+                                        <constraint firstAttribute="trailing" secondItem="Iwx-Fc-7O1" secondAttribute="trailing" constant="20" id="PhY-sK-KND"/>
+                                        <constraint firstItem="Iwx-Fc-7O1" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="rMA-PL-deH" secondAttribute="trailing" constant="8" symbolic="YES" id="cwD-Lg-0Dq"/>
                                         <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="f2V-Rt-LNW" secondAttribute="trailing" constant="20" symbolic="YES" id="gyp-G6-9Ig"/>
+                                        <constraint firstItem="Iwx-Fc-7O1" firstAttribute="centerY" secondItem="94c-QK-tLo" secondAttribute="centerY" id="lMB-k4-b8d"/>
                                         <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="94c-QK-tLo" secondAttribute="trailing" constant="20" symbolic="YES" id="nRZ-ck-22D"/>
                                         <constraint firstItem="94c-QK-tLo" firstAttribute="top" secondItem="rMA-PL-deH" secondAttribute="bottom" constant="8" id="pX9-zA-cPZ"/>
                                         <constraint firstItem="f2V-Rt-LNW" firstAttribute="top" secondItem="94c-QK-tLo" secondAttribute="bottom" constant="8" id="q5I-Gh-WCl"/>
@@ -195,6 +205,7 @@
                                     </constraints>
                                 </tableViewCellContentView>
                                 <connections>
+                                    <outlet property="btnApprove" destination="Iwx-Fc-7O1" id="vjF-dw-XUn"/>
                                     <outlet property="lblDetail" destination="f2V-Rt-LNW" id="ElW-8j-Zon"/>
                                     <outlet property="lblEmail" destination="94c-QK-tLo" id="YgM-rF-aZ7"/>
                                     <outlet property="lblName" destination="rMA-PL-deH" id="4Af-qs-emB"/>

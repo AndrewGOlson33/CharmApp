@@ -8,6 +8,16 @@
 
 import Foundation
 
+// MARK: - Protocols
+
+// Use for Firebase Objects that need to have the uid stored in model
 protocol Identifiable {
     var id: String? { get set }
+}
+
+// MARK: - Delegates
+
+// Delegate that handles approving friend requests
+protocol ApproveFriendDelegate {
+    func approveFriendRequest(withId id: String)
 }

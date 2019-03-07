@@ -18,6 +18,10 @@ enum StoryboardID {
     static let NavigationHome = "vc_navhome"
 }
 
+enum CellID {
+    static let FriendList = "cid_friendlist"
+}
+
 // MARK: - Firebase Related
 
 enum FirebaseStructure {
