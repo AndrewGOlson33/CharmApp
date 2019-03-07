@@ -31,6 +31,8 @@ class VideoCallViewController: UIViewController {
     
     // OpenTok API key
     var kApiKey = TokBox.ApiKey
+    
+    // TODO: - replace these with real values
     // Generated session ID
     var kSessionId = "1_MX40NjIzMjg2Mn5-MTU1MTk5MTA3NzUwMX5JM2VyOEN3QUFIeklRUUVIbFRSeWhVNVR-fg"
     // Generated token
