@@ -293,7 +293,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="aHz-JH-29W">
-                                <rect key="frame" x="23" y="459" width="72" height="72"/>
+                                <rect key="frame" x="151.5" y="459" width="72" height="72"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="72" id="UrT-72-JKN"/>
                                     <constraint firstAttribute="width" secondItem="aHz-JH-29W" secondAttribute="height" multiplier="1:1" id="vpF-jZ-vho"/>
@@ -303,9 +303,8 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
-                            <constraint firstItem="aHz-JH-29W" firstAttribute="leading" secondItem="osk-j0-Ppl" secondAttribute="leading" constant="23" id="52L-JH-Hh8"/>
-                            <constraint firstItem="osk-j0-Ppl" firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="aHz-JH-29W" secondAttribute="trailing" symbolic="YES" id="dxC-Td-Lfx"/>
                             <constraint firstItem="osk-j0-Ppl" firstAttribute="bottom" secondItem="aHz-JH-29W" secondAttribute="bottom" constant="20" id="jfz-rk-gZo"/>
+                            <constraint firstItem="aHz-JH-29W" firstAttribute="centerX" secondItem="osk-j0-Ppl" secondAttribute="centerX" id="o26-oo-U2w"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="osk-j0-Ppl"/>
                     </view>
