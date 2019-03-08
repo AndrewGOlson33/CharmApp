@@ -42,6 +42,8 @@ class VideoCallViewController: UIViewController {
     // Generated token will be loaded here
     var kToken = ""
     
+    var archiveId: String = ""
+    
     // Picture in Picture width / height
     var kMainScreenWidth: CGFloat {
         return view.safeAreaLayoutGuide.layoutFrame.width
@@ -224,6 +226,9 @@ class VideoCallViewController: UIViewController {
             pubView.contentMode = .scaleToFill
             view.addSubview(pubView)
         }
+        
+        // start archiving
+        startArchive()
     }
     
     /**
@@ -260,6 +265,68 @@ class VideoCallViewController: UIViewController {
             }
         }
     }
+    
+    func startArchive() {
+        let fullURL = "https://charmcharismaanalytics.herokuapp.com/archive/start"
+        let url = URL(string: fullURL)
+        var urlRequest: URLRequest? = nil
+        if let url = url {
+            urlRequest = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalAndRemoteCacheData, timeoutInterval: 10)
+        }
+        
+        guard var request = urlRequest else { return }
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpMethod = "POST"
+        let dict = [
+            "sessionId": kSessionId
+        ]
+        request.httpBody = try? JSONSerialization.data(withJSONObject: dict, options: .prettyPrinted)
+        
+        let configuration = URLSessionConfiguration.default
+        let session = URLSession(configuration: configuration)
+        
+        let dataTask = session.dataTask(with: request) { (data, response, error) in
+        
+            print("~>Got response: \(String(describing: response))")
+            if let error = error {
+                print("~>Got an error trying to start an archive: \(error)")
+            } else {
+                print("~>Archive started.")
+            }
+        }
+        
+        dataTask.resume()
+        session.finishTasksAndInvalidate()
+    }
+
+    
+    func stopArchive() {
+        let fullURL = "https://charmcharismaanalytics.herokuapp.com/archive/\(archiveId)/stop"
+        let url = URL(string: fullURL)
+        var urlRequest: URLRequest? = nil
+        if let url = url {
+            urlRequest = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalAndRemoteCacheData, timeoutInterval: 10)
+        }
+        
+        guard var request = urlRequest else { return }
+        request.httpMethod = "POST"
+        
+        let configuration = URLSessionConfiguration.default
+        let session = URLSession(configuration: configuration)
+        
+        let dataTask = session.dataTask(with: request) { (data, response, error) in
+            print("~>Got response: \(String(describing: response))")
+            if let error = error {
+                print("~>Got an error trying to stop an archive: \(error)")
+            } else {
+                print("~>Archive stopped.")
+            }
+        }
+        
+        dataTask.resume()
+        session.finishTasksAndInvalidate()
+    }
+
 
     // MARK: - Button Handling
     
@@ -273,6 +340,7 @@ class VideoCallViewController: UIViewController {
         }
         
         session.disconnect(&error)
+        stopArchive()
     }
     
 }
@@ -317,6 +385,16 @@ extension VideoCallViewController: OTSessionDelegate {
         print("~>session Failed to connect: \(error.localizedDescription)")
     }
     
+    func session(_ session: OTSession, archiveStartedWithId archiveId: String, name: String?) {
+        print("~>archive began using archiveID: \(archiveId)")
+        self.archiveId = archiveId
+    }
+    
+    func session(_ session: OTSession, archiveStoppedWithId archiveId: String) {
+        // TODO: - Add Archive ID to firebase
+        print("~>archive with archiveID: \(archiveId) ended.")
+    }
+    
 }
 
 // MARK: - OTPublisher delegate callbacks
@@ -344,7 +422,6 @@ extension VideoCallViewController: OTSubscriberDelegate {
         if let subsView = subscriber?.view {
             subsView.frame = CGRect(x: 0, y: 0, width: kMainScreenWidth, height: kMainScreenHeight)
             view.addSubview(subsView)
-//            view.bringSubviewToFront(subsView)
             view.sendSubviewToBack(subsView)
         }
     }
