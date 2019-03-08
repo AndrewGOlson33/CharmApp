@@ -15,6 +15,10 @@ class VideoCallViewController: UIViewController {
     
     // User to establish connection with
     var friend: Friend! = nil
+    var myUser: CharmUser! = nil
+    
+    // Bool to check if there is a disconnection happening right now
+    var disconnecting: Bool = false
     
     // Session Variables
     lazy var session: OTSession = {
@@ -30,13 +34,13 @@ class VideoCallViewController: UIViewController {
     var subscriber: OTSubscriber?
     
     // OpenTok API key
-    var kApiKey = TokBox.ApiKey
+    let kApiKey = TokBox.ApiKey
     
     // TODO: - replace these with real values
     // Generated session ID
-    var kSessionId = "1_MX40NjIzMjg2Mn5-MTU1MTk5MTA3NzUwMX5JM2VyOEN3QUFIeklRUUVIbFRSeWhVNVR-fg"
+    var kSessionId = "" //1_MX40NjIzMjg2Mn5-MTU1MTk5MTA3NzUwMX5JM2VyOEN3QUFIeklRUUVIbFRSeWhVNVR-fg"
     // Generated token
-    var kToken = "T1==cGFydG5lcl9pZD00NjIzMjg2MiZzaWc9ZWNlODY4MWJhYzFjYjY4MjdkY2Y0NjM2YzAyOWU3N2I1ZjY3MTY3MjpzZXNzaW9uX2lkPTFfTVg0ME5qSXpNamcyTW41LU1UVTFNVGs1TVRBM056VXdNWDVKTTJWeU9FTjNRVUZJZWtsUlVVVkliRlJTZVdoVk5WUi1mZyZjcmVhdGVfdGltZT0xNTUxOTkxMDc4Jm5vbmNlPTAuODIwNTU1MDc3OTQwNDM4NyZyb2xlPXB1Ymxpc2hlciZleHBpcmVfdGltZT0xNTUyMDc3NDc4JmluaXRpYWxfbGF5b3V0X2NsYXNzX2xpc3Q9"
+    var kToken = "" // "T1==cGFydG5lcl9pZD00NjIzMjg2MiZzaWc9ZWNlODY4MWJhYzFjYjY4MjdkY2Y0NjM2YzAyOWU3N2I1ZjY3MTY3MjpzZXNzaW9uX2lkPTFfTVg0ME5qSXpNamcyTW41LU1UVTFNVGs1TVRBM056VXdNWDVKTTJWeU9FTjNRVUZJZWtsUlVVVkliRlJTZVdoVk5WUi1mZyZjcmVhdGVfdGltZT0xNTUxOTkxMDc4Jm5vbmNlPTAuODIwNTU1MDc3OTQwNDM4NyZyb2xlPXB1Ymxpc2hlciZleHBpcmVfdGltZT0xNTUyMDc3NDc4JmluaXRpYWxfbGF5b3V0X2NsYXNzX2xpc3Q9"
     
     // Picture in Picture width / height
     let kWidgetHeight = 240
@@ -46,16 +50,92 @@ class VideoCallViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        doConnect()
+      
+        doTokenSetup()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        endCallButtonTapped(self)
+        if !disconnecting && (session.sessionConnectionStatus == .connected || session.sessionConnectionStatus == .connecting || session.sessionConnectionStatus == .disconnecting) {
+            endCallButtonTapped(self)
+        }
     }
     
     // MARK: - Private Helper Functions
+    
+    /**
+     * Gets the token to begin the connection process
+     * If a session ID is present, use that to start the call with
+     */
+    fileprivate func doTokenSetup() {
+        if !kSessionId.isEmpty {
+            getTokensForExistingSession()
+        } else {
+            getTokensForNewSession()
+        }
+    }
+    
+    /**
+     * Gets the token to begin the connection process
+     * If a session ID is present, use that to start the call with
+     */
+    fileprivate func getTokensForNewSession() {
+        guard let myID = myUser.id, let friendID = friend.id else {
+            // TODO: - Error handling (low priority; this should never fail)
+            return
+        }
+        
+        let room = "\(myID)+\(friendID)"
+        guard let url = URL(string: "https://charmcharismaanalytics.herokuapp.com/room/\(room)") else {
+            // TODO: - Error handling (low priority; this should never fail)
+            return
+        }
+        configureSession(withURL: url)
+    }
+    
+    /**
+     * Gets the token to begin the connection process
+     * If a session ID is present, use that to start the call with
+     */
+    fileprivate func getTokensForExistingSession() {
+        guard let url = URL(string: "https://charmcharismaanalytics.herokuapp.com/\(kSessionId)") else {
+            // TODO: - Error handling (low priority; this should never fail)
+            return
+        }
+        configureSession(withURL: url)
+    }
+    
+    /**
+     * Uses URL to generate tokens
+     * After tokens are setup, calls do connect to connect to the session
+     */
+    fileprivate func configureSession(withURL url: URL) {
+        let configuration = URLSessionConfiguration.default
+        let session = URLSession(configuration: configuration)
+        let dataTask = session.dataTask(with: url) {
+            (data: Data?, response: URLResponse?, error: Error?) in
+            
+            guard error == nil, let data = data else {
+                print(error!)
+                return
+            }
+            
+            do {
+                let dict = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [AnyHashable: Any]
+                self.kSessionId = dict?["sessionId"] as? String ?? ""
+                self.kToken = dict?["token"] as? String ?? ""
+                print("~>Got a sessionID: \(self.kSessionId)")
+                print("~>Got a token: \(self.kToken)")
+                self.doConnect()
+            } catch let error {
+                print("~>There was an error decoding json object: \(error)")
+                return
+            }
+            
+        }
+        dataTask.resume()
+        session.finishTasksAndInvalidate()
+    }
     
     /**
      * Asynchronously begins the session connect process. Some time later, we will
@@ -126,7 +206,16 @@ class VideoCallViewController: UIViewController {
 
     // MARK: - Button Handling
     
+    // Disconnects from the session
     @IBAction func endCallButtonTapped(_ sender: Any) {
+        disconnecting = true
+        var error: OTError?
+        defer {
+            processError(error)
+            if error == nil, let _ = sender as? UIButton { navigationController?.popViewController(animated: true) }
+        }
+        
+        session.disconnect(&error)
     }
     
 }
@@ -140,6 +229,7 @@ extension VideoCallViewController: OTSessionDelegate {
     
     func sessionDidDisconnect(_ session: OTSession) {
         print("~>Session disconnected")
+        disconnecting = false
     }
     
     func session(_ session: OTSession, streamCreated stream: OTStream) {

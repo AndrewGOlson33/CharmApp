@@ -196,6 +196,7 @@ class ChatTableViewController: UITableViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == SegueID.VideoCall, let videoVC = segue.destination as? VideoCallViewController, let friend = sender as? Friend {
             videoVC.friend = friend
+            videoVC.myUser = myUser
         }
     }
 
