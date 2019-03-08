@@ -43,8 +43,21 @@ class VideoCallViewController: UIViewController {
     var kToken = ""
     
     // Picture in Picture width / height
-    let kWidgetHeight = 240
-    let kWidgetWidth = 320
+    var kMainScreenWidth: CGFloat {
+        return view.safeAreaLayoutGuide.layoutFrame.width
+    }
+    
+    var kMainScreenHeight: CGFloat {
+        return view.safeAreaLayoutGuide.layoutFrame.height
+    }
+    
+    var kMyScreenWidth: CGFloat {
+        return kMainScreenWidth * 0.25
+    }
+    
+    var kMyScreenHeight: CGFloat {
+        return kMainScreenHeight * 0.25
+    }
     
     // MARK: - View Lifecycle Functions
 
@@ -206,7 +219,8 @@ class VideoCallViewController: UIViewController {
         session.publish(publisher, error: &error)
         
         if let pubView = publisher.view {
-            pubView.frame = CGRect(x: 0, y: 0, width: kWidgetWidth, height: kWidgetHeight)
+            pubView.frame = CGRect(x: 20, y: 20, width: kMyScreenWidth, height: kMyScreenHeight)
+            pubView.contentMode = .scaleToFill
             view.addSubview(pubView)
         }
     }
@@ -327,9 +341,10 @@ extension VideoCallViewController: OTSubscriberDelegate {
     func subscriberDidConnect(toStream subscriberKit: OTSubscriberKit) {
         print("~>Subscriber did connect, setting up view.")
         if let subsView = subscriber?.view {
-            subsView.frame = CGRect(x: 0, y: kWidgetHeight, width: kWidgetWidth, height: kWidgetHeight)
+            subsView.frame = CGRect(x: 0, y: 0, width: kMainScreenWidth, height: kMainScreenHeight)
             view.addSubview(subsView)
-            view.bringSubviewToFront(subsView)
+//            view.bringSubviewToFront(subsView)
+            view.sendSubviewToBack(subsView)
         }
     }
     
