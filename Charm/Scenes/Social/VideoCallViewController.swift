@@ -272,6 +272,16 @@ extension VideoCallViewController: OTSessionDelegate {
     func sessionDidDisconnect(_ session: OTSession) {
         print("~>Session disconnected")
         disconnecting = false
+        DispatchQueue.main.async {
+            // remove call
+            let call: Call? = nil
+            do {
+                let callData = try FirebaseEncoder().encode(call)
+                Database.database().reference().child(FirebaseStructure.Users).child(myUser.id!).child(FirebaseStructure.CharmUser.CurrentCall).setValue(callData)
+            } catch let error {
+                print("~>There was an error converting the nil call object: \(error)")
+            }
+        }
     }
     
     func session(_ session: OTSession, streamCreated stream: OTStream) {

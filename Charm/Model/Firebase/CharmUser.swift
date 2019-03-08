@@ -51,10 +51,10 @@ struct UserProfile: Codable {
 
 struct Call: Codable {
     enum CallStatus: Int, Codable {
-        case incoming = 0
-        case connected = 1
-        case outgoing = 2
-        case disconnected = 3
+        case connected = 0
+        case disconnected = 1
+        case incoming = 2
+        case outgoing = 3
     }
     
     var sessionID: String
