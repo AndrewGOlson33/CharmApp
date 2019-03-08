@@ -287,7 +287,7 @@
         <!--Video Call View Controller-->
         <scene sceneID="h5E-yx-pu8">
             <objects>
-                <viewController id="M8q-z3-gMC" customClass="VideoCallViewController" customModule="Charm" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="vc_videocall" id="M8q-z3-gMC" customClass="VideoCallViewController" customModule="Charm" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="7mE-Ca-f23">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="551"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>

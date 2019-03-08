@@ -8,6 +8,8 @@
 
 import UIKit
 import OpenTok
+import Firebase
+import CodableFirebase
 
 class VideoCallViewController: UIViewController {
     
@@ -35,12 +37,10 @@ class VideoCallViewController: UIViewController {
     
     // OpenTok API key
     let kApiKey = TokBox.ApiKey
-    
-    // TODO: - replace these with real values
-    // Generated session ID
-    var kSessionId = "" //1_MX40NjIzMjg2Mn5-MTU1MTk5MTA3NzUwMX5JM2VyOEN3QUFIeklRUUVIbFRSeWhVNVR-fg"
-    // Generated token
-    var kToken = "" // "T1==cGFydG5lcl9pZD00NjIzMjg2MiZzaWc9ZWNlODY4MWJhYzFjYjY4MjdkY2Y0NjM2YzAyOWU3N2I1ZjY3MTY3MjpzZXNzaW9uX2lkPTFfTVg0ME5qSXpNamcyTW41LU1UVTFNVGs1TVRBM056VXdNWDVKTTJWeU9FTjNRVUZJZWtsUlVVVkliRlJTZVdoVk5WUi1mZyZjcmVhdGVfdGltZT0xNTUxOTkxMDc4Jm5vbmNlPTAuODIwNTU1MDc3OTQwNDM4NyZyb2xlPXB1Ymxpc2hlciZleHBpcmVfdGltZT0xNTUyMDc3NDc4JmluaXRpYWxfbGF5b3V0X2NsYXNzX2xpc3Q9"
+    // Generated session ID will be loaded here
+    var kSessionId = ""
+    // Generated token will be loaded here
+    var kToken = ""
     
     // Picture in Picture width / height
     let kWidgetHeight = 240
@@ -90,7 +90,8 @@ class VideoCallViewController: UIViewController {
             // TODO: - Error handling (low priority; this should never fail)
             return
         }
-        configureSession(withURL: url)
+        
+        configureSession(withURL: url, inviteFriend: true)
     }
     
     /**
@@ -98,7 +99,12 @@ class VideoCallViewController: UIViewController {
      * If a session ID is present, use that to start the call with
      */
     fileprivate func getTokensForExistingSession() {
-        guard let url = URL(string: "https://charmcharismaanalytics.herokuapp.com/\(kSessionId)") else {
+        guard let myID = myUser.id, let friendID = friend.id else {
+            // TODO: - Error handling (low priority; this should never fail)
+            return
+        }
+        let room = "\(friendID)+\(myID)"
+        guard let url = URL(string: "https://charmcharismaanalytics.herokuapp.com/room/\(room)") else {
             // TODO: - Error handling (low priority; this should never fail)
             return
         }
@@ -109,7 +115,7 @@ class VideoCallViewController: UIViewController {
      * Uses URL to generate tokens
      * After tokens are setup, calls do connect to connect to the session
      */
-    fileprivate func configureSession(withURL url: URL) {
+    fileprivate func configureSession(withURL url: URL, inviteFriend: Bool = false) {
         let configuration = URLSessionConfiguration.default
         let session = URLSession(configuration: configuration)
         let dataTask = session.dataTask(with: url) {
@@ -126,6 +132,9 @@ class VideoCallViewController: UIViewController {
                 self.kToken = dict?["token"] as? String ?? ""
                 print("~>Got a sessionID: \(self.kSessionId)")
                 print("~>Got a token: \(self.kToken)")
+                
+                let status = inviteFriend ? Call.CallStatus.outgoing : Call.CallStatus.connected
+                self.updateCallStatus(withSessionID: self.kSessionId, status: status)
                 self.doConnect()
             } catch let error {
                 print("~>There was an error decoding json object: \(error)")
@@ -135,6 +144,39 @@ class VideoCallViewController: UIViewController {
         }
         dataTask.resume()
         session.finishTasksAndInvalidate()
+    }
+    
+    // TODO: - Handle case where other user is already on a call
+    /**
+     * Updates the user's call status
+     * Also update the friend's call status if they were invited
+    */
+    fileprivate func updateCallStatus(withSessionID id: String, status: Call.CallStatus) {
+        // Setup Call Objects
+        var myCall: Call!
+        var friendCall: Call!
+        
+        if status == .outgoing {
+            myCall = Call(sessionID: id, status: .outgoing, from: friend.id!)
+            friendCall = Call(sessionID: id, status: .incoming, from: myUser.id!)
+        } else {
+            myCall = Call(sessionID: id, status: .connected, from: friend.id!)
+            friendCall = Call(sessionID: id, status: .connected, from: myUser.id!)
+        }
+        
+        // Write call objects to Firebase
+        do {
+            // encode data
+            let myCallData = try FirebaseEncoder().encode(myCall)
+            let friendCallData = try FirebaseEncoder().encode(friendCall)
+            
+            // upload to firebase
+            let usersRef = Database.database().reference().child(FirebaseStructure.Users)
+            usersRef.child(friend.id!).child(FirebaseStructure.CharmUser.Call).setValue(friendCallData)
+            usersRef.child(myUser.id!).child(FirebaseStructure.CharmUser.Call).setValue(myCallData)
+        } catch let error {
+            print("~>Got an error converting objects for firebase: \(error)")
+        }
     }
     
     /**

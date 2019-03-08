@@ -24,11 +24,46 @@ class MainMenuViewController: UIViewController {
                     (UIApplication.shared.delegate as! AppDelegate).user = user
                     // Post a notification that the user changed, along with the user obejct
                     NotificationCenter.default.post(name: FirebaseNotification.CharmUserDidUpdate, object: user)
+                    
+                    // If there is a call, post a notification about that call
+                    if let call = user.currentCall {
+                        if call.status == .incoming {
+                            NotificationCenter.default.post(name: FirebaseNotification.CharmUserIncomingCall, object: call)
+                            let alert = UIAlertController(title: "Incoming Call", message: "You have an incoming call.", preferredStyle: .alert)
+                            alert.addAction(UIAlertAction(title: "Accept", style: .default, handler: { (_) in
+                                self.setupIncoming(call: call)
+                            }))
+                            alert.addAction(UIAlertAction(title: "Ignore", style: .cancel, handler: nil))
+                            self.navigationController?.present(alert, animated: true, completion: nil)
+                        }
+                    }
                 } catch let error {
                     print("~>There was an error: \(error)")
                     return
                 }
             }
+        }
+    }
+    
+    // MARK: - Private Call Helper
+    
+    fileprivate func setupIncoming(call: Call) {
+        DispatchQueue.main.async {
+            let appDelegate = UIApplication.shared.delegate as! AppDelegate
+            let myUser = appDelegate.user!
+            guard let friend = myUser.friendList?.currentFriends?.first(where: { (friend) -> Bool in
+                friend.id! == call.fromUserID
+            }) else {
+                // TODO: - Error handling
+                return
+            }
+            
+            let callVC = self.storyboard?.instantiateViewController(withIdentifier: StoryboardID.VideoCall) as! VideoCallViewController
+            callVC.myUser = myUser
+            callVC.friend = friend
+            callVC.kSessionId = call.sessionID
+            
+            self.navigationController?.present(callVC, animated: true, completion: nil)
         }
     }
     

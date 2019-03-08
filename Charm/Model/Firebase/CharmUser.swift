@@ -14,6 +14,7 @@ struct CharmUser: Codable, Identifiable {
     var id: String? = nil
     var userProfile: UserProfile
     var friendList: FriendList?
+    var currentCall: Call?
     
     init(first: String, last: String, email: String) {
         userProfile = UserProfile(first: first, last: last, email: email)
@@ -43,6 +44,27 @@ struct UserProfile: Codable {
         numCredits = 10
         renewDate = Date()
         membershipStatus = .unknown
+    }
+}
+
+// Call
+
+struct Call: Codable {
+    enum CallStatus: Int, Codable {
+        case incoming = 0
+        case connected = 1
+        case outgoing = 2
+        case disconnected = 3
+    }
+    
+    var sessionID: String
+    var status: CallStatus
+    var fromUserID: String
+    
+    init(sessionID: String, status: CallStatus, from: String) {
+        self.sessionID = sessionID
+        self.status = status
+        self.fromUserID = from
     }
 }
 

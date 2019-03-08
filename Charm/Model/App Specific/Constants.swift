@@ -16,6 +16,7 @@ enum SegueID {
 
 enum StoryboardID {
     static let NavigationHome = "vc_navhome"
+    static let VideoCall = "vc_videocall"
 }
 
 enum CellID {
@@ -30,7 +31,10 @@ enum FirebaseStructure {
     
     enum CharmUser {
         static let ID = "id"
-        static let Profile = "userProfile"
+        
+        // profile
+        static let Profile = "userProfile" // base
+        
         enum UserProfile {
             static let Email = "email"
             static let FirstName = "firstName"
@@ -39,12 +43,22 @@ enum FirebaseStructure {
             static let NumCredits = "numCredits"
             static let RenewDate = "renewDate"
         }
-        static let Friends = "friendList"
+        
+        // friends
+        static let Friends = "friendList" // base
         enum FriendList {
             static let CurrentFriends = "currentFriends"
             static let PendingSentApproval = "pendingSentApproval"
             static let PendingReceivedApproval = "pendingReceivedApproval"
         }
+        
+        // callse
+        static let Call = "currentCall"
+        enum CurrentCall {
+            static let SessionID = "sessionID"
+            static let CallStatus = "status"
+        }
+        
     }
     
     enum Friend {
@@ -59,4 +73,5 @@ enum FirebaseStructure {
 
 enum FirebaseNotification {
     static let CharmUserDidUpdate = Notification.Name("notificationCharmUserDidUpdate")
+    static let CharmUserIncomingCall = Notification.Name("notificationCharmUserHasIncomingCall")
 }
