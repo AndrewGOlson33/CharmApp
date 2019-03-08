@@ -36,7 +36,7 @@ class VideoCallViewController: UIViewController {
     var subscriber: OTSubscriber?
     
     // OpenTok API key
-    let kApiKey = TokBox.ApiKey
+    var kApiKey = ""
     // Generated session ID will be loaded here
     var kSessionId = ""
     // Generated token will be loaded here
@@ -141,6 +141,7 @@ class VideoCallViewController: UIViewController {
             
             do {
                 let dict = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [AnyHashable: Any]
+                self.kApiKey = dict?["apiKey"] as? String ?? ""
                 self.kSessionId = dict?["sessionId"] as? String ?? ""
                 self.kToken = dict?["token"] as? String ?? ""
                 print("~>Got a sessionID: \(self.kSessionId)")
