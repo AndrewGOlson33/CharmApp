@@ -278,7 +278,8 @@ class VideoCallViewController: UIViewController {
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.httpMethod = "POST"
         let dict = [
-            "sessionId": kSessionId
+            "sessionId": kSessionId,
+            "userId" : myUser.id!
         ]
         request.httpBody = try? JSONSerialization.data(withJSONObject: dict, options: .prettyPrinted)
         
