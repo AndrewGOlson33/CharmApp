@@ -63,7 +63,7 @@ class MainMenuViewController: UIViewController {
             callVC.friend = friend
             callVC.kSessionId = call.sessionID
             
-            self.navigationController?.present(callVC, animated: true, completion: nil)
+            self.navigationController?.pushViewController(callVC, animated: true)
         }
     }
     
