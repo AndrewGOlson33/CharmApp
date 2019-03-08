@@ -277,7 +277,7 @@ extension VideoCallViewController: OTSessionDelegate {
             let call: Call? = nil
             do {
                 let callData = try FirebaseEncoder().encode(call)
-                Database.database().reference().child(FirebaseStructure.Users).child(myUser.id!).child(FirebaseStructure.CharmUser.CurrentCall).setValue(callData)
+                Database.database().reference().child(FirebaseStructure.Users).child(self.myUser.id!).child(FirebaseStructure.CharmUser.Call).setValue(callData)
             } catch let error {
                 print("~>There was an error converting the nil call object: \(error)")
             }
