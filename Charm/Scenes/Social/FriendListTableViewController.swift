@@ -95,9 +95,9 @@ class FriendListTableViewController: UITableViewController {
         // #warning Incomplete implementation, return the number of rows
         switch section {
         case 0:
-            return viewModel.currentFriends.count
+            return isContactsViewShowing ? viewModel.currentFriends.count : viewModel.existingUsers.count
         case 1:
-            return viewModel.pendingReceived.count
+            return isContactsViewShowing ? viewModel.pendingReceived.count : viewModel.usersToInvite.count
         default:
             return viewModel.pendingReceived.count
         }
@@ -109,9 +109,9 @@ class FriendListTableViewController: UITableViewController {
 
         switch indexPath.section {
         case 0:
-            cell = viewModel.configureCell(atIndex: indexPath.row, withCell: cell, forType: .Current)
+            cell = isContactsViewShowing ? viewModel.configureCell(atIndex: indexPath.row, withCell: cell, forType: .Current) : viewModel.configureCell(atIndex: indexPath.row, withCell: cell, forType: .ExistingNotInContacts)
         case 1:
-            cell = viewModel.configureCell(atIndex: indexPath.row, withCell: cell, forType: .PendingReceived)
+            cell = isContactsViewShowing ? viewModel.configureCell(atIndex: indexPath.row, withCell: cell, forType: .PendingReceived) : viewModel.configureCell(atIndex: indexPath.row, withCell: cell, forType: .AddByPhone)
         default:
             cell = viewModel.configureCell(atIndex: indexPath.row, withCell: cell, forType: .PendingSent)
         }

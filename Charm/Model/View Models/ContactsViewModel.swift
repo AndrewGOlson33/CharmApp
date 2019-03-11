@@ -46,11 +46,22 @@ class ContactsViewModel {
     // contacts
     var contacts: [CNContact] = []
     var notInContacts: [CNContact] = []
-//    var inContacts: [CNContact] = []
     
     // friends you can add
-    var existingUsers: [Friend] = []
-    var usersToInvite: [Friend] = []
+    var existingUsers: [Friend] = [] {
+        didSet {
+            existingUsers.sort { (lhs, rhs) -> Bool in
+                return lhs.lastName < rhs.lastName
+            }
+        }
+    }
+    var usersToInvite: [Friend] = [] {
+        didSet {
+            usersToInvite.sort { (lhs, rhs) -> Bool in
+                return lhs.lastName < rhs.lastName
+            }
+        }
+    }
     
     init() {
         NotificationCenter.default.addObserver(self, selector: #selector(updatedUser), name: FirebaseNotification.CharmUserDidUpdate, object: nil)
@@ -58,6 +69,7 @@ class ContactsViewModel {
         // load contact list
         loadContacts()
         delegate?.updateTableView()
+        setupAddFriendsArrays()
     }
     
     // MARK: - Data Access
@@ -95,7 +107,7 @@ class ContactsViewModel {
         
         // configure cell data
         cell.lblName.text = "\(friend.firstName) \(friend.lastName)"
-        cell.lblEmail.text = friend.email
+        cell.lblEmail.text = type == .AddByPhone ? friend.phone! : friend.email
         
         // configure image
         
@@ -105,7 +117,6 @@ class ContactsViewModel {
             cell.imgProfile.image = image
         } else {
             cell.imgProfile.image = UIImage(named: "icnTempProfile")
-            cell.imgProfile.layer.cornerRadius = 0
         }
         
         cell.id = friend.id
@@ -173,7 +184,8 @@ class ContactsViewModel {
     }
     
     // Check to see if a contact exists already in Charm contact list
-    
+    // If not, add it to the not in contacts list to use
+    // in the add user section
     fileprivate func checkFriendList(for contact: CNContact) {
         
         var emailAddresses: [String] = []
@@ -183,11 +195,9 @@ class ContactsViewModel {
         }
         
         guard let contacts = user?.friendList?.currentFriends else { return }
-        if contacts.enumerated().contains(where: { (index, friend) -> Bool in
+        if !contacts.enumerated().contains(where: { (index, friend) -> Bool in
             return emailAddresses.contains(friend.email)
         }) {
-//            inContacts.append(contact)
-        } else {
             notInContacts.append(contact)
         }
         
@@ -214,6 +224,41 @@ class ContactsViewModel {
         return nil
     }
     
+    // setup the arrays for adding contacts
+    fileprivate func setupAddFriendsArrays() {
+        // only loop through contacts we know are not in the user's friend list
+        for contact in contacts {
+            var found: Bool = false
+            for email in contact.emailAddresses {
+                let value = email.value as String
+                let ref = Database.database().reference()
+                let emailQuery = ref.child(FirebaseStructure.Users).queryOrdered(byChild: "userProfile/email").queryEqual(toValue: value).queryLimited(toFirst: 1)
+                emailQuery.observeSingleEvent(of: .value) { (snapshot) in
+                    if let results = snapshot.value as? [AnyHashable:Any], let first = results.first?.value {
+                        found = true
+                        let friendUser = try! FirebaseDecoder().decode(CharmUser.self, from: first)
+                        let friend = Friend(id: friendUser.id!, first: friendUser.userProfile.firstName, last: friendUser.userProfile.lastName, email: friendUser.userProfile.email)
+                        self.existingUsers.append(friend)
+                    }
+                }
+            }
+            
+            if !found {
+                let firstName = contact.givenName
+                let lastName = contact.familyName
+                var emailAddress = ""
+                if let emailItem = contact.emailAddresses.first {
+                    emailAddress = emailItem.value as String
+                }
+                let phone = contact.phoneNumbers.first?.value.stringValue ?? ""
+                guard !firstName.isEmpty && !phone.isEmpty else { continue }
+                var friend = Friend(id: "N/A", first: firstName, last: lastName, email: emailAddress)
+                friend.phone = phone
+                usersToInvite.append(friend)
+            }
+        }
+    }
+    
     
     // MARK: - Notifications
     
@@ -231,6 +276,10 @@ extension ContactsViewModel: ApproveFriendDelegate {
     
     func approveFriendRequest(withId id: String) {
         // first move friend from received to current friends
+        guard false else {
+            print("~>Add user tapped.")
+            return
+        }
         
         guard var user = user else { return }
         

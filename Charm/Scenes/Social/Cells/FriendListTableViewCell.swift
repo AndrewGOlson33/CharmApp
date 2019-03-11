@@ -46,7 +46,6 @@ class FriendListTableViewCell: UITableViewCell {
         
         // make sure profile image doesn't get confused with other cells
         imgProfile.image = nil
-        imgProfile.layer.cornerRadius = 0
     }
     
 }

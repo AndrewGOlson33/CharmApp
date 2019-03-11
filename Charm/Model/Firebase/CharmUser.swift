@@ -71,9 +71,27 @@ struct Call: Codable {
 // Friends List
 
 struct FriendList: Codable {
-    var currentFriends: [Friend]? = []
-    var pendingSentApproval: [Friend]? = []
-    var pendingReceivedApproval: [Friend]? = []
+    var currentFriends: [Friend]? = [] {
+        didSet {
+            currentFriends?.sort(by: { (lhs, rhs) -> Bool in
+                return lhs.lastName < rhs.lastName
+            })
+        }
+    }
+    var pendingSentApproval: [Friend]? = [] {
+        didSet {
+            pendingSentApproval?.sort(by: { (lhs, rhs) -> Bool in
+                return lhs.lastName < rhs.lastName
+            })
+        }
+    }
+    var pendingReceivedApproval: [Friend]? = [] {
+        didSet {
+            pendingReceivedApproval?.sort(by: { (lhs, rhs) -> Bool in
+                return lhs.lastName < rhs.lastName
+            })
+        }
+    }
     
     var count: Int {
         var count = 0
