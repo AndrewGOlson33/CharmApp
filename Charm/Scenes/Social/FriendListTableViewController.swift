@@ -34,7 +34,10 @@ class FriendListTableViewController: UITableViewController {
 
         // load up the user to build friend list from
         DispatchQueue.main.async {
+            // load user
             self.user = (UIApplication.shared.delegate as! AppDelegate).user
+            // Load Contact list
+            self.loadContacts()
             self.tableView.reloadData()
         }
         
@@ -45,9 +48,6 @@ class FriendListTableViewController: UITableViewController {
         tableView.tableHeaderView = searchController.searchBar
 //        definesPresentationContext = true
         searchController.searchBar.delegate = self
-        
-        // Load Contact list
-        loadContacts()
         
     }
     
@@ -84,8 +84,8 @@ class FriendListTableViewController: UITableViewController {
             // do request
             do {
                 try store.enumerateContacts(with: request, usingBlock: { (contact, stop) in
-                    let  name = CNContactFormatter.string(from: contact, style: .fullName)
-                    print("~>Got contact with name: \(String(describing: name)), phone numbers: \(contact.phoneNumbers), email addresses: \(contact.emailAddresses), and image data: \(String(describing: contact.imageData)), and thumbnail data: \(String(describing: contact.thumbnailImageData))")
+                    self.contacts.append(contact)
+                    self.checkFriendList(for: contact)
                 })
             } catch let error {
                 print("~>Got an error: \(error)")
@@ -93,9 +93,37 @@ class FriendListTableViewController: UITableViewController {
         }
     }
     
+    // Check to see if a contact exists already in Charm contact list
+    
+    fileprivate func checkFriendList(for contact: CNContact) {
+        
+        var emailAddresses: [String] = []
+        
+        for email in contact.emailAddresses {
+            emailAddresses.append(email.value as String)
+        }
+        
+        guard let contacts = user.friendList?.currentFriends else { return }
+        if contacts.enumerated().contains(where: { (index, friend) -> Bool in
+            if emailAddresses.contains(friend.email) {
+                if contact.imageDataAvailable {
+                    user.friendList!.currentFriends![index].userImage = contact.thumbnailImageData
+                }
+                return true
+            } else {
+                return false
+            }
+        }) {
+            inContacts.append(contact)
+        } else {
+            notInContacts.append(contact)
+        }
+        
+    }
+    
     // Present an error when unable to get authorization for contacts
     
-    private func presentSettingsAlert() {
+    fileprivate func presentSettingsAlert() {
         let settingsURL = URL(string: UIApplication.openSettingsURLString)!
         
         DispatchQueue.main.async {
@@ -164,8 +192,15 @@ class FriendListTableViewController: UITableViewController {
         cell.lblEmail.text = friend.email
         cell.lblDetail.text = detail
         
+        if let imageData = friend.userImage, let image = UIImage(data: imageData) {
+            cell.imgProfile.image = image
+        } else {
+            cell.imgProfile.image = UIImage(named: "icnTempProfile")
+            cell.imgProfile.layer.cornerRadius = 0
+        }
+        
         // setup approval delegate
-        cell.btnApprove.isHidden = indexPath.section == 1 ? false : false
+        cell.btnApprove.isHidden = indexPath.section == 1 ? false : true
         cell.id = friend.id
         cell.delegate = self
 
