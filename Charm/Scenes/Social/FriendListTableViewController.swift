@@ -19,27 +19,15 @@ class FriendListTableViewController: UITableViewController {
     let searchController = UISearchController(searchResultsController: nil)
     
     // User object that holds friend list
-    var user: CharmUser!
-    
-    // add mode properties
-    var inAddMode: Bool = false
-    var contacts: [CNContact] = []
-    var notInContacts: [CNContact] = []
-    var inContacts: [CNContact] = []
+    var viewModel = ContactsViewModel()
     
     // MARK: - View Lifecycle Functions
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // load up the user to build friend list from
-        DispatchQueue.main.async {
-            // load user
-            self.user = (UIApplication.shared.delegate as! AppDelegate).user
-            // Load Contact list
-            self.loadContacts()
-            self.tableView.reloadData()
-        }
+        // allow view model to refresh tableview
+        viewModel.delegate = self
         
         // setup a search bar
         searchController.searchResultsUpdater = self
@@ -49,92 +37,6 @@ class FriendListTableViewController: UITableViewController {
 //        definesPresentationContext = true
         searchController.searchBar.delegate = self
         
-    }
-    
-    // MARK: - Private Helper Functions
-    
-    private func loadContacts() {
-        
-        // make sure user hasn't denied access
-        let status = CNContactStore.authorizationStatus(for: .contacts)
-        if status == .denied || status == .restricted {
-            // present alert
-            presentSettingsAlert()
-        }
-        
-        let store = CNContactStore()
-        store.requestAccess(for: .contacts) { (granted, error) in
-            
-            // make sure access is granted
-            guard granted else {
-                print("~>There was an error getting authorization: \(String(describing: error))")
-                self.presentSettingsAlert()
-                return
-            }
-            
-            // format request
-            let request = CNContactFetchRequest(keysToFetch: [CNContactFormatter.descriptorForRequiredKeys(for: .fullName),
-                                                              CNContactPhoneNumbersKey as CNKeyDescriptor,
-                                                              CNContactEmailAddressesKey as CNKeyDescriptor,
-                                                              CNContactImageDataKey as CNKeyDescriptor,
-                                                              CNContactThumbnailImageDataKey as CNKeyDescriptor,
-                                                              CNContactImageDataAvailableKey as CNKeyDescriptor
-                                                              ])
-            
-            // do request
-            do {
-                try store.enumerateContacts(with: request, usingBlock: { (contact, stop) in
-                    self.contacts.append(contact)
-                    self.checkFriendList(for: contact)
-                })
-            } catch let error {
-                print("~>Got an error: \(error)")
-            }
-        }
-    }
-    
-    // Check to see if a contact exists already in Charm contact list
-    
-    fileprivate func checkFriendList(for contact: CNContact) {
-        
-        var emailAddresses: [String] = []
-        
-        for email in contact.emailAddresses {
-            emailAddresses.append(email.value as String)
-        }
-        
-        guard let contacts = user.friendList?.currentFriends else { return }
-        if contacts.enumerated().contains(where: { (index, friend) -> Bool in
-            if emailAddresses.contains(friend.email) {
-                if contact.imageDataAvailable {
-                    user.friendList!.currentFriends![index].userImage = contact.thumbnailImageData
-                }
-                return true
-            } else {
-                return false
-            }
-        }) {
-            inContacts.append(contact)
-        } else {
-            notInContacts.append(contact)
-        }
-        
-    }
-    
-    // Present an error when unable to get authorization for contacts
-    
-    fileprivate func presentSettingsAlert() {
-        let settingsURL = URL(string: UIApplication.openSettingsURLString)!
-        
-        DispatchQueue.main.async {
-            let alert = UIAlertController(title: "Permission to Contacts", message: "This app needs access to contacts in order to ...", preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "Go to Settings", style: .default) { _ in
-//                UIApplication.shared.openURL(settingsURL)
-                UIApplication.shared.open(settingsURL, options: [:], completionHandler: nil)
-            })
-            alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
-            self.present(alert, animated: true)
-        }
     }
 
     // MARK: - Table view data source
@@ -157,130 +59,32 @@ class FriendListTableViewController: UITableViewController {
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
-        guard let friends = user?.friendList else { return 0 }
         switch section {
         case 0:
-            return friends.currentFriends?.count ?? 0
+            return viewModel.currentFriends.count
         case 1:
-            return friends.pendingReceivedApproval?.count ?? 0
+            return viewModel.pendingReceived.count
         default:
-            return friends.pendingSentApproval?.count ?? 0
+            return viewModel.pendingReceived.count
         }
     }
 
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: CellID.FriendList, for: indexPath) as! FriendListTableViewCell
-        guard let friends = user?.friendList else { fatalError("~>Unable to load friends") }
-        
-        // get friend object
-        var friend: Friend!
-        var detail: String = ""
+        var cell = tableView.dequeueReusableCell(withIdentifier: CellID.FriendList, for: indexPath) as! FriendListTableViewCell
+
         switch indexPath.section {
         case 0:
-            friend = friends.currentFriends![indexPath.row]
-            detail = "In friend list"
+            cell = viewModel.configureCell(atIndex: indexPath.row, withCell: cell, forType: .Current)
         case 1:
-            friend = friends.pendingReceivedApproval![indexPath.row]
-            detail = "Added you from: \(friend.email)"
+            cell = viewModel.configureCell(atIndex: indexPath.row, withCell: cell, forType: .PendingReceived)
         default:
-            friend = friends.pendingSentApproval![indexPath.row]
-            detail = "Waiting for response."
+            cell = viewModel.configureCell(atIndex: indexPath.row, withCell: cell, forType: .PendingSent)
         }
-        
-        cell.lblName.text = "\(friend.firstName) \(friend.lastName)"
-        cell.lblEmail.text = friend.email
-        cell.lblDetail.text = detail
-        
-        if let imageData = friend.userImage, let image = UIImage(data: imageData) {
-            cell.imgProfile.image = image
-        } else {
-            cell.imgProfile.image = UIImage(named: "icnTempProfile")
-            cell.imgProfile.layer.cornerRadius = 0
-        }
-        
-        // setup approval delegate
-        cell.btnApprove.isHidden = indexPath.section == 1 ? false : true
-        cell.id = friend.id
-        cell.delegate = self
-
+    
         return cell
     }
 
-}
-
-// MARK: - Delegate Function to handle approving a friend request
-
-extension FriendListTableViewController: ApproveFriendDelegate {
-    
-    func approveFriendRequest(withId id: String) {
-        // first move friend from received to current friends
-        let received = user.friendList!.pendingReceivedApproval
-        if user.friendList?.currentFriends == nil { user.friendList?.currentFriends = [] }
-        
-        for (index, friend) in received!.enumerated() {
-            if friend.id == id {
-                user.friendList?.currentFriends?.append(friend)
-                user.friendList!.pendingReceivedApproval?.remove(at: index)
-                print("~>Removed item.")
-                break
-            }
-        }
-        
-        // write data to firebase
-        
-        do {
-            let current = try FirebaseEncoder().encode(user.friendList?.currentFriends!)
-            let received = try FirebaseEncoder().encode(user.friendList!.pendingReceivedApproval!)
-            
-            Database.database().reference().child(FirebaseStructure.Users).child(user.id!).child(FirebaseStructure.CharmUser.Friends).child(FirebaseStructure.CharmUser.FriendList.CurrentFriends).setValue(current)
-            Database.database().reference().child(FirebaseStructure.Users).child(user.id!).child(FirebaseStructure.CharmUser.Friends).child(FirebaseStructure.CharmUser.FriendList.PendingReceivedApproval).setValue(received)
-            
-            DispatchQueue.main.async {
-                self.tableView.reloadData()
-            }
-            
-            
-        } catch let error {
-            print("~>Got an error: \(error)")
-            return
-        }
-        
-        // update table
-        
-        // finally move user from sent to current friends on friend's friend list'
-        guard let myID = user.id else { return }
-        Database.database().reference().child(FirebaseStructure.Users).child(id).observeSingleEvent(of: .value) { (snapshot) in
-            guard let value = snapshot.value else { return }
-            // get the user object
-            var friendUser = try! FirebaseDecoder().decode(CharmUser.self, from: value)
-            if friendUser.friendList == nil { friendUser.friendList = FriendList() }
-            let pending = friendUser.friendList?.pendingSentApproval
-            if friendUser.friendList?.currentFriends == nil { friendUser.friendList?.currentFriends = [] }
-        
-            if pending == nil { return }
-            var meFriend: Friend!
-            for (index, user) in pending!.enumerated() {
-                if user.id == myID {
-                    meFriend = user
-                    friendUser.friendList!.pendingSentApproval!.remove(at: index)
-                    friendUser.friendList?.currentFriends?.append(meFriend)
-                    break
-                }
-            }
-            
-            // write changes to firebase
-            do {
-                let current = try FirebaseEncoder().encode(friendUser.friendList!.currentFriends!)
-                let sent = try FirebaseEncoder().encode(friendUser.friendList!.pendingSentApproval!)
-                Database.database().reference().child(FirebaseStructure.Users).child(id).child(FirebaseStructure.CharmUser.Friends).child(FirebaseStructure.CharmUser.FriendList.CurrentFriends).setValue(current)
-                Database.database().reference().child(FirebaseStructure.Users).child(id).child(FirebaseStructure.CharmUser.Friends).child(FirebaseStructure.CharmUser.FriendList.PendingSentApproval).setValue(sent)
-            } catch let error {
-                print("~>Got an error: \(error)")
-            }
-        }
-    }
-    
 }
 
 // MARK: - Search Delegate Functions
@@ -303,6 +107,14 @@ extension FriendListTableViewController: UISearchResultsUpdating, UISearchBarDel
     fileprivate func searchBarIsEmpty() -> Bool {
         // Returns true if the text is empty or nil
         return searchController.searchBar.text?.isEmpty ?? true
+    }
+    
+}
+
+extension FriendListTableViewController: TableViewRefreshDelegate {
+    
+    func updateTableView() {
+        tableView.reloadData()
     }
     
 }

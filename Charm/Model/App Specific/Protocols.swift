@@ -21,3 +21,8 @@ protocol Identifiable {
 protocol ApproveFriendDelegate {
     func approveFriendRequest(withId id: String)
 }
+
+// Delegate that allows a view model to update table view
+protocol TableViewRefreshDelegate {
+    func updateTableView()
+}

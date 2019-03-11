@@ -24,7 +24,6 @@ class MainMenuViewController: UIViewController {
                     (UIApplication.shared.delegate as! AppDelegate).user = user
                     // Post a notification that the user changed, along with the user obejct
                     NotificationCenter.default.post(name: FirebaseNotification.CharmUserDidUpdate, object: user)
-                    
                     // If there is a call, post a notification about that call
                     if let call = user.currentCall {
                         if call.status == .incoming {
