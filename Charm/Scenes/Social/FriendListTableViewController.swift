@@ -13,6 +13,11 @@ import CodableFirebase
 class FriendListTableViewController: UITableViewController {
     
     // MARK: - Properties
+    
+    // Search controller
+    let searchController = UISearchController(searchResultsController: nil)
+    
+    // User object that holds friend list
     var user: CharmUser!
     
     // MARK: - View Lifecycle Functions
@@ -20,10 +25,20 @@ class FriendListTableViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        // load up the user to build friend list from
         DispatchQueue.main.async {
             self.user = (UIApplication.shared.delegate as! AppDelegate).user
             self.tableView.reloadData()
         }
+        
+        // setup a search bar
+        searchController.searchResultsUpdater = self
+        searchController.obscuresBackgroundDuringPresentation = false
+        searchController.searchBar.placeholder = "Search your friend list..."
+        tableView.tableHeaderView = searchController.searchBar
+//        definesPresentationContext = true
+        searchController.searchBar.delegate = self
+        
     }
 
     // MARK: - Table view data source
@@ -82,7 +97,7 @@ class FriendListTableViewController: UITableViewController {
         cell.lblDetail.text = detail
         
         // setup approval delegate
-        cell.btnApprove.isHidden = indexPath.section == 1 ? false : true
+        cell.btnApprove.isHidden = indexPath.section == 1 ? false : false
         cell.id = friend.id
         cell.delegate = self
 
@@ -161,6 +176,30 @@ extension FriendListTableViewController: ApproveFriendDelegate {
                 print("~>Got an error: \(error)")
             }
         }
+    }
+    
+}
+
+// MARK: - Search Delegate Functions
+
+extension FriendListTableViewController: UISearchResultsUpdating, UISearchBarDelegate {
+    
+    func updateSearchResults(for searchController: UISearchController) {
+//        filterContentForSearchText(searchController.searchBar.text!)
+    }
+    
+    fileprivate func isFiltering() -> Bool {
+        return searchController.isActive && !searchBarIsEmpty()
+    }
+    
+    fileprivate func searchBarShouldEndEditing(_ searchBar: UISearchBar) -> Bool {
+        searchController.searchBar.resignFirstResponder()
+        return true
+    }
+    
+    fileprivate func searchBarIsEmpty() -> Bool {
+        // Returns true if the text is empty or nil
+        return searchController.searchBar.text?.isEmpty ?? true
     }
     
 }

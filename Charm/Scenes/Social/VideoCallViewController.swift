@@ -101,7 +101,7 @@ class VideoCallViewController: UIViewController {
         }
         
         let room = "\(myID)+\(friendID)"
-        guard let url = URL(string: "https://charmcharismaanalytics.herokuapp.com/room/\(room)") else {
+        guard let url = URL(string: "\(Server.BaseURL)\(Server.Room)/\(room)") else {
             // TODO: - Error handling (low priority; this should never fail)
             return
         }
@@ -119,10 +119,11 @@ class VideoCallViewController: UIViewController {
             return
         }
         let room = "\(friendID)+\(myID)"
-        guard let url = URL(string: "https://charmcharismaanalytics.herokuapp.com/room/\(room)") else {
+        guard let url = URL(string: "\(Server.BaseURL)\(Server.Room)/\(room)") else {
             // TODO: - Error handling (low priority; this should never fail)
             return
         }
+        
         configureSession(withURL: url)
     }
     
@@ -267,7 +268,7 @@ class VideoCallViewController: UIViewController {
     }
     
     func startArchive() {
-        let fullURL = "https://charmcharismaanalytics.herokuapp.com/archive/start"
+        let fullURL = "\(Server.BaseURL)\(Server.Archive)\(Server.StartArchive)"
         let url = URL(string: fullURL)
         var urlRequest: URLRequest? = nil
         if let url = url {
@@ -302,7 +303,7 @@ class VideoCallViewController: UIViewController {
 
     
     func stopArchive() {
-        let fullURL = "https://charmcharismaanalytics.herokuapp.com/archive/\(archiveId)/stop"
+        let fullURL = "\(Server.BaseURL)\(Server.Archive)/\(archiveId)\(Server.StopArchive)"
         let url = URL(string: fullURL)
         var urlRequest: URLRequest? = nil
         if let url = url {

@@ -12,6 +12,7 @@ class FriendListTableViewCell: UITableViewCell {
     
     // MARK: - IBOutlets
 
+    @IBOutlet weak var imgProfile: UIImageView!
     @IBOutlet weak var lblName: UILabel!
     @IBOutlet weak var lblEmail: UILabel!
     @IBOutlet weak var lblDetail: UILabel!
@@ -23,9 +24,24 @@ class FriendListTableViewCell: UITableViewCell {
     
     // MARK: - Button Handling
     
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        
+        btnApprove.layer.borderColor = #colorLiteral(red: 0, green: 0.4784313725, blue: 1, alpha: 1)
+        btnApprove.layer.borderWidth = 1
+        btnApprove.layer.cornerRadius = btnApprove.bounds.height / 2
+    }
+    
     @IBAction func approveButtonTapped(_ sender: Any) {
         // When button is tapped
         delegate?.approveFriendRequest(withId: id)
+    }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        
+        // make sure profile image doesn't get confused with other cells
+        imgProfile.image = nil
     }
     
 }

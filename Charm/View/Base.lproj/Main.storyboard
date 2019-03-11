@@ -137,7 +137,13 @@
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="sT6-F8-q87"/>
                     </view>
-                    <navigationItem key="navigationItem" title="Charm" id="m6I-pG-5gz"/>
+                    <navigationItem key="navigationItem" title="Charm" id="m6I-pG-5gz">
+                        <barButtonItem key="rightBarButtonItem" image="icn_friendList" id="dDu-Hj-1zX">
+                            <connections>
+                                <segue destination="HGr-Mw-46F" kind="show" identifier="sid_friendlist" id="Tm4-2t-woS"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                     <connections>
                         <segue destination="hps-G3-QtS" kind="show" identifier="sid_friendlist" id="cJb-R5-kAt"/>
                     </connections>
@@ -158,54 +164,67 @@
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="cid_friendlist" id="dP4-Hr-yNV" customClass="FriendListTableViewCell" customModule="Charm" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="28" width="375" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" ambiguous="YES" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="dP4-Hr-yNV" id="uQE-SI-8lP">
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="dP4-Hr-yNV" id="uQE-SI-8lP">
                                     <rect key="frame" x="0.0" y="0.0" width="375" height="43.5"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Name" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rMA-PL-deH">
-                                            <rect key="frame" x="16" y="11" width="45" height="21"/>
+                                        <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="icnTempProfile" translatesAutoresizingMaskIntoConstraints="NO" id="QqD-5f-eEX">
+                                            <rect key="frame" x="20" y="10.5" width="53" height="53"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="53" id="fdZ-FW-BxP"/>
+                                                <constraint firstAttribute="width" constant="53" id="iNU-Je-5Bj"/>
+                                            </constraints>
+                                        </imageView>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="252" verticalHuggingPriority="251" verticalCompressionResistancePriority="751" text="Name" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rMA-PL-deH">
+                                            <rect key="frame" x="81" y="8" width="191" height="20.5"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Email" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="94c-QK-tLo">
-                                            <rect key="frame" x="16" y="40" width="31" height="15"/>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="252" verticalCompressionResistancePriority="752" text="Email" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="94c-QK-tLo">
+                                            <rect key="frame" x="81" y="32.5" width="191" height="14.5"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Detail" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="f2V-Rt-LNW">
-                                            <rect key="frame" x="16" y="63" width="33" height="15"/>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="252" verticalHuggingPriority="251" verticalCompressionResistancePriority="752" text="Detail" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="f2V-Rt-LNW">
+                                            <rect key="frame" x="81" y="51" width="191" height="14.5"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
-                                        <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Iwx-Fc-7O1">
-                                            <rect key="frame" x="297" y="32.5" width="58" height="30"/>
-                                            <state key="normal" title="Approve"/>
+                                        <button hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="245" horizontalCompressionResistancePriority="749" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Iwx-Fc-7O1">
+                                            <rect key="frame" x="280" y="21" width="75" height="32"/>
+                                            <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="16"/>
+                                            <state key="normal" title="+ Add">
+                                                <color key="titleColor" red="0.0" green="0.47843137254901957" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                            </state>
                                             <connections>
                                                 <action selector="approveButtonTapped:" destination="dP4-Hr-yNV" eventType="touchUpInside" id="Jdo-Cl-VnT"/>
                                             </connections>
                                         </button>
                                     </subviews>
                                     <constraints>
-                                        <constraint firstItem="rMA-PL-deH" firstAttribute="top" secondItem="uQE-SI-8lP" secondAttribute="topMargin" id="2T4-9D-QUR"/>
-                                        <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="rMA-PL-deH" secondAttribute="trailing" constant="20" symbolic="YES" id="7cg-6U-yPE"/>
-                                        <constraint firstAttribute="bottomMargin" secondItem="f2V-Rt-LNW" secondAttribute="bottom" constant="8" id="AUW-95-eSf"/>
-                                        <constraint firstItem="rMA-PL-deH" firstAttribute="leading" secondItem="uQE-SI-8lP" secondAttribute="leadingMargin" id="Fy3-9i-KPv"/>
-                                        <constraint firstItem="94c-QK-tLo" firstAttribute="leading" secondItem="uQE-SI-8lP" secondAttribute="leadingMargin" id="KYc-65-5nJ"/>
-                                        <constraint firstAttribute="trailing" secondItem="Iwx-Fc-7O1" secondAttribute="trailing" constant="20" id="PhY-sK-KND"/>
-                                        <constraint firstItem="Iwx-Fc-7O1" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="rMA-PL-deH" secondAttribute="trailing" constant="8" symbolic="YES" id="cwD-Lg-0Dq"/>
-                                        <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="f2V-Rt-LNW" secondAttribute="trailing" constant="20" symbolic="YES" id="gyp-G6-9Ig"/>
-                                        <constraint firstItem="Iwx-Fc-7O1" firstAttribute="centerY" secondItem="94c-QK-tLo" secondAttribute="centerY" id="lMB-k4-b8d"/>
-                                        <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="94c-QK-tLo" secondAttribute="trailing" constant="20" symbolic="YES" id="nRZ-ck-22D"/>
-                                        <constraint firstItem="94c-QK-tLo" firstAttribute="top" secondItem="rMA-PL-deH" secondAttribute="bottom" constant="8" id="pX9-zA-cPZ"/>
-                                        <constraint firstItem="f2V-Rt-LNW" firstAttribute="top" secondItem="94c-QK-tLo" secondAttribute="bottom" constant="8" id="q5I-Gh-WCl"/>
-                                        <constraint firstItem="f2V-Rt-LNW" firstAttribute="leading" secondItem="uQE-SI-8lP" secondAttribute="leadingMargin" id="u1N-qG-XKq"/>
+                                        <constraint firstItem="Iwx-Fc-7O1" firstAttribute="width" secondItem="uQE-SI-8lP" secondAttribute="width" multiplier="0.2" id="061-X6-xjV"/>
+                                        <constraint firstItem="rMA-PL-deH" firstAttribute="leading" secondItem="QqD-5f-eEX" secondAttribute="trailing" constant="8" id="3xC-on-VCo"/>
+                                        <constraint firstItem="94c-QK-tLo" firstAttribute="top" secondItem="rMA-PL-deH" secondAttribute="bottom" constant="4" id="5K8-g8-36x"/>
+                                        <constraint firstAttribute="bottom" secondItem="f2V-Rt-LNW" secondAttribute="bottom" constant="8" id="7Ob-B8-dgu"/>
+                                        <constraint firstItem="QqD-5f-eEX" firstAttribute="leading" secondItem="uQE-SI-8lP" secondAttribute="leading" constant="20" id="8uM-Iv-OCZ"/>
+                                        <constraint firstItem="f2V-Rt-LNW" firstAttribute="top" secondItem="94c-QK-tLo" secondAttribute="bottom" constant="4" id="DzS-RD-e4g"/>
+                                        <constraint firstItem="Iwx-Fc-7O1" firstAttribute="centerY" secondItem="QqD-5f-eEX" secondAttribute="centerY" id="GC0-Oz-F8K"/>
+                                        <constraint firstAttribute="trailing" secondItem="Iwx-Fc-7O1" secondAttribute="trailing" constant="20" id="WH5-ja-QjX"/>
+                                        <constraint firstItem="rMA-PL-deH" firstAttribute="top" secondItem="uQE-SI-8lP" secondAttribute="top" constant="8" id="dji-FV-fVN"/>
+                                        <constraint firstItem="f2V-Rt-LNW" firstAttribute="leading" secondItem="QqD-5f-eEX" secondAttribute="trailing" constant="8" id="fSc-kw-BUf"/>
+                                        <constraint firstItem="QqD-5f-eEX" firstAttribute="centerY" secondItem="uQE-SI-8lP" secondAttribute="centerY" id="hRn-Ii-S9t"/>
+                                        <constraint firstItem="Iwx-Fc-7O1" firstAttribute="leading" secondItem="f2V-Rt-LNW" secondAttribute="trailing" constant="8" id="n9V-Xe-SFY"/>
+                                        <constraint firstItem="Iwx-Fc-7O1" firstAttribute="leading" secondItem="94c-QK-tLo" secondAttribute="trailing" constant="8" id="qLX-eh-wgf"/>
+                                        <constraint firstItem="94c-QK-tLo" firstAttribute="leading" secondItem="QqD-5f-eEX" secondAttribute="trailing" constant="8" id="yQs-5l-Mnu"/>
+                                        <constraint firstItem="Iwx-Fc-7O1" firstAttribute="leading" secondItem="rMA-PL-deH" secondAttribute="trailing" constant="8" id="zic-4m-viS"/>
                                     </constraints>
                                 </tableViewCellContentView>
                                 <connections>
                                     <outlet property="btnApprove" destination="Iwx-Fc-7O1" id="vjF-dw-XUn"/>
+                                    <outlet property="imgProfile" destination="QqD-5f-eEX" id="USv-t4-vIS"/>
                                     <outlet property="lblDetail" destination="f2V-Rt-LNW" id="ElW-8j-Zon"/>
                                     <outlet property="lblEmail" destination="94c-QK-tLo" id="YgM-rF-aZ7"/>
                                     <outlet property="lblName" destination="rMA-PL-deH" id="4Af-qs-emB"/>
@@ -271,7 +290,7 @@
                             </barButtonItem>
                             <barButtonItem title="Friends" id="EFf-2T-bja">
                                 <connections>
-                                    <segue destination="HGr-Mw-46F" kind="show" id="tbo-GU-nKp"/>
+                                    <segue destination="HGr-Mw-46F" kind="show" identifier="sid_friendlist" id="tbo-GU-nKp"/>
                                 </connections>
                             </barButtonItem>
                         </rightBarButtonItems>
@@ -318,6 +337,11 @@
         </scene>
     </scenes>
     <resources>
+        <image name="icnTempProfile" width="28" height="28"/>
         <image name="icn_cancel" width="144" height="144"/>
+        <image name="icn_friendList" width="60" height="60"/>
     </resources>
+    <inferredMetricsTieBreakers>
+        <segue reference="Tm4-2t-woS"/>
+    </inferredMetricsTieBreakers>
 </document>

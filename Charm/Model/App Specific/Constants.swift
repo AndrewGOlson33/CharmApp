@@ -8,6 +8,14 @@
 
 import Foundation
 
+enum Server {
+    static let BaseURL = "https://charmtokens.herokuapp.com"
+    static let Room = "/room"
+    static let Archive = "/archive"
+    static let StartArchive = "/start"
+    static let StopArchive = "/stop"
+}
+
 // MARK: - UI Related
 enum SegueID {
     static let FriendList = "sid_friendlist"
