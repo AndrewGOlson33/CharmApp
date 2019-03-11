@@ -227,8 +227,11 @@ class ContactsViewModel {
     // setup the arrays for adding contacts
     fileprivate func setupAddFriendsArrays() {
         // only loop through contacts we know are not in the user's friend list
-        for contact in contacts {
+        for contact in notInContacts {
             var found: Bool = false
+            
+            // TODO: - Prevent showing the user's own email
+            
             for email in contact.emailAddresses {
                 let value = email.value as String
                 let ref = Database.database().reference()
