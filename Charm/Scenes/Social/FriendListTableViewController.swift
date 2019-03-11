@@ -9,6 +9,7 @@
 import UIKit
 import Firebase
 import CodableFirebase
+import Contacts
 
 class FriendListTableViewController: UITableViewController {
     
@@ -19,6 +20,12 @@ class FriendListTableViewController: UITableViewController {
     
     // User object that holds friend list
     var user: CharmUser!
+    
+    // add mode properties
+    var inAddMode: Bool = false
+    var contacts: [CNContact] = []
+    var notInContacts: [CNContact] = []
+    var inContacts: [CNContact] = []
     
     // MARK: - View Lifecycle Functions
 
@@ -39,6 +46,67 @@ class FriendListTableViewController: UITableViewController {
 //        definesPresentationContext = true
         searchController.searchBar.delegate = self
         
+        // Load Contact list
+        loadContacts()
+        
+    }
+    
+    // MARK: - Private Helper Functions
+    
+    private func loadContacts() {
+        
+        // make sure user hasn't denied access
+        let status = CNContactStore.authorizationStatus(for: .contacts)
+        if status == .denied || status == .restricted {
+            // present alert
+            presentSettingsAlert()
+        }
+        
+        let store = CNContactStore()
+        store.requestAccess(for: .contacts) { (granted, error) in
+            
+            // make sure access is granted
+            guard granted else {
+                print("~>There was an error getting authorization: \(String(describing: error))")
+                self.presentSettingsAlert()
+                return
+            }
+            
+            // format request
+            let request = CNContactFetchRequest(keysToFetch: [CNContactFormatter.descriptorForRequiredKeys(for: .fullName),
+                                                              CNContactPhoneNumbersKey as CNKeyDescriptor,
+                                                              CNContactEmailAddressesKey as CNKeyDescriptor,
+                                                              CNContactImageDataKey as CNKeyDescriptor,
+                                                              CNContactThumbnailImageDataKey as CNKeyDescriptor,
+                                                              CNContactImageDataAvailableKey as CNKeyDescriptor
+                                                              ])
+            
+            // do request
+            do {
+                try store.enumerateContacts(with: request, usingBlock: { (contact, stop) in
+                    let  name = CNContactFormatter.string(from: contact, style: .fullName)
+                    print("~>Got contact with name: \(String(describing: name)), phone numbers: \(contact.phoneNumbers), email addresses: \(contact.emailAddresses), and image data: \(String(describing: contact.imageData)), and thumbnail data: \(String(describing: contact.thumbnailImageData))")
+                })
+            } catch let error {
+                print("~>Got an error: \(error)")
+            }
+        }
+    }
+    
+    // Present an error when unable to get authorization for contacts
+    
+    private func presentSettingsAlert() {
+        let settingsURL = URL(string: UIApplication.openSettingsURLString)!
+        
+        DispatchQueue.main.async {
+            let alert = UIAlertController(title: "Permission to Contacts", message: "This app needs access to contacts in order to ...", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "Go to Settings", style: .default) { _ in
+//                UIApplication.shared.openURL(settingsURL)
+                UIApplication.shared.open(settingsURL, options: [:], completionHandler: nil)
+            })
+            alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+            self.present(alert, animated: true)
+        }
     }
 
     // MARK: - Table view data source

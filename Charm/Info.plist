@@ -22,6 +22,8 @@
 	<true/>
 	<key>NSCameraUsageDescription</key>
 	<string>$(PRODUCT_NAME) uses the camera for making video calls.</string>
+	<key>NSContactsUsageDescription</key>
+	<string>$(PRODUCT_NAME) uses your contacts to help you connect with your friends.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>$(PRODUCT_NAME) uses the microphone to enable sound during video calls.</string>
 	<key>UILaunchStoryboardName</key>

@@ -152,7 +152,7 @@
             </objects>
             <point key="canvasLocation" x="950" y="145"/>
         </scene>
-        <!--Friend List Table View Controller-->
+        <!--Contacts-->
         <scene sceneID="SYg-d1-gd7">
             <objects>
                 <tableViewController id="HGr-Mw-46F" customClass="FriendListTableViewController" customModule="Charm" customModuleProvider="target" sceneMemberID="viewController">
@@ -236,10 +236,16 @@
                             <outlet property="delegate" destination="HGr-Mw-46F" id="UYq-z5-NxK"/>
                         </connections>
                     </tableView>
+                    <navigationItem key="navigationItem" title="Contacts" id="sql-HT-Ktc">
+                        <rightBarButtonItems>
+                            <barButtonItem systemItem="add" id="2Ab-NE-ApQ"/>
+                            <barButtonItem systemItem="bookmarks" id="AQj-jI-pMr"/>
+                        </rightBarButtonItems>
+                    </navigationItem>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="nD0-Vb-4Jn" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="949.60000000000002" y="-606.74662668665667"/>
+            <point key="canvasLocation" x="950" y="-574"/>
         </scene>
         <!--Chat-->
         <scene sceneID="5r8-Kl-SlV">
