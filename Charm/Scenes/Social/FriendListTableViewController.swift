@@ -13,18 +13,29 @@ import Contacts
 
 class FriendListTableViewController: UITableViewController {
     
+    // MARK: - IBOutlets
+    
+    @IBOutlet weak var btnContacts: UIBarButtonItem!
+    @IBOutlet weak var btnAddContact: UIBarButtonItem!
+    
     // MARK: - Properties
     
     // Search controller
     let searchController = UISearchController(searchResultsController: nil)
     
     // User object that holds friend list
-    var viewModel = ContactsViewModel()
+    let viewModel = ContactsViewModel()
+    
+    // toggle for display contacts or add contacts views
+    var isContactsViewShowing: Bool = true
     
     // MARK: - View Lifecycle Functions
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        // disable contacts button on launch
+        btnContacts.isEnabled = false
 
         // allow view model to refresh tableview
         viewModel.delegate = self
@@ -38,23 +49,46 @@ class FriendListTableViewController: UITableViewController {
         searchController.searchBar.delegate = self
         
     }
+    
+    // MARK: - Button Handling
+    
+    @IBAction func contactsButtonTapped(_ sender: Any) {
+        btnContacts.isEnabled = false
+        btnAddContact.isEnabled = true
+        isContactsViewShowing = true
+        tableView.reloadData()
+    }
+    
+    @IBAction func addContactButtonTapped(_ sender: Any) {
+        btnContacts.isEnabled = true
+        btnAddContact.isEnabled = false
+        isContactsViewShowing = false
+        tableView.reloadData()
+    }
+    
 
     // MARK: - Table view data source
-// Comment out for now
-//    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-//        switch section {
-//        case 0:
-//            return "Friends"
-//        case 1:
-//            return "Received Friend Request"
-//        default:
-//            return "Sent Friend Requests"
-//        }
-//    }
+
+    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        
+        if isContactsViewShowing { return "" }
+        
+        switch section {
+        case 0:
+            return "Users in My Contacts"
+        default:
+            return "Add by Phone Number"
+        }
+    }
+    
+    override func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
+        guard let header = view as? UITableViewHeaderFooterView else { return }
+        header.textLabel?.textColor = #colorLiteral(red: 0, green: 0.4784313725, blue: 1, alpha: 1)
+    }
 
     override func numberOfSections(in tableView: UITableView) -> Int {
         // #warning Incomplete implementation, return the number of sections
-        return 3
+        return isContactsViewShowing ? 3 : 2
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {

@@ -17,6 +17,8 @@ class ContactsViewModel {
         case Current
         case PendingReceived
         case PendingSent
+        case ExistingNotInContacts
+        case AddByPhone
     }
     
     // delegate for updating table view
@@ -44,7 +46,11 @@ class ContactsViewModel {
     // contacts
     var contacts: [CNContact] = []
     var notInContacts: [CNContact] = []
-    var inContacts: [CNContact] = []
+//    var inContacts: [CNContact] = []
+    
+    // friends you can add
+    var existingUsers: [Friend] = []
+    var usersToInvite: [Friend] = []
     
     init() {
         NotificationCenter.default.addObserver(self, selector: #selector(updatedUser), name: FirebaseNotification.CharmUserDidUpdate, object: nil)
@@ -58,20 +64,33 @@ class ContactsViewModel {
     
     func configureCell(atIndex index: Int, withCell cell: FriendListTableViewCell, forType type: ContactType) -> FriendListTableViewCell {
         
-        let friend = currentFriends[index]
+        var friend: Friend! = nil
         
         // configure cell properties that vary by type
         switch type {
         case .Current:
+            friend = currentFriends[index]
             cell.lblDetail.text = "In friend list"
             cell.btnApprove.isHidden = true
         case .PendingReceived:
+            friend = pendingReceived[index]
             cell.lblDetail.text = "Added you from: \(friend.email)"
             cell.btnApprove.setTitle("Approve", for: .normal)
             cell.btnApprove.isHidden = false
-        default:
+        case .PendingSent:
+            friend = pendingSent[index]
             cell.lblDetail.text = "Waiting for response."
             cell.btnApprove.isHidden = true
+        case .ExistingNotInContacts:
+            friend = existingUsers[index]
+            cell.lblDetail.text = "In your contacts"
+            cell.btnApprove.setTitle("+ Add", for: .normal)
+            cell.btnApprove.isHidden = false
+        case .AddByPhone:
+            friend = usersToInvite[index]
+            cell.lblDetail.text = "Invite to Charm"
+            cell.btnApprove.setTitle("+ Add", for: .normal)
+            cell.btnApprove.isHidden = false
         }
         
         // configure cell data
@@ -79,7 +98,10 @@ class ContactsViewModel {
         cell.lblEmail.text = friend.email
         
         // configure image
-        if let imageData = friend.userImage, let image = UIImage(data: imageData) {
+        
+        // check to see if contacts has an image
+        
+        if let image = getPhoto(forFriend: friend) {
             cell.imgProfile.image = image
         } else {
             cell.imgProfile.image = UIImage(named: "icnTempProfile")
@@ -162,21 +184,36 @@ class ContactsViewModel {
         
         guard let contacts = user?.friendList?.currentFriends else { return }
         if contacts.enumerated().contains(where: { (index, friend) -> Bool in
-            if emailAddresses.contains(friend.email) {
-                if contact.imageDataAvailable {
-                    user?.friendList!.currentFriends![index].userImage = contact.thumbnailImageData
-                }
-                return true
-            } else {
-                return false
-            }
+            return emailAddresses.contains(friend.email)
         }) {
-            inContacts.append(contact)
+//            inContacts.append(contact)
         } else {
             notInContacts.append(contact)
         }
         
     }
+    
+    fileprivate func getPhoto(forFriend friend: Friend) -> UIImage? {
+
+        for contact in contacts {
+            var emailAddresses: [String] = []
+            
+            for email in contact.emailAddresses {
+                emailAddresses.append(email.value as String)
+            }
+            
+            if emailAddresses.contains(friend.email) {
+                if contact.imageDataAvailable, let data = contact.thumbnailImageData, let image = UIImage(data: data) {
+                    return image
+                } else {
+                    return nil
+                }
+            }
+        }
+        
+        return nil
+    }
+    
     
     // MARK: - Notifications
     

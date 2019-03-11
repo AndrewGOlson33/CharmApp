@@ -88,10 +88,10 @@ struct FriendList: Codable {
 
 struct Friend: Codable, Identifiable {
     var id: String? = nil
-    var userImage: Data? = nil
     var firstName: String
     var lastName: String
     var email: String
+    var phone: String? = nil
     
     init(id: String, first: String, last: String, email: String) {
         self.id = id
