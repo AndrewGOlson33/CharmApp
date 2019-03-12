@@ -45,7 +45,7 @@ class FriendListTableViewController: UITableViewController {
         searchController.obscuresBackgroundDuringPresentation = false
         searchController.searchBar.placeholder = "Search your friend list..."
         tableView.tableHeaderView = searchController.searchBar
-//        definesPresentationContext = true
+        definesPresentationContext = true
         searchController.searchBar.delegate = self
         
     }
@@ -53,6 +53,7 @@ class FriendListTableViewController: UITableViewController {
     // MARK: - Button Handling
     
     @IBAction func contactsButtonTapped(_ sender: Any) {
+        searchController.resignFirstResponder()
         btnContacts.isEnabled = false
         btnAddContact.isEnabled = true
         isContactsViewShowing = true
@@ -60,6 +61,7 @@ class FriendListTableViewController: UITableViewController {
     }
     
     @IBAction func addContactButtonTapped(_ sender: Any) {
+        searchController.resignFirstResponder()
         btnContacts.isEnabled = true
         btnAddContact.isEnabled = false
         isContactsViewShowing = false
@@ -95,28 +97,36 @@ class FriendListTableViewController: UITableViewController {
         // #warning Incomplete implementation, return the number of rows
         switch section {
         case 0:
-            return isContactsViewShowing ? viewModel.currentFriends.count : viewModel.existingUsers.count
+            return isContactsViewShowing ? isFiltering() ? viewModel.filteredFriends.count : viewModel.currentFriends.count : isFiltering() ? viewModel.filteredExistingUsers.count :  viewModel.existingUsers.count
         case 1:
-            return isContactsViewShowing ? viewModel.pendingReceived.count : viewModel.usersToInvite.count
+            return isContactsViewShowing ? isFiltering() ? viewModel.filteredPendingReceived.count : viewModel.pendingReceived.count : isFiltering() ? viewModel.filteredUsersToInvite.count : viewModel.usersToInvite.count
         default:
-            return viewModel.pendingSent.count
+            return isFiltering() ? viewModel.filteredPendingSent.count : viewModel.pendingSent.count
         }
     }
 
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         var cell = tableView.dequeueReusableCell(withIdentifier: CellID.FriendList, for: indexPath) as! FriendListTableViewCell
+        
+        let filtered = isFiltering()
 
         switch indexPath.section {
         case 0:
-            cell = isContactsViewShowing ? viewModel.configureCell(atIndex: indexPath.row, withCell: cell, forType: .Current) : viewModel.configureCell(atIndex: indexPath.row, withCell: cell, forType: .ExistingNotInContacts)
+            cell = isContactsViewShowing ? viewModel.configureCell(atIndex: indexPath.row, withCell: cell, forType: .Current, filtered: filtered) : viewModel.configureCell(atIndex: indexPath.row, withCell: cell, forType: .ExistingNotInContacts, filtered: filtered)
         case 1:
-            cell = isContactsViewShowing ? viewModel.configureCell(atIndex: indexPath.row, withCell: cell, forType: .PendingReceived) : viewModel.configureCell(atIndex: indexPath.row, withCell: cell, forType: .AddByPhone)
+            cell = isContactsViewShowing ? viewModel.configureCell(atIndex: indexPath.row, withCell: cell, forType: .PendingReceived, filtered: filtered) : viewModel.configureCell(atIndex: indexPath.row, withCell: cell, forType: .AddByPhone, filtered: filtered)
         default:
-            cell = viewModel.configureCell(atIndex: indexPath.row, withCell: cell, forType: .PendingSent)
+            cell = viewModel.configureCell(atIndex: indexPath.row, withCell: cell, forType: .PendingSent, filtered: filtered)
         }
     
         return cell
+    }
+    
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        guard let cell = tableView.cellForRow(at: indexPath) as? FriendListTableViewCell else { return }
+        if !cell.btnApprove.isHidden { cell.approveButtonTapped(cell.btnApprove) }
     }
 
 }
@@ -126,7 +136,7 @@ class FriendListTableViewController: UITableViewController {
 extension FriendListTableViewController: UISearchResultsUpdating, UISearchBarDelegate {
     
     func updateSearchResults(for searchController: UISearchController) {
-//        filterContentForSearchText(searchController.searchBar.text!)
+        viewModel.filterSearch(forContacts: isContactsViewShowing, withText: searchController.searchBar.text!)
     }
     
     fileprivate func isFiltering() -> Bool {

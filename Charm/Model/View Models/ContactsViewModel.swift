@@ -12,7 +12,7 @@ import CodableFirebase
 import Contacts
 import MessageUI
 
-class ContactsViewModel {
+class ContactsViewModel: NSObject {
     
     enum ContactType {
         case Current
@@ -64,7 +64,49 @@ class ContactsViewModel {
         }
     }
     
-    init() {
+    // arrays used for search
+    
+    var filteredFriends: [Friend] = [] {
+        didSet {
+            filteredFriends.sort { (lhs, rhs) -> Bool in
+                return lhs.lastName < rhs.lastName
+            }
+        }
+    }
+    
+    var filteredPendingReceived: [Friend] = [] {
+        didSet {
+            filteredPendingReceived.sort { (lhs, rhs) -> Bool in
+                return lhs.lastName < rhs.lastName
+            }
+        }
+    }
+    
+    var filteredPendingSent: [Friend] = [] {
+        didSet {
+            filteredPendingSent.sort { (lhs, rhs) -> Bool in
+                return lhs.lastName < rhs.lastName
+            }
+        }
+    }
+    
+    var filteredExistingUsers: [Friend] = [] {
+        didSet {
+            filteredExistingUsers.sort { (lhs, rhs) -> Bool in
+                return lhs.lastName < rhs.lastName
+            }
+        }
+    }
+    var filteredUsersToInvite: [Friend] = [] {
+        didSet {
+            filteredExistingUsers.sort { (lhs, rhs) -> Bool in
+                return lhs.lastName < rhs.lastName
+            }
+        }
+    }
+    
+    override init() {
+        super.init()
         NotificationCenter.default.addObserver(self, selector: #selector(updatedUser), name: FirebaseNotification.CharmUserDidUpdate, object: nil)
         
         // load contact list
@@ -75,35 +117,45 @@ class ContactsViewModel {
     
     // MARK: - Data Access
     
-    func configureCell(atIndex index: Int, withCell cell: FriendListTableViewCell, forType type: ContactType) -> FriendListTableViewCell {
+    func configureCell(atIndex index: Int, withCell cell: UITableViewCell) -> UITableViewCell {
+        
+        let friend = currentFriends[index]
+        
+        cell.textLabel?.text = "\(friend.firstName) \(friend.lastName)"
+        cell.detailTextLabel?.text = friend.email
+        
+        return cell
+    }
+    
+    func configureCell(atIndex index: Int, withCell cell: FriendListTableViewCell, forType type: ContactType, filtered: Bool) -> FriendListTableViewCell {
         
         var friend: Friend! = nil
         
         // configure cell properties that vary by type
         switch type {
         case .Current:
-            friend = currentFriends[index]
+            friend = filtered ? filteredFriends[index] : currentFriends[index]
             cell.lblDetail.text = "In friend list"
             cell.btnApprove.isHidden = true
         case .PendingReceived:
-            friend = pendingReceived[index]
+            friend = filtered ? filteredPendingReceived[index] : pendingReceived[index]
             cell.lblDetail.text = "Added you from: \(friend.email)"
             cell.btnApprove.setTitle("Approve", for: .normal)
             cell.btnApprove.isHidden = false
             cell.addMethod = .Approval
         case .PendingSent:
-            friend = pendingSent[index]
+            friend = filtered ? filteredPendingSent[index] : pendingSent[index]
             cell.lblDetail.text = "Waiting for response."
             cell.btnApprove.isHidden = false
             cell.btnApprove.setTitle("Pending", for: .normal)
         case .ExistingNotInContacts:
-            friend = existingUsers[index]
+            friend = filtered ? filteredExistingUsers[index] : existingUsers[index]
             cell.lblDetail.text = "In your contacts"
             cell.btnApprove.setTitle("+ Add", for: .normal)
             cell.btnApprove.isHidden = false
             cell.addMethod = .Email
         case .AddByPhone:
-            friend = usersToInvite[index]
+            friend = filtered ? filteredUsersToInvite[index] : usersToInvite[index]
             cell.lblDetail.text = "Invite to Charm"
             cell.btnApprove.setTitle("+ Add", for: .normal)
             cell.btnApprove.isHidden = false
@@ -233,6 +285,50 @@ class ContactsViewModel {
         return nil
     }
     
+    // MARK: - Search Filtering
+    
+    func filterSearch(forContacts: Bool, withText text: String) {
+        let search = text.lowercased()
+        switch forContacts {
+        case true:
+            // search for contact related arrays
+            // find current friends who match search
+            let current = currentFriends.filter { (friend) -> Bool in
+                return friend.email.lowercased().contains(search) || "\(friend.firstName.lowercased()) \(friend.lastName.lowercased())".contains(search) || friend.phone?.lowercased().contains(search) ?? false
+            }
+            
+            // search received friend requests
+            let received = pendingReceived.filter { (friend) -> Bool in
+                return friend.email.lowercased().contains(search) || "\(friend.firstName.lowercased()) \(friend.lastName.lowercased())".contains(search) || friend.phone?.lowercased().contains(search) ?? false
+            }
+            
+            // search friend requests that have already been sent
+            let sent = pendingSent.filter { (friend) -> Bool in
+                return friend.email.lowercased().contains(search) || "\(friend.firstName.lowercased()) \(friend.lastName.lowercased())".contains(search) || friend.phone?.lowercased().contains(search) ?? false
+            }
+            
+            filteredFriends = current
+            filteredPendingReceived = received
+            filteredPendingSent = sent
+        default:
+            // search from friends you can add
+            // start searching users who already exist in charm
+            let existing = existingUsers.filter { (friend) -> Bool in
+                return friend.email.lowercased().contains(search) || "\(friend.firstName.lowercased()) \(friend.lastName.lowercased())".contains(search) || friend.phone?.lowercased().contains(search) ?? false
+            }
+            
+            // next search users that could be invited
+            let invite = usersToInvite.filter { (friend) -> Bool in
+                return friend.email.lowercased().contains(search) || "\(friend.firstName.lowercased()) \(friend.lastName.lowercased())".contains(search) || friend.phone?.lowercased().contains(search) ?? false
+            }
+            
+            filteredExistingUsers = existing
+            filteredUsersToInvite = invite
+        }
+        
+        delegate?.updateTableView()
+    }
+    
     // setup the arrays for adding contacts
     fileprivate func setupAddFriendsArrays() {
         // only loop through contacts we know are not in the user's friend list
@@ -262,7 +358,25 @@ class ContactsViewModel {
                 if let emailItem = contact.emailAddresses.first {
                     emailAddress = emailItem.value as String
                 }
-                let phone = contact.phoneNumbers.first?.value.stringValue ?? ""
+
+                
+                var phone: String = ""
+                var found: Bool = false
+                
+                for number in contact.phoneNumbers {
+                    guard let label = number.label else { continue }
+                    if label.lowercased().contains("iphone") || label.lowercased().contains("mobile") || label.lowercased().contains("iphone") || label.lowercased().contains("main") {
+                        phone = number.value.stringValue
+                        found = true
+                        break
+                    }
+                }
+                
+                if !found {
+                    phone = contact.phoneNumbers.first?.value.stringValue ?? ""
+                }
+                
+                
                 guard !firstName.isEmpty && !phone.isEmpty else { continue }
                 var friend = Friend(id: "N/A", first: firstName, last: lastName, email: emailAddress)
                 friend.phone = phone
@@ -395,7 +509,6 @@ extension ContactsViewModel: FriendManagementDelegate {
             friendUser.friendList!.pendingReceivedApproval?.append(meAsFriend)
 
             // set friend user as a friend item, and add them to user's sent requests
-//            let friend = Friend(id: friendUser.id!, first: friendUser.userProfile.firstName, last: friendUser.userProfile.lastName, email: friendUser.userProfile.email)
             if self.user!.friendList == nil { self.user!.friendList = FriendList() }
             self.user!.friendList!.pendingSentApproval?.append(friend)
 
@@ -418,6 +531,47 @@ extension ContactsViewModel: FriendManagementDelegate {
                 navVC.present(alert, animated: true, completion: nil)
             }
         }
+    }
+    
+    func sendTextRequest(toFriend friend: Friend) {
+        let navVC = (UIApplication.shared.delegate as! AppDelegate).window!.rootViewController as! UINavigationController
+        let alert = UIAlertController(title: "", message: "", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: nil))
+        
+        guard MFMessageComposeViewController.canSendText() else {
+            alert.title = "Error Adding Friend"
+            alert.message = "This device is not setup for sending text messages."
+            return
+        }
+        
+        // this should succeed 100% of the time, so user will never see this error
+        guard let phone = friend.phone else {
+            alert.title = "Error Adding Friend"
+            alert.message = "Unable to add friend at this time.  Please restart the app and try again."
+            return
+        }
+        
+        // setup message
+        let composeVC = MFMessageComposeViewController()
+        composeVC.messageComposeDelegate = self
+        
+        // Configure the fields of the interface.
+        composeVC.recipients = [phone]
+        let url = "https://www.blaumagier.com"
+        composeVC.body = "Click the link to add me as a friend on Charm, the app that teaches you how to be more charming!  If you don't have Charm, the link will open the App Store page so you can download it first.\n\(url)"
+        
+        // Present the view controller modally.
+        navVC.present(composeVC, animated: true, completion: nil)
+    }
+    
+}
+
+extension ContactsViewModel: MFMessageComposeViewControllerDelegate {
+    
+    func messageComposeViewController(_ controller: MFMessageComposeViewController, didFinishWith result: MessageComposeResult) {
+        
+        // Dismiss the message compose view controller.
+        controller.dismiss(animated: true, completion: nil)
     }
     
 }

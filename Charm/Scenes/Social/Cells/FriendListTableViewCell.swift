@@ -54,8 +54,8 @@ class FriendListTableViewCell: UITableViewCell {
             delegate?.approveFriendRequest(withId: id)
         case .Email:
             delegate?.sendEmailRequest(toFriend: friend)
-        default:
-            print("~>Not yet handled")
+        case .Phone:
+            delegate?.sendTextRequest(toFriend: friend)
         }
         
     }

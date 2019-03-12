@@ -21,6 +21,7 @@ protocol Identifiable {
 protocol FriendManagementDelegate {
     func approveFriendRequest(withId id: String)
     func sendEmailRequest(toFriend friend: Friend)
+    func sendTextRequest(toFriend friend: Friend)
 }
 
 // Delegate that allows a view model to update table view
