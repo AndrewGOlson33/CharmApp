@@ -37,7 +37,7 @@ class ChatTableViewController: UITableViewController {
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        var cell = tableView.dequeueReusableCell(withIdentifier: CellID.ChatList, for: indexPath)
+        var cell = tableView.dequeueReusableCell(withIdentifier: CellID.ChatList, for: indexPath) as! ChatFriendListTableViewCell
 
         cell = viewModel.configureCell(atIndex: indexPath.row, withCell: cell)
 

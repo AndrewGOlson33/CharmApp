@@ -42,7 +42,7 @@ class FriendListTableViewCell: UITableViewCell {
         btnApprove.layer.borderWidth = 1
         btnApprove.layer.cornerRadius = btnApprove.bounds.height / 2
         
-        imgProfile.layer.cornerRadius =  imgProfile.frame.height / 2
+        imgProfile.layer.cornerRadius = imgProfile.frame.height / 2
         imgProfile.clipsToBounds = true
     }
     

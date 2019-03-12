@@ -9,16 +9,23 @@
 import UIKit
 
 class ChatFriendListTableViewCell: UITableViewCell {
-
+   
+    // MARK: - IBOutlets
+    
+    @IBOutlet weak var imgProfile: UIImageView!
+    @IBOutlet weak var lblName: UILabel!
+    @IBOutlet weak var lblEmail: UILabel!
+    
     override func awakeFromNib() {
         super.awakeFromNib()
-        // Initialization code
+        
+        // Setup profile picture to look circular
+        imgProfile.layer.cornerRadius = imgProfile.frame.height / 2
+        imgProfile.clipsToBounds = true
     }
 
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-
-        // Configure the view for the selected state
+    override func prepareForReuse() {
+        imgProfile.image = nil
     }
 
 }

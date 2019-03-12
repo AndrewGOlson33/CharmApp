@@ -117,12 +117,20 @@ class ContactsViewModel: NSObject {
     
     // MARK: - Data Access
     
-    func configureCell(atIndex index: Int, withCell cell: UITableViewCell) -> UITableViewCell {
+    func configureCell(atIndex index: Int, withCell cell: ChatFriendListTableViewCell) -> ChatFriendListTableViewCell {
         
         let friend = currentFriends[index]
         
-        cell.textLabel?.text = "\(friend.firstName) \(friend.lastName)"
-        cell.detailTextLabel?.text = friend.email
+        cell.lblName.text = "\(friend.firstName) \(friend.lastName)"
+        cell.lblEmail.text = friend.email
+        
+        // check to see if contacts has an image
+        
+        if let image = getPhoto(forFriend: friend) {
+            cell.imgProfile.image = image
+        } else {
+            cell.imgProfile.image = UIImage(named: "icnTempProfile")
+        }
         
         return cell
     }
@@ -165,8 +173,6 @@ class ContactsViewModel: NSObject {
         // configure cell data
         cell.lblName.text = "\(friend.firstName) \(friend.lastName)"
         cell.lblEmail.text = type == .AddByPhone ? friend.phone! : friend.email
-        
-        // configure image
         
         // check to see if contacts has an image
         
