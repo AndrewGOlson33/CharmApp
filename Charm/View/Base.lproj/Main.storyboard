@@ -298,19 +298,11 @@
                         </connections>
                     </tableView>
                     <navigationItem key="navigationItem" title="Chat" id="za4-yU-hpg">
-                        <rightBarButtonItems>
-                            <barButtonItem systemItem="add" id="Pqz-TD-Nxx">
-                                <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                <connections>
-                                    <action selector="addFriendTapped:" destination="hps-G3-QtS" id="v4F-Rz-oSG"/>
-                                </connections>
-                            </barButtonItem>
-                            <barButtonItem title="Friends" id="EFf-2T-bja">
-                                <connections>
-                                    <segue destination="HGr-Mw-46F" kind="show" identifier="sid_friendlist" id="tbo-GU-nKp"/>
-                                </connections>
-                            </barButtonItem>
-                        </rightBarButtonItems>
+                        <barButtonItem key="rightBarButtonItem" image="icn_friendList" id="EFf-2T-bja">
+                            <connections>
+                                <segue destination="HGr-Mw-46F" kind="show" identifier="sid_friendlist" id="tbo-GU-nKp"/>
+                            </connections>
+                        </barButtonItem>
                     </navigationItem>
                     <connections>
                         <segue destination="M8q-z3-gMC" kind="show" identifier="sid_videocall" id="lJa-O7-cLE"/>
@@ -359,6 +351,6 @@
         <image name="icn_friendList" width="60" height="60"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="Tm4-2t-woS"/>
+        <segue reference="tbo-GU-nKp"/>
     </inferredMetricsTieBreakers>
 </document>

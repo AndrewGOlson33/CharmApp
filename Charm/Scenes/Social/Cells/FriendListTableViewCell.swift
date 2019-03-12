@@ -10,6 +10,14 @@ import UIKit
 
 class FriendListTableViewCell: UITableViewCell {
     
+    // Enum For Add Method
+    
+    enum AddMethod {
+        case Email
+        case Phone
+        case Approval
+    }
+    
     // MARK: - IBOutlets
 
     @IBOutlet weak var imgProfile: UIImageView!
@@ -20,7 +28,9 @@ class FriendListTableViewCell: UITableViewCell {
     
     // MARK: - Properties
     var id: String!
-    var delegate: ApproveFriendDelegate?
+    var delegate: FriendManagementDelegate?
+    var addMethod: AddMethod? = nil
+    var friend: Friend!
     
     // MARK: - Button Handling
     
@@ -38,7 +48,16 @@ class FriendListTableViewCell: UITableViewCell {
     
     @IBAction func approveButtonTapped(_ sender: Any) {
         // When button is tapped
-        delegate?.approveFriendRequest(withId: id)
+        guard let method = addMethod else { return }
+        switch method {
+        case .Approval:
+            delegate?.approveFriendRequest(withId: id)
+        case .Email:
+            delegate?.sendEmailRequest(toFriend: friend)
+        default:
+            print("~>Not yet handled")
+        }
+        
     }
     
     override func prepareForReuse() {

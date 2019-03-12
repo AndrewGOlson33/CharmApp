@@ -18,8 +18,9 @@ protocol Identifiable {
 // MARK: - Delegates
 
 // Delegate that handles approving friend requests
-protocol ApproveFriendDelegate {
+protocol FriendManagementDelegate {
     func approveFriendRequest(withId id: String)
+    func sendEmailRequest(toFriend friend: Friend)
 }
 
 // Delegate that allows a view model to update table view

@@ -39,7 +39,7 @@ class ContactsViewModel {
     }
     
     var pendingSent: [Friend] {
-        guard let thisUser = user, let friendsList = thisUser.friendList, let pending = friendsList.pendingReceivedApproval else { return [] }
+        guard let thisUser = user, let friendsList = thisUser.friendList, let pending = friendsList.pendingSentApproval else { return [] }
         return pending
     }
     
@@ -89,20 +89,24 @@ class ContactsViewModel {
             cell.lblDetail.text = "Added you from: \(friend.email)"
             cell.btnApprove.setTitle("Approve", for: .normal)
             cell.btnApprove.isHidden = false
+            cell.addMethod = .Approval
         case .PendingSent:
             friend = pendingSent[index]
             cell.lblDetail.text = "Waiting for response."
-            cell.btnApprove.isHidden = true
+            cell.btnApprove.isHidden = false
+            cell.btnApprove.setTitle("Pending", for: .normal)
         case .ExistingNotInContacts:
             friend = existingUsers[index]
             cell.lblDetail.text = "In your contacts"
             cell.btnApprove.setTitle("+ Add", for: .normal)
             cell.btnApprove.isHidden = false
+            cell.addMethod = .Email
         case .AddByPhone:
             friend = usersToInvite[index]
             cell.lblDetail.text = "Invite to Charm"
             cell.btnApprove.setTitle("+ Add", for: .normal)
             cell.btnApprove.isHidden = false
+            cell.addMethod = .Phone
         }
         
         // configure cell data
@@ -119,6 +123,7 @@ class ContactsViewModel {
             cell.imgProfile.image = UIImage(named: "icnTempProfile")
         }
         
+        cell.friend = friend
         cell.id = friend.id
         cell.delegate = self
         
@@ -194,7 +199,10 @@ class ContactsViewModel {
             emailAddresses.append(email.value as String)
         }
         
-        guard let contacts = user?.friendList?.currentFriends else { return }
+        guard let contacts = user?.friendList?.currentFriends else {
+            notInContacts.append(contact)
+            return
+        }
         if !contacts.enumerated().contains(where: { (index, friend) -> Bool in
             return emailAddresses.contains(friend.email)
         }) {
@@ -275,15 +283,10 @@ class ContactsViewModel {
 
 // MARK: - Delegate Function to handle approving a friend request
 
-extension ContactsViewModel: ApproveFriendDelegate {
+extension ContactsViewModel: FriendManagementDelegate {
     
     func approveFriendRequest(withId id: String) {
         // first move friend from received to current friends
-        guard false else {
-            print("~>Add user tapped.")
-            return
-        }
-        
         guard var user = user else { return }
         
         let received = user.friendList!.pendingReceivedApproval
@@ -345,6 +348,70 @@ extension ContactsViewModel: ApproveFriendDelegate {
                 Database.database().reference().child(FirebaseStructure.Users).child(id).child(FirebaseStructure.CharmUser.Friends).child(FirebaseStructure.CharmUser.FriendList.PendingSentApproval).setValue(sent)
             } catch let error {
                 print("~>Got an error: \(error)")
+            }
+        }
+    }
+    
+    // MARK: - Private Helper Functions that do the heavy lifting for friend adding
+    
+    func sendEmailRequest(toFriend friend: Friend) {
+        // setup views for displaying error alerts
+        let navVC = (UIApplication.shared.delegate as! AppDelegate).window!.rootViewController as! UINavigationController
+        let alert = UIAlertController(title: "", message: "", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: nil))
+
+        let ref = Database.database().reference()
+        let emailQuery = ref.child(FirebaseStructure.Users).queryOrdered(byChild: "userProfile/email").queryEqual(toValue: friend.email).queryLimited(toFirst: 1)
+        emailQuery.observeSingleEvent(of: .value) { (snapshot) in
+            guard let results = snapshot.value as? [AnyHashable:Any], let first = results.first?.value else {
+                alert.title = "Unable to Send Request"
+                alert.message = "The request not able to be sent at this time.  Please try again later."
+                navVC.present(alert, animated: true, completion: nil)
+                return
+            }
+
+            // get friend user setup, and add self to their incoming friends
+            var friendUser = try! FirebaseDecoder().decode(CharmUser.self, from: first)
+
+            // create a friend list if needed
+            // if the user already has a list, make sure we don't have
+            // a pending reques from them already
+            if friendUser.friendList == nil {
+                friendUser.friendList = FriendList()
+            } else if let myList = self.user!.friendList, let received = myList.pendingReceivedApproval {
+                for friend in received {
+                if friend.id == friendUser.id {
+                    alert.title = "Accept Request"
+                    alert.message = "This user has already sent you a friend request.  Please accept their request to add as a friend."
+                    navVC.present(alert, animated: true, completion: nil)
+                    return
+                    }
+                }
+            }
+        
+            let meAsFriend = Friend(id: self.user!.id!, first: self.user!.userProfile.firstName, last: self.user!.userProfile.lastName, email: self.user!.userProfile.email)
+        
+            friendUser.friendList!.pendingReceivedApproval?.append(meAsFriend)
+
+            // set friend user as a friend item, and add them to user's sent requests
+//            let friend = Friend(id: friendUser.id!, first: friendUser.userProfile.firstName, last: friendUser.userProfile.lastName, email: friendUser.userProfile.email)
+            if self.user!.friendList == nil { self.user!.friendList = FriendList() }
+            self.user!.friendList!.pendingSentApproval?.append(friend)
+
+            do {
+                let myData = try FirebaseEncoder().encode(friendUser.friendList!.pendingReceivedApproval)
+                let friendData = try FirebaseEncoder().encode(self.user!.friendList!.pendingSentApproval)
+
+                // Write data to firebase
+                ref.child(FirebaseStructure.Users).child(friendUser.id!).child(FirebaseStructure.CharmUser.Friends).child(FirebaseStructure.CharmUser.FriendList.PendingReceivedApproval).setValue(myData)
+
+                ref.child(FirebaseStructure.Users).child(self.user!.id!).child(FirebaseStructure.CharmUser.Friends).child(FirebaseStructure.CharmUser.FriendList.PendingSentApproval).setValue(friendData)
+
+                alert.title = "Sent Request"
+                alert.message = "Your friend request has been sent.  Once the request has been approved by your friend, they will show up on your friends list."
+                navVC.present(alert, animated: true, completion: nil)
+            } catch let error {
+                print("~>Got a bloody error: \(error)")
             }
         }
     }

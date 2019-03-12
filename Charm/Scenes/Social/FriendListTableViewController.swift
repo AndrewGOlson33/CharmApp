@@ -75,9 +75,9 @@ class FriendListTableViewController: UITableViewController {
         
         switch section {
         case 0:
-            return "Users in My Contacts"
+            return viewModel.existingUsers.count == 0 ? "" : "Users in My Contacts"
         default:
-            return "Add by Phone Number"
+            return viewModel.usersToInvite.count == 0 ? "" : "Add by Phone Number"
         }
     }
     
@@ -99,7 +99,7 @@ class FriendListTableViewController: UITableViewController {
         case 1:
             return isContactsViewShowing ? viewModel.pendingReceived.count : viewModel.usersToInvite.count
         default:
-            return viewModel.pendingReceived.count
+            return viewModel.pendingSent.count
         }
     }
 
