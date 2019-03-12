@@ -10,6 +10,7 @@ import UIKit
 import Firebase
 import CodableFirebase
 import Contacts
+import MessageUI
 
 class ContactsViewModel {
     
@@ -411,7 +412,10 @@ extension ContactsViewModel: FriendManagementDelegate {
                 alert.message = "Your friend request has been sent.  Once the request has been approved by your friend, they will show up on your friends list."
                 navVC.present(alert, animated: true, completion: nil)
             } catch let error {
-                print("~>Got a bloody error: \(error)")
+                alert.title = "Request Failed"
+                alert.message = "Your friend request failed.  Please try again later."
+                print("~>Got an error: \(error)")
+                navVC.present(alert, animated: true, completion: nil)
             }
         }
     }
