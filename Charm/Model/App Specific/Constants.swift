@@ -60,7 +60,7 @@ enum FirebaseStructure {
             static let PendingReceivedApproval = "pendingReceivedApproval"
         }
         
-        // callse
+        // calls
         static let Call = "currentCall"
         enum CurrentCall {
             static let SessionID = "sessionID"
@@ -75,6 +75,20 @@ enum FirebaseStructure {
         static let LastName = "lastName"
         static let Email = "email"
     }
+    
+    // Archives
+    enum Archive {
+        static let Pending = "pendingArchive"
+        static let Completed = "completedArchive"
+        
+        enum ArchiveData {
+            static let SessionId = "sessionId"
+            static let InitiatingUserId = "initiatingUserId"
+            static let ReceivingUserId = "receivingUserId"
+        }
+    }
+    
+    
 }
 
 // MARK: - Notifications

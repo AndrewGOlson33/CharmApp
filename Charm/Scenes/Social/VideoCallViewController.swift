@@ -61,6 +61,9 @@ class VideoCallViewController: UIViewController {
         return kMainScreenHeight * 0.25
     }
     
+    // variable set to true if user is the one initiating call
+    var isInitiatingUser: Bool = false
+    
     // MARK: - View Lifecycle Functions
 
     override func viewDidLoad() {
@@ -86,6 +89,7 @@ class VideoCallViewController: UIViewController {
         if !kSessionId.isEmpty {
             getTokensForExistingSession()
         } else {
+            isInitiatingUser = true
             getTokensForNewSession()
         }
     }
@@ -294,11 +298,15 @@ class VideoCallViewController: UIViewController {
                 print("~>Got an error trying to start an archive: \(error)")
             } else {
                 print("~>Archive started.")
+                let pendingArchive = SessionArchive(id: self.kSessionId, callerId: self.myUser.id!, calledId: self.friend.id!)
+                print("~>Added pending to firebase: \(pendingArchive.addPending())")
             }
         }
         
         dataTask.resume()
         session.finishTasksAndInvalidate()
+        
+        
     }
 
     

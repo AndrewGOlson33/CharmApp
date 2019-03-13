@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		440B49E3FFECF797577DDB57 /* Pods_Charm.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 16C20027951EB6711E199488 /* Pods_Charm.framework */; };
+		650D400C223957B30023D983 /* ArchiveSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 650D400B223957B30023D983 /* ArchiveSession.swift */; };
 		6572642222300640008D9ED4 /* MainMenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6572642122300640008D9ED4 /* MainMenuViewController.swift */; };
 		657264262230081B008D9ED4 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 657264252230081B008D9ED4 /* Constants.swift */; };
 		65B872A822302BE0001705B3 /* CharmUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65B872A722302BE0001705B3 /* CharmUser.swift */; };
@@ -29,6 +30,7 @@
 /* Begin PBXFileReference section */
 		16C20027951EB6711E199488 /* Pods_Charm.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Charm.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		32AEF01E8A1AE05F8906832B /* Pods-Charm.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Charm.debug.xcconfig"; path = "Target Support Files/Pods-Charm/Pods-Charm.debug.xcconfig"; sourceTree = "<group>"; };
+		650D400B223957B30023D983 /* ArchiveSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchiveSession.swift; sourceTree = "<group>"; };
 		6572642122300640008D9ED4 /* MainMenuViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMenuViewController.swift; sourceTree = "<group>"; };
 		657264252230081B008D9ED4 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		65B872A722302BE0001705B3 /* CharmUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CharmUser.swift; sourceTree = "<group>"; };
@@ -149,6 +151,7 @@
 			isa = PBXGroup;
 			children = (
 				65B872A722302BE0001705B3 /* CharmUser.swift */,
+				650D400B223957B30023D983 /* ArchiveSession.swift */,
 			);
 			path = Firebase;
 			sourceTree = "<group>";
@@ -351,6 +354,7 @@
 			files = (
 				65C55C2122318BE300336243 /* VideoCallViewController.swift in Sources */,
 				65C7FB1B22383D7500A150BF /* ChatFriendListTableViewCell.swift in Sources */,
+				650D400C223957B30023D983 /* ArchiveSession.swift in Sources */,
 				65EADDD722303A1C00593F9D /* CharmSignInViewController.swift in Sources */,
 				65C55C1C22315EED00336243 /* FriendListTableViewController.swift in Sources */,
 				65EADDD522302FE900593F9D /* Protocols.swift in Sources */,
