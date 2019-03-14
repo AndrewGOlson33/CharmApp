@@ -10,6 +10,7 @@ target 'Charm' do
   pod 'Highcharts'
   pod 'Firebase/Core'
   pod 'Firebase/Database'
+  pod 'Firebase/Storage'
   pod 'FirebaseUI/Auth'
   pod 'FirebaseUI/Email'
   pod 'Firebase/DynamicLinks'

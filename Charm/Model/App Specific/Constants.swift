@@ -8,6 +8,8 @@
 
 import Foundation
 
+// MARK: - Server location constants
+
 enum Server {
     static let BaseURL = "https://charmtokens.herokuapp.com"
     static let Room = "/room"
@@ -30,6 +32,7 @@ enum StoryboardID {
 enum CellID {
     static let FriendList = "cid_friendlist"
     static let ChatList = "cid_chatlist"
+    static let VideoList = "cid_video"
 }
 
 // MARK: - Firebase Related
@@ -85,6 +88,21 @@ enum FirebaseStructure {
             static let SessionId = "sessionId"
             static let InitiatingUserId = "initiatingUserId"
             static let ReceivingUserId = "receivingUserId"
+        }
+    }
+    
+    // Learning Videos
+    enum Videos {
+        static let Learning = "learning"
+        
+        enum Sections {
+            static let Fundamentals = "Fundamentals"
+            static let Supplemental = "Supplemental"
+        }
+        
+        enum VideoItem {
+            static let Title = "title"
+            static let Url = "url"
         }
     }
     
