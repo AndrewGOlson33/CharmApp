@@ -50,6 +50,19 @@ class ChatTableViewController: UITableViewController {
         performSegue(withIdentifier: SegueID.VideoCall, sender: friend)
     }
     
+    // prevent extra table view lines
+    override func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+        let view = UIView(frame: CGRect(origin: .zero, size: CGSize(width: tableView.frame.width, height: 1)))
+        view.backgroundColor = .clear
+        return view
+    }
+    
+    override func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        return 1
+    }
+    
+    // MARK: - Segue (start call)
+    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == SegueID.VideoCall, let videoVC = segue.destination as? VideoCallViewController, let friend = sender as? Friend {
             videoVC.friend = friend

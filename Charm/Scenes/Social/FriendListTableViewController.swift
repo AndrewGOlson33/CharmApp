@@ -27,12 +27,18 @@ class FriendListTableViewController: UITableViewController {
     let viewModel = ContactsViewModel()
     
     // toggle for display contacts or add contacts views
-    var isContactsViewShowing: Bool = true
+    var isContactsViewShowing: Bool = true {
+        didSet {
+            tableView.allowsSelection = isContactsViewShowing ? false : true
+        }
+    }
     
     // MARK: - View Lifecycle Functions
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        tableView.allowsSelection = false
         
         // disable contacts button on launch
         btnContacts.isEnabled = false
@@ -127,6 +133,50 @@ class FriendListTableViewController: UITableViewController {
         tableView.deselectRow(at: indexPath, animated: true)
         guard let cell = tableView.cellForRow(at: indexPath) as? FriendListTableViewCell else { return }
         if !cell.btnApprove.isHidden { cell.approveButtonTapped(cell.btnApprove) }
+    }
+    
+    // prevent extra table view lines
+    override func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+        let view = UIView(frame: CGRect(origin: .zero, size: CGSize(width: tableView.frame.width, height: 1)))
+        view.backgroundColor = .clear
+        return view
+    }
+    
+    override func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        return 1
+    }
+    
+    // MARK: - Handle Deleting Friends
+    
+    override func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCell.EditingStyle {
+        if isContactsViewShowing { return .delete }
+
+        return .none
+    }
+    
+    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
+            // Ask for confirmation before deleting
+            let deleteAlert = UIAlertController(title: "Are You Sure?", message: "Are you sure you want to delete this contact?", preferredStyle: .alert)
+            deleteAlert.addAction(UIAlertAction(title: "No", style: .cancel, handler: nil))
+            deleteAlert.addAction(UIAlertAction(title: "Yes", style: .destructive, handler: { (_) in
+                // get friend object
+                guard let friend = (tableView.cellForRow(at: indexPath) as! FriendListTableViewCell).friend else { return }
+                var type: ContactsViewModel.ContactType!
+                switch indexPath.section {
+                case 0:
+                    type = .Current
+                case 1:
+                    type = .PendingReceived
+                case 2:
+                    type = .PendingSent
+                default:
+                    return
+                }
+                self.viewModel.delete(friend: friend, fromTableView: self.tableView, atIndexPath: indexPath, ofType: type)
+            }))
+            present(deleteAlert, animated: true, completion: nil)
+        }
     }
 
 }

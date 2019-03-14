@@ -406,6 +406,73 @@ class ContactsViewModel: NSObject {
 
 extension ContactsViewModel: FriendManagementDelegate {
     
+    func delete(friend: Friend, fromTableView tableView: UITableView, atIndexPath indexPath: IndexPath, ofType type: ContactType) {
+        // Make sure this is all done on the main thread
+        
+        DispatchQueue.main.async {
+            guard let user = self.user, let myId = user.id, let id = friend.id else { return }
+            
+            var myTypeLocation: String = ""
+            var friendTypeLocation: String = ""
+            var myNewFriends: [Friend]!
+            tableView.beginUpdates()
+            switch type {
+            case .Current:
+                myTypeLocation = FirebaseStructure.CharmUser.FriendList.CurrentFriends
+                friendTypeLocation = FirebaseStructure.CharmUser.FriendList.CurrentFriends
+                self.user!.friendList!.currentFriends!.remove(at: indexPath.row)
+                myNewFriends = self.user!.friendList!.currentFriends!
+            case .PendingReceived:
+                myTypeLocation = FirebaseStructure.CharmUser.FriendList.PendingReceivedApproval
+                friendTypeLocation = FirebaseStructure.CharmUser.FriendList.PendingSentApproval
+                self.user!.friendList!.pendingReceivedApproval!.remove(at: indexPath.row)
+                myNewFriends = self.user!.friendList!.pendingReceivedApproval!
+            case .PendingSent:
+                myTypeLocation = FirebaseStructure.CharmUser.FriendList.PendingSentApproval
+                friendTypeLocation = FirebaseStructure.CharmUser.FriendList.PendingReceivedApproval
+                self.user!.friendList!.pendingSentApproval!.remove(at: indexPath.row)
+                myNewFriends = self.user!.friendList!.pendingSentApproval!
+            default:
+                tableView.endUpdates()
+                return
+            }
+            
+            tableView.deleteRows(at: [indexPath], with: .automatic)
+            tableView.endUpdates()
+            
+            let myRef = Database.database().reference().child(FirebaseStructure.Users).child(myId).child(FirebaseStructure.CharmUser.Friends).child(myTypeLocation)
+            let friendRef = Database.database().reference().child(FirebaseStructure.Users).child(id).child(FirebaseStructure.CharmUser.Friends).child(friendTypeLocation)
+            
+            friendRef.observeSingleEvent(of: .value, with: { (snapshot) in
+                guard let values = snapshot.value as? NSArray else { return }
+                var friendsFriendlist: [Friend] = []
+                do {
+                    // first get friendlist for friend
+                    for friend in values {
+                        friendsFriendlist.append(try FirebaseDecoder().decode(Friend.self, from: friend))
+                    }
+                    
+                    guard let index = friendsFriendlist.firstIndex(where: { (friend) -> Bool in
+                        friend.id == myId
+                    }) else { return }
+                    
+                    friendsFriendlist.remove(at: index)
+                    
+                    // now encode and save data
+                    let myFriendData = try FirebaseEncoder().encode(myNewFriends)
+                    let friendsData = try FirebaseEncoder().encode(friendsFriendlist)
+                    
+                    myRef.setValue(myFriendData)
+                    friendRef.setValue(friendsData)
+                } catch let error {
+                    print("~>There was an error converting friend lists to delete: \(error)")
+                }
+            })
+            
+        }
+        
+    }
+    
     func approveFriendRequest(withId id: String) {
         // first move friend from received to current friends
         guard var user = user else { return }
