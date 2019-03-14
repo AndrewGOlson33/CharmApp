@@ -11,11 +11,51 @@ import Firebase
 import CodableFirebase
 
 class MainMenuViewController: UIViewController {
+    
+    // MARK: - Properties
+    
+    var isFirebaseConnected: Bool = true
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        // Setup loss of internet observer
+        setupConnetionObserver()
+        
         // Setup user observer
+        setupUser()
+    }
+    
+    // MARK: - Private Setup Functions
+    
+    fileprivate func setupConnetionObserver() {
+        let connectedRef = Database.database().reference(withPath: ".info/connected")
+        connectedRef.observe(.value, with: { connected in
+            if let boolean = connected.value as? Bool, boolean == true {
+                print("~>Connected")
+                if !self.isFirebaseConnected {
+                    self.showConnectionAlert()
+                }
+            } else {
+                print("~>Not connected")
+                self.showConnectionAlert()
+            }
+        })
+    }
+    
+    fileprivate func showConnectionAlert() {
+        DispatchQueue.main.async {
+            self.isFirebaseConnected = !self.isFirebaseConnected
+            let title = self.isFirebaseConnected ? "Connection Restored" : "Connection Lost"
+            let message = self.isFirebaseConnected ? "Connection to the database server has been restored." : "Lost connection to databse server.  Please check your internet connection."
+            
+            let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+            self.navigationController?.present(alert, animated: true, completion: nil)
+        }
+    }
+    
+    fileprivate func setupUser() {
         Database.database().reference().child(FirebaseStructure.Users).child(Auth.auth().currentUser!.uid).observe(.value) { (snapshot) in
             guard let value = snapshot.value else { return }
             DispatchQueue.main.async {
@@ -43,8 +83,6 @@ class MainMenuViewController: UIViewController {
             }
         }
     }
-    
-    // MARK: - Private Call Helper
     
     fileprivate func setupIncoming(call: Call) {
         DispatchQueue.main.async {

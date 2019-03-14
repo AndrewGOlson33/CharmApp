@@ -51,16 +51,34 @@ class LearningVideoViewModel: NSObject {
         let learningRef = Database.database().reference().child(FirebaseStructure.Videos.Learning)
         
         learningRef.observeSingleEvent(of: .value) { (snapshot) in
+            
             guard let value = snapshot.value else { return }
             
             do {
                 self.sections = try FirebaseDecoder().decode(VideoSections.self, from: value)
                 self.delegate?.updateTableView()
+                if self.sections.sections.count == 0 {
+                    self.showInternetConnectionAlert()
+                }
             } catch let error {
                 print("~>There was an error decoding the video section: \(error)")
                 print("~>Value: \(String(describing: value))")
+                self.delegate?.updateTableView()
+                self.showInternetConnectionAlert()
             }
         }
+    }
+    
+    private func showInternetConnectionAlert() {
+        DispatchQueue.main.async {
+            let navVC = (UIApplication.shared.delegate as? AppDelegate)?.window?.rootViewController as? UINavigationController
+            guard let nav = navVC else { return }
+            
+            let alert = UIAlertController(title: "Check Your Connection", message: "Charm is unable to communicate with the server, please check your internet connection and try again.", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+            nav.present(alert, animated: true, completion: nil)
+        }
+        
     }
     
 }
