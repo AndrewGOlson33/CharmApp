@@ -13,6 +13,10 @@ import CodableFirebase
 
 class VideoCallViewController: UIViewController {
     
+    // MARK: - IBOutlets
+    
+    @IBOutlet weak var btnEndCall: UIButton!
+    
     // MARK: - Properties
     
     // User to establish connection with

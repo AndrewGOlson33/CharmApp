@@ -380,6 +380,9 @@
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="osk-j0-Ppl"/>
                     </view>
+                    <connections>
+                        <outlet property="btnEndCall" destination="aHz-JH-29W" id="KoF-Pf-bkw"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Bjo-HO-Ez9" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>

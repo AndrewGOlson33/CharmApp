@@ -73,12 +73,26 @@ class MainMenuViewController: UIViewController {
                             alert.addAction(UIAlertAction(title: "Accept", style: .default, handler: { (_) in
                                 self.setupIncoming(call: call)
                             }))
-                            alert.addAction(UIAlertAction(title: "Ignore", style: .cancel, handler: nil))
+                            alert.addAction(UIAlertAction(title: "Ignore", style: .cancel, handler: { _ in
+                                guard let call = (UIApplication.shared.delegate as! AppDelegate).user.currentCall else { return }
+                                self.reject(call: call)
+                            }))
                             self.navigationController?.present(alert, animated: true, completion: nil)
                         } else if self.firstSetup && call.status == .connected {
                             DispatchQueue.main.async {
                                 (UIApplication.shared.delegate as! AppDelegate).removeActiveCalls()
                             }
+                        } else if call.status == .rejected {
+                            // remove the value first
+                            if let videoVC = self.navigationController!.topViewController! as? VideoCallViewController {
+                                videoVC.endCallButtonTapped(videoVC.btnEndCall)
+                            } else {
+                                call.myCallRef.removeValue()
+                            }
+                            
+                            let rejectedAlert = UIAlertController(title: "Unable to Place Call", message: "The person you are trying to reach is not available at this time.  Please try again later.", preferredStyle: .alert)
+                            rejectedAlert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                            self.present(rejectedAlert, animated: true, completion: nil)
                         }
                     }
                     self.firstSetup = false
@@ -87,6 +101,19 @@ class MainMenuViewController: UIViewController {
                     return
                 }
             }
+        }
+    }
+    
+    fileprivate func reject(call: Call) {
+        call.myCallRef.removeValue()
+        
+        let friendCall = Call(sessionID: call.sessionID, status: .rejected, from: Auth.auth().currentUser!.uid)
+        
+        do {
+            let data = try FirebaseEncoder().encode(friendCall)
+            call.friendCallRef.setValue(data)
+        } catch let error {
+            print("~>There was an error converting call data: \(error)")
         }
     }
     

@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import Firebase
 import CodableFirebase
 
 struct CharmUser: Codable, Identifiable {
@@ -55,11 +56,20 @@ struct Call: Codable {
         case disconnected = 1
         case incoming = 2
         case outgoing = 3
+        case rejected = 4
     }
     
     var sessionID: String
     var status: CallStatus
     var fromUserID: String
+    
+    var myCallRef: DatabaseReference {
+        return Database.database().reference().child(FirebaseStructure.Users).child(Auth.auth().currentUser!.uid).child(FirebaseStructure.CharmUser.Call)
+    }
+    
+    var friendCallRef: DatabaseReference {
+        return Database.database().reference().child(FirebaseStructure.Users).child(fromUserID).child(FirebaseStructure.CharmUser.Call)
+    }
     
     init(sessionID: String, status: CallStatus, from: String) {
         self.sessionID = sessionID
