@@ -81,6 +81,16 @@ class VideoCallViewController: UIViewController {
     
     // MARK: - Private Helper Functions
     
+    fileprivate func showCallErrorAlert() {
+        DispatchQueue.main.async {
+            let alert = UIAlertController(title: "Unable to Place Call", message: "An error occurred preventing the call from being placed.  Please try again later", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { (_) in
+                self.navigationController?.popViewController(animated: true)
+            }))
+            self.present(alert, animated: true, completion: nil)
+        }
+    }
+    
     /**
      * Gets the token to begin the connection process
      * If a session ID is present, use that to start the call with
@@ -100,13 +110,13 @@ class VideoCallViewController: UIViewController {
      */
     fileprivate func getTokensForNewSession() {
         guard let myID = myUser.id, let friendID = friend.id else {
-            // TODO: - Error handling (low priority; this should never fail)
+            self.showCallErrorAlert()
             return
         }
         
         let room = "\(myID)+\(friendID)"
         guard let url = URL(string: "\(Server.BaseURL)\(Server.Room)/\(room)") else {
-            // TODO: - Error handling (low priority; this should never fail)
+            self.showCallErrorAlert()
             return
         }
         
@@ -119,12 +129,12 @@ class VideoCallViewController: UIViewController {
      */
     fileprivate func getTokensForExistingSession() {
         guard let myID = myUser.id, let friendID = friend.id else {
-            // TODO: - Error handling (low priority; this should never fail)
+            self.showCallErrorAlert()
             return
         }
         let room = "\(friendID)+\(myID)"
         guard let url = URL(string: "\(Server.BaseURL)\(Server.Room)/\(room)") else {
-            // TODO: - Error handling (low priority; this should never fail)
+            self.showCallErrorAlert()
             return
         }
         
@@ -167,15 +177,15 @@ class VideoCallViewController: UIViewController {
         session.finishTasksAndInvalidate()
     }
     
-    // TODO: - Handle case where other user is already on a call
     /**
      * Updates the user's call status
      * Also update the friend's call status if they were invited
     */
     fileprivate func updateCallStatus(withSessionID id: String, status: Call.CallStatus) {
-        // Setup Call Objects
+        // Setup Call Objects and reference
         var myCall: Call!
         var friendCall: Call!
+        let usersRef = Database.database().reference().child(FirebaseStructure.Users)
         
         if status == .outgoing {
             myCall = Call(sessionID: id, status: .outgoing, from: friend.id!)
@@ -190,13 +200,12 @@ class VideoCallViewController: UIViewController {
             // encode data
             let myCallData = try FirebaseEncoder().encode(myCall)
             let friendCallData = try FirebaseEncoder().encode(friendCall)
-            
-            // upload to firebase
-            let usersRef = Database.database().reference().child(FirebaseStructure.Users)
+           // upload to firebase
             usersRef.child(friend.id!).child(FirebaseStructure.CharmUser.Call).setValue(friendCallData)
             usersRef.child(myUser.id!).child(FirebaseStructure.CharmUser.Call).setValue(myCallData)
         } catch let error {
             print("~>Got an error converting objects for firebase: \(error)")
+            showCallErrorAlert()
         }
     }
     
