@@ -32,6 +32,7 @@ enum StoryboardID {
 enum CellID {
     static let FriendList = "cid_friendlist"
     static let ChatList = "cid_chatlist"
+    static let EmptyChatList = "cid_emptychatlist"
     static let VideoList = "cid_video"
 }
 
