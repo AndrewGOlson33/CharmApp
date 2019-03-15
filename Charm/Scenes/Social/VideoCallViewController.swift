@@ -34,6 +34,7 @@ class VideoCallViewController: UIViewController {
     }()
     
     var subscriber: OTSubscriber?
+    var callWasConnected: Bool = false
     
     // OpenTok API key
     var kApiKey = ""
@@ -43,6 +44,7 @@ class VideoCallViewController: UIViewController {
     var kToken = ""
     
     var archiveId: String = ""
+    var pendingArchive: SessionArchive? = nil
     
     // Picture in Picture width / height
     var kMainScreenWidth: CGFloat {
@@ -307,8 +309,9 @@ class VideoCallViewController: UIViewController {
                 print("~>Got an error trying to start an archive: \(error)")
             } else {
                 print("~>Archive started.")
-                let pendingArchive = SessionArchive(id: self.kSessionId, callerId: self.myUser.id!, calledId: self.friend.id!)
-                print("~>Added pending to firebase: \(pendingArchive.addPending())")
+                self.pendingArchive = SessionArchive(id: self.kSessionId, callerId: self.myUser.id!, calledId: self.friend.id!)
+                guard let pending = self.pendingArchive else { return }
+                print("~>Added pending to firebase: \(pending.addPending())")
             }
         }
         
@@ -360,6 +363,19 @@ class VideoCallViewController: UIViewController {
         
         session.disconnect(&error)
         stopArchive()
+        if !callWasConnected {
+            print("~>Call was not connected.")
+            // remove both user's call data
+            let usersRef = Database.database().reference().child(FirebaseStructure.Users)
+            usersRef.child(myUser.id!).child(FirebaseStructure.CharmUser.Call).removeValue()
+            usersRef.child(friend.id!).child(FirebaseStructure.CharmUser.Call).removeValue()
+            print("~>Removed call references.")
+            
+            // remove the pending archive
+            if let pending = pendingArchive {
+                print("~>Removed archive from pending list: \(pending.removePending())")
+            }
+        }
     }
     
 }
@@ -438,6 +454,7 @@ extension VideoCallViewController: OTPublisherDelegate {
 extension VideoCallViewController: OTSubscriberDelegate {
     func subscriberDidConnect(toStream subscriberKit: OTSubscriberKit) {
         print("~>Subscriber did connect, setting up view.")
+        callWasConnected = true
         if let subsView = subscriber?.view {
             subsView.frame = CGRect(x: 0, y: 0, width: kMainScreenWidth, height: kMainScreenHeight)
             view.addSubview(subsView)

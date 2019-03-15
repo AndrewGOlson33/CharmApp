@@ -107,12 +107,10 @@ class ChatTableViewController: UITableViewController {
         viewActivity.startAnimating()
         
         check(isFriendBusy: friend) { (busy) in
-            print("~>Going to stop animating soon.")
             viewActivity.stopAnimating()
             guard !busy else { return }
             self.performSegue(withIdentifier: SegueID.VideoCall, sender: friend)
         }
-        
         
     }
     

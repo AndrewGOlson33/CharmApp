@@ -21,5 +21,23 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         FirebaseApp.configure()
         return true
     }
+    
+    func applicationWillTerminate(_ application: UIApplication) {
+        print("~>Application will terminate.")
+        if let videoVC = (window?.rootViewController as? UINavigationController)?.topViewController as? VideoCallViewController {
+            print("~>On video vc.")
+            videoVC.endCallButtonTapped(videoVC)
+        } else {
+            print("~>Calling Remove active calls.")
+            removeActiveCalls()
+        }
+    }
+    
+    func removeActiveCalls() {
+        guard let user = self.user else { return }
+        let myCallsRef = Database.database().reference().child(FirebaseStructure.Users).child(user.id!).child(FirebaseStructure.CharmUser.Call)
+        myCallsRef.removeValue()
+        print("~>Did remove active calls.")
+    }
 
 }

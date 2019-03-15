@@ -62,6 +62,7 @@ class CharmSignInViewController: UIViewController {
         DispatchQueue.main.async {
             let nav = self.storyboard?.instantiateViewController(withIdentifier: StoryboardID.NavigationHome)
             let appDelegate = (UIApplication.shared.delegate as! AppDelegate)
+            // clear out any calls as needed
             appDelegate.window?.rootViewController = nav
             appDelegate.window?.makeKeyAndVisible()
         }

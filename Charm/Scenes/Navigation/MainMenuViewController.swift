@@ -15,6 +15,7 @@ class MainMenuViewController: UIViewController {
     // MARK: - Properties
     
     var isFirebaseConnected: Bool = true
+    var firstSetup: Bool = true
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -74,8 +75,13 @@ class MainMenuViewController: UIViewController {
                             }))
                             alert.addAction(UIAlertAction(title: "Ignore", style: .cancel, handler: nil))
                             self.navigationController?.present(alert, animated: true, completion: nil)
+                        } else if self.firstSetup && call.status == .connected {
+                            DispatchQueue.main.async {
+                                (UIApplication.shared.delegate as! AppDelegate).removeActiveCalls()
+                            }
                         }
                     }
+                    self.firstSetup = false
                 } catch let error {
                     print("~>There was an error: \(error)")
                     return

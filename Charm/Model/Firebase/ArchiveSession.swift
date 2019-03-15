@@ -34,4 +34,10 @@ struct SessionArchive: Codable, Identifiable {
         }
     }
     
+    func removePending() -> Bool {
+        guard let id = self.id else { return false }
+        Database.database().reference().child(FirebaseStructure.Archive.Pending).child(id).removeValue()
+        return true
+    }
+    
 }
