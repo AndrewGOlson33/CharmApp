@@ -42,8 +42,11 @@ class CharmSignInViewController: UIViewController {
                 print("~>Need to show login screen.")
                 self.showLoginScreen()
             } else {
-                // TODO: - Handle Bad Results
-                guard let uid = Auth.auth().currentUser?.uid else { fatalError("~>No uid with existing user") }
+                guard let uid = Auth.auth().currentUser?.uid else {
+                    print("~>There was an error getting the user's UID.")
+                    self.showLoginError()
+                    return
+                }
                 self.loadUser(withUID: uid)
             }
         }
@@ -64,6 +67,15 @@ class CharmSignInViewController: UIViewController {
         }
         
     }
+    
+    private func showLoginError() {
+        let loginError = UIAlertController(title: "Login Error", message: "Unable to login at this time.  Do you want to try again?", preferredStyle: .alert)
+        loginError.addAction(UIAlertAction(title: "No", style: .cancel, handler: nil))
+        loginError.addAction(UIAlertAction(title: "Yes", style: .default, handler: { (_) in
+            self.viewDidAppear(true)
+        }))
+        present(loginError, animated: true, completion: nil)
+    }
 
 }
 
@@ -74,8 +86,11 @@ extension CharmSignInViewController: FUIAuthDelegate {
     func authUI(_ authUI: FUIAuth, didSignInWith authDataResult: AuthDataResult?, error: Error?) {
         print("~>Got a result: \(authDataResult.debugDescription)")
         
-        // TODO: - Handle Bad Results
-        guard let result = authDataResult else { fatalError("~>Bad result") }
+        guard let result = authDataResult else {
+            print("~>Unable to get an auth result.")
+            showLoginError()
+            return
+        }
         let uid = result.user.uid
         loadUser(withUID: uid)
     }
@@ -94,8 +109,9 @@ extension CharmSignInViewController: FUIAuthDelegate {
                         (UIApplication.shared.delegate as! AppDelegate).user = user
                         self.showNavigation()
                     } catch let error {
-                        // TODO: - Error handling
-                        fatalError("~>There was an error creating object: \(error)")
+                        print("~>There was an error creating object: \(error)")
+                        self.showLoginError()
+                        return
                     }
                 }
                 
@@ -105,11 +121,18 @@ extension CharmSignInViewController: FUIAuthDelegate {
                     let info = self.getUserInfo()
                     var user = CharmUser(first: info.first, last: info.last, email: info.email)
                     user.id = uid
-                    // TODO: - Add some error handling
-                    let data = try! FirebaseEncoder().encode(user)
-                    Database.database().reference().child(FirebaseStructure.Users).child(uid).setValue(data)
-                    (UIApplication.shared.delegate as! AppDelegate).user = user
-                    self.showNavigation()
+                    
+                    do {
+                        let data = try FirebaseEncoder().encode(user)
+                        Database.database().reference().child(FirebaseStructure.Users).child(uid).setValue(data)
+                        (UIApplication.shared.delegate as! AppDelegate).user = user
+                        self.showNavigation()
+                    } catch let error {
+                        print("~>There was an error encoding user: \(error)")
+                        self.showLoginError()
+                        return
+                    }
+                    
                 }
             }
         }

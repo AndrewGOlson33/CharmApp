@@ -91,7 +91,13 @@ class MainMenuViewController: UIViewController {
             guard let friend = myUser.friendList?.currentFriends?.first(where: { (friend) -> Bool in
                 friend.id! == call.fromUserID
             }) else {
-                // TODO: - Error handling
+                let connectionError = UIAlertController(title: "Error", message: "There was an error connecting your call.  Do you want to try again?", preferredStyle: .alert)
+                connectionError.addAction(UIAlertAction(title: "No", style: .cancel, handler: nil))
+                connectionError.addAction(UIAlertAction(title: "Yes", style: .default, handler: { (_) in
+                    self.setupIncoming(call: call)
+                    return
+                }))
+                self.present(connectionError, animated: true, completion: nil)
                 return
             }
             

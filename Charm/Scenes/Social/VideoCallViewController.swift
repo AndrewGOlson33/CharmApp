@@ -410,7 +410,7 @@ extension VideoCallViewController: OTSessionDelegate {
     }
     
     func session(_ session: OTSession, archiveStoppedWithId archiveId: String) {
-        // TODO: - Add Archive ID to firebase
+        // TODO: - Find out if we need archive ID in firebase
         print("~>archive with archiveID: \(archiveId) ended.")
     }
     

@@ -341,7 +341,7 @@ class ContactsViewModel: NSObject {
         for contact in notInContacts {
             var found: Bool = false
             
-            // TODO: - Prevent showing the user's own email
+            // TODO: - Prevent showing the user's own email (Do near end, as this is needed for testing right now)
             
             for email in contact.emailAddresses {
                 let value = email.value as String
