@@ -14,12 +14,16 @@ struct SessionArchive: Codable, Identifiable {
     
     var id: String? = nil
     var initiatingUserId: String
+    var initiatingUserFirstName: String
     var receivingUserId: String
+    var receivingUserFirstName: String
     
-    init(id: String, callerId: String, calledId: String) {
+    init(id: String, callerId: String, calledId: String, callerName: String, calledName: String) {
         self.id = id
         initiatingUserId = callerId
+        initiatingUserFirstName = calledName
         receivingUserId = calledId
+        receivingUserFirstName = calledName
     }
     
     func addPending() -> Bool {

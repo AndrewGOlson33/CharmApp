@@ -313,7 +313,7 @@ class VideoCallViewController: UIViewController {
                 print("~>Got an error trying to start an archive: \(error)")
             } else {
                 print("~>Archive started.")
-                self.pendingArchive = SessionArchive(id: self.kSessionId, callerId: self.myUser.id!, calledId: self.friend.id!)
+                self.pendingArchive = SessionArchive(id: self.kSessionId, callerId: self.myUser.id!, calledId: self.friend.id!, callerName: self.myUser.userProfile.firstName, calledName: self.friend.firstName)
                 guard let pending = self.pendingArchive else { return }
                 print("~>Added pending to firebase: \(pending.addPending())")
             }
