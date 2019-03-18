@@ -56,3 +56,17 @@ struct TopLevelMetric: Codable {
     }
     
 }
+
+struct SummaryCellInfo {
+    var title: String
+    var score: Double
+    var scoreString: String {
+        return "\(score)"
+    }
+    
+    init(title: String, score: Double) {
+        self.title = title
+        self.score = score
+    }
+    
+}

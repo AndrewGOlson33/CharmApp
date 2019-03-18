@@ -14,18 +14,13 @@ class ReviewSummaryViewController: UIViewController {
     // MARK: - IBOutlets
     
     @IBOutlet weak var chartView: HIChartView!
-    
-    // score outlets
-    @IBOutlet weak var lblWordChoiceScore: UILabel!
-    @IBOutlet weak var lblBackAndForthScore: UILabel!
-    @IBOutlet weak var lblConnectionScore: UILabel!
-    @IBOutlet weak var lblToneOfWordsScore: UILabel!
-    
+    @IBOutlet weak var tableView: UITableView!
     
     // MARK: - Properties
     
     // data chart will be built with
     var snapshot: Snapshot!
+    var cellInfo: [SummaryCellInfo] = []
     
     // date formatter for setting chart title
     let dFormatter = DateFormatter()
@@ -92,11 +87,10 @@ class ReviewSummaryViewController: UIViewController {
         
         let total = wordChoiceRaw + backAndForthRaw + connectionRaw + toneRaw
         
-        // set lables
-        lblWordChoiceScore.text = "\(wordChoiceRaw)"
-        lblBackAndForthScore.text = "\(backAndForthRaw)"
-        lblConnectionScore.text = "\(connectionRaw)"
-        lblToneOfWordsScore.text = "\(toneRaw)"
+        cellInfo.append(SummaryCellInfo(title: "Word Choice", score: wordChoiceRaw))
+        cellInfo.append(SummaryCellInfo(title: "Back and Forth", score: backAndForthRaw))
+        cellInfo.append(SummaryCellInfo(title: "Connection", score: connectionRaw))
+        cellInfo.append(SummaryCellInfo(title: "Tone of Words", score: toneRaw))
         
         // set chart data
         variablepie.data = [
@@ -119,5 +113,43 @@ class ReviewSummaryViewController: UIViewController {
         options.tooltip = tooltip
         options.series = [variablepie]
         chartView.options = options
+        
+        // load data into tableview
+        tableView.reloadData()
     }
+}
+
+extension ReviewSummaryViewController: UITableViewDelegate, UITableViewDataSource {
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return cellInfo.count + 1
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
+        guard indexPath.row != cellInfo.count else {
+            return tableView.dequeueReusableCell(withIdentifier: CellID.ViewPrevious, for: indexPath)
+        }
+        
+        let cell = tableView.dequeueReusableCell(withIdentifier: CellID.SummaryMetric, for: indexPath) as! SummaryMetricTableViewCell
+        let info = cellInfo[indexPath.row]
+        cell.lblMetric.text = info.title
+        cell.lblScore.text = info.scoreString
+        return cell
+    }
+    
+    func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+        let view = UIView(frame: CGRect(origin: .zero, size: CGSize(width: tableView.frame.width, height: 1)))
+        view.backgroundColor = .clear
+        return view
+    }
+    
+    func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        return 1
+    }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return cellInfo.count == indexPath.row ? 44 : 50
+    }
+    
 }

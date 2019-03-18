@@ -34,6 +34,8 @@ enum CellID {
     static let ChatList = "cid_chatlist"
     static let EmptyChatList = "cid_emptychatlist"
     static let VideoList = "cid_video"
+    static let SummaryMetric = "cid_summary"
+    static let ViewPrevious = "cid_previous"
 }
 
 // MARK: - Firebase Related
