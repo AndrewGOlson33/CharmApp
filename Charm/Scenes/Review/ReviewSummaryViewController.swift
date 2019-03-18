@@ -81,7 +81,6 @@ class ReviewSummaryViewController: UIViewController {
         variablepie.minPointSize = NSNumber(value: 1)
         variablepie.innerSize = "20%"
         variablepie.zMin = NSNumber(value: 0)
-//        variablepie.name = "Summary"
         variablepie.dataLabels = HIDataLabels()
         variablepie.dataLabels.enabled = NSNumber(value: false)
         
@@ -106,6 +105,13 @@ class ReviewSummaryViewController: UIViewController {
             ["name": "Connection", "y": connectionRaw, "z" : connectionRaw / total],
             ["name": "Tone of Words", "y": toneRaw, "z" : toneRaw / total]
         ]
+        
+        // hide hamburger button
+        let navigation = HINavigation()
+        let buttonOptions = HIButtonOptions()
+        buttonOptions.enabled = false
+        navigation.buttonOptions = buttonOptions
+        options.navigation = navigation
         
         // load options and show chart
         options.chart = chart
