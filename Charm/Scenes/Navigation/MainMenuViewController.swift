@@ -25,6 +25,9 @@ class MainMenuViewController: UIViewController {
         
         // Setup user observer
         setupUser()
+        
+        // Setup user's snapshot data observer
+        setupDataObserver()
     }
     
     // MARK: - Private Setup Functions
@@ -99,6 +102,33 @@ class MainMenuViewController: UIViewController {
                 } catch let error {
                     print("~>There was an error: \(error)")
                     return
+                }
+            }
+        }
+    }
+    
+    // Observes snapshot data
+    fileprivate func setupDataObserver() {
+        let snapShotRef = Database.database().reference().child(FirebaseStructure.Users).child(Auth.auth().currentUser!.uid).child(FirebaseStructure.CharmUser.Snapshot)
+        
+        snapShotRef.observe(.value) { (snapshot) in
+            guard let values = snapshot.value as? [String:Any] else {
+                print("~>Couldn't convert values to [String:Any], possibly no data exists.")
+                return
+            }
+            
+            for value in values {
+                do {
+                    let key = value.key
+                    var snapshotData = try FirebaseDecoder().decode(Snapshot.self, from: value.value)
+                    snapshotData.dateString = key
+                    guard snapshotData.date != nil else { continue }
+                    guard !UserSnapshotData.shared.snapshots.contains(where: { (snapshot) -> Bool in
+                        snapshot.date == snapshotData.date
+                    }) else { continue }
+                    UserSnapshotData.shared.snapshots.append(snapshotData)
+                } catch let error {
+                    print("~>Error getting snapshot data: \(error)")
                 }
             }
         }

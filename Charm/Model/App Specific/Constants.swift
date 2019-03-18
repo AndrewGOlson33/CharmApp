@@ -71,6 +71,18 @@ enum FirebaseStructure {
             static let CallStatus = "status"
         }
         
+        // snapshot data
+        static let Snapshot = "snapshotData"
+        enum SnapshotData {
+            static let BackandForth = "BackandForth"
+            static let Concrete = "Concrete"
+            static let PersonalPronouns = "PersonalPronouns"
+            static let Transcript = "Transcript"
+            static let SentimentAll = "sentimentAll"
+            static let SentimentRaw = "sentimentRaw"
+            static let TopLevelMetrics = "topLevelMetrics"
+        }
+        
     }
     
     enum Friend {
@@ -106,8 +118,6 @@ enum FirebaseStructure {
             static let Url = "url"
         }
     }
-    
-    
 }
 
 // MARK: - Notifications
@@ -115,4 +125,15 @@ enum FirebaseStructure {
 enum FirebaseNotification {
     static let CharmUserDidUpdate = Notification.Name("notificationCharmUserDidUpdate")
     static let CharmUserIncomingCall = Notification.Name("notificationCharmUserHasIncomingCall")
+}
+
+// MARK: - Database Constants
+
+enum SummaryItem: String {
+    
+    case WordChoice = "Concrete_Eng"
+    case BackAndForth = "Talking_Eng"
+    case Connection = "Pronoun_Ctn"
+    case ToneOfWords = "Emo_Ctn"
+    
 }
