@@ -127,6 +127,7 @@ class MainMenuViewController: UIViewController {
                         snapshot.date == snapshotData.date
                     }) else { continue }
                     UserSnapshotData.shared.snapshots.append(snapshotData)
+                    print("~>Added a user snapshot.")
                 } catch let error {
                     print("~>Error getting snapshot data: \(error)")
                 }

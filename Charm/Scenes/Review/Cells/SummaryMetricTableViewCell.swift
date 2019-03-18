@@ -13,9 +13,4 @@ class SummaryMetricTableViewCell: UITableViewCell {
     @IBOutlet weak var lblMetric: UILabel!
     @IBOutlet weak var lblScore: UILabel!
 
-    override func awakeFromNib() {
-        super.awakeFromNib()
-        // Initialization code
-    }
-
 }
