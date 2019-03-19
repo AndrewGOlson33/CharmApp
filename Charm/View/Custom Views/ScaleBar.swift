@@ -32,10 +32,20 @@ class ScaleBar: UIView {
         super.init(coder: coder)
     }
     
-    func setupBar(ofType type: BarType,withValue value: Double) {
+    func setupBar(ofType type: BarType,withValue value: Double, andLabelPosition labelValue: Double) {
         self.type = type
         self.value = value
+        calculatedValue = labelValue
         setupBar()
+    }
+    
+    func getStringValue() -> String {
+        if type == .Green {
+            return "\(value)"
+        } else {
+            let percent = Int(value * 100)
+            return "\(percent)%"
+        }
     }
     
     // MARK: - Bar Setup Functions

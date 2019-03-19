@@ -15,7 +15,7 @@ class TempTestViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        scaleBar.setupBar(ofType: .BlueCenter, withValue: 7.5)
+        scaleBar.setupBar(ofType: .BlueCenter, withValue: 0.63, andLabelPosition: 0.67)
     }
     
 
@@ -25,7 +25,7 @@ class TempTestViewController: UIViewController {
         //Configure the presentation controller
         let popoverContentController = self.storyboard?.instantiateViewController(withIdentifier: StoryboardID.LabelPopover) as? LabelBubbleViewController
         popoverContentController?.modalPresentationStyle = .popover
-        popoverContentController?.labelText = "\(scaleBar.value)"
+        popoverContentController?.labelText = scaleBar.getStringValue()
         
         /* 3 */
         if let popoverPresentationController = popoverContentController?.popoverPresentationController {
