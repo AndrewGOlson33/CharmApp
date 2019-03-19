@@ -630,10 +630,10 @@
             </objects>
             <point key="canvasLocation" x="3313.04347826087" y="146.65178571428569"/>
         </scene>
-        <!--Item-->
+        <!--Connection-->
         <scene sceneID="Z7R-8p-8bV">
             <objects>
-                <viewController id="0w2-6d-GYS" sceneMemberID="viewController">
+                <viewController id="0w2-6d-GYS" customClass="ConnectionViewController" customModule="Charm" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="xBd-oj-6dY">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="756"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -654,7 +654,7 @@
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="cFH-Ho-Gey"/>
                     </view>
-                    <tabBarItem key="tabBarItem" title="Item" id="yHB-YB-gS8"/>
+                    <tabBarItem key="tabBarItem" title="Connection" image="icn_connection" id="yHB-YB-gS8"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="5Op-f6-fo4" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -788,10 +788,11 @@
         <image name="icn_backforth" width="23" height="23"/>
         <image name="icn_barchart" width="23" height="23"/>
         <image name="icn_cancel" width="144" height="144"/>
+        <image name="icn_connection" width="23" height="23"/>
         <image name="icn_friendList" width="60" height="60"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="ZLg-Dm-URE"/>
+        <segue reference="YDd-Pg-fOz"/>
         <segue reference="Tm4-2t-woS"/>
     </inferredMetricsTieBreakers>
 </document>

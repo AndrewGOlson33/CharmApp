@@ -20,14 +20,14 @@ class DetailChartViewController: UIViewController {
     
     // data chart will be built with
     var snapshot: Snapshot!
-    var transcript: [Transcript]!
+    var transcript: [TranscriptCellInfo] = []
     var scalebarData: [ScalebarCellInfo] = []
     
     // date formatter for setting chart title
     let dFormatter = DateFormatter()
     
     // chart type (used to figure out which data to present)
-    var chartType: ChartType = .BackAndForth
+    var chartType: ChartType!
     
     // data used for creating chart
     var chartData: [Any] = []
@@ -47,7 +47,6 @@ class DetailChartViewController: UIViewController {
         }
         
         snapshot = data
-        transcript = data.transcript
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -57,9 +56,13 @@ class DetailChartViewController: UIViewController {
     }
     
     private func loadData() {
+        // clear any old values
         chartData = []
         scalebarData = []
-        switch chartType {
+        transcript = []
+        
+        // setup data based on type
+        switch chartType! {
         case .BackAndForth:
             let backAndForth = snapshot.backAndForth
             // setup chart data
@@ -79,7 +82,42 @@ class DetailChartViewController: UIViewController {
                 let cellInfo = ScalebarCellInfo(type: .BlueCenter, title: "Talking Percentage", score: talkingRaw, position: talkingLevel)
                 scalebarData.append(cellInfo)
             }
+            
+            // setup transcript
+            for item in snapshot.transcript {
+                let text = "[\(item.person)]: \(item.words)"
+                transcript.append(TranscriptCellInfo(withText: text))
+            }
+            
+        case .Connection:
+            let connection = snapshot.connection
+            // setup chart data
+            for (index, item) in connection.enumerated() {
+                // add transcript data
+                let pronoun = Pronoun.init(rawValue: item.pronoun) ?? .FirstPerson
+                let text = "[\(index)]: \(item.word) (\(pronoun.description))"
+                transcript.append(TranscriptCellInfo(withText: text))
+                
+                // add chart data
+                if let value = item.adjustedAverage {
+                    chartData.append([index, value])
+                }
+            }
+            
+            // setup scale bar data
+            if let connectionRaw = snapshot.getTopLevelRawValue(forSummaryItem: .Connection), let connectionLevel = snapshot.getTopLevelRawLevelValue(forSummaryItem: .Connection) {
+                let cellInfo = ScalebarCellInfo(type: .Green, title: "Estimated Connection", score: connectionRaw, position: connectionLevel)
+                scalebarData.append(cellInfo)
+            }
+            
+            if let firstPersonRaw = snapshot.getTopLevelRawValue(forSummaryItem: .ConnectionFirstPerson), let firstPersonLevel = snapshot.getTopLevelRawLevelValue(forSummaryItem: .ConnectionFirstPerson) {
+                let cellInfo = ScalebarCellInfo(type: .BlueCenter, title: "First Person Percentage", score: firstPersonRaw, position: firstPersonLevel)
+                scalebarData.append(cellInfo)
+            }
+        
         }
+        
+        tableView.reloadData()
     }
     
     private func setupChart() {
@@ -200,8 +238,7 @@ extension DetailChartViewController: UITableViewDelegate, UITableViewDataSource 
             // setup transcript
             let cell = tableView.dequeueReusableCell(withIdentifier: CellID.Transcript, for: indexPath) as! TranscriptTableViewCell
             let info = transcript[indexPath.row]
-            let text = "[\(info.person)]: \(info.words)"
-            cell.lblTranscriptText.text = text
+            cell.lblTranscriptText.text = info.text
             return cell
         }
         
@@ -239,7 +276,11 @@ extension DetailChartViewController: UITableViewDelegate, UITableViewDataSource 
             bubble.sourceRect = CGRect(x: getX(for: cell.scaleBar), y: cell.scaleBar.frame.minY - 2, width: 0, height: 0)
             bubble.delegate = self
             if let popoverController = popoverContent {
-                present(popoverController, animated: true, completion: nil)
+                present(popoverController, animated: true, completion: {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0, execute: {
+                        popoverController.dismiss(animated: true, completion: nil)
+                    })
+                })
             }
         }
     }

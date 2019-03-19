@@ -22,6 +22,7 @@
 		657330D622414A0E0066624B /* DetailChartViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 657330D522414A0E0066624B /* DetailChartViewController.swift */; };
 		657330D822414C9C0066624B /* ScaleBarTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 657330D722414C9C0066624B /* ScaleBarTableViewCell.swift */; };
 		657330DA22415EDC0066624B /* TranscriptTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 657330D922415EDC0066624B /* TranscriptTableViewCell.swift */; };
+		657330DC224164490066624B /* ConnectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 657330DB224164490066624B /* ConnectionViewController.swift */; };
 		65B872A822302BE0001705B3 /* CharmUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65B872A722302BE0001705B3 /* CharmUser.swift */; };
 		65B872AA22302CF2001705B3 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 65B872A922302CF1001705B3 /* GoogleService-Info.plist */; };
 		65C1705C223FCD030081B55F /* CharmData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65C1705B223FCD030081B55F /* CharmData.swift */; };
@@ -56,6 +57,7 @@
 		657330D522414A0E0066624B /* DetailChartViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailChartViewController.swift; sourceTree = "<group>"; };
 		657330D722414C9C0066624B /* ScaleBarTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScaleBarTableViewCell.swift; sourceTree = "<group>"; };
 		657330D922415EDC0066624B /* TranscriptTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranscriptTableViewCell.swift; sourceTree = "<group>"; };
+		657330DB224164490066624B /* ConnectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionViewController.swift; sourceTree = "<group>"; };
 		65B872A722302BE0001705B3 /* CharmUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CharmUser.swift; sourceTree = "<group>"; };
 		65B872A922302CF1001705B3 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		65C1705B223FCD030081B55F /* CharmData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CharmData.swift; sourceTree = "<group>"; };
@@ -111,6 +113,7 @@
 				656543E0223FE9D100C207EA /* ReviewSummaryViewController.swift */,
 				657330D3224149FA0066624B /* BackAndForthViewController.swift */,
 				657330D522414A0E0066624B /* DetailChartViewController.swift */,
+				657330DB224164490066624B /* ConnectionViewController.swift */,
 			);
 			path = Review;
 			sourceTree = "<group>";
@@ -420,6 +423,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				657330DC224164490066624B /* ConnectionViewController.swift in Sources */,
 				65C55C2122318BE300336243 /* VideoCallViewController.swift in Sources */,
 				657330CE22411A2D0066624B /* LabelBubbleViewController.swift in Sources */,
 				65C7FB1B22383D7500A150BF /* ChatFriendListTableViewCell.swift in Sources */,

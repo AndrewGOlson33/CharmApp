@@ -141,12 +141,34 @@ enum SummaryItem: String {
     case BackAndForth = "Talking_Eng"
     case Talking = "Talking_Raw"
     case Connection = "Pronoun_Ctn"
+    case ConnectionFirstPerson = "Pronoun_Raw"
     case ToneOfWords = "Emo_Ctn"
     
+}
+
+enum Pronoun: Int {
+    case FirstPerson = 1
+    case SecondPerson = 2
+    case ThirdPerson = 3
+    case Plural = 4
+    
+    var description: String {
+        switch self {
+        case .FirstPerson:
+            return "First"
+        case .SecondPerson:
+            return "Second"
+        case .ThirdPerson:
+            return "Third"
+        case .Plural:
+            return "Plural"
+        }
+    }
 }
 
 // MARK: - Charts
 
 enum ChartType: String {
     case BackAndForth = "Back and Forth"
+    case Connection = "Connection"
 }

@@ -182,3 +182,13 @@ struct ScalebarCellInfo {
         self.position = position
     }
 }
+
+struct TranscriptCellInfo {
+    
+    var text: String
+    
+    init(withText text: String) {
+        self.text = text
+    }
+    
+}
