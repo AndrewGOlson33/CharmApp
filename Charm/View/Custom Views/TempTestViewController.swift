@@ -15,7 +15,7 @@ class TempTestViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        scaleBar.setupBar(ofType: .BlueRight, withValue: 7.5)
+        scaleBar.setupBar(ofType: .BlueCenter, withValue: 7.5)
     }
     
 
