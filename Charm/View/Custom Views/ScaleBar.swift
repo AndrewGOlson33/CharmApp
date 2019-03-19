@@ -60,15 +60,18 @@ class ScaleBar: UIView {
         
         switch type {
         case .Green:
-            print("~>Green")
             setupGreenBar()
         case .BlueRight:
-            print("~>Blue Right")
             setupBlueRightBar()
         case .BlueCenter:
-            print("~>Blue Center")
             setupBlueCenter()
         }
+        
+        let scoreLocation = UIView(frame: CGRect(x: frame.width * CGFloat(calculatedValue) - (frame.height / 2), y: frame.height / 4, width: frame.height / 2, height: frame.height / 2))
+        scoreLocation.backgroundColor = .black
+        scoreLocation.layer.cornerRadius = scoreLocation.frame.height / 2
+        addSubview(scoreLocation)
+        bringSubviewToFront(scoreLocation)
     }
     
     // setup function for green bar

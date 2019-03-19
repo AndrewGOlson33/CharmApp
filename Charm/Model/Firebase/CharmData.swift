@@ -58,7 +58,7 @@ struct Snapshot: Codable {
         return summaryItem.raw
     }
     
-    func getTopLevelRawLevelValue(furSummaryItem item: SummaryItem) -> Double? {
+    func getTopLevelRawLevelValue(forSummaryItem item: SummaryItem) -> Double? {
         guard let summaryItem = topLevelMetrics.first(where: { (metric) -> Bool in
             return metric.metric == item.rawValue
         }) else { return nil }
@@ -167,4 +167,18 @@ struct SummaryCellInfo {
         self.score = score
     }
     
+}
+
+struct ScalebarCellInfo {
+    var type: BarType
+    var title: String
+    var score: Double
+    var position: Double
+    
+    init(type: BarType, title: String, score: Double, position: Double) {
+        self.type = type
+        self.title = title
+        self.score = score
+        self.position = position
+    }
 }

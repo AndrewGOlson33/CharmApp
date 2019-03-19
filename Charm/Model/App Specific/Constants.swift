@@ -22,6 +22,7 @@ enum Server {
 enum SegueID {
     static let FriendList = "sid_friendlist"
     static let VideoCall = "sid_videocall"
+    static let DetailChart = "sid_detailchart"
 }
 
 enum StoryboardID {
@@ -37,6 +38,8 @@ enum CellID {
     static let VideoList = "cid_video"
     static let SummaryMetric = "cid_summary"
     static let ViewPrevious = "cid_previous"
+    static let ScaleBar = "cid_scalebar"
+    static let Transcript = "cid_transcript"
 }
 
 // MARK: - Firebase Related
@@ -136,7 +139,14 @@ enum SummaryItem: String {
     
     case WordChoice = "Concrete_Eng"
     case BackAndForth = "Talking_Eng"
+    case Talking = "Talking_Raw"
     case Connection = "Pronoun_Ctn"
     case ToneOfWords = "Emo_Ctn"
     
+}
+
+// MARK: - Charts
+
+enum ChartType: String {
+    case BackAndForth = "Back and Forth"
 }
