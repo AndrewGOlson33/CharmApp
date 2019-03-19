@@ -46,7 +46,6 @@ class DetailChartViewController: UIViewController {
         
         // load summary data
         if let data = UserSnapshotData.shared.selectedSnapshot {
-            print("~>Got snapshot from existing.")
             snapshot = data
         } else if let data = UserSnapshotData.shared.snapshots.first {
             snapshot = data
