@@ -138,6 +138,7 @@ enum FirebaseNotification {
 enum SummaryItem: String {
     
     case WordChoice = "Concrete_Eng"
+    case ConcretePercentage = "Concrete_Raw"
     case BackAndForth = "Talking_Eng"
     case Talking = "Talking_Raw"
     case Connection = "Pronoun_Ctn"
@@ -171,6 +172,7 @@ enum Pronoun: Int {
 // MARK: - Charts
 
 enum ChartType: String {
+    case WordChoice = "Word Choice"
     case BackAndForth = "Back and Forth"
     case Connection = "Connection"
     case Emotions = "Emotions"

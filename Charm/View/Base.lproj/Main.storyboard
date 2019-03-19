@@ -170,6 +170,7 @@
                     </tabBar>
                     <connections>
                         <segue destination="HkE-k7-xGf" kind="relationship" relationship="viewControllers" id="zVS-M6-gqH"/>
+                        <segue destination="xvt-hm-GDT" kind="relationship" relationship="viewControllers" id="nSw-Us-CAv"/>
                         <segue destination="DGp-Gr-cTp" kind="relationship" relationship="viewControllers" id="sGb-eg-Aq5"/>
                         <segue destination="0w2-6d-GYS" kind="relationship" relationship="viewControllers" id="082-sm-jPh"/>
                         <segue destination="919-gt-QcB" kind="relationship" relationship="viewControllers" id="qdN-QA-sm4"/>
@@ -601,6 +602,36 @@
             </objects>
             <point key="canvasLocation" x="2526.0869565217395" y="142.63392857142856"/>
         </scene>
+        <!--Word Choice-->
+        <scene sceneID="Xu2-pH-AwM">
+            <objects>
+                <viewController id="xvt-hm-GDT" customClass="WordChoiceViewController" customModule="Charm" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="M7u-3w-Kfd">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="756"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Iya-md-Dhc">
+                                <rect key="frame" x="0.0" y="0.0" width="414" height="673"/>
+                                <connections>
+                                    <segue destination="e2C-2h-6KN" kind="embed" identifier="sid_detailchart" id="4d7-Qv-FyQ"/>
+                                </connections>
+                            </containerView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="Iya-md-Dhc" firstAttribute="top" secondItem="qPz-Sr-o84" secondAttribute="top" id="0Cc-ud-8wt"/>
+                            <constraint firstItem="Iya-md-Dhc" firstAttribute="bottom" secondItem="qPz-Sr-o84" secondAttribute="bottom" id="1VB-wc-jyK"/>
+                            <constraint firstItem="Iya-md-Dhc" firstAttribute="trailing" secondItem="qPz-Sr-o84" secondAttribute="trailing" id="6yK-yO-9zS"/>
+                            <constraint firstItem="Iya-md-Dhc" firstAttribute="leading" secondItem="qPz-Sr-o84" secondAttribute="leading" id="UqE-dW-xCs"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="qPz-Sr-o84"/>
+                    </view>
+                    <tabBarItem key="tabBarItem" title="Word Choice" image="icn_wordchoice" id="XlS-wz-138"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="U0p-EC-mBW" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3272.4637681159425" y="143.97321428571428"/>
+        </scene>
         <!--Back & Forth-->
         <scene sceneID="ze0-Oj-zhZ">
             <objects>
@@ -629,7 +660,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="JoX-jI-1qN" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3313.04347826087" y="146.65178571428569"/>
+            <point key="canvasLocation" x="3988" y="147"/>
         </scene>
         <!--Connection-->
         <scene sceneID="Z7R-8p-8bV">
@@ -659,7 +690,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="5Op-f6-fo4" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="4127.536231884058" y="152.67857142857142"/>
+            <point key="canvasLocation" x="4764" y="147"/>
         </scene>
         <!--Emotions-->
         <scene sceneID="ORl-0H-o9q">
@@ -689,7 +720,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ruP-tO-Wat" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="4969.5652173913049" y="157.36607142857142"/>
+            <point key="canvasLocation" x="5538" y="153"/>
         </scene>
         <!--Detail Chart View Controller-->
         <scene sceneID="GEE-6D-0gq">
@@ -823,9 +854,10 @@
         <image name="icn_connection" width="23" height="23"/>
         <image name="icn_emotions" width="23" height="23"/>
         <image name="icn_friendList" width="60" height="60"/>
+        <image name="icn_wordchoice" width="23" height="23"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="RVB-Hc-N14"/>
+        <segue reference="4d7-Qv-FyQ"/>
         <segue reference="Tm4-2t-woS"/>
     </inferredMetricsTieBreakers>
 </document>

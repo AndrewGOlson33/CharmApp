@@ -65,6 +65,21 @@ class DetailChartViewController: UIViewController {
         
         // setup data based on type
         switch chartType! {
+        case .WordChoice:
+            // TODO: - Enable setting up chart data once we can do that
+            
+            
+            // setup scale bar data
+            if let engagementRaw = snapshot.getTopLevelRawValue(forSummaryItem: .WordChoice), let engagementLevel = snapshot.getTopLevelRawLevelValue(forSummaryItem: .WordChoice) {
+                let cellInfo = ScalebarCellInfo(type: .Green, title: "Estimated Engagement", score: engagementRaw, position: engagementLevel)
+                scalebarData.append(cellInfo)
+            }
+            
+            if let concreteRaw = snapshot.getTopLevelRawValue(forSummaryItem: .ConcretePercentage), let concreteLevel = snapshot.getTopLevelRawLevelValue(forSummaryItem: .ConcretePercentage) {
+                let cellInfo = ScalebarCellInfo(type: .BlueRight, title: "Concrete Details(%)", score: concreteRaw, position: concreteLevel)
+                scalebarData.append(cellInfo)
+            }
+            
         case .BackAndForth:
             let backAndForth = snapshot.backAndForth
             // setup chart data
@@ -81,7 +96,7 @@ class DetailChartViewController: UIViewController {
             }
             
             if let talkingRaw = snapshot.getTopLevelRawValue(forSummaryItem: .Talking), let talkingLevel = snapshot.getTopLevelRawLevelValue(forSummaryItem: .Talking) {
-                let cellInfo = ScalebarCellInfo(type: .BlueCenter, title: "Talking Percentage", score: talkingRaw, position: talkingLevel)
+                let cellInfo = ScalebarCellInfo(type: .BlueCenter, title: "Talking(%)", score: talkingRaw, position: talkingLevel)
                 scalebarData.append(cellInfo)
             }
             
@@ -113,7 +128,7 @@ class DetailChartViewController: UIViewController {
             }
             
             if let firstPersonRaw = snapshot.getTopLevelRawValue(forSummaryItem: .ConnectionFirstPerson), let firstPersonLevel = snapshot.getTopLevelRawLevelValue(forSummaryItem: .ConnectionFirstPerson) {
-                let cellInfo = ScalebarCellInfo(type: .BlueCenter, title: "First Person Percentage", score: firstPersonRaw, position: firstPersonLevel)
+                let cellInfo = ScalebarCellInfo(type: .BlueCenter, title: "First Person(%)", score: firstPersonRaw, position: firstPersonLevel)
                 scalebarData.append(cellInfo)
             }
         
@@ -137,12 +152,12 @@ class DetailChartViewController: UIViewController {
             }
             
             if let positiveRaw = snapshot.getTopLevelRawValue(forSummaryItem: .PositiveWords), let positiveLevel = snapshot.getTopLevelRawLevelValue(forSummaryItem: .PositiveWords) {
-                let cellInfo = ScalebarCellInfo(type: .BlueRight, title: "Positive Word Percentage", score: positiveRaw, position: positiveLevel)
+                let cellInfo = ScalebarCellInfo(type: .BlueRight, title: "Positive Word(%)", score: positiveRaw, position: positiveLevel)
                 scalebarData.append(cellInfo)
             }
             
             if let negativeRaw = snapshot.getTopLevelRawValue(forSummaryItem: .NegativeWords), let negativeLevel = snapshot.getTopLevelRawLevelValue(forSummaryItem: .NegativeWords) {
-                let cellInfo = ScalebarCellInfo(type: .BlueCenter, title: "Negative Word Percentage", score: negativeRaw, position: negativeLevel)
+                let cellInfo = ScalebarCellInfo(type: .BlueCenter, title: "Negative Word(%)", score: negativeRaw, position: negativeLevel)
                 scalebarData.append(cellInfo)
             }
             
@@ -195,10 +210,10 @@ class DetailChartViewController: UIViewController {
         yaxis.title.text = "Word Score"
         yaxis.visible = true
         
-        let xaxis = HIXAxis()
-        xaxis.title = HITitle()
-        xaxis.title.text = "Word in Conversation"
-        xaxis.visible = true
+//        let xaxis = HIXAxis()
+//        xaxis.title = HITitle()
+//        xaxis.title.text = "Word in Conversation"
+//        xaxis.visible = true
         
         let legend = HILegend()
         legend.enabled = false
@@ -242,7 +257,7 @@ class DetailChartViewController: UIViewController {
         options.subtitle = subtitle
         options.legend = legend
         options.yAxis = [yaxis]
-        options.xAxis = [xaxis]
+//        options.xAxis = [xaxis]
         options.plotOptions = plotoptions
         
         

@@ -13,6 +13,7 @@
 		6543FF11223A8AAB003FC625 /* LearningVideo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6543FF10223A8AAB003FC625 /* LearningVideo.swift */; };
 		6543FF13223A8D02003FC625 /* LearningVideoViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6543FF12223A8D02003FC625 /* LearningVideoViewModel.swift */; };
 		654B5D142241754900C34352 /* EmotionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 654B5D132241754900C34352 /* EmotionsViewController.swift */; };
+		654B5D1622417A8E00C34352 /* WordChoiceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 654B5D1522417A8E00C34352 /* WordChoiceViewController.swift */; };
 		656543E1223FE9D100C207EA /* ReviewSummaryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 656543E0223FE9D100C207EA /* ReviewSummaryViewController.swift */; };
 		656544022240103600C207EA /* SummaryMetricTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 656544012240103600C207EA /* SummaryMetricTableViewCell.swift */; };
 		6572642222300640008D9ED4 /* MainMenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6572642122300640008D9ED4 /* MainMenuViewController.swift */; };
@@ -49,6 +50,7 @@
 		6543FF10223A8AAB003FC625 /* LearningVideo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LearningVideo.swift; sourceTree = "<group>"; };
 		6543FF12223A8D02003FC625 /* LearningVideoViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LearningVideoViewModel.swift; sourceTree = "<group>"; };
 		654B5D132241754900C34352 /* EmotionsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmotionsViewController.swift; sourceTree = "<group>"; };
+		654B5D1522417A8E00C34352 /* WordChoiceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordChoiceViewController.swift; sourceTree = "<group>"; };
 		656543E0223FE9D100C207EA /* ReviewSummaryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewSummaryViewController.swift; sourceTree = "<group>"; };
 		656544012240103600C207EA /* SummaryMetricTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SummaryMetricTableViewCell.swift; sourceTree = "<group>"; };
 		6572642122300640008D9ED4 /* MainMenuViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMenuViewController.swift; sourceTree = "<group>"; };
@@ -117,6 +119,7 @@
 				657330D522414A0E0066624B /* DetailChartViewController.swift */,
 				657330DB224164490066624B /* ConnectionViewController.swift */,
 				654B5D132241754900C34352 /* EmotionsViewController.swift */,
+				654B5D1522417A8E00C34352 /* WordChoiceViewController.swift */,
 			);
 			path = Review;
 			sourceTree = "<group>";
@@ -433,6 +436,7 @@
 				650D400C223957B30023D983 /* ArchiveSession.swift in Sources */,
 				654B5D142241754900C34352 /* EmotionsViewController.swift in Sources */,
 				657330D2224120A30066624B /* ScaleBar.swift in Sources */,
+				654B5D1622417A8E00C34352 /* WordChoiceViewController.swift in Sources */,
 				65EADDD722303A1C00593F9D /* CharmSignInViewController.swift in Sources */,
 				657330D822414C9C0066624B /* ScaleBarTableViewCell.swift in Sources */,
 				65C1705C223FCD030081B55F /* CharmData.swift in Sources */,
