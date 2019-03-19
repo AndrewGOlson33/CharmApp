@@ -152,4 +152,14 @@ extension ReviewSummaryViewController: UITableViewDelegate, UITableViewDataSourc
         return cellInfo.count == indexPath.row ? 44 : 50
     }
     
+    // MARK: - Handle TableView Actions
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        
+        if indexPath.row < 4 {
+            tabBarController?.selectedIndex = indexPath.row + 1
+        }
+    }
+    
 }
