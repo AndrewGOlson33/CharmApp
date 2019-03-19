@@ -64,6 +64,7 @@ class DetailChartViewController: UIViewController {
             snapshot = newSnapshot
         }
         
+        guard snapshot != nil else { return }
         loadData()
         setupChart()
     }
@@ -78,7 +79,6 @@ class DetailChartViewController: UIViewController {
         switch chartType! {
         case .WordChoice:
             // TODO: - Enable setting up chart data once we can do that
-            
             
             // setup scale bar data
             if let engagementRaw = snapshot.getTopLevelRawValue(forSummaryItem: .WordChoice), let engagementLevel = snapshot.getTopLevelRawLevelValue(forSummaryItem: .WordChoice) {
