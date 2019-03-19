@@ -31,6 +31,8 @@ class DetailChartViewController: UIViewController {
     
     // data used for creating chart
     var chartData: [Any] = []
+    var posData: [Any]? = nil
+    var negData: [Any]? = nil
     
     // MARK: - View Lifecycle Functions
 
@@ -115,6 +117,40 @@ class DetailChartViewController: UIViewController {
                 scalebarData.append(cellInfo)
             }
         
+        case .Emotions:
+            posData = []
+            negData = []
+            let toneGraph = snapshot.graphTone
+            let toneTable = snapshot.tableViewTone
+            // setup chart data
+            for (index, item) in toneGraph.enumerated() {
+                // add chart data
+                chartData.append([index, item.roll3])
+                posData?.append([index, item.rollPos3])
+                negData?.append([index, item.rollNeg3])
+            }
+            
+            // setup scale bar data
+            if let connectionRaw = snapshot.getTopLevelRawValue(forSummaryItem: .ToneOfWords), let connectionLevel = snapshot.getTopLevelRawLevelValue(forSummaryItem: .ToneOfWords) {
+                let cellInfo = ScalebarCellInfo(type: .Green, title: "Estimated Connection", score: connectionRaw, position: connectionLevel)
+                scalebarData.append(cellInfo)
+            }
+            
+            if let positiveRaw = snapshot.getTopLevelRawValue(forSummaryItem: .PositiveWords), let positiveLevel = snapshot.getTopLevelRawLevelValue(forSummaryItem: .PositiveWords) {
+                let cellInfo = ScalebarCellInfo(type: .BlueRight, title: "Positive Word Percentage", score: positiveRaw, position: positiveLevel)
+                scalebarData.append(cellInfo)
+            }
+            
+            if let negativeRaw = snapshot.getTopLevelRawValue(forSummaryItem: .NegativeWords), let negativeLevel = snapshot.getTopLevelRawLevelValue(forSummaryItem: .NegativeWords) {
+                let cellInfo = ScalebarCellInfo(type: .BlueCenter, title: "Negative Word Percentage", score: negativeRaw, position: negativeLevel)
+                scalebarData.append(cellInfo)
+            }
+            
+            // setup transcript data
+            for (index, item) in toneTable.enumerated() {
+                let text = "[\(index)]: \(item.word) (Score: \(item.score))"
+                transcript.append(TranscriptCellInfo(withText: text))
+            }
         }
         
         tableView.reloadData()
@@ -187,6 +223,20 @@ class DetailChartViewController: UIViewController {
         area.name = chartType.rawValue
         area.data = chartData
         
+        if let pos = posData, let neg = negData {
+            let posArea = HIArea()
+            let negArea = HIArea()
+            area.name = "Emotional Connection Score"
+            posArea.name = "Positive Word Score"
+            negArea.name = "Negative Word Score"
+            posArea.data = pos
+            negArea.data = neg
+            options.series = [area, posArea, negArea]
+            legend.enabled = true
+        } else {
+            options.series = [area]
+        }
+        
         options.chart = chart
         options.title = title
         options.subtitle = subtitle
@@ -194,7 +244,7 @@ class DetailChartViewController: UIViewController {
         options.yAxis = [yaxis]
         options.xAxis = [xaxis]
         options.plotOptions = plotoptions
-        options.series = [area]
+        
         
         // hide hamburger button
         let navigation = HINavigation()
@@ -246,9 +296,8 @@ extension DetailChartViewController: UITableViewDelegate, UITableViewDataSource 
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
+        tableView.deselectRow(at: indexPath, animated: false)
         if let cell = tableView.cellForRow(at: indexPath) as? ScaleBarTableViewCell {
-            tableView.deselectRow(at: indexPath, animated: false)
             setupPopover(for: cell)
         }
         

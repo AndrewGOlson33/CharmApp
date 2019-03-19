@@ -172,6 +172,7 @@
                         <segue destination="HkE-k7-xGf" kind="relationship" relationship="viewControllers" id="zVS-M6-gqH"/>
                         <segue destination="DGp-Gr-cTp" kind="relationship" relationship="viewControllers" id="sGb-eg-Aq5"/>
                         <segue destination="0w2-6d-GYS" kind="relationship" relationship="viewControllers" id="082-sm-jPh"/>
+                        <segue destination="919-gt-QcB" kind="relationship" relationship="viewControllers" id="qdN-QA-sm4"/>
                     </connections>
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="BHe-vu-scK" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -660,6 +661,36 @@
             </objects>
             <point key="canvasLocation" x="4127.536231884058" y="152.67857142857142"/>
         </scene>
+        <!--Emotions-->
+        <scene sceneID="ORl-0H-o9q">
+            <objects>
+                <viewController id="919-gt-QcB" customClass="EmotionsViewController" customModule="Charm" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="ZjJ-RS-mNf">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="756"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="F6w-cS-nEV">
+                                <rect key="frame" x="0.0" y="0.0" width="414" height="673"/>
+                                <connections>
+                                    <segue destination="e2C-2h-6KN" kind="embed" identifier="sid_detailchart" id="RVB-Hc-N14"/>
+                                </connections>
+                            </containerView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="F6w-cS-nEV" firstAttribute="bottom" secondItem="bee-XJ-vaI" secondAttribute="bottom" id="1ne-qy-CCn"/>
+                            <constraint firstItem="F6w-cS-nEV" firstAttribute="leading" secondItem="bee-XJ-vaI" secondAttribute="leading" id="Xfj-rr-FVg"/>
+                            <constraint firstItem="F6w-cS-nEV" firstAttribute="top" secondItem="bee-XJ-vaI" secondAttribute="top" id="wJY-3V-SzZ"/>
+                            <constraint firstItem="F6w-cS-nEV" firstAttribute="trailing" secondItem="bee-XJ-vaI" secondAttribute="trailing" id="weM-Hj-VYz"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="bee-XJ-vaI"/>
+                    </view>
+                    <tabBarItem key="tabBarItem" title="Emotions" image="icn_emotions" id="MDZ-61-Y6J"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="ruP-tO-Wat" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="4969.5652173913049" y="157.36607142857142"/>
+        </scene>
         <!--Detail Chart View Controller-->
         <scene sceneID="GEE-6D-0gq">
             <objects>
@@ -772,6 +803,7 @@
                             <constraint firstItem="Vhi-nl-4Qg" firstAttribute="leading" secondItem="vkg-aw-6Dz" secondAttribute="leading" id="c7e-Pg-DUR"/>
                             <constraint firstAttribute="trailing" secondItem="Vhi-nl-4Qg" secondAttribute="trailing" id="ren-qm-Mgm"/>
                         </constraints>
+                        <viewLayoutGuide key="safeArea" id="Uj5-fn-Drh"/>
                     </view>
                     <connections>
                         <outlet property="chartView" destination="gWu-e0-aYJ" id="ggu-EB-nd9"/>
@@ -789,10 +821,11 @@
         <image name="icn_barchart" width="23" height="23"/>
         <image name="icn_cancel" width="144" height="144"/>
         <image name="icn_connection" width="23" height="23"/>
+        <image name="icn_emotions" width="23" height="23"/>
         <image name="icn_friendList" width="60" height="60"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="YDd-Pg-fOz"/>
+        <segue reference="RVB-Hc-N14"/>
         <segue reference="Tm4-2t-woS"/>
     </inferredMetricsTieBreakers>
 </document>

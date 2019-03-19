@@ -143,6 +143,8 @@ enum SummaryItem: String {
     case Connection = "Pronoun_Ctn"
     case ConnectionFirstPerson = "Pronoun_Raw"
     case ToneOfWords = "Emo_Ctn"
+    case PositiveWords = "Emo_Pos_Raw"
+    case NegativeWords = "Emo_Neg_Raw"
     
 }
 
@@ -171,4 +173,5 @@ enum Pronoun: Int {
 enum ChartType: String {
     case BackAndForth = "Back and Forth"
     case Connection = "Connection"
+    case Emotions = "Emotions"
 }
