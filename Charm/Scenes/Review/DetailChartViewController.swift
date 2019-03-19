@@ -379,13 +379,3 @@ extension DetailChartViewController: UIPopoverPresentationControllerDelegate {
         return true
     }
 }
-
-// MARK: - Delegate for updating snapshot used
-
-extension DetailChartViewController: SnapshotDelegate {
-    
-    func updateSnapshot(with snapshot: Snapshot) {
-        print("~>Got new snapshot for date: \(snapshot.dateString)")
-    }
-    
-}
