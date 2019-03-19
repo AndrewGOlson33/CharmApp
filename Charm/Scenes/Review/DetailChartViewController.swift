@@ -20,6 +20,8 @@ class DetailChartViewController: UIViewController {
     
     // data chart will be built with
     var snapshot: Snapshot!
+    
+    // Data for filling tableview cells
     var transcript: [TranscriptCellInfo] = []
     var scalebarData: [ScalebarCellInfo] = []
     
@@ -43,16 +45,26 @@ class DetailChartViewController: UIViewController {
         dFormatter.dateStyle = .medium
         
         // load summary data
-        guard let data = UserSnapshotData.shared.snapshots.first else {
-            // TODO: - handle no data
-            return
+        if let data = UserSnapshotData.shared.selectedSnapshot {
+            print("~>Got snapshot from existing.")
+            snapshot = data
+        } else if let data = UserSnapshotData.shared.snapshots.first {
+            snapshot = data
+        } else {
+            // TODO: - Handle no data
         }
         
-        snapshot = data
+        
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        
+        // load a new snapshot if needed
+        if let newSnapshot = UserSnapshotData.shared.selectedSnapshot {
+            snapshot = newSnapshot
+        }
+        
         loadData()
         setupChart()
     }
@@ -367,4 +379,14 @@ extension DetailChartViewController: UIPopoverPresentationControllerDelegate {
     func popoverPresentationControllerShouldDismissPopover(_ popoverPresentationController: UIPopoverPresentationController) -> Bool {
         return true
     }
+}
+
+// MARK: - Delegate for updating snapshot used
+
+extension DetailChartViewController: SnapshotDelegate {
+    
+    func updateSnapshot(with snapshot: Snapshot) {
+        print("~>Got new snapshot for date: \(snapshot.dateString)")
+    }
+    
 }

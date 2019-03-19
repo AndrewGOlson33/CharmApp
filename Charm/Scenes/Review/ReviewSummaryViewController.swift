@@ -40,6 +40,7 @@ class ReviewSummaryViewController: UIViewController {
         }
         
         snapshot = data
+        UserSnapshotData.shared.selectedSnapshot = snapshot
         
         // setup chart
         setupSummaryChart()

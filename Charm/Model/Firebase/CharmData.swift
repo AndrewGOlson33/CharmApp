@@ -12,6 +12,7 @@ import CodableFirebase
 
 struct UserSnapshotData {
     var snapshots: [Snapshot] = []
+    var selectedSnapshot: Snapshot? = nil
     
     static var shared = UserSnapshotData()
 }
