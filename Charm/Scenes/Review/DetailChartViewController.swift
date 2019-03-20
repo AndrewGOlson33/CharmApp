@@ -207,7 +207,8 @@ class DetailChartViewController: UIViewController {
         
         // make sure there is data from summary
         guard snapshot != nil else {
-            // TODO: - handle no data
+            // Charts should not be accessable without data
+            // however this case is handled with an overlay that gets set during load
             return
         }
         

@@ -69,7 +69,7 @@ class ReviewSummaryViewController: UIViewController {
     fileprivate func setupSummaryChart() {
         // make sure there is data from summary
         guard snapshot != nil else {
-            // TODO: - handle no data
+            // No data case is handled in load methods (will show a screen overlay with label saying there are no snapshots)
             return
         }
         
