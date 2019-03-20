@@ -15,8 +15,14 @@ class DetailChartViewController: UIViewController {
     
     @IBOutlet weak var chartView: HIChartView!
     @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var viewNoSnapshots: UIView!
+    
+    // Layout Constraint for Chart View
+    @IBOutlet weak var chartViewHeight: NSLayoutConstraint!
     
     // MARK: - Properties
+    
+    var navTitle: String = ""
     
     // data chart will be built with
     var snapshot: Snapshot!
@@ -40,6 +46,13 @@ class DetailChartViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        if let delegate = UIApplication.shared.delegate as? AppDelegate, let window = delegate.window, let nav = window.rootViewController as? UINavigationController {
+            let constant = nav.navigationBar.frame.height
+            chartViewHeight.constant = constant
+            view.setNeedsLayout()
+            view.layoutIfNeeded()
+        }
 
         // setup date formatter
         dFormatter.dateStyle = .medium
@@ -50,10 +63,18 @@ class DetailChartViewController: UIViewController {
         } else if let data = UserSnapshotData.shared.snapshots.first {
             snapshot = data
         } else {
-            // TODO: - Handle no data
+            viewNoSnapshots.alpha = 0.0
+            viewNoSnapshots.isHidden = false
+            UIView.animate(withDuration: 0.25) {
+                self.viewNoSnapshots.alpha = 1.0
+            }
+            return
         }
-        
-        
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        tabBarController?.navigationItem.title = navTitle
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -221,11 +242,6 @@ class DetailChartViewController: UIViewController {
         yaxis.title.text = "Word Score"
         yaxis.visible = true
         
-//        let xaxis = HIXAxis()
-//        xaxis.title = HITitle()
-//        xaxis.title.text = "Word in Conversation"
-//        xaxis.visible = true
-        
         let legend = HILegend()
         legend.enabled = false
         
@@ -268,7 +284,6 @@ class DetailChartViewController: UIViewController {
         options.subtitle = subtitle
         options.legend = legend
         options.yAxis = [yaxis]
-//        options.xAxis = [xaxis]
         options.plotOptions = plotoptions
         
         
@@ -302,6 +317,11 @@ extension DetailChartViewController: UITableViewDelegate, UITableViewDataSource 
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
+        guard viewNoSnapshots.isHidden else {
+            // just return an empty cell
+            return UITableViewCell()
+        }
+        
         switch indexPath.section {
         case 0:
             // setup scalebar
@@ -317,8 +337,12 @@ extension DetailChartViewController: UITableViewDelegate, UITableViewDataSource 
             cell.lblTranscriptText.text = info.text
             return cell
         }
-        
-        
+    }
+    
+    func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+        let view = UIView(frame: CGRect(origin: .zero, size: CGSize(width: tableView.frame.width, height: 1)))
+        view.backgroundColor = .clear
+        return view
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -326,8 +350,6 @@ extension DetailChartViewController: UITableViewDelegate, UITableViewDataSource 
         if let cell = tableView.cellForRow(at: indexPath) as? ScaleBarTableViewCell {
             setupPopover(for: cell)
         }
-        
-        
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {

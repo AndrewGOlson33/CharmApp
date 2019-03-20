@@ -15,6 +15,7 @@ class ReviewSummaryViewController: UIViewController {
     
     @IBOutlet weak var chartView: HIChartView!
     @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var viewNoSnapshots: UIView!
     
     // MARK: - Properties
     
@@ -35,15 +36,33 @@ class ReviewSummaryViewController: UIViewController {
         
         // load summary data
         guard let data = UserSnapshotData.shared.snapshots.first else {
-            // TODO: - handle no data
+            viewNoSnapshots.alpha = 0.0
+            viewNoSnapshots.isHidden = false
+            UIView.animate(withDuration: 0.25) {
+                self.viewNoSnapshots.alpha = 1.0
+            }
+            
+            // disable tab bar buttons
+            if let items = tabBarController?.tabBar.items {
+                for item in items {
+                    item.isEnabled = false
+                }
+            }
+            
             return
         }
         
+        // Set data
         snapshot = data
         UserSnapshotData.shared.selectedSnapshot = snapshot
         
         // setup chart
         setupSummaryChart()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        tabBarController?.navigationItem.title = "Summary"
     }
     
 
@@ -55,11 +74,15 @@ class ReviewSummaryViewController: UIViewController {
         }
         
         // Setup Chart
-        chartView.plugins = ["variable-pie"]
         let options = HIOptions()
         let chart = HIChart()
-        chart.type = "variablepie"
+        chart.polar = true
+        chart.type = "line"
         let title = HITitle()
+        
+        // Create a legend so we can hide it
+        let legend = HILegend()
+        legend.enabled = false
         
         // get date to use for title
         if let date = snapshot.date {
@@ -73,12 +96,20 @@ class ReviewSummaryViewController: UIViewController {
         tooltip.headerFormat = ""
         tooltip.pointFormat = "<span style=\"color:{point.color}\">\u{25CF}</span> <b> {point.name}</b><br/>Score: <b>{point.y}</b>"
         
-        let variablepie = HIVariablepie()
-        variablepie.minPointSize = NSNumber(value: 1)
-        variablepie.innerSize = "20%"
-        variablepie.zMin = NSNumber(value: 0)
-        variablepie.dataLabels = HIDataLabels()
-        variablepie.dataLabels.enabled = NSNumber(value: false)
+        let yAxis = HIYAxis()
+        yAxis.min = 0
+        yAxis.lineWidth = 0
+        yAxis.gridLineInterpolation = "polygon"
+        
+        let xAxis = HIXAxis()
+        xAxis.categories = [
+            "Word Choice",
+            "Back and Forth",
+            "Connection",
+            "Tone of Words"
+        ]
+        xAxis.tickmarkPlacement = "on"
+        xAxis.lineWidth = 0
         
         // get and set data
         let wordChoiceRaw = snapshot.getTopLevelRawValue(forSummaryItem: .WordChoice) ?? 0
@@ -86,20 +117,19 @@ class ReviewSummaryViewController: UIViewController {
         let connectionRaw = snapshot.getTopLevelRawValue(forSummaryItem: .Connection) ?? 0
         let toneRaw = snapshot.getTopLevelRawValue(forSummaryItem: .ToneOfWords) ?? 0
         
-        let total = wordChoiceRaw + backAndForthRaw + connectionRaw + toneRaw
-        
         cellInfo.append(SummaryCellInfo(title: "Word Choice", score: wordChoiceRaw))
         cellInfo.append(SummaryCellInfo(title: "Back and Forth", score: backAndForthRaw))
         cellInfo.append(SummaryCellInfo(title: "Connection", score: connectionRaw))
         cellInfo.append(SummaryCellInfo(title: "Tone of Words", score: toneRaw))
         
-        // set chart data
-        variablepie.data = [
-            ["name": "Word Choice", "y": wordChoiceRaw, "z" : wordChoiceRaw / total],
-            ["name": "Back and Forth", "y": backAndForthRaw, "z" : backAndForthRaw / total],
-            ["name": "Connection", "y": connectionRaw, "z" : connectionRaw / total],
-            ["name": "Tone of Words", "y": toneRaw, "z" : toneRaw / total]
+        let area = HIArea()
+        area.data = [
+            ["name": "Word Choice", "y": wordChoiceRaw],
+            ["name": "Back and Forth", "y": backAndForthRaw],
+            ["name": "Connection", "y": connectionRaw],
+            ["name": "Tone of Words", "y": toneRaw]
         ]
+        area.pointPlacement = "on"
         
         // hide hamburger button
         let navigation = HINavigation()
@@ -112,7 +142,10 @@ class ReviewSummaryViewController: UIViewController {
         options.chart = chart
         options.title = title
         options.tooltip = tooltip
-        options.series = [variablepie]
+        options.legend = legend
+        options.yAxis = [yAxis]
+        options.xAxis = [xAxis]
+        options.series = [area]
         chartView.options = options
         
         // load data into tableview
@@ -127,6 +160,11 @@ extension ReviewSummaryViewController: UITableViewDelegate, UITableViewDataSourc
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
+        guard viewNoSnapshots.isHidden else {
+            // just return an empty cell
+            return UITableViewCell()
+        }
         
         guard indexPath.row != cellInfo.count else {
             return tableView.dequeueReusableCell(withIdentifier: CellID.ViewPrevious, for: indexPath)
