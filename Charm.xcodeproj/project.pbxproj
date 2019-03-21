@@ -25,6 +25,7 @@
 		657330D822414C9C0066624B /* ScaleBarTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 657330D722414C9C0066624B /* ScaleBarTableViewCell.swift */; };
 		657330DA22415EDC0066624B /* TranscriptTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 657330D922415EDC0066624B /* TranscriptTableViewCell.swift */; };
 		657330DC224164490066624B /* ConnectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 657330DB224164490066624B /* ConnectionViewController.swift */; };
+		657E72022243DF50001EE828 /* ConcreteFlashcardsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 657E72012243DF50001EE828 /* ConcreteFlashcardsViewController.swift */; };
 		65B872A822302BE0001705B3 /* CharmUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65B872A722302BE0001705B3 /* CharmUser.swift */; };
 		65B872AA22302CF2001705B3 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 65B872A922302CF1001705B3 /* GoogleService-Info.plist */; };
 		65C1705C223FCD030081B55F /* CharmData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65C1705B223FCD030081B55F /* CharmData.swift */; };
@@ -62,6 +63,7 @@
 		657330D722414C9C0066624B /* ScaleBarTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScaleBarTableViewCell.swift; sourceTree = "<group>"; };
 		657330D922415EDC0066624B /* TranscriptTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranscriptTableViewCell.swift; sourceTree = "<group>"; };
 		657330DB224164490066624B /* ConnectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionViewController.swift; sourceTree = "<group>"; };
+		657E72012243DF50001EE828 /* ConcreteFlashcardsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConcreteFlashcardsViewController.swift; sourceTree = "<group>"; };
 		65B872A722302BE0001705B3 /* CharmUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CharmUser.swift; sourceTree = "<group>"; };
 		65B872A922302CF1001705B3 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		65C1705B223FCD030081B55F /* CharmData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CharmData.swift; sourceTree = "<group>"; };
@@ -148,6 +150,7 @@
 		6572641F2230061D008D9ED4 /* Scenes */ = {
 			isa = PBXGroup;
 			children = (
+				657E72002243DF2D001EE828 /* Training */,
 				656543DF223FE98700C207EA /* Review */,
 				6543FF0D223A8440003FC625 /* Learning */,
 				65C55C1822314C5600336243 /* Social */,
@@ -191,6 +194,14 @@
 				657330D1224120A30066624B /* ScaleBar.swift */,
 			);
 			path = "Custom Views";
+			sourceTree = "<group>";
+		};
+		657E72002243DF2D001EE828 /* Training */ = {
+			isa = PBXGroup;
+			children = (
+				657E72012243DF50001EE828 /* ConcreteFlashcardsViewController.swift */,
+			);
+			path = Training;
 			sourceTree = "<group>";
 		};
 		65C55C1822314C5600336243 /* Social */ = {
@@ -438,6 +449,7 @@
 				657330D2224120A30066624B /* ScaleBar.swift in Sources */,
 				654B5D1622417A8E00C34352 /* WordChoiceViewController.swift in Sources */,
 				65EADDD722303A1C00593F9D /* CharmSignInViewController.swift in Sources */,
+				657E72022243DF50001EE828 /* ConcreteFlashcardsViewController.swift in Sources */,
 				657330D822414C9C0066624B /* ScaleBarTableViewCell.swift in Sources */,
 				65C1705C223FCD030081B55F /* CharmData.swift in Sources */,
 				65C55C1C22315EED00336243 /* FriendListTableViewController.swift in Sources */,
