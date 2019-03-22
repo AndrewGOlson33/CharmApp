@@ -77,6 +77,7 @@ class MainMenuViewController: UIViewController {
                     // post training history notification if needed
                     if self.shouldPostTrainingHistoryNotification {
                         NotificationCenter.default.post(name: FirebaseNotification.TrainingHistoryUpdated, object: nil)
+                        self.shouldPostTrainingHistoryNotification = false
                     }
                     // If there is a call, post a notification about that call
                     if let call = user.currentCall {
@@ -149,7 +150,7 @@ class MainMenuViewController: UIViewController {
     fileprivate func setupTrainingHistoryObserver() {
         let historyRef = Database.database().reference().child(FirebaseStructure.Users).child(Auth.auth().currentUser!.uid).child(FirebaseStructure.Training.TrainingDatabase)
         
-        historyRef.observe(.childChanged) { (snapshot) in
+        historyRef.observe(.value) { (snapshot) in
             self.shouldPostTrainingHistoryNotification = true
         }
     }
