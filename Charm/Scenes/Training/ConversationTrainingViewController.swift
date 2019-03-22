@@ -15,7 +15,7 @@ class ConversationTrainingViewController: UIViewController {
     
     @IBOutlet weak var lblYouSaid: UILabel!
     @IBOutlet weak var lblTheySaid: UILabel!
-    @IBOutlet weak var txtReply: UITextField!
+    @IBOutlet weak var txtReply: UITextView!
     
     // Layout Constraints
     @IBOutlet weak var setHighIfOnlyTheySaid: NSLayoutConstraint!
@@ -39,6 +39,10 @@ class ConversationTrainingViewController: UIViewController {
 
         // Load initial prompts
         updatePrompts()
+        
+        txtReply.delegate = self
+        txtReply.textColor = .lightGray
+        txtReply.text = "tap microphone to respond to prompt"
     }
     
     // MARK: - UI Setup Functions
@@ -70,15 +74,6 @@ class ConversationTrainingViewController: UIViewController {
                 self.view.layoutIfNeeded()
             }
         }
-        
-        
-        
-        
-        
-        
-        
-        
-        view.layoutIfNeeded()
     }
     
 
@@ -108,6 +103,12 @@ class ConversationTrainingViewController: UIViewController {
     
     // Score or Load New Prompts
     @IBAction func scoreLoadButtonTapped(_ sender: Any) {
+        
+        if let text = txtReply.text {
+            trainingViewModel.score(response: text)
+        }
+        
+        
         updatePrompts()
     }
     
@@ -161,6 +162,8 @@ class ConversationTrainingViewController: UIViewController {
 
 }
 
+// MARK: - Speech Task Delegate
+
 extension ConversationTrainingViewController: SFSpeechRecognitionTaskDelegate {
     
     func speechRecognitionDidDetectSpeech(_ task: SFSpeechRecognitionTask) {
@@ -168,7 +171,25 @@ extension ConversationTrainingViewController: SFSpeechRecognitionTaskDelegate {
     }
     
     func speechRecognitionTask(_ task: SFSpeechRecognitionTask, didHypothesizeTranscription transcription: SFTranscription) {
+        txtReply.textColor = .black
         txtReply.text = transcription.formattedString
+    }
+    
+}
+
+// MARK: - TextView Delegate
+
+extension ConversationTrainingViewController: UITextViewDelegate {
+    
+    func textViewDidBeginEditing(_ textView: UITextView) {
+        textView.textColor = .black
+    }
+    
+    func textViewDidEndEditing(_ textView: UITextView) {
+        if textView.text.isEmpty || textView.text == "" {
+            textView.textColor = .lightGray
+            textView.text = "tap microphone to respond to prompt"
+        }
     }
     
 }

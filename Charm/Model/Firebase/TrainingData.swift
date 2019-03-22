@@ -39,6 +39,16 @@ class TrainingModelCapsule {
 struct TrainingData: Codable {
     var concreteNouns: [ConcreteNoun] = []
     var abstractNouns: [AbstractNoun] = []
+    var firstPerson: [String] = []
+    var firstPersonLowercased: [String] {
+        return firstPerson.map {$0.lowercased()}
+    }
+    var secondPerson: [String] = []
+    var secondPersonLowercased: [String] {
+        return secondPerson.map {$0.lowercased()}
+    }
+    var positiveWords: [ScoredWord] = []
+    var negativeWords: [ScoredWord] = []
     var converstaionPrompt: [ConversationPrompts] = []
 }
 
@@ -69,4 +79,9 @@ struct ConversationPrompts: Codable {
         case youSaid = "You Said"
         case theySaid = "They Said"
     }
+}
+
+struct ScoredWord: Codable {
+    var score: Int
+    var word: String
 }

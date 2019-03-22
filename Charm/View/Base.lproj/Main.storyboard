@@ -966,28 +966,22 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="your reply" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="HXV-EB-caa">
-                                <rect key="frame" x="20" y="505" width="374" height="75.5"/>
-                                <nil key="textColor"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <textInputTraits key="textInputTraits"/>
-                            </textField>
                             <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="7Zl-IK-XIA">
-                                <rect key="frame" x="20" y="588.5" width="374" height="76.5"/>
+                                <rect key="frame" x="20" y="635" width="374" height="30"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Yzk-6s-Evz">
-                                        <rect key="frame" x="0.0" y="0.0" width="124.5" height="76.5"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="124.5" height="30"/>
                                         <state key="normal" title="Replay"/>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="zCG-4Y-pRc">
-                                        <rect key="frame" x="124.5" y="0.0" width="125" height="76.5"/>
+                                        <rect key="frame" x="124.5" y="0.0" width="125" height="30"/>
                                         <state key="normal" title="Record"/>
                                         <connections>
                                             <action selector="recordButtonTapped:" destination="ggN-Ql-Tv5" eventType="touchUpInside" id="URZ-u7-O5i"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1Td-vR-oIY">
-                                        <rect key="frame" x="249.5" y="0.0" width="124.5" height="76.5"/>
+                                        <rect key="frame" x="249.5" y="0.0" width="124.5" height="30"/>
                                         <state key="normal" title="Score / Load"/>
                                         <connections>
                                             <action selector="scoreLoadButtonTapped:" destination="ggN-Ql-Tv5" eventType="touchUpInside" id="zdt-bC-0zX"/>
@@ -995,14 +989,18 @@
                                     </button>
                                 </subviews>
                             </stackView>
+                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="Uiu-Gi-fIq">
+                                <rect key="frame" x="20" y="505" width="374" height="114"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                            </textView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="cxK-T7-J3C" firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="GTw-Jx-7cZ" secondAttribute="trailing" constant="20" id="0kY-fc-rzt"/>
-                            <constraint firstItem="7Zl-IK-XIA" firstAttribute="top" secondItem="HXV-EB-caa" secondAttribute="bottom" constant="8" id="1Pj-rW-fXX"/>
-                            <constraint firstItem="HXV-EB-caa" firstAttribute="leading" secondItem="cxK-T7-J3C" secondAttribute="leading" constant="20" id="CPC-ly-na5"/>
+                            <constraint firstItem="Uiu-Gi-fIq" firstAttribute="top" secondItem="GTw-Jx-7cZ" secondAttribute="bottom" constant="16" id="Dta-cV-aXG"/>
                             <constraint firstItem="7Zl-IK-XIA" firstAttribute="leading" secondItem="cxK-T7-J3C" secondAttribute="leading" constant="20" id="EED-pl-WOz"/>
-                            <constraint firstItem="cxK-T7-J3C" firstAttribute="trailing" secondItem="HXV-EB-caa" secondAttribute="trailing" constant="20" id="Fce-Fd-A9D"/>
                             <constraint firstItem="P7S-UY-COL" firstAttribute="height" secondItem="uhE-84-0e1" secondAttribute="height" multiplier="0.55" id="Goj-wu-dae"/>
                             <constraint firstItem="cxK-T7-J3C" firstAttribute="trailing" secondItem="7Zl-IK-XIA" secondAttribute="trailing" constant="20" id="Jpg-yd-Kqd"/>
                             <constraint firstItem="GTw-Jx-7cZ" firstAttribute="leading" secondItem="cxK-T7-J3C" secondAttribute="leading" constant="20" id="LIy-oy-54r"/>
@@ -1011,12 +1009,13 @@
                             <constraint firstItem="cxK-T7-J3C" firstAttribute="bottom" secondItem="7Zl-IK-XIA" secondAttribute="bottom" constant="8" id="SCb-lv-Uz0"/>
                             <constraint firstItem="P7S-UY-COL" firstAttribute="top" secondItem="cxK-T7-J3C" secondAttribute="top" id="Vkh-55-can"/>
                             <constraint firstItem="P7S-UY-COL" firstAttribute="leading" secondItem="cxK-T7-J3C" secondAttribute="leading" id="XW1-lM-TiB"/>
+                            <constraint firstItem="Uiu-Gi-fIq" firstAttribute="leading" secondItem="cxK-T7-J3C" secondAttribute="leading" constant="20" id="ZBY-Ng-cRr"/>
                             <constraint firstItem="cxK-T7-J3C" firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="MhL-BW-Yvw" secondAttribute="trailing" constant="20" id="c4h-yO-8gR"/>
+                            <constraint firstItem="7Zl-IK-XIA" firstAttribute="top" secondItem="Uiu-Gi-fIq" secondAttribute="bottom" constant="16" id="ceL-HG-0SY"/>
                             <constraint firstItem="MhL-BW-Yvw" firstAttribute="leading" secondItem="cxK-T7-J3C" secondAttribute="leading" constant="20" id="csb-vH-ybN"/>
                             <constraint firstItem="P7S-UY-COL" firstAttribute="trailing" secondItem="cxK-T7-J3C" secondAttribute="trailing" id="nRT-RD-3Sn"/>
-                            <constraint firstItem="HXV-EB-caa" firstAttribute="top" secondItem="GTw-Jx-7cZ" secondAttribute="bottom" constant="16" id="p4T-o7-HkX"/>
+                            <constraint firstItem="cxK-T7-J3C" firstAttribute="trailing" secondItem="Uiu-Gi-fIq" secondAttribute="trailing" constant="20" id="plN-dI-iIG"/>
                             <constraint firstItem="GTw-Jx-7cZ" firstAttribute="top" secondItem="MhL-BW-Yvw" secondAttribute="bottom" priority="750" constant="16" id="wIK-ca-cEl"/>
-                            <constraint firstItem="HXV-EB-caa" firstAttribute="height" secondItem="uhE-84-0e1" secondAttribute="height" multiplier="0.1" id="x3V-dp-tYo"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="cxK-T7-J3C"/>
                     </view>
@@ -1026,7 +1025,7 @@
                         <outlet property="lblYouSaid" destination="MhL-BW-Yvw" id="4WF-64-KwU"/>
                         <outlet property="setHighIfOnlyTheySaid" destination="Qcm-LC-Kzf" id="2J5-At-kn0"/>
                         <outlet property="setLowIfOnlyTheySaid" destination="wIK-ca-cEl" id="n6j-SS-Nem"/>
-                        <outlet property="txtReply" destination="HXV-EB-caa" id="fGf-I5-YSG"/>
+                        <outlet property="txtReply" destination="Uiu-Gi-fIq" id="Y4i-Vf-3Au"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ppf-K1-BYf" userLabel="First Responder" sceneMemberID="firstResponder"/>
