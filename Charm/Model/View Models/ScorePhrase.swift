@@ -33,10 +33,9 @@ class ScorePhraseModel: NSObject {
                 print("~>\(word): \(tag)")
                 // append all words to wordlist
                 wordCount += 1
-                if tag.rawValue == "Noun" {
-                    if checkConcrete(word: word) { concreteCount += 1 }
-                    if checkAbstract(word: word) { abstractCount += 1 }
-                }
+                
+                if checkConcrete(word: word) { concreteCount += 1 }
+                if checkAbstract(word: word) { abstractCount += 1 }
                 
                 if tag.rawValue == "Pronoun" {
                     if checkFirstPerson(word: word) { firstCount += 1 }
