@@ -32,6 +32,11 @@ class ConcreteFlashcardsViewController: UIViewController {
     
     // MARK: - Properties
     
+    // View Model
+    let viewModel = FlashcardsViewModel()
+    
+    // View Properties
+    
     var concreteFrame: CGRect = CGRect.zero
     var abstractFrame: CGRect = CGRect.zero
     
@@ -60,6 +65,23 @@ class ConcreteFlashcardsViewController: UIViewController {
             button.layer.shadowOpacity = 0.5
         }
         
+        // setup scale bar
+        viewModel.getAverageScore { (concreteScores) in
+            print("~>Got concrete scores: \(concreteScores.numCorrect), \(concreteScores.numQuestions), \(concreteScores.averageScore)")
+            self.scaleBar.setupBar(ofType: .Green, withValue: concreteScores.scoreValue, andLabelPosition: concreteScores.averageScore)
+            let tap = UITapGestureRecognizer(target: self, action: #selector(self.setupPopover))
+            tap.numberOfTapsRequired = 1
+            tap.numberOfTouchesRequired = 1
+            self.scaleBar.addGestureRecognizer(tap)
+        }
+        
+        
+        // Start animating activity view and turn on firebase listener
+        viewLoading.layer.cornerRadius = 20
+        viewLoading.isHidden = false
+        activityIndicator.startAnimating()
+        NotificationCenter.default.addObserver(self, selector: #selector(firebaseModelLoaded), name: FirebaseNotification.FlashCardsModelLoaded, object: nil)
+        
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -68,6 +90,129 @@ class ConcreteFlashcardsViewController: UIViewController {
         // set the original frames to use for animations
         concreteFrame = btnConcrete.frame
         abstractFrame = btnAbstract.frame
+        
+        // setup listener for when score updates
+        NotificationCenter.default.addObserver(self, selector: #selector(trainingHistoryUpdated), name: FirebaseNotification.TrainingHistoryUpdated, object: nil)
+    }
+    
+    // Remove observer when view is not visible
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        NotificationCenter.default.removeObserver(self, name: FirebaseNotification.TrainingHistoryUpdated, object: nil)
+    }
+    
+    // MARK: - Private Helper Functions
+    
+    // Setup Popover View
+    @objc private func setupPopover() {
+        let popoverContent = self.storyboard?.instantiateViewController(withIdentifier: StoryboardID.LabelPopover) as? LabelBubbleViewController
+        popoverContent?.modalPresentationStyle = .popover
+        popoverContent?.labelText = viewModel.shouldShowNA ? "N/A" : scaleBar.getStringValue(showPercentOnGreen: true)
+        
+        if let bubble = popoverContent?.popoverPresentationController {
+            bubble.permittedArrowDirections = .down
+            bubble.backgroundColor = #colorLiteral(red: 0.7843906283, green: 0.784409225, blue: 0.7843992114, alpha: 1)
+            bubble.sourceView = scaleBar
+            bubble.sourceRect = CGRect(x: getX(for: scaleBar), y: 0, width: 0, height: 0)
+            bubble.delegate = self
+            if let popoverController = popoverContent {
+                present(popoverController, animated: true, completion: {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0, execute: {
+                        popoverController.dismiss(animated: true, completion: nil)
+                    })
+                })
+            }
+        }
+    }
+    
+    // Get calculated x coord for scalebar
+    private func getX(for bar: ScaleBar) -> CGFloat {
+        let value = CGFloat(bar.calculatedValue)
+        return bar.bounds.width * value
+    }
+    
+    // Setup UI once the firebase model is loaded
+    @objc private func firebaseModelLoaded() {
+        // remove listener
+        NotificationCenter.default.removeObserver(self, name: FirebaseNotification.FlashCardsModelLoaded, object: nil)
+        
+        // setup first flashcard
+        lblWord.text = viewModel.getFlashCard()
+        lblWord.alpha = 0.0
+        lblWord.isHidden = false
+        
+        UIView.animate(withDuration: 0.4, animations: {
+            self.lblWord.alpha = 1.0
+            self.viewLoading.alpha = 0.0
+        }) { (_) in
+            self.activityIndicator.stopAnimating()
+            self.viewLoading.isHidden = true
+        }
+
+    }
+    
+    // Updates UI When Training Data Updates
+    
+    @objc private func trainingHistoryUpdated() {
+        viewModel.getAverageScore { (newHistory) in
+            print("~>Got concrete score update: \(newHistory.numCorrect), \(newHistory.numQuestions), \(newHistory.averageScore)")
+            DispatchQueue.main.async {
+                self.scaleBar.update(withValue: newHistory.scoreValue, andCalculatedValue: newHistory.averageScore)
+            }
+        }
+    }
+    
+    // Hande Updates After Answer is Submitted
+    
+    private func handle(response: (response: String, correct: Bool)) {
+        animate(responseText: response.response)
+        updateScore(withCorrectAnswer: response.correct)
+    }
+    
+    // Updates Score
+    private func updateScore(withCorrectAnswer correct: Bool) {
+        viewModel.calculateAverageScore(addingCorrect: correct)
+        
+    }
+    
+    // Animation Helper Function For Response
+    
+    private func animate(responseText text: String) {
+        lblResponsePhrase.text = text
+        lblResponsePhrase.alpha = 0.0
+        lblResponsePhrase.isHidden = false
+        
+        UIView.animate(withDuration: 0.2, animations: {
+            self.lblResponsePhrase.alpha = 1.0
+        }) { (_) in
+            UIView.animate(withDuration: 0.25, delay: 1.5, animations: {
+                self.lblResponsePhrase.alpha = 0.0
+            }, completion: { (_) in
+                self.lblResponsePhrase.isHidden = true
+                self.updateFlashcard()
+            })
+        }
+    }
+    
+    // Animation helper to setup new word
+    private func updateFlashcard() {
+        let newWord = viewModel.getFlashCard()
+        UIView.animate(withDuration: 0.25, delay: 0.25, animations: {
+            self.lblWord.alpha = 0.0
+        }) { (_) in
+            self.lblWord.text = newWord
+            UIView.animate(withDuration: 0.4, animations: {
+                self.lblWord.alpha = 1.0
+            })
+        }
+    }
+    
+    // Animation Helper Function For Toggling Buttons
+    private func animate(view: UIView, withLabel label: UILabel, withColor color: UIColor, toFrame frame: CGRect) {
+        UIView.animate(withDuration: 0.2, animations: {
+            view.frame = frame
+            label.textColor = color
+        })
     }
     
 }
@@ -94,9 +239,18 @@ extension ConcreteFlashcardsViewController: UIGestureRecognizerDelegate {
             if concreteFrame.contains(touch.location(in: view)) {
                 animate(view: btnConcrete, withLabel: lblConcrete, withColor: .black, toFrame: concreteFrame)
                 lastTouchedButton = nil
+                
+                // submit answer and get response
+                let response = viewModel.getResponse(answeredConcrete: true)
+                handle(response: response)
+                
             } else if abstractFrame.contains(touch.location(in: view)) {
                 animate(view: btnAbstract, withLabel: lblAbstract, withColor: .black, toFrame: abstractFrame)
                 lastTouchedButton = nil
+                
+                // submit answer and get response
+                let response = viewModel.getResponse(answeredConcrete: false)
+                handle(response: response)
             }
         }
     }
@@ -142,11 +296,22 @@ extension ConcreteFlashcardsViewController: UIGestureRecognizerDelegate {
         }
     }
     
-    private func animate(view: UIView, withLabel label: UILabel, withColor color: UIColor, toFrame frame: CGRect) {
-        UIView.animate(withDuration: 0.2, animations: {
-            view.frame = frame
-            label.textColor = color
-        })
+}
+
+// MARK: - Popover Delegate
+
+extension ConcreteFlashcardsViewController: UIPopoverPresentationControllerDelegate {
+    //UIPopoverPresentationControllerDelegate inherits from UIAdaptivePresentationControllerDelegate, we will use this method to define the presentation style for popover presentation controller
+    func adaptivePresentationStyle(for controller: UIPresentationController) -> UIModalPresentationStyle {
+        return .none
     }
     
+    //UIPopoverPresentationControllerDelegate
+    func popoverPresentationControllerDidDismissPopover(_ popoverPresentationController: UIPopoverPresentationController) {
+        
+    }
+    
+    func popoverPresentationControllerShouldDismissPopover(_ popoverPresentationController: UIPopoverPresentationController) -> Bool {
+        return true
+    }
 }

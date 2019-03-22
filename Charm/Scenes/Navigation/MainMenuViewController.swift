@@ -16,6 +16,9 @@ class MainMenuViewController: UIViewController {
     
     var isFirebaseConnected: Bool = true
     var firstSetup: Bool = true
+    
+    // private vars for posting notifications
+    private var shouldPostTrainingHistoryNotification: Bool = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -28,6 +31,9 @@ class MainMenuViewController: UIViewController {
         
         // Setup user's snapshot data observer
         setupDataObserver()
+        
+        // Setup user's training history observer
+        setupTrainingHistoryObserver()
     }
     
     // MARK: - Private Setup Functions
@@ -68,6 +74,10 @@ class MainMenuViewController: UIViewController {
                     (UIApplication.shared.delegate as! AppDelegate).user = user
                     // Post a notification that the user changed, along with the user obejct
                     NotificationCenter.default.post(name: FirebaseNotification.CharmUserDidUpdate, object: user)
+                    // post training history notification if needed
+                    if self.shouldPostTrainingHistoryNotification {
+                        NotificationCenter.default.post(name: FirebaseNotification.TrainingHistoryUpdated, object: nil)
+                    }
                     // If there is a call, post a notification about that call
                     if let call = user.currentCall {
                         if call.status == .incoming {
@@ -132,6 +142,15 @@ class MainMenuViewController: UIViewController {
                     print("~>Error getting snapshot data: \(error)")
                 }
             }
+        }
+    }
+    
+    // Observes Training History
+    fileprivate func setupTrainingHistoryObserver() {
+        let historyRef = Database.database().reference().child(FirebaseStructure.Users).child(Auth.auth().currentUser!.uid).child(FirebaseStructure.Training.TrainingDatabase)
+        
+        historyRef.observe(.childChanged) { (snapshot) in
+            self.shouldPostTrainingHistoryNotification = true
         }
     }
     

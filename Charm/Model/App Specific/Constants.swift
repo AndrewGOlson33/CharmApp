@@ -124,6 +124,12 @@ enum FirebaseStructure {
             static let Url = "url"
         }
     }
+    
+    // Training
+    
+    enum Training {
+        static let TrainingDatabase = "trainingData"
+    }
 }
 
 // MARK: - Notifications
@@ -131,6 +137,8 @@ enum FirebaseStructure {
 enum FirebaseNotification {
     static let CharmUserDidUpdate = Notification.Name("notificationCharmUserDidUpdate")
     static let CharmUserIncomingCall = Notification.Name("notificationCharmUserHasIncomingCall")
+    static let FlashCardsModelLoaded = Notification.Name("flashcardsModelHasLoaded")
+    static let TrainingHistoryUpdated = Notification.Name("trainingHistoryHasUpdates")
 }
 
 // MARK: - Database Constants

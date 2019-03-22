@@ -16,6 +16,7 @@ struct CharmUser: Codable, Identifiable {
     var userProfile: UserProfile
     var friendList: FriendList?
     var currentCall: Call?
+    var trainingData: TrainingHistory?
     
     init(first: String, last: String, email: String) {
         userProfile = UserProfile(first: first, last: last, email: email)
@@ -126,5 +127,41 @@ struct Friend: Codable, Identifiable {
         firstName = first
         lastName = last
         self.email = email
+    }
+}
+
+// Training History
+
+struct TrainingHistory: Codable {
+    var concreteAverage: ConcreteTrainingHistory
+    
+    init() {
+        concreteAverage = ConcreteTrainingHistory()
+    }
+}
+
+struct ConcreteTrainingHistory: Codable {
+    var numQuestions: Int = 0
+    var numCorrect: Int = 0
+    
+    var doubleNumQuestions: Double {
+        return Double(numQuestions)
+    }
+    
+    var doubleNumCorrect: Double {
+        return Double(numCorrect)
+    }
+    
+    // computed vars
+    var numWrong: Int {
+        return numQuestions - numCorrect
+    }
+    
+    var averageScore: Double {
+        return numQuestions == 0 ? 0.0 : Double(doubleNumCorrect / doubleNumQuestions)
+    }
+    
+    var scoreValue: Double {
+        return ceil(averageScore*100)/100
     }
 }

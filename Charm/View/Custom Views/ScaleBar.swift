@@ -24,6 +24,9 @@ class ScaleBar: UIView {
     let greenColors: [UIColor] = [#colorLiteral(red: 0.9943112372, green: 0.9765252471, blue: 0.9763546586, alpha: 1), #colorLiteral(red: 0, green: 0.6454889178, blue: 0.4457359314, alpha: 1), #colorLiteral(red: 0.2968337834, green: 0.4757083654, blue: 0.2566408515, alpha: 1), #colorLiteral(red: 0.04722579569, green: 0.3977198601, blue: 0.1387369335, alpha: 1)]
     let blueColors: [UIColor] = [#colorLiteral(red: 0.3418416381, green: 0.6355850101, blue: 0.9122640491, alpha: 1), #colorLiteral(red: 0.3310806155, green: 0.6119198799, blue: 0.8886095881, alpha: 1), #colorLiteral(red: 0.316000998, green: 0.5882632136, blue: 0.8649668694, alpha: 1)]
     
+    // location dot
+    var scoreLocation: UIView? = nil
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
     }
@@ -39,8 +42,8 @@ class ScaleBar: UIView {
         setupBar()
     }
     
-    func getStringValue() -> String {
-        if type == .Green {
+    func getStringValue(showPercentOnGreen: Bool = false) -> String {
+        if type == .Green && !showPercentOnGreen {
             return "\(value)"
         } else {
             let percent = Int(value * 100)
@@ -67,11 +70,28 @@ class ScaleBar: UIView {
             setupBlueCenter()
         }
         
-        let scoreLocation = UIView(frame: CGRect(x: frame.width * CGFloat(calculatedValue) - (frame.height / 2), y: frame.height / 4, width: frame.height / 2, height: frame.height / 2))
-        scoreLocation.backgroundColor = .black
-        scoreLocation.layer.cornerRadius = scoreLocation.frame.height / 2
-        addSubview(scoreLocation)
-        bringSubviewToFront(scoreLocation)
+        setupScoreLocation()
+        
+    }
+    
+    // set score location
+    
+    func update(withValue value: Double, andCalculatedValue calculated: Double) {
+        self.value = value
+        calculatedValue = calculated
+        
+        setupScoreLocation()
+    }
+    
+    fileprivate func setupScoreLocation() {
+        if scoreLocation != nil {
+            scoreLocation?.removeFromSuperview()
+        }
+        scoreLocation = UIView(frame: CGRect(x: frame.width * CGFloat(calculatedValue) - (frame.height / 2), y: frame.height / 4, width: frame.height / 2, height: frame.height / 2))
+        scoreLocation!.backgroundColor = .black
+        scoreLocation!.layer.cornerRadius = scoreLocation!.frame.height / 2
+        addSubview(scoreLocation!)
+        bringSubviewToFront(scoreLocation!)
     }
     
     // setup function for green bar
