@@ -38,6 +38,7 @@ class ConversationTrainingViewController: UIViewController {
         if audioEngine.isRunning {
             audioEngine.stop()
             recognitionRequest?.endAudio()
+            AudioServicesPlaySystemSound(1114)
             return
         }
         
@@ -80,7 +81,7 @@ class ConversationTrainingViewController: UIViewController {
         inputNode.removeTap(onBus: 0)
         
         guard let recognitionRequest = recognitionRequest else {
-            fatalError("~>Unable to create an SFSpeechAudioBufferRecognitionRequest object")
+            return
         }
         
         recognitionRequest.shouldReportPartialResults = true
@@ -95,6 +96,7 @@ class ConversationTrainingViewController: UIViewController {
         
         do {
             try audioEngine.start()
+            AudioServicesPlaySystemSound(1113)
         } catch {
             print("audioEngine couldn't start because of an error.")
         }
