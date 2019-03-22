@@ -77,10 +77,14 @@ class ConcreteFlashcardsViewController: UIViewController {
         
         
         // Start animating activity view and turn on firebase listener
-        viewLoading.layer.cornerRadius = 20
-        viewLoading.isHidden = false
-        activityIndicator.startAnimating()
-        NotificationCenter.default.addObserver(self, selector: #selector(firebaseModelLoaded), name: FirebaseNotification.FlashCardsModelLoaded, object: nil)
+        if viewModel.trainingModel.model.concreteNouns.count == 0 || viewModel.trainingModel.model.abstractNouns.count == 0 {
+            viewLoading.layer.cornerRadius = 20
+            viewLoading.isHidden = false
+            activityIndicator.startAnimating()
+            NotificationCenter.default.addObserver(self, selector: #selector(firebaseModelLoaded), name: FirebaseNotification.FlashCardsModelLoaded, object: nil)
+        } else {
+            firebaseModelLoaded()
+        }
         
     }
     

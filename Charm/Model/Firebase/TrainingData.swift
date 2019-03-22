@@ -32,6 +32,8 @@ class TrainingModelCapsule {
         }
     }
     
+    static var shared = TrainingModelCapsule()
+    
 }
 
 struct TrainingData: Codable {

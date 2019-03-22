@@ -14,7 +14,7 @@ class FlashcardsViewModel: NSObject {
     
     // MARK: - Properties
     
-    var trainingModel = TrainingModelCapsule()
+    var trainingModel = TrainingModelCapsule.shared
     var answerIsConcrete: Bool = false
     var answerString: String = ""
     var shouldShowNA: Bool = false
@@ -51,7 +51,6 @@ class FlashcardsViewModel: NSObject {
             let delegate = UIApplication.shared.delegate as! AppDelegate
             let user = delegate.user
             if let trainingHistory = user?.trainingData {
-                print("~>Got training history data.")
                 if trainingHistory.concreteAverage.numQuestions == 0 { self.shouldShowNA = true }
                 completion(trainingHistory.concreteAverage)
                 self.shouldShowNA = false
