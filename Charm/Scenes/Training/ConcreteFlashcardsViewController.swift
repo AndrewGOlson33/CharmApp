@@ -81,7 +81,7 @@ class ConcreteFlashcardsViewController: UIViewController {
             viewLoading.layer.cornerRadius = 20
             viewLoading.isHidden = false
             activityIndicator.startAnimating()
-            NotificationCenter.default.addObserver(self, selector: #selector(firebaseModelLoaded), name: FirebaseNotification.FlashCardsModelLoaded, object: nil)
+            NotificationCenter.default.addObserver(self, selector: #selector(firebaseModelLoaded), name: FirebaseNotification.TrainingModelLoaded, object: nil)
         } else {
             firebaseModelLoaded()
         }
@@ -138,7 +138,7 @@ class ConcreteFlashcardsViewController: UIViewController {
     // Setup UI once the firebase model is loaded
     @objc private func firebaseModelLoaded() {
         // remove listener
-        NotificationCenter.default.removeObserver(self, name: FirebaseNotification.FlashCardsModelLoaded, object: nil)
+        NotificationCenter.default.removeObserver(self, name: FirebaseNotification.TrainingModelLoaded, object: nil)
         
         // setup first flashcard
         lblWord.text = viewModel.getFlashCard()

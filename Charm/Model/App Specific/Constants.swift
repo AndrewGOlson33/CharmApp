@@ -23,6 +23,7 @@ enum SegueID {
     static let FriendList = "sid_friendlist"
     static let VideoCall = "sid_videocall"
     static let DetailChart = "sid_detailchart"
+    static let TrainingChart = "sid_trainingchart"
 }
 
 enum StoryboardID {
@@ -137,7 +138,7 @@ enum FirebaseStructure {
 enum FirebaseNotification {
     static let CharmUserDidUpdate = Notification.Name("notificationCharmUserDidUpdate")
     static let CharmUserIncomingCall = Notification.Name("notificationCharmUserHasIncomingCall")
-    static let FlashCardsModelLoaded = Notification.Name("flashcardsModelHasLoaded")
+    static let TrainingModelLoaded = Notification.Name("flashcardsModelHasLoaded")
     static let TrainingHistoryUpdated = Notification.Name("trainingHistoryHasUpdates")
 }
 

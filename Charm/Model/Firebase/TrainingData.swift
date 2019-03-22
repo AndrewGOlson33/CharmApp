@@ -25,7 +25,7 @@ class TrainingModelCapsule {
         
             do {
                 self.model = try FirebaseDecoder().decode(TrainingData.self, from: value)
-                NotificationCenter.default.post(Notification(name: FirebaseNotification.FlashCardsModelLoaded))
+                NotificationCenter.default.post(Notification(name: FirebaseNotification.TrainingModelLoaded))
             } catch let error {
                 print("~>There was an error converting data: \(error)")
             }
@@ -39,6 +39,7 @@ class TrainingModelCapsule {
 struct TrainingData: Codable {
     var concreteNouns: [ConcreteNoun] = []
     var abstractNouns: [AbstractNoun] = []
+    var converstaionPrompt: [ConversationPrompts] = []
 }
 
 struct ConcreteNoun: Codable {
@@ -58,5 +59,14 @@ struct AbstractNoun: Codable {
     enum CodingKeys: String, CodingKey {
         case word = "X3"
     }
+}
+
+struct ConversationPrompts: Codable {
+    var youSaid: String?
+    var theySaid: String?
     
+    enum CodingKeys: String, CodingKey {
+        case youSaid = "You Said"
+        case theySaid = "They Said"
+    }
 }
