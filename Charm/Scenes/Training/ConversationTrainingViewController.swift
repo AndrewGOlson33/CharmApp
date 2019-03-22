@@ -13,10 +13,20 @@ class ConversationTrainingViewController: UIViewController {
     
     // MARK: - IBOutlets
     
+    @IBOutlet weak var lblYouSaid: UILabel!
+    @IBOutlet weak var lblTheySaid: UILabel!
     @IBOutlet weak var txtReply: UITextField!
+    
+    // Layout Constraints
+    @IBOutlet weak var setHighIfOnlyTheySaid: NSLayoutConstraint!
+    @IBOutlet weak var setLowIfOnlyTheySaid: NSLayoutConstraint!
     
     // MARK: - Properties
     
+    // View Models
+    var trainingViewModel: ChatTrainingViewModel = ChatTrainingViewModel()
+    
+    // Speech Recognition Properties
     private let speechRecognizer = SFSpeechRecognizer(locale: Locale.autoupdatingCurrent)
     private var recognitionRequest: SFSpeechAudioBufferRecognitionRequest?
     private var recognitionTask: SFSpeechRecognitionTask?
@@ -27,7 +37,48 @@ class ConversationTrainingViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Do any additional setup after loading the view.
+        // Load initial prompts
+        updatePrompts()
+    }
+    
+    // MARK: - UI Setup Functions
+    private func updatePrompts() {
+        
+        guard let prompt = trainingViewModel.getRandomPrompt() else { return }
+        UIView.animate(withDuration: 0.25, animations: {
+            self.lblYouSaid.alpha = 0
+            self.lblTheySaid.alpha = 0
+        }) { (_) in
+            let theySaid = prompt.theySaid
+            self.lblTheySaid.text = "They said: \(theySaid)"
+            
+            if let youSaid = prompt.youSaid {
+                self.lblYouSaid.text = "You said: \(youSaid)"
+                self.lblYouSaid.isHidden = false
+                UIView.animate(withDuration: 0.25, animations: {
+                    self.lblYouSaid.alpha = 1.0
+                    self.lblTheySaid.alpha = 1.0
+                    self.setLowIfOnlyTheySaid.priority = .defaultHigh
+                    self.setHighIfOnlyTheySaid.priority = .defaultLow
+                    self.view.layoutIfNeeded()
+                })
+            } else {
+                self.lblYouSaid.isHidden = true
+                self.setLowIfOnlyTheySaid.priority = .defaultLow
+                self.setHighIfOnlyTheySaid.priority = .defaultHigh
+                self.lblTheySaid.alpha = 1.0
+                self.view.layoutIfNeeded()
+            }
+        }
+        
+        
+        
+        
+        
+        
+        
+        
+        view.layoutIfNeeded()
     }
     
 
@@ -53,6 +104,11 @@ class ConversationTrainingViewController: UIViewController {
             alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
             present(alert, animated: true, completion: nil)
         }
+    }
+    
+    // Score or Load New Prompts
+    @IBAction func scoreLoadButtonTapped(_ sender: Any) {
+        updatePrompts()
     }
     
     // MARK: - Private Helper Functions

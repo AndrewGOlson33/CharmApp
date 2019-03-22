@@ -954,13 +954,13 @@
                                     <segue destination="FqG-hi-uoL" kind="embed" identifier="sid_trainingchart" id="hCZ-b1-Nwa"/>
                                 </connections>
                             </containerView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="You said:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="MhL-BW-Yvw">
+                            <label opaque="NO" userInteractionEnabled="NO" alpha="0.0" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="You said:" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="MhL-BW-Yvw">
                                 <rect key="frame" x="20" y="432" width="69" height="20.5"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="They said:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GTw-Jx-7cZ">
+                            <label opaque="NO" userInteractionEnabled="NO" alpha="0.0" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="They said:" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GTw-Jx-7cZ">
                                 <rect key="frame" x="20" y="468.5" width="78.5" height="20.5"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
@@ -989,6 +989,9 @@
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1Td-vR-oIY">
                                         <rect key="frame" x="249.5" y="0.0" width="124.5" height="76.5"/>
                                         <state key="normal" title="Score / Load"/>
+                                        <connections>
+                                            <action selector="scoreLoadButtonTapped:" destination="ggN-Ql-Tv5" eventType="touchUpInside" id="zdt-bC-0zX"/>
+                                        </connections>
                                     </button>
                                 </subviews>
                             </stackView>
@@ -1019,6 +1022,10 @@
                     </view>
                     <tabBarItem key="tabBarItem" title="Chat" image="icn_backforth" id="1X2-Kb-dS3"/>
                     <connections>
+                        <outlet property="lblTheySaid" destination="GTw-Jx-7cZ" id="ycx-R4-scB"/>
+                        <outlet property="lblYouSaid" destination="MhL-BW-Yvw" id="4WF-64-KwU"/>
+                        <outlet property="setHighIfOnlyTheySaid" destination="Qcm-LC-Kzf" id="2J5-At-kn0"/>
+                        <outlet property="setLowIfOnlyTheySaid" destination="wIK-ca-cEl" id="n6j-SS-Nem"/>
                         <outlet property="txtReply" destination="HXV-EB-caa" id="fGf-I5-YSG"/>
                     </connections>
                 </viewController>
@@ -1180,7 +1187,7 @@
                     <view key="view" contentMode="scaleToFill" id="X7P-r3-srf">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="416"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </view>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="vS1-zQ-WZI" userLabel="First Responder" sceneMemberID="firstResponder"/>

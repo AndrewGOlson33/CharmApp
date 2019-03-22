@@ -63,7 +63,7 @@ struct AbstractNoun: Codable {
 
 struct ConversationPrompts: Codable {
     var youSaid: String?
-    var theySaid: String?
+    var theySaid: String
     
     enum CodingKeys: String, CodingKey {
         case youSaid = "You Said"
