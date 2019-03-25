@@ -287,7 +287,6 @@ class DetailChartViewController: UIViewController {
         options.yAxis = [yaxis]
         options.plotOptions = plotoptions
         
-        
         // hide hamburger button
         let navigation = HINavigation()
         let buttonOptions = HIButtonOptions()

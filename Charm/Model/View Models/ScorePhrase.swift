@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 
 class ScorePhraseModel: NSObject {
     
@@ -101,6 +102,21 @@ class ScorePhraseModel: NSObject {
         negative = getChatScore(for: .Negative, withScore: negativeScore)
         
         print("~>I counted: \(wordCount) words, and had a concrete count of: \(concreteCount), abstract count of: \(abstractCount), first count of: \(firstCount), second count of: \(secondCount), positive score: \(positiveScore), negative score: \(negativeScore) with an estimated phrase strength of: \(score)")
+    }
+    
+    func getSandboxScore() -> SandboxScore {
+        
+        return SandboxScore(length: length.score, concrete: concrete.score, abstract: abstract.score, unclassified: unclassified, first: first.score, second: second.score, positive: positive.score, negative: negative.score, repeated: repeatedWords)
+        
+    }
+    
+    func getSandboxAverage() -> SandboxAverage {
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        if let user = appDelegate.user, let trainingData = user.trainingData, let history = trainingData.sandboxHistory {
+            return history.average
+        } else {
+            return SandboxAverage(length: 0, concrete: 0, abstract: 0, unclassified: 0, first: 0, second: 0, positive: 0, negative: 0, repeated: 0)
+        }
     }
     
     private func checkConcrete(word: String) -> Bool {

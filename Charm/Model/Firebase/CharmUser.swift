@@ -134,6 +134,7 @@ struct Friend: Codable, Identifiable {
 
 struct TrainingHistory: Codable {
     var concreteAverage: ConcreteTrainingHistory
+    var sandboxHistory: SandboxTrainingHistory?
     
     init() {
         concreteAverage = ConcreteTrainingHistory()
@@ -164,4 +165,80 @@ struct ConcreteTrainingHistory: Codable {
     var scoreValue: Double {
         return ceil(averageScore*100)/100
     }
+}
+
+struct SandboxTrainingHistory: Codable {
+    
+    var history: [SandboxScore] = []
+    
+    var average: SandboxAverage {
+        let count: Double = Double(history.count)
+        let length = Double(history.map{$0.length}.reduce(0, +)) / count
+        let concrete = Double(history.map{$0.concrete}.reduce(0, +)) / count
+        let abstract = Double(history.map{$0.abstract}.reduce(0, +)) / count
+        let unclassified = Double(history.map{$0.unclassified}.reduce(0, +)) / count
+        let first = Double(history.map{$0.first}.reduce(0, +)) / count
+        let second = Double(history.map{$0.second}.reduce(0, +)) / count
+        let positive = Double(history.map{$0.positive}.reduce(0, +)) / count
+        let negative = Double(history.map{$0.negative}.reduce(0, +)) / count
+        let repeated = Double(history.map{$0.repeated}.reduce(0, +)) / count
+        
+        return SandboxAverage(length: length, concrete: concrete, abstract: abstract, unclassified: unclassified, first: first, second: second, positive: positive, negative: negative, repeated: repeated)
+    }
+    
+    mutating func append(_ score: SandboxScore) {
+        if history.count >= 10 { history.removeFirst() }
+        history.append(score)
+    }
+    
+}
+
+struct SandboxAverage {
+    var length: Double
+    var concrete: Double
+    var abstract: Double
+    var unclassified: Double
+    var first: Double
+    var second: Double
+    var positive: Double
+    var negative: Double
+    var repeated: Double
+    
+    init(length: Double, concrete: Double, abstract: Double, unclassified: Double, first: Double, second: Double, positive: Double, negative: Double, repeated: Double) {
+        self.length = length
+        self.concrete = concrete
+        self.abstract = abstract
+        self.unclassified = unclassified
+        self.first = first
+        self.second = second
+        self.positive = positive
+        self.negative = negative
+        self.repeated = repeated
+    }
+}
+
+struct SandboxScore: Codable {
+    
+    var length: Int
+    var concrete: Int
+    var abstract: Int
+    var unclassified: Int
+    var first: Int
+    var second: Int
+    var positive: Int
+    var negative: Int
+    var repeated: Int
+    
+    init(length: Int, concrete: Int, abstract: Int, unclassified: Int, first: Int, second: Int, positive: Int, negative: Int, repeated: Int) {
+        self.length = length
+        self.concrete = concrete
+        self.abstract = abstract
+        self.unclassified = unclassified
+        self.first = first
+        self.second = second
+        self.positive = positive
+        self.negative = negative
+        self.repeated = repeated
+    }
+    
 }

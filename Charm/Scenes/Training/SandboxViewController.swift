@@ -178,15 +178,16 @@ class SandboxViewController: UIViewController {
         buttonOptions.enabled = false
         navigation.buttonOptions = buttonOptions
         
-        let bar1 = HIBar()
-        let bar2 = HIBar()
+        let averageBar = HIBar()
+        let lastBar = HIBar()
         
         let blankData = [0, 0, 0, 0, 0, 0, 0, 0, 0]
-        bar1.name = "Average"
-        bar2.name = "Last Phrase"
+        averageBar.name = "Average"
+        lastBar.name = "Last Phrase"
         
-        bar1.data = blankData
-        bar2.data = blankData
+        let average = viewModel.getSandboxAverage()
+        averageBar.data = [average.length, average.concrete, average.abstract, average.unclassified, average.first, average.second, average.positive, average.negative, average.repeated]
+        lastBar.data = blankData
         
         let options = HIOptions()
         options.chart = chart
@@ -196,7 +197,7 @@ class SandboxViewController: UIViewController {
         options.tooltip = tooltip
         options.plotOptions = plotOptions
         options.legend = legend
-        options.series = [bar1, bar2]
+        options.series = [averageBar, lastBar]
         options.navigation = navigation
         
         chartView.options = options
@@ -204,18 +205,22 @@ class SandboxViewController: UIViewController {
     }
     
     private func updateChartData() {
-        let bar1 = HIBar()
-        let bar2 = HIBar()
+        let averageBar = HIBar()
+        let lastBar = HIBar()
         
-        let oldData = [4, 3, 11, 2, 4, 6, 0, 1, 2]
+        averageBar.name = "Average"
+        lastBar.name = "Last Phrase"
+        
+        // TODO: - Remove temp data
         let blankData = [2, 3, 5, 0, 0, 7, 9, 10, 2]
-        bar1.name = "Average"
-        bar2.name = "Last Phrase"
         
-        bar1.data = blankData
-        bar2.data = oldData
+        let averageData = viewModel.getSandboxAverage()
+//        let lastData = viewModel.getSandboxScore()
         
-        chartView.options.series = [bar1, bar2]
+        averageBar.data = [averageData.length, averageData.concrete, averageData.abstract, averageData.unclassified, averageData.first, averageData.second, averageData.positive, averageData.negative, averageData.repeated]
+        lastBar.data = blankData
+        
+        chartView.options.series = [averageBar, lastBar]
         
     }
     
