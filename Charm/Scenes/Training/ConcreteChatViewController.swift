@@ -27,12 +27,7 @@ class ConcreteChatViewController: UIViewController {
     
     // View Models
     var trainingViewModel: ChatTrainingViewModel = ChatTrainingViewModel()
-    
-    // Speech Recognition Properties
-    private let speechRecognizer = SFSpeechRecognizer(locale: Locale.autoupdatingCurrent)
-    private var recognitionRequest: SFSpeechAudioBufferRecognitionRequest?
-    private var recognitionTask: SFSpeechRecognitionTask?
-    private let audioEngine = AVAudioEngine()
+    var speechModel: SpeechRecognitionModel = SpeechRecognitionModel()
     
     // Detect if we are in score or reset mode
     private var shouldReset = false
@@ -73,13 +68,15 @@ class ConcreteChatViewController: UIViewController {
         btnScoreReset.addGestureRecognizer(scoreResetTap)
         btnScoreReset.isUserInteractionEnabled = true
         
+        // set speech model delegate so we can get responses from voice recognition
+        speechModel.delegate = self
     }
     
     // load navigation bar items
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        tabBarController?.navigationItem.title = "Conversation"
+        tabBarController?.navigationItem.title = "Concrete Training"
         let info = UIBarButtonItem(image: UIImage(named: Image.Info), style: .plain, target: self, action: #selector(infoButtonTapped))
         tabBarController?.navigationItem.rightBarButtonItem = info
     }
@@ -105,33 +102,23 @@ class ConcreteChatViewController: UIViewController {
     // MARK: - Button Handling
     
     @IBAction func recordButtonTapped(_ sender: Any) {
-        
-        if audioEngine.isRunning {
-            audioEngine.stop()
-            recognitionRequest?.endAudio()
-            AudioServicesPlaySystemSound(1114)
-            UIView.animate(withDuration: 0.25, animations: {
-                self.btnRecordStop.alpha = 0
-            }) { (_) in
-                self.btnRecordStop.image = self.mic
-                UIView.animate(withDuration: 0.25, animations: {
-                    self.btnRecordStop.alpha = 1.0
-                })
-            }
+        print("~>Record button tapped.")
+        if speechModel.isRecording() {
+            speechModel.stopRecording()
+            animate(button: btnRecordStop, toImage: mic)
             
             return
         }
         
-        SFSpeechRecognizer.requestAuthorization { (status) in
-            print("~>Status: \(status.rawValue)")
-        }
-        
-        if speechRecognizer?.isAvailable ?? false {
-            startRecording()
-        } else {
-            let alert = UIAlertController(title: "Not Available", message: "Speech recogniztion is not currently available.  Please check your internet connection and try again.", preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-            present(alert, animated: true, completion: nil)
+        speechModel.checkAuthorization { (authorized) in
+            if authorized && self.speechModel.isAvailable() {
+                self.speechModel.startRecording()
+                self.animate(button: self.btnRecordStop, toImage: self.stop)
+            } else {
+                let alert = UIAlertController(title: "Not Available", message: "Speech recogniztion is not currently available.  Please check your internet connection and try again.", preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                self.present(alert, animated: true, completion: nil)
+            }
         }
     }
     
@@ -139,22 +126,13 @@ class ConcreteChatViewController: UIViewController {
     @IBAction func scoreLoadButtonTapped(_ sender: Any) {
         
         // make sure recording has ended first
-        if audioEngine.isRunning {
-            audioEngine.stop()
-            recognitionRequest?.endAudio()
-            AudioServicesPlaySystemSound(1114)
-            UIView.animate(withDuration: 0.25, animations: {
-                self.btnRecordStop.alpha = 0
-            }) { (_) in
-                self.btnRecordStop.image = self.mic
-                UIView.animate(withDuration: 0.25, animations: {
-                    self.btnRecordStop.alpha = 1.0
-                })
-            }
+        if speechModel.isRecording() {
+            speechModel.stopRecording()
+            animate(button: btnRecordStop, toImage: mic)
         }
         
         if !shouldReset, let text = txtReply.text {
-            if text == "tap microphone to respond to prompt" {
+            if text == "tap microphone to respond to prompt" || text.isEmpty {
                 let alert = UIAlertController(title: "Tap Microphone", message: "You must record a response before you can score it.", preferredStyle: .alert)
                 alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
                 present(alert, animated: true, completion: nil)
@@ -164,11 +142,12 @@ class ConcreteChatViewController: UIViewController {
             trainingViewModel.score(response: text)
             tableView.reloadData()
             shouldReset = true
+            animate(button: btnScoreReset, toImage: reset)
         } else {
             updatePrompts()
             shouldReset = false
+            animate(button: btnScoreReset, toImage: chart)
         }
-        
         
     }
     
@@ -178,58 +157,19 @@ class ConcreteChatViewController: UIViewController {
         print("~>Info button tapped.")
     }
     
-    // Recording Task
-    private func startRecording() {
-        // cancel any existing tasks
-        if recognitionTask != nil {
-            recognitionTask?.cancel()
-            recognitionTask = nil
-        }
-        
-        let audioSession = AVAudioSession.sharedInstance()
-        do {
-            try audioSession.setCategory(.record, mode: .measurement, options: [])
-            try audioSession.setActive(true, options: .notifyOthersOnDeactivation)
-        } catch {
-            print("~>audioSession properties weren't set because of an error.")
-        }
-        
-        recognitionRequest = SFSpeechAudioBufferRecognitionRequest()
-        
-        let inputNode = audioEngine.inputNode
-        
-        // remove old tap (if there was any)
-        inputNode.removeTap(onBus: 0)
-        
-        guard let recognitionRequest = recognitionRequest else {
-            return
-        }
-        
-        recognitionRequest.shouldReportPartialResults = true
-        recognitionTask = speechRecognizer?.recognitionTask(with: recognitionRequest, delegate: self)
-        
-        let recordingFormat = inputNode.outputFormat(forBus: 0)
-        inputNode.installTap(onBus: 0, bufferSize: 1024, format: recordingFormat) { (buffer, when) in
-            self.recognitionRequest?.append(buffer)
-        }
-        
-        audioEngine.prepare()
-        
-        do {
-            try audioEngine.start()
-            AudioServicesPlaySystemSound(1113)
+    // Animation Helpers
+    
+    private func animate(button: UIImageView, toImage image: UIImage) {
+        DispatchQueue.main.async {
             UIView.animate(withDuration: 0.25, animations: {
-                self.btnRecordStop.alpha = 0
+                button.alpha = 0
             }) { (_) in
-                self.btnRecordStop.image = self.stop
+                button.image = image
                 UIView.animate(withDuration: 0.25, animations: {
-                    self.btnRecordStop.alpha = 1.0
+                    button.alpha = 1.0
                 })
             }
-        } catch {
-            print("audioEngine couldn't start because of an error.")
         }
-        
     }
     
 }
@@ -322,15 +262,11 @@ extension ConcreteChatViewController: UITableViewDelegate, UITableViewDataSource
 
 // MARK: - Speech Task Delegate
 
-extension ConcreteChatViewController: SFSpeechRecognitionTaskDelegate {
+extension ConcreteChatViewController: SpeechRecognitionDelegate {
     
-    func speechRecognitionDidDetectSpeech(_ task: SFSpeechRecognitionTask) {
-        print("~>Detected speech.")
-    }
-    
-    func speechRecognitionTask(_ task: SFSpeechRecognitionTask, didHypothesizeTranscription transcription: SFTranscription) {
+    func speechRecognizerGotText(text: String) {
         txtReply.textColor = .black
-        txtReply.text = transcription.formattedString
+        txtReply.text = text
     }
     
 }

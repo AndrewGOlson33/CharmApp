@@ -10,6 +10,8 @@
 		440B49E3FFECF797577DDB57 /* Pods_Charm.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 16C20027951EB6711E199488 /* Pods_Charm.framework */; };
 		65030B78224948FE00079AFC /* ConcreteChatViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65030B77224948FE00079AFC /* ConcreteChatViewController.swift */; };
 		65030B7A22494C1900079AFC /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65030B7922494C1900079AFC /* Extensions.swift */; };
+		65030B7C2249508C00079AFC /* SandboxViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65030B7B2249508C00079AFC /* SandboxViewController.swift */; };
+		65030B7E224951A600079AFC /* SpeechRecognitionModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65030B7D224951A600079AFC /* SpeechRecognitionModel.swift */; };
 		650D400C223957B30023D983 /* ArchiveSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 650D400B223957B30023D983 /* ArchiveSession.swift */; };
 		650E9F532245443A000EADEE /* ConversationTrainingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 650E9F522245443A000EADEE /* ConversationTrainingViewController.swift */; };
 		650E9F55224550AA000EADEE /* ChatTrainingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 650E9F54224550AA000EADEE /* ChatTrainingViewModel.swift */; };
@@ -55,6 +57,8 @@
 		32AEF01E8A1AE05F8906832B /* Pods-Charm.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Charm.debug.xcconfig"; path = "Target Support Files/Pods-Charm/Pods-Charm.debug.xcconfig"; sourceTree = "<group>"; };
 		65030B77224948FE00079AFC /* ConcreteChatViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConcreteChatViewController.swift; sourceTree = "<group>"; };
 		65030B7922494C1900079AFC /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
+		65030B7B2249508C00079AFC /* SandboxViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SandboxViewController.swift; sourceTree = "<group>"; };
+		65030B7D224951A600079AFC /* SpeechRecognitionModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechRecognitionModel.swift; sourceTree = "<group>"; };
 		650D400B223957B30023D983 /* ArchiveSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchiveSession.swift; sourceTree = "<group>"; };
 		650E9F522245443A000EADEE /* ConversationTrainingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationTrainingViewController.swift; sourceTree = "<group>"; };
 		650E9F54224550AA000EADEE /* ChatTrainingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatTrainingViewModel.swift; sourceTree = "<group>"; };
@@ -217,6 +221,7 @@
 				657E72012243DF50001EE828 /* ConcreteFlashcardsViewController.swift */,
 				650E9F522245443A000EADEE /* ConversationTrainingViewController.swift */,
 				65030B77224948FE00079AFC /* ConcreteChatViewController.swift */,
+				65030B7B2249508C00079AFC /* SandboxViewController.swift */,
 			);
 			path = Training;
 			sourceTree = "<group>";
@@ -249,6 +254,7 @@
 				657E72052243F41B001EE828 /* FlashcardsViewModel.swift */,
 				650E9F54224550AA000EADEE /* ChatTrainingViewModel.swift */,
 				650E9F5622455885000EADEE /* ScorePhrase.swift */,
+				65030B7D224951A600079AFC /* SpeechRecognitionModel.swift */,
 			);
 			path = "View Models";
 			sourceTree = "<group>";
@@ -468,9 +474,11 @@
 				650D400C223957B30023D983 /* ArchiveSession.swift in Sources */,
 				654B5D142241754900C34352 /* EmotionsViewController.swift in Sources */,
 				657330D2224120A30066624B /* ScaleBar.swift in Sources */,
+				65030B7E224951A600079AFC /* SpeechRecognitionModel.swift in Sources */,
 				654B5D1622417A8E00C34352 /* WordChoiceViewController.swift in Sources */,
 				65EADDD722303A1C00593F9D /* CharmSignInViewController.swift in Sources */,
 				657E72022243DF50001EE828 /* ConcreteFlashcardsViewController.swift in Sources */,
+				65030B7C2249508C00079AFC /* SandboxViewController.swift in Sources */,
 				657330D822414C9C0066624B /* ScaleBarTableViewCell.swift in Sources */,
 				65C1705C223FCD030081B55F /* CharmData.swift in Sources */,
 				65C55C1C22315EED00336243 /* FriendListTableViewController.swift in Sources */,
