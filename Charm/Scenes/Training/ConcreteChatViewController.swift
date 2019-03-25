@@ -8,6 +8,7 @@
 
 import UIKit
 import Speech
+import AVKit
 
 class ConcreteChatViewController: UIViewController {
 
@@ -28,6 +29,9 @@ class ConcreteChatViewController: UIViewController {
     // View Models
     var trainingViewModel: ChatTrainingViewModel = ChatTrainingViewModel()
     var speechModel: SpeechRecognitionModel = SpeechRecognitionModel()
+    
+    // For speaking text
+    let speaker = AVSpeechSynthesizer()
     
     // Detect if we are in score or reset mode
     private var shouldReset = false
@@ -53,8 +57,11 @@ class ConcreteChatViewController: UIViewController {
         
         // Setup Button Taps
         
-        //        let replayTap = UITapGestureRecognizer(target: self, action: <#T##Selector?#>)
-        //        btnReplay.isUserInteractionEnabled = true
+        let replayTap = UITapGestureRecognizer(target: self, action: #selector(speakTextTapped(_:)))
+        replayTap.numberOfTapsRequired = 1
+        replayTap.numberOfTouchesRequired = 1
+        btnReplay.addGestureRecognizer(replayTap)
+        btnReplay.isUserInteractionEnabled = true
         
         let recordStopTap = UITapGestureRecognizer(target: self, action: #selector(recordButtonTapped(_:)))
         recordStopTap.numberOfTapsRequired = 1
@@ -95,11 +102,21 @@ class ConcreteChatViewController: UIViewController {
             self.lblWord.text = "\(word.capitalizedFirst)"
             self.lblWord.alpha = 1.0
             self.view.layoutIfNeeded()
+            self.speakTextTapped(self)
         }
     }
     
     
     // MARK: - Button Handling
+    
+    @IBAction func speakTextTapped(_ sender: Any) {
+        DispatchQueue.main.async {
+            guard let phrase = self.lblWord.text else { return }
+            if self.speaker.isSpeaking { self.speaker.stopSpeaking(at: .immediate) }
+            let utterance = AVSpeechUtterance(string: phrase)
+            self.speaker.speak(utterance)
+        }
+    }
     
     @IBAction func recordButtonTapped(_ sender: Any) {
         print("~>Record button tapped.")

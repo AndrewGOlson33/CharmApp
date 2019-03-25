@@ -8,6 +8,7 @@
 
 import UIKit
 import Speech
+import AVKit
 
 class ConversationTrainingViewController: UIViewController {
     
@@ -33,6 +34,9 @@ class ConversationTrainingViewController: UIViewController {
     // View Models
     var trainingViewModel: ChatTrainingViewModel = ChatTrainingViewModel()
     var speechModel: SpeechRecognitionModel = SpeechRecognitionModel()
+    
+    // For speaking text
+    let speaker = AVSpeechSynthesizer()
 
     // Detect if we are in score or reset mode
     private var shouldReset = false
@@ -57,9 +61,12 @@ class ConversationTrainingViewController: UIViewController {
         txtReply.text = "tap microphone to respond to prompt"
         
         // Setup Button Taps
-        
-//        let replayTap = UITapGestureRecognizer(target: self, action: <#T##Selector?#>)
-//        btnReplay.isUserInteractionEnabled = true
+
+        let replayTap = UITapGestureRecognizer(target: self, action: #selector(speakTextTapped(_:)))
+        replayTap.numberOfTapsRequired = 1
+        replayTap.numberOfTouchesRequired = 1
+        btnReplay.addGestureRecognizer(replayTap)
+        btnReplay.isUserInteractionEnabled = true
         
         let recordStopTap = UITapGestureRecognizer(target: self, action: #selector(recordButtonTapped(_:)))
         recordStopTap.numberOfTapsRequired = 1
@@ -111,16 +118,30 @@ class ConversationTrainingViewController: UIViewController {
                 })
             } else {
                 self.lblYouSaid.isHidden = true
+                self.lblYouSaid.text = ""
                 self.setLowIfOnlyTheySaid.priority = .defaultLow
                 self.setHighIfOnlyTheySaid.priority = .defaultHigh
                 self.lblTheySaid.alpha = 1.0
                 self.view.layoutIfNeeded()
             }
+            
+            self.speakTextTapped(self)
         }
     }
     
 
     // MARK: - Button Handling
+    
+    @IBAction func speakTextTapped(_ sender: Any) {
+        DispatchQueue.main.async {
+            let yousaid = self.lblYouSaid.isHidden ? "" : self.lblYouSaid.text ?? ""
+            let pause = yousaid.isEmpty ? "" : ","
+            let phrase = "\(yousaid) \(pause) \(self.lblTheySaid.text ?? "")"
+            if self.speaker.isSpeaking { self.speaker.stopSpeaking(at: .immediate) }
+            let utterance = AVSpeechUtterance(string: phrase)
+            self.speaker.speak(utterance)
+        }
+    }
     
     @IBAction func recordButtonTapped(_ sender: Any) {
         
