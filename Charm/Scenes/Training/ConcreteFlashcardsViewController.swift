@@ -90,6 +90,15 @@ class ConcreteFlashcardsViewController: UIViewController {
         
     }
     
+    // load navigation bar items
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        tabBarController?.navigationItem.title = "Concrete"
+        let info = UIBarButtonItem(image: UIImage(named: Image.Info), style: .plain, target: self, action: #selector(infoButtonTapped))
+        tabBarController?.navigationItem.rightBarButtonItem = info
+    }
+    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
@@ -108,6 +117,10 @@ class ConcreteFlashcardsViewController: UIViewController {
     }
     
     // MARK: - Private Helper Functions
+    
+    @objc private func infoButtonTapped() {
+        print("~>Info button tapped.")
+    }
     
     // Setup Popover View
     @objc private func setupPopover() {
@@ -143,7 +156,7 @@ class ConcreteFlashcardsViewController: UIViewController {
         NotificationCenter.default.removeObserver(self, name: FirebaseNotification.TrainingModelLoaded, object: nil)
         
         // setup first flashcard
-        lblWord.text = viewModel.getFlashCard()
+        lblWord.text = viewModel.getFlashCard().capitalizedFirst
         lblWord.alpha = 0.0
         lblWord.isHidden = false
         

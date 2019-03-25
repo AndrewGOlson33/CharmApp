@@ -48,8 +48,13 @@ class ChatTrainingViewModel: NSObject {
     
     // training model
     let model = TrainingModelCapsule.shared
+    
     var prompts: [ConversationPrompts] {
         return model.model.converstaionPrompt
+    }
+    
+    var wordPrompts: [ConcreteNoun] {
+        return model.model.concreteNouns
     }
     
     // MARK: - Functions
@@ -57,6 +62,11 @@ class ChatTrainingViewModel: NSObject {
     func getRandomConversationPrompt() -> ConversationPrompts? {
         guard prompts.count > 0 else { return nil }
         return prompts[Int(arc4random_uniform(UInt32(prompts.count)))]
+    }
+    
+    func getRandomWordPrompt() -> ConcreteNoun? {
+        guard wordPrompts.count > 0 else { return nil }
+        return wordPrompts[Int(arc4random_uniform(UInt32(wordPrompts.count)))]
     }
     
     func score(response text: String) {

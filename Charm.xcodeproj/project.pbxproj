@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		440B49E3FFECF797577DDB57 /* Pods_Charm.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 16C20027951EB6711E199488 /* Pods_Charm.framework */; };
+		65030B78224948FE00079AFC /* ConcreteChatViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65030B77224948FE00079AFC /* ConcreteChatViewController.swift */; };
+		65030B7A22494C1900079AFC /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65030B7922494C1900079AFC /* Extensions.swift */; };
 		650D400C223957B30023D983 /* ArchiveSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 650D400B223957B30023D983 /* ArchiveSession.swift */; };
 		650E9F532245443A000EADEE /* ConversationTrainingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 650E9F522245443A000EADEE /* ConversationTrainingViewController.swift */; };
 		650E9F55224550AA000EADEE /* ChatTrainingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 650E9F54224550AA000EADEE /* ChatTrainingViewModel.swift */; };
@@ -51,6 +53,8 @@
 /* Begin PBXFileReference section */
 		16C20027951EB6711E199488 /* Pods_Charm.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Charm.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		32AEF01E8A1AE05F8906832B /* Pods-Charm.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Charm.debug.xcconfig"; path = "Target Support Files/Pods-Charm/Pods-Charm.debug.xcconfig"; sourceTree = "<group>"; };
+		65030B77224948FE00079AFC /* ConcreteChatViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConcreteChatViewController.swift; sourceTree = "<group>"; };
+		65030B7922494C1900079AFC /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		650D400B223957B30023D983 /* ArchiveSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchiveSession.swift; sourceTree = "<group>"; };
 		650E9F522245443A000EADEE /* ConversationTrainingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationTrainingViewController.swift; sourceTree = "<group>"; };
 		650E9F54224550AA000EADEE /* ChatTrainingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatTrainingViewModel.swift; sourceTree = "<group>"; };
@@ -193,6 +197,7 @@
 			children = (
 				657264252230081B008D9ED4 /* Constants.swift */,
 				65EADDD422302FE900593F9D /* Protocols.swift */,
+				65030B7922494C1900079AFC /* Extensions.swift */,
 			);
 			path = "App Specific";
 			sourceTree = "<group>";
@@ -211,6 +216,7 @@
 			children = (
 				657E72012243DF50001EE828 /* ConcreteFlashcardsViewController.swift */,
 				650E9F522245443A000EADEE /* ConversationTrainingViewController.swift */,
+				65030B77224948FE00079AFC /* ConcreteChatViewController.swift */,
 			);
 			path = Training;
 			sourceTree = "<group>";
@@ -470,9 +476,11 @@
 				65C55C1C22315EED00336243 /* FriendListTableViewController.swift in Sources */,
 				65EADDD522302FE900593F9D /* Protocols.swift in Sources */,
 				657330D4224149FA0066624B /* BackAndForthViewController.swift in Sources */,
+				65030B78224948FE00079AFC /* ConcreteChatViewController.swift in Sources */,
 				6572642222300640008D9ED4 /* MainMenuViewController.swift in Sources */,
 				657E72082243F4A7001EE828 /* TrainingData.swift in Sources */,
 				65F5A022222FF8A8001262FB /* AppDelegate.swift in Sources */,
+				65030B7A22494C1900079AFC /* Extensions.swift in Sources */,
 				657264262230081B008D9ED4 /* Constants.swift in Sources */,
 				657330D622414A0E0066624B /* DetailChartViewController.swift in Sources */,
 				65B872A822302BE0001705B3 /* CharmUser.swift in Sources */,

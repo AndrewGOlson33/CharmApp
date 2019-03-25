@@ -1,20 +1,19 @@
 //
-//  ConversationTrainingViewController.swift
+//  ConcreteChatViewController.swift
 //  Charm
 //
-//  Created by Daniel Pratt on 3/22/19.
+//  Created by Daniel Pratt on 3/25/19.
 //  Copyright © 2019 Charm, LLC. All rights reserved.
 //
 
 import UIKit
 import Speech
 
-class ConversationTrainingViewController: UIViewController {
-    
+class ConcreteChatViewController: UIViewController {
+
     // MARK: - IBOutlets
     
-    @IBOutlet weak var lblYouSaid: UILabel!
-    @IBOutlet weak var lblTheySaid: UILabel!
+    @IBOutlet weak var lblWord: UILabel!
     @IBOutlet weak var txtReply: UITextView!
     @IBOutlet weak var tableView: UITableView!
     
@@ -23,10 +22,6 @@ class ConversationTrainingViewController: UIViewController {
     @IBOutlet weak var btnReplay: UIImageView!
     @IBOutlet weak var btnRecordStop: UIImageView!
     @IBOutlet weak var btnScoreReset: UIImageView!
-    
-    // Layout Constraints
-    @IBOutlet weak var setHighIfOnlyTheySaid: NSLayoutConstraint!
-    @IBOutlet weak var setLowIfOnlyTheySaid: NSLayoutConstraint!
     
     // MARK: - Properties
     
@@ -50,10 +45,10 @@ class ConversationTrainingViewController: UIViewController {
     let reset = UIImage(named: Image.Reset)!
     
     // MARK: - View Lifecycle Functions
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         // Load initial prompts
         updatePrompts()
         
@@ -63,8 +58,8 @@ class ConversationTrainingViewController: UIViewController {
         
         // Setup Button Taps
         
-//        let replayTap = UITapGestureRecognizer(target: self, action: <#T##Selector?#>)
-//        btnReplay.isUserInteractionEnabled = true
+        //        let replayTap = UITapGestureRecognizer(target: self, action: <#T##Selector?#>)
+        //        btnReplay.isUserInteractionEnabled = true
         
         let recordStopTap = UITapGestureRecognizer(target: self, action: #selector(recordButtonTapped(_:)))
         recordStopTap.numberOfTapsRequired = 1
@@ -92,37 +87,21 @@ class ConversationTrainingViewController: UIViewController {
     // MARK: - UI Setup Functions
     private func updatePrompts() {
         
-        guard let prompt = trainingViewModel.getRandomConversationPrompt() else { return }
+        // TODO: - Update to get rid of theysaid verbiage
+        guard let prompt = trainingViewModel.getRandomWordPrompt() else { return }
         UIView.animate(withDuration: 0.25, animations: {
-            self.lblYouSaid.alpha = 0
-            self.lblTheySaid.alpha = 0
+            self.lblWord.alpha = 0
             self.txtReply.textColor = .lightGray
             self.txtReply.text = "tap microphone to respond to prompt"
         }) { (_) in
-            let theySaid = prompt.theySaid
-            self.lblTheySaid.text = "They said: \(theySaid)"
-            
-            if let youSaid = prompt.youSaid {
-                self.lblYouSaid.text = "You said: \(youSaid)"
-                self.lblYouSaid.isHidden = false
-                UIView.animate(withDuration: 0.25, animations: {
-                    self.lblYouSaid.alpha = 1.0
-                    self.lblTheySaid.alpha = 1.0
-                    self.setLowIfOnlyTheySaid.priority = .defaultHigh
-                    self.setHighIfOnlyTheySaid.priority = .defaultLow
-                    self.view.layoutIfNeeded()
-                })
-            } else {
-                self.lblYouSaid.isHidden = true
-                self.setLowIfOnlyTheySaid.priority = .defaultLow
-                self.setHighIfOnlyTheySaid.priority = .defaultHigh
-                self.lblTheySaid.alpha = 1.0
-                self.view.layoutIfNeeded()
-            }
+            let word = prompt.word
+            self.lblWord.text = "\(word.capitalizedFirst)"
+            self.lblWord.alpha = 1.0
+            self.view.layoutIfNeeded()
         }
     }
     
-
+    
     // MARK: - Button Handling
     
     @IBAction func recordButtonTapped(_ sender: Any) {
@@ -252,12 +231,12 @@ class ConversationTrainingViewController: UIViewController {
         }
         
     }
-
+    
 }
 
 // MARK: - Table View Delegate Functions
 
-extension ConversationTrainingViewController: UITableViewDelegate, UITableViewDataSource {
+extension ConcreteChatViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return 8
@@ -343,7 +322,7 @@ extension ConversationTrainingViewController: UITableViewDelegate, UITableViewDa
 
 // MARK: - Speech Task Delegate
 
-extension ConversationTrainingViewController: SFSpeechRecognitionTaskDelegate {
+extension ConcreteChatViewController: SFSpeechRecognitionTaskDelegate {
     
     func speechRecognitionDidDetectSpeech(_ task: SFSpeechRecognitionTask) {
         print("~>Detected speech.")
@@ -358,7 +337,7 @@ extension ConversationTrainingViewController: SFSpeechRecognitionTaskDelegate {
 
 // MARK: - TextView Delegate
 
-extension ConversationTrainingViewController: UITextViewDelegate {
+extension ConcreteChatViewController: UITextViewDelegate {
     
     func textViewDidBeginEditing(_ textView: UITextView) {
         textView.textColor = .black
@@ -388,7 +367,7 @@ extension ConversationTrainingViewController: UITextViewDelegate {
 
 // MARK: - Extension to enable popover presentation
 
-extension ConversationTrainingViewController: UIPopoverPresentationControllerDelegate {
+extension ConcreteChatViewController: UIPopoverPresentationControllerDelegate {
     //UIPopoverPresentationControllerDelegate inherits from UIAdaptivePresentationControllerDelegate, we will use this method to define the presentation style for popover presentation controller
     func adaptivePresentationStyle(for controller: UIPresentationController) -> UIModalPresentationStyle {
         return .none
