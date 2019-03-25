@@ -85,3 +85,15 @@ struct ScoredWord: Codable {
     var score: Int
     var word: String
 }
+
+struct ChatScore {
+    
+    var score: Int = 0
+    var position: Double = 0
+    
+    init(withScore score: Int, andPosition position: Double) {
+        self.score = score
+        self.position = position
+    }
+    
+}

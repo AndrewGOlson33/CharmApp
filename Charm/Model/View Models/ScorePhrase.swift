@@ -10,7 +10,31 @@ import Foundation
 
 class ScorePhraseModel: NSObject {
     
+    // Enum for Score Type
+    
+    enum ChatScoreCategory {
+        case Strength
+        case Length
+        case Concrete
+        case Abstract
+        case First
+        case Second
+        case Positive
+        case Negative
+    }
+    
+    // training data model
     let model = TrainingModelCapsule.shared
+    
+    // public scored properties
+    public private(set) var strenth = ChatScore(withScore: 0, andPosition: 0)
+    public private(set) var length = ChatScore(withScore: 0, andPosition: 0)
+    public private(set) var concrete = ChatScore(withScore: 0, andPosition: 0)
+    public private(set) var abstract = ChatScore(withScore: 0, andPosition: 0)
+    public private(set) var first = ChatScore(withScore: 0, andPosition: 0)
+    public private(set) var second = ChatScore(withScore: 0, andPosition: 0)
+    public private(set) var positive = ChatScore(withScore: 0, andPosition: 0)
+    public private(set) var negative = ChatScore(withScore: 0, andPosition: 0)
     
     func calculateScore(fromPhrase text: String) {
         
@@ -28,26 +52,34 @@ class ScorePhraseModel: NSObject {
         var negativeScore: Int = 0
         
         tagger.enumerateTags(in: range, unit: .word, scheme: .lexicalClass, options: optionsTagger) { tag, tokenRange, _ in
-            if let tag = tag {
-                let word = (text as NSString).substring(with: tokenRange)
-                print("~>\(word): \(tag)")
-                // append all words to wordlist
-                wordCount += 1
-                
-                if checkConcrete(word: word) { concreteCount += 1 }
-                if checkAbstract(word: word) { abstractCount += 1 }
-                
-                if tag.rawValue == "Pronoun" {
-                    if checkFirstPerson(word: word) { firstCount += 1 }
-                    if checkSecondPerson(word: word) { secondCount += 1 }
-                }
-                
-                positiveScore += getPositiveScore(word: word)
-                negativeScore += getNegativeScore(word: word)
-            }
+//            if let tag = tag {
+//                print("~>\(word): \(tag)")
+//            }
+            let word = (text as NSString).substring(with: tokenRange)
+            // append all words to wordlist
+            wordCount += 1
+            
+            if checkConcrete(word: word) { concreteCount += 1 }
+            if checkAbstract(word: word) { abstractCount += 1 }
+            
+            if checkFirstPerson(word: word) { firstCount += 1 }
+            if checkSecondPerson(word: word) { secondCount += 1 }
+            
+            positiveScore += getPositiveScore(word: word)
+            negativeScore += getNegativeScore(word: word)
         }
         
         let score = getEstimatedPhraseStrength(length: wordCount, concrete: concreteCount, abstract: abstractCount, first: firstCount, second: secondCount)
+        
+        
+        strenth = getChatScore(for: .Strength, withScore: score)
+        length = getChatScore(for: .Length, withScore: wordCount)
+        concrete = getChatScore(for: .Concrete, withScore: concreteCount)
+        abstract = getChatScore(for: .Abstract, withScore: abstractCount)
+        first = getChatScore(for: .First, withScore: firstCount)
+        second = getChatScore(for: .Second, withScore: secondCount)
+        positive = getChatScore(for: .Positive, withScore: positiveScore)
+        negative = getChatScore(for: .Negative, withScore: negativeScore)
         
         print("~>I counted: \(wordCount) words, and had a concrete count of: \(concreteCount), abstract count of: \(abstractCount), first count of: \(firstCount), second count of: \(secondCount), positive score: \(positiveScore), negative score: \(negativeScore) with an estimated phrase strength of: \(score)")
     }
@@ -103,5 +135,30 @@ class ScorePhraseModel: NSObject {
         return score
         
     }
+    
+    // Creates a new object that is accessed externally
+    private func getChatScore(for category: ChatScoreCategory, withScore score: Int) -> ChatScore {
+        return ChatScore(withScore: score, andPosition: getScorePercent(score: score, category: category))
+    }
+    
+    // helper function to calculate position percent
+    private func getScorePercent(score: Int, category: ChatScoreCategory) -> Double {
+        
+        switch category {
+        case .Strength:
+            return Double(score) / 10.0
+        case .Length:
+            let percent = Double(score) / 15.0
+            return percent > 1 ? 1 : percent
+        case .Positive, .Negative:
+            let percent = Double(score) / 4.0
+            return percent > 1 ? 1 : percent
+        default:
+            let percent = Double(score) / 2.0
+            return percent > 1 ? 1 : percent
+        }
+        
+    }
+    
     
 }

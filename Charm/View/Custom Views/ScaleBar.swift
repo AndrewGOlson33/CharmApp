@@ -12,6 +12,7 @@ enum BarType {
     case Green
     case BlueRight
     case BlueCenter
+    case RedRightHalf
 }
 
 class ScaleBar: UIView {
@@ -68,6 +69,8 @@ class ScaleBar: UIView {
             setupBlueRightBar()
         case .BlueCenter:
             setupBlueCenter()
+        case .RedRightHalf:
+            setupRedRightHalf()
         }
         
         setupScoreLocation()
@@ -87,7 +90,8 @@ class ScaleBar: UIView {
         if scoreLocation != nil {
             scoreLocation?.removeFromSuperview()
         }
-        scoreLocation = UIView(frame: CGRect(x: frame.width * CGFloat(calculatedValue) - (frame.height / 2), y: frame.height / 4, width: frame.height / 2, height: frame.height / 2))
+        scoreLocation = calculatedValue == 0 ? UIView(frame: CGRect(x: frame.width * CGFloat(calculatedValue) + (frame.height / 2), y: frame.height / 4, width: frame.height / 2, height: frame.height / 2)) : UIView(frame: CGRect(x: frame.width * CGFloat(calculatedValue) - (frame.height / 2), y: frame.height / 4, width: frame.height / 2, height: frame.height / 2))
+        
         scoreLocation!.backgroundColor = .black
         scoreLocation!.layer.cornerRadius = scoreLocation!.frame.height / 2
         addSubview(scoreLocation!)
@@ -162,5 +166,20 @@ class ScaleBar: UIView {
             segment.backgroundColor = segmentColor
             addSubview(segment)
         }
+    }
+    
+    private func setupRedRightHalf() {
+        let width = frame.width
+        let segmentWidth = width / 2
+        
+        for index in 0...1 {
+            let segmentFrame = CGRect(origin: CGPoint(x: CGFloat(index) * segmentWidth, y: 0), size: CGSize(width: segmentWidth, height: frame.height))
+            let segment = UIView(frame: segmentFrame)
+            let segmentColor: UIColor = index == 0 ? .white : .red
+            
+            segment.backgroundColor = segmentColor
+            addSubview(segment)
+        }
+        
     }
 }

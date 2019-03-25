@@ -43,6 +43,13 @@ enum CellID {
     static let Transcript = "cid_transcript"
 }
 
+enum Image {
+    static let Mic = "icn_mic"
+    static let Stop = "icn_stop"
+    static let Chart = "icn_chart"
+    static let Reset = "icn_reset"
+}
+
 // MARK: - Firebase Related
 
 enum FirebaseStructure {
