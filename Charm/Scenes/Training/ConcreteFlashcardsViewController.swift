@@ -7,6 +7,8 @@
 //
 
 import UIKit
+import Firebase
+import CodableFirebase
 
 class ConcreteFlashcardsViewController: UIViewController {
     
@@ -216,6 +218,22 @@ class ConcreteFlashcardsViewController: UIViewController {
             view.frame = frame
             label.textColor = color
         })
+    }
+    
+    // MARK: - Button Handling
+    
+    @IBAction func resetButtonTapped(_ sender: Any) {
+        // overwrite old data with new data
+        let blankHistory = ConcreteTrainingHistory()
+        do {
+            let data = try FirebaseEncoder().encode(blankHistory)
+            Database.database().reference().child(FirebaseStructure.Users).child(Auth.auth().currentUser!.uid).child(FirebaseStructure.Training.TrainingDatabase).child(FirebaseStructure.Training.ConcreteHistory).setValue(data)
+        } catch let errror {
+            print("~>Got an error trying to encode a blank history: \(errror)")
+            let alert = UIAlertController(title: "Unable to Reset", message: "Unable to reset scores at this time.  Please try again later.", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+            present(alert, animated: true, completion: nil)
+        }
     }
     
 }

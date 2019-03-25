@@ -130,6 +130,7 @@ enum FirebaseStructure {
     
     enum Training {
         static let TrainingDatabase = "trainingData"
+        static let ConcreteHistory = "concreteAverage"
     }
 }
 
