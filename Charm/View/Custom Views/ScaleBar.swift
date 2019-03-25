@@ -43,12 +43,16 @@ class ScaleBar: UIView {
         setupBar()
     }
     
-    func getStringValue(showPercentOnGreen: Bool = false) -> String {
+    func getStringValue(showPercentOnGreen: Bool = false, showScoreOnOther: Bool = false) -> String {
         if type == .Green && !showPercentOnGreen {
             return "\(value)"
-        } else {
+        } else if showScoreOnOther && type != .Green {
+            return "\(Int(value))"
+        } else if value < 1 {
             let percent = Int(value * 100)
             return "\(percent)%"
+        } else {
+            return "\(value)%"
         }
     }
     

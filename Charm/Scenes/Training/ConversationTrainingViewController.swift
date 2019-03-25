@@ -293,6 +293,39 @@ extension ConversationTrainingViewController: UITableViewDelegate, UITableViewDa
         return cell
     }
     
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: false)
+        if let cell = tableView.cellForRow(at: indexPath) as? ScaleBarTableViewCell {
+            setupPopover(for: cell)
+        }
+    }
+    
+    private func getX(for bar: ScaleBar) -> CGFloat {
+        let value = CGFloat(bar.calculatedValue)
+        return bar.bounds.width * value
+    }
+    
+    private func setupPopover(for cell: ScaleBarTableViewCell) {
+        let popoverContent = self.storyboard?.instantiateViewController(withIdentifier: StoryboardID.LabelPopover) as? LabelBubbleViewController
+        popoverContent?.modalPresentationStyle = .popover
+        popoverContent?.labelText = cell.scaleBar.getStringValue(showScoreOnOther: true)
+        
+        if let bubble = popoverContent?.popoverPresentationController {
+            bubble.permittedArrowDirections = .down
+            bubble.backgroundColor = #colorLiteral(red: 0.7843906283, green: 0.784409225, blue: 0.7843992114, alpha: 1)
+            bubble.sourceView = cell
+            bubble.sourceRect = CGRect(x: getX(for: cell.scaleBar), y: cell.scaleBar.frame.minY - 2, width: 0, height: 0)
+            bubble.delegate = self
+            if let popoverController = popoverContent {
+                present(popoverController, animated: true, completion: {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0, execute: {
+                        popoverController.dismiss(animated: true, completion: nil)
+                    })
+                })
+            }
+        }
+    }
+    
 }
 
 // MARK: - Speech Task Delegate
@@ -338,4 +371,22 @@ extension ConversationTrainingViewController: UITextViewDelegate {
         }
     }
     
+}
+
+// MARK: - Extension to enable popover presentation
+
+extension ConversationTrainingViewController: UIPopoverPresentationControllerDelegate {
+    //UIPopoverPresentationControllerDelegate inherits from UIAdaptivePresentationControllerDelegate, we will use this method to define the presentation style for popover presentation controller
+    func adaptivePresentationStyle(for controller: UIPresentationController) -> UIModalPresentationStyle {
+        return .none
+    }
+    
+    //UIPopoverPresentationControllerDelegate
+    func popoverPresentationControllerDidDismissPopover(_ popoverPresentationController: UIPopoverPresentationController) {
+        
+    }
+    
+    func popoverPresentationControllerShouldDismissPopover(_ popoverPresentationController: UIPopoverPresentationController) -> Bool {
+        return true
+    }
 }
