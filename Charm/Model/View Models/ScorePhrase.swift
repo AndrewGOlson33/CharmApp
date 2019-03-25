@@ -151,7 +151,7 @@ class ScorePhraseModel: NSObject {
             let percent = Double(score) / 15.0
             return percent > 1 ? 1 : percent
         case .Positive, .Negative:
-            let percent = Double(score) / 4.0
+            let percent = Double(abs(score)) / 4.0
             return percent > 1 ? 1 : percent
         default:
             let percent = Double(score) / 2.0

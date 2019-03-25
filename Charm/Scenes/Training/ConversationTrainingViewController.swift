@@ -285,7 +285,7 @@ extension ConversationTrainingViewController: UITableViewDelegate, UITableViewDa
         case 7:
             let negative = trainingViewModel.negative
             cell.lblDescription.text = "Negative Word Score"
-            cell.scaleBar.setupBar(ofType: .RedRightHalf, withValue: Double(negative.score), andLabelPosition: negative.position)
+            cell.scaleBar.setupBar(ofType: .RedRightQuarter, withValue: Double(negative.score), andLabelPosition: negative.position)
         default:
             print("~>Should not be possible to get here.")
         }

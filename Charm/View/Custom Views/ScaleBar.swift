@@ -12,7 +12,7 @@ enum BarType {
     case Green
     case BlueRight
     case BlueCenter
-    case RedRightHalf
+    case RedRightQuarter
 }
 
 class ScaleBar: UIView {
@@ -69,8 +69,8 @@ class ScaleBar: UIView {
             setupBlueRightBar()
         case .BlueCenter:
             setupBlueCenter()
-        case .RedRightHalf:
-            setupRedRightHalf()
+        case .RedRightQuarter:
+            setupRedRightQuarter()
         }
         
         setupScoreLocation()
@@ -168,14 +168,14 @@ class ScaleBar: UIView {
         }
     }
     
-    private func setupRedRightHalf() {
+    private func setupRedRightQuarter() {
         let width = frame.width
-        let segmentWidth = width / 2
+        let segmentWidth = width / 4
         
-        for index in 0...1 {
+        for index in 0...3 {
             let segmentFrame = CGRect(origin: CGPoint(x: CGFloat(index) * segmentWidth, y: 0), size: CGSize(width: segmentWidth, height: frame.height))
             let segment = UIView(frame: segmentFrame)
-            let segmentColor: UIColor = index == 0 ? .white : .red
+            let segmentColor: UIColor = index == 3 ? .red : .white
             
             segment.backgroundColor = segmentColor
             addSubview(segment)
