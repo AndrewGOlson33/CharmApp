@@ -155,6 +155,7 @@ class ConversationTrainingViewController: UIViewController {
         
         speechModel.checkAuthorization { (authorized) in
             if authorized && self.speechModel.isAvailable() {
+                if self.speaker.isSpeaking { self.speaker.stopSpeaking(at: .immediate) }
                 self.speechModel.startRecording()
                 self.animate(button: self.btnRecordStop, toImage: self.stop)
             } else {
