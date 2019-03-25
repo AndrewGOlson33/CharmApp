@@ -35,8 +35,14 @@ class ScorePhraseModel: NSObject {
     public private(set) var second = ChatScore(withScore: 0, andPosition: 0)
     public private(set) var positive = ChatScore(withScore: 0, andPosition: 0)
     public private(set) var negative = ChatScore(withScore: 0, andPosition: 0)
+    public private(set) var unclassified: Int = 0
+    public private(set) var repeatedWords: Int = 0
+    private var words: [String] = []
     
     func calculateScore(fromPhrase text: String) {
+        
+        unclassified = 0
+        repeatedWords = 0
         
         let tagger = NSLinguisticTagger(tagSchemes: [.lexicalClass], options: 0)
         tagger.string = text
@@ -52,21 +58,34 @@ class ScorePhraseModel: NSObject {
         var negativeScore: Int = 0
         
         tagger.enumerateTags(in: range, unit: .word, scheme: .lexicalClass, options: optionsTagger) { tag, tokenRange, _ in
-//            if let tag = tag {
-//                print("~>\(word): \(tag)")
-//            }
+
             let word = (text as NSString).substring(with: tokenRange)
             // append all words to wordlist
             wordCount += 1
             
-            if checkConcrete(word: word) { concreteCount += 1 }
-            if checkAbstract(word: word) { abstractCount += 1 }
+            var classified = false
+            
+            if checkConcrete(word: word) {
+                concreteCount += 1
+                classified = true
+            }
+            if checkAbstract(word: word) {
+                abstractCount += 1
+                classified = true
+            }
+            
+            if !classified, let tag = tag, tag.rawValue == "Noun" {
+                unclassified += 1
+            }
             
             if checkFirstPerson(word: word) { firstCount += 1 }
             if checkSecondPerson(word: word) { secondCount += 1 }
             
             positiveScore += getPositiveScore(word: word)
             negativeScore += getNegativeScore(word: word)
+            
+            if words.contains(word) { repeatedWords += 1 }
+            words.append(word)
         }
         
         let score = getEstimatedPhraseStrength(length: wordCount, concrete: concreteCount, abstract: abstractCount, first: firstCount, second: secondCount)

@@ -1091,10 +1091,59 @@
                     <view key="view" contentMode="scaleToFill" id="3XQ-jP-G4u">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="756"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="AaH-1j-OWU" customClass="HIChartView">
+                                <rect key="frame" x="0.0" y="0.0" width="414" height="416"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </view>
+                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="r0O-j1-kJe">
+                                <rect key="frame" x="20" y="436" width="374" height="175"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences" returnKeyType="done"/>
+                            </textView>
+                            <stackView opaque="NO" contentMode="scaleAspectFit" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="8ZN-Es-dgl">
+                                <rect key="frame" x="20" y="627" width="374" height="38"/>
+                                <subviews>
+                                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="icn_mic" translatesAutoresizingMaskIntoConstraints="NO" id="1XN-A6-avf">
+                                        <rect key="frame" x="0.0" y="0.0" width="187" height="38"/>
+                                        <accessibility key="accessibilityConfiguration">
+                                            <accessibilityTraits key="traits" button="YES" image="YES"/>
+                                        </accessibility>
+                                    </imageView>
+                                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="icn_chart" translatesAutoresizingMaskIntoConstraints="NO" id="FkW-M5-CSl">
+                                        <rect key="frame" x="187" y="0.0" width="187" height="38"/>
+                                        <accessibility key="accessibilityConfiguration">
+                                            <accessibilityTraits key="traits" button="YES" image="YES"/>
+                                        </accessibility>
+                                    </imageView>
+                                </subviews>
+                            </stackView>
+                        </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="8ZN-Es-dgl" firstAttribute="top" secondItem="r0O-j1-kJe" secondAttribute="bottom" constant="16" id="1OD-9L-2BU"/>
+                            <constraint firstItem="r0O-j1-kJe" firstAttribute="leading" secondItem="tCs-zk-bfz" secondAttribute="leading" constant="20" id="30K-qP-yyr"/>
+                            <constraint firstItem="tCs-zk-bfz" firstAttribute="bottom" secondItem="8ZN-Es-dgl" secondAttribute="bottom" constant="8" id="C8b-KJ-k3N"/>
+                            <constraint firstItem="AaH-1j-OWU" firstAttribute="top" secondItem="tCs-zk-bfz" secondAttribute="top" id="EVy-qS-d7O"/>
+                            <constraint firstItem="AaH-1j-OWU" firstAttribute="leading" secondItem="tCs-zk-bfz" secondAttribute="leading" id="GRS-hG-wJ0"/>
+                            <constraint firstItem="tCs-zk-bfz" firstAttribute="trailing" secondItem="r0O-j1-kJe" secondAttribute="trailing" constant="20" id="KAS-Hh-4R4"/>
+                            <constraint firstItem="tCs-zk-bfz" firstAttribute="trailing" secondItem="8ZN-Es-dgl" secondAttribute="trailing" constant="20" id="QxU-jl-fMh"/>
+                            <constraint firstItem="8ZN-Es-dgl" firstAttribute="leading" secondItem="tCs-zk-bfz" secondAttribute="leading" constant="20" id="V7Y-rF-Flv"/>
+                            <constraint firstItem="AaH-1j-OWU" firstAttribute="height" secondItem="3XQ-jP-G4u" secondAttribute="height" multiplier="0.55" id="jjk-PK-0uJ"/>
+                            <constraint firstItem="AaH-1j-OWU" firstAttribute="trailing" secondItem="tCs-zk-bfz" secondAttribute="trailing" id="kl0-bk-7AX"/>
+                            <constraint firstItem="r0O-j1-kJe" firstAttribute="top" secondItem="AaH-1j-OWU" secondAttribute="bottom" constant="20" id="nF3-Q9-xs1"/>
+                            <constraint firstItem="8ZN-Es-dgl" firstAttribute="height" secondItem="3XQ-jP-G4u" secondAttribute="height" multiplier="0.05" id="wde-dv-bAA"/>
+                        </constraints>
                         <viewLayoutGuide key="safeArea" id="tCs-zk-bfz"/>
                     </view>
                     <tabBarItem key="tabBarItem" title="Sandbox" image="icn_sandbox" id="eEp-Dr-Hia"/>
+                    <connections>
+                        <outlet property="btnRecordStop" destination="1XN-A6-avf" id="aKY-6I-5AR"/>
+                        <outlet property="btnScoreReset" destination="FkW-M5-CSl" id="OIR-CH-eTR"/>
+                        <outlet property="chartView" destination="AaH-1j-OWU" id="GNL-gU-ADp"/>
+                        <outlet property="txtReply" destination="r0O-j1-kJe" id="FqY-3Y-5wW"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="CQY-j3-CuF" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
