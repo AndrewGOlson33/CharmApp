@@ -93,6 +93,14 @@ class ConversationTrainingViewController: UIViewController {
         tabBarController?.navigationItem.rightBarButtonItem = info
     }
     
+    // Make sure speech is not going on when leaving the view
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        if speaker.isSpeaking { speaker.stopSpeaking(at: .immediate) }
+    }
+    
     // MARK: - UI Setup Functions
     private func updatePrompts() {
         

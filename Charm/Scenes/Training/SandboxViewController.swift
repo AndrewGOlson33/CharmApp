@@ -63,7 +63,11 @@ class SandboxViewController: UIViewController {
         speechModel.delegate = self
         
         setupChart()
-        updateChartData()
+        
+        DispatchQueue.main.async {
+            self.updateChartData(shouldAppend: false)
+        }
+
     }
     
     // load navigation bar items
@@ -115,13 +119,21 @@ class SandboxViewController: UIViewController {
                 return
             }
             
-            viewModel.calculateScore(fromPhrase: text)
-            shouldReset = true
-            animate(button: btnScoreReset, toImage: reset)
+            DispatchQueue.main.async {
+                self.viewModel.calculateScore(fromPhrase: text)
+                self.updateChartData(shouldAppend: true)
+                self.shouldReset = true
+                self.animate(button: self.btnScoreReset, toImage: self.reset)
+            }
+            
+            
         } else {
-            // TODO: - Call update chart once function exists
-            shouldReset = false
-            animate(button: btnScoreReset, toImage: chart)
+            
+            DispatchQueue.main.async {
+                self.shouldReset = false
+                self.animate(button: self.btnScoreReset, toImage: self.chart)
+            }
+            
         }
         
     }
@@ -204,21 +216,40 @@ class SandboxViewController: UIViewController {
         
     }
     
-    private func updateChartData() {
+    private func updateChartData(shouldAppend append: Bool) {
         let averageBar = HIBar()
         let lastBar = HIBar()
         
         averageBar.name = "Average"
         lastBar.name = "Last Phrase"
+    
+        // Get data
+        let lastData = viewModel.getSandboxScore()
         
-        // TODO: - Remove temp data
-        let blankData = [2, 3, 5, 0, 0, 7, 9, 10, 2]
+        if append {
+            let appDelegate = UIApplication.shared.delegate as! AppDelegate
+            if let user = appDelegate.user, let history = user.trainingData {
+                var sandbox: SandboxTrainingHistory = SandboxTrainingHistory()
+                
+                // append new data to the current user
+                // append process automatically removes anything past 10
+                // and also updates firebase
+                if let sandboxHistory = history.sandboxHistory {
+                    sandbox = sandboxHistory
+                    sandbox.append(lastData)
+                } else {
+                    sandbox.append(lastData)
+                }
+                
+                appDelegate.user.trainingData?.sandboxHistory = sandbox
+            }
+        }
         
         let averageData = viewModel.getSandboxAverage()
-//        let lastData = viewModel.getSandboxScore()
+        print("~>Average data is: \(averageData)")
         
         averageBar.data = [averageData.length, averageData.concrete, averageData.abstract, averageData.unclassified, averageData.first, averageData.second, averageData.positive, averageData.negative, averageData.repeated]
-        lastBar.data = blankData
+        lastBar.data = [lastData.length, lastData.concrete, lastData.abstract, lastData.unclassified, lastData.first, lastData.second, lastData.positive, lastData.negative, lastData.repeated]
         
         chartView.options.series = [averageBar, lastBar]
         
@@ -244,7 +275,7 @@ class SandboxViewController: UIViewController {
             }
         }
     }
-
+    
 }
 
 // MARK: - Speech Delegate

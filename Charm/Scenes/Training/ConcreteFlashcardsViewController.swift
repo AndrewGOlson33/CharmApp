@@ -214,7 +214,7 @@ class ConcreteFlashcardsViewController: UIViewController {
     
     // Animation helper to setup new word
     private func updateFlashcard() {
-        let newWord = viewModel.getFlashCard()
+        let newWord = viewModel.getFlashCard().capitalizedFirst
         UIView.animate(withDuration: 0.25, delay: 0.25, animations: {
             self.lblWord.alpha = 0.0
         }) { (_) in

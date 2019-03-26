@@ -189,6 +189,14 @@ struct SandboxTrainingHistory: Codable {
     mutating func append(_ score: SandboxScore) {
         if history.count >= 10 { history.removeFirst() }
         history.append(score)
+        
+        // upload new history to firebase
+        do {
+            let data = try FirebaseEncoder().encode(self)
+            Database.database().reference().child(FirebaseStructure.Users).child(Auth.auth().currentUser!.uid).child(FirebaseStructure.Training.TrainingDatabase).child(FirebaseStructure.Training.SandboxHistory).setValue(data)
+        } catch let error {
+            print("~>There was an error converting the data into firebase format: \(error)")
+        }
     }
     
 }
