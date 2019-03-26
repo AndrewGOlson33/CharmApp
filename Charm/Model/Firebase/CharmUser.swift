@@ -173,15 +173,15 @@ struct SandboxTrainingHistory: Codable {
     
     var average: SandboxAverage {
         let count: Double = Double(history.count)
-        let length = Double(history.map{$0.length}.reduce(0, +)) / count
-        let concrete = Double(history.map{$0.concrete}.reduce(0, +)) / count
-        let abstract = Double(history.map{$0.abstract}.reduce(0, +)) / count
-        let unclassified = Double(history.map{$0.unclassified}.reduce(0, +)) / count
-        let first = Double(history.map{$0.first}.reduce(0, +)) / count
-        let second = Double(history.map{$0.second}.reduce(0, +)) / count
-        let positive = Double(history.map{$0.positive}.reduce(0, +)) / count
-        let negative = Double(history.map{$0.negative}.reduce(0, +)) / count
-        let repeated = Double(history.map{$0.repeated}.reduce(0, +)) / count
+        let length = (Double(history.map{$0.length}.reduce(0, +)) / count).rounded()
+        let concrete = (Double(history.map{$0.concrete}.reduce(0, +)) / count).rounded()
+        let abstract = (Double(history.map{$0.abstract}.reduce(0, +)) / count).rounded()
+        let unclassified = (Double(history.map{$0.unclassified}.reduce(0, +)) / count).rounded()
+        let first = (Double(history.map{$0.first}.reduce(0, +)) / count).rounded()
+        let second = (Double(history.map{$0.second}.reduce(0, +)) / count).rounded()
+        let positive = (Double(history.map{$0.positive}.reduce(0, +)) / count).rounded()
+        let negative = (Double(history.map{$0.negative}.reduce(0, +)) / count).rounded()
+        let repeated = (Double(history.map{$0.repeated}.reduce(0, +)) / count).rounded()
         
         return SandboxAverage(length: length, concrete: concrete, abstract: abstract, unclassified: unclassified, first: first, second: second, positive: positive, negative: negative, repeated: repeated)
     }

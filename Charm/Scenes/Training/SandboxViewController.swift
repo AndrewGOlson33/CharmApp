@@ -132,6 +132,7 @@ class SandboxViewController: UIViewController {
             DispatchQueue.main.async {
                 self.shouldReset = false
                 self.animate(button: self.btnScoreReset, toImage: self.chart)
+                self.txtReply.text = "tap microphone and start speaking"
             }
             
         }

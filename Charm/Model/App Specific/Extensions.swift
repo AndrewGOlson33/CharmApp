@@ -24,3 +24,12 @@ extension String {
     }
     
 }
+
+extension Double {
+    
+    // A quick hack to round to a specific number of places
+    func rounded(toPlaces places:Int = 1) -> Double {
+        let stringValue = String(format: "%.\(places)f", self)
+        return Double(stringValue) ?? self
+    }
+}
