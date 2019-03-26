@@ -103,33 +103,66 @@ class ReviewSummaryViewController: UIViewController {
         
         let xAxis = HIXAxis()
         xAxis.categories = [
-            "Word Choice",
+            "Concrete Details",
             "Back and Forth",
             "Connection",
-            "Tone of Words"
+            "Positivity",
+            "Smiling"
         ]
         xAxis.tickmarkPlacement = "on"
         xAxis.lineWidth = 0
         
         // get and set data
-        let wordChoiceRaw = snapshot.getTopLevelRawValue(forSummaryItem: .WordChoice) ?? 0
-        let backAndForthRaw = snapshot.getTopLevelRawValue(forSummaryItem: .BackAndForth) ?? 0
-        let connectionRaw = snapshot.getTopLevelRawValue(forSummaryItem: .Connection) ?? 0
-        let toneRaw = snapshot.getTopLevelRawValue(forSummaryItem: .ToneOfWords) ?? 0
         
-        cellInfo.append(SummaryCellInfo(title: "Word Choice", score: wordChoiceRaw))
-        cellInfo.append(SummaryCellInfo(title: "Back and Forth", score: backAndForthRaw))
-        cellInfo.append(SummaryCellInfo(title: "Connection", score: connectionRaw))
-        cellInfo.append(SummaryCellInfo(title: "Tone of Words", score: toneRaw))
+        // ctn / eng score values
+        let concreteDetailsEngScore = snapshot.getTopLevelScoreValue(forSummaryItem: .WordChoice) ?? 0
+        let backAndForthEngScore = snapshot.getTopLevelScoreValue(forSummaryItem: .BackAndForth) ?? 0
+        let connectionCtnScore = snapshot.getTopLevelScoreValue(forSummaryItem: .Connection) ?? 0
+        let toneCtnScore = snapshot.getTopLevelScoreValue(forSummaryItem: .ToneOfWords) ?? 0
+        
+        // raw score values
+        let concreteDetailsRawScore = snapshot.getTopLevelScoreValue(forSummaryItem: .ConcretePercentage) ?? 0
+        let backAndForthRawScore = snapshot.getTopLevelScoreValue(forSummaryItem: .Talking) ?? 0
+        let connectionRawScore = snapshot.getTopLevelScoreValue(forSummaryItem: .ConnectionFirstPerson) ?? 0
+        let toneRawScore = snapshot.getTopLevelScoreValue(forSummaryItem: .PositiveWords) ?? 0
+        
+        // ctn / eng raw values
+        let concreteDetailsEngRaw = snapshot.getTopLevelRawValue(forSummaryItem: .WordChoice) ?? 0
+        let backAndForthEngRaw = snapshot.getTopLevelRawValue(forSummaryItem: .BackAndForth) ?? 0
+        let connectionCtnRaw = snapshot.getTopLevelRawValue(forSummaryItem: .Connection) ?? 0
+        let toneCtnRaw = snapshot.getTopLevelRawValue(forSummaryItem: .ToneOfWords) ?? 0
+        
+        // raw raw values
+        let concreteDetailsEngRawRaw = snapshot.getTopLevelRawLevelValue(forSummaryItem: .WordChoice) ?? 0
+        let backAndForthEngRawRaw = snapshot.getTopLevelRawLevelValue(forSummaryItem: .BackAndForth) ?? 0
+        let connectionCtnRawRaw = snapshot.getTopLevelRawLevelValue(forSummaryItem: .Connection) ?? 0
+        let toneCtnRawRaw = snapshot.getTopLevelRawLevelValue(forSummaryItem: .ToneOfWords) ?? 0
+        
+        
+        cellInfo.append(SummaryCellInfo(title: "Concrete Details", score: concreteDetailsEngRaw, percent: concreteDetailsEngRawRaw))
+        cellInfo.append(SummaryCellInfo(title: "Back and Forth", score: backAndForthEngRaw, percent: backAndForthEngRawRaw))
+        cellInfo.append(SummaryCellInfo(title: "Connection", score: connectionCtnRaw, percent: connectionCtnRawRaw))
+        cellInfo.append(SummaryCellInfo(title: "Tone of Words", score: toneCtnRaw, percent: toneCtnRawRaw))
+        cellInfo.append(SummaryCellInfo(title: "Smiling", score: toneCtnRaw, percent: toneCtnRawRaw))
         
         let area = HIArea()
         area.data = [
-            ["name": "Word Choice", "y": wordChoiceRaw],
-            ["name": "Back and Forth", "y": backAndForthRaw],
-            ["name": "Connection", "y": connectionRaw],
-            ["name": "Tone of Words", "y": toneRaw]
+            ["name": "Concrete Details", "y": concreteDetailsEngScore],
+            ["name": "Back and Forth", "y": backAndForthEngScore],
+            ["name": "Connection", "y": connectionCtnScore],
+            ["name": "Positivity", "y": toneCtnScore],
+            ["name": "Smiling", "y": toneCtnScore]
         ]
         area.pointPlacement = "on"
+        
+        let line = HILine()
+        line.data = [
+            ["name": "Concrete Details", "y": concreteDetailsRawScore],
+            ["name": "Back and Forth", "y": backAndForthRawScore],
+            ["name": "Connection", "y": connectionRawScore],
+            ["name": "Positivity", "y": toneRawScore],
+            ["name": "Smiling", "y": toneCtnScore]
+        ]
         
         // hide hamburger button
         let navigation = HINavigation()
@@ -145,7 +178,7 @@ class ReviewSummaryViewController: UIViewController {
         options.legend = legend
         options.yAxis = [yAxis]
         options.xAxis = [xAxis]
-        options.series = [area]
+        options.series = [area, line]
         chartView.options = options
         
         // load data into tableview
@@ -173,7 +206,35 @@ extension ReviewSummaryViewController: UITableViewDelegate, UITableViewDataSourc
         let cell = tableView.dequeueReusableCell(withIdentifier: CellID.SummaryMetric, for: indexPath) as! SummaryMetricTableViewCell
         let info = cellInfo[indexPath.row]
         cell.lblMetric.text = info.title
-        cell.lblScore.text = info.scoreString
+        
+        var header = ""
+        
+        switch info.title {
+        case "Concrete Details":
+            header = "Estimated Engagement:"
+            cell.lblScoreDetail.isHidden = true
+        case "Back and Forth":
+            cell.lblScoreDetail.text = "Talking Time"
+            cell.lblScoreDetail.isHidden = false
+            header = "Estimated Engagement:"
+        case "Connection":
+            cell.lblScoreDetail.text = "First Person"
+            cell.lblScoreDetail.isHidden = false
+            header = "Estimated Connection:"
+        case "Positivity":
+            cell.lblScoreDetail.isHidden = true
+            header = "Estimated Connection:"
+        case "Smiling":
+            cell.lblScoreDetail.isHidden = true
+            header = "Last Snapshot:"
+        default:
+            cell.lblScoreDetail.isHidden = true
+        }
+        
+        cell.lblMetricDetail.text = "\(header) \(info.scoreString)"
+        cell.lblScore.text = info.percentString
+        
+        
         return cell
     }
     

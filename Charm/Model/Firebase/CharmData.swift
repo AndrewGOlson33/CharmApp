@@ -66,6 +66,13 @@ struct Snapshot: Codable {
         return summaryItem.rank
     }
     
+    func getTopLevelScoreValue(forSummaryItem item: SummaryItem) -> Double? {
+        guard let summaryItem = topLevelMetrics.first(where: { (metric) -> Bool in
+            return metric.metric == item.rawValue
+        }) else { return nil }
+        return summaryItem.score
+    }
+    
 }
 
 // MARK: - Top Level Data
@@ -75,12 +82,14 @@ struct TopLevelMetric: Codable {
     var metric: String
     var rank: Double
     var raw: Double
+    var score: Double?
     
     // coding keys to how data is stored on firebase
     enum CodingKeys: String, CodingKey {
         case metric = "Metric"
         case rank = "Rank"
         case raw = "Raw"
+        case score = "Score"
     }
 }
 
@@ -159,13 +168,20 @@ struct Transcript: Codable {
 struct SummaryCellInfo {
     var title: String
     var score: Double
+    var percent: Double
+    
     var scoreString: String {
         return "\(score)"
     }
     
-    init(title: String, score: Double) {
+    var percentString: String {
+        return "\((percent * 100).rounded())%"
+    }
+    
+    init(title: String, score: Double, percent: Double) {
         self.title = title
         self.score = score
+        self.percent = percent
     }
     
 }

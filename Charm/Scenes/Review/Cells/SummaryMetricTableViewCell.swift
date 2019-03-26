@@ -11,6 +11,8 @@ import UIKit
 class SummaryMetricTableViewCell: UITableViewCell {
     
     @IBOutlet weak var lblMetric: UILabel!
+    @IBOutlet weak var lblMetricDetail: UILabel!
     @IBOutlet weak var lblScore: UILabel!
-
+    @IBOutlet weak var lblScoreDetail: UILabel!
+    
 }
