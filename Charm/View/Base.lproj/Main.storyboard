@@ -766,7 +766,7 @@
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="bee-XJ-vaI"/>
                     </view>
-                    <tabBarItem key="tabBarItem" title="Emotions" image="icn_emotions" id="MDZ-61-Y6J"/>
+                    <tabBarItem key="tabBarItem" title="Tone" image="icn_emotions" id="MDZ-61-Y6J"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ruP-tO-Wat" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -1466,7 +1466,7 @@
         <image name="icn_wordchoice" width="23" height="23"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="ZLg-Dm-URE"/>
+        <segue reference="RVB-Hc-N14"/>
         <segue reference="Tm4-2t-woS"/>
     </inferredMetricsTieBreakers>
 </document>

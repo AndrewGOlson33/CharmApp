@@ -99,7 +99,12 @@ class DetailChartViewController: UIViewController {
         // setup data based on type
         switch chartType! {
         case .WordChoice:
-            // TODO: - Enable setting up chart data once we can do that
+            let wordChoice = snapshot.wordChoice
+            // setup chart data
+            for (index, item) in wordChoice.enumerated() {
+                chartData.append([index, item.score])
+                transcript.append(TranscriptCellInfo(withText: "[\(index)]: \(item.word)"))
+            }
             
             // setup scale bar data
             if let engagementRaw = snapshot.getTopLevelRawValue(forSummaryItem: .WordChoice), let engagementLevel = snapshot.getTopLevelRawLevelValue(forSummaryItem: .WordChoice) {

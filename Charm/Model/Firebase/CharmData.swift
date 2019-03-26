@@ -32,6 +32,7 @@ struct Snapshot: Codable {
     
     var dateString: String?
     var topLevelMetrics: [TopLevelMetric]
+    var wordChoice: [WordChoice]
     var backAndForth: [BackAndForth]
     var connection: [PersonalPronouns]
     var graphTone: [Sentiment]
@@ -42,6 +43,7 @@ struct Snapshot: Codable {
     
     enum CodingKeys: String, CodingKey {
         case topLevelMetrics = "topLevelMetrics"
+        case wordChoice = "Concrete"
         case backAndForth = "BackandForth"
         case connection = "PersonalPronouns"
         case graphTone = "sentimentAll"
@@ -96,8 +98,14 @@ struct TopLevelMetric: Codable {
 // MARK: - Word Choice Data
 
 struct WordChoice: Codable {
-    // TODO: - Finish after data errors are corrected
+    var score: Double
+    var word: String
     
+    // coding keys to how data is stored on firebase
+    enum CodingKeys: String, CodingKey {
+        case score = "ema3"
+        case word = "word"
+    }
 }
 
 // MARK: - Back and Forth
