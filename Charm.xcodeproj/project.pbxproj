@@ -86,6 +86,7 @@
 		657E72072243F4A7001EE828 /* TrainingData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainingData.swift; sourceTree = "<group>"; };
 		65B872A722302BE0001705B3 /* CharmUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CharmUser.swift; sourceTree = "<group>"; };
 		65B872A922302CF1001705B3 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		65BD506A2252BFE7001E3A66 /* Charm.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Charm.entitlements; sourceTree = "<group>"; };
 		65C1705B223FCD030081B55F /* CharmData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CharmData.swift; sourceTree = "<group>"; };
 		65C55C1922314C7A00336243 /* ChatTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatTableViewController.swift; sourceTree = "<group>"; };
 		65C55C1B22315EED00336243 /* FriendListTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendListTableViewController.swift; sourceTree = "<group>"; };
@@ -295,6 +296,7 @@
 		65F5A020222FF8A8001262FB /* Charm */ = {
 			isa = PBXGroup;
 			children = (
+				65BD506A2252BFE7001E3A66 /* Charm.entitlements */,
 				65726423223007FE008D9ED4 /* Model */,
 				6572641F2230061D008D9ED4 /* Scenes */,
 				6572641E223004DD008D9ED4 /* View */,
@@ -350,6 +352,11 @@
 					65F5A01D222FF8A8001262FB = {
 						CreatedOnToolsVersion = 10.1;
 						LastSwiftMigration = 1020;
+						SystemCapabilities = {
+							com.apple.Push = {
+								enabled = 1;
+							};
+						};
 					};
 				};
 			};
@@ -656,6 +663,7 @@
 			baseConfigurationReference = 32AEF01E8A1AE05F8906832B /* Pods-Charm.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Charm/Charm.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = ZJ769HHQS2;
 				INFOPLIST_FILE = Charm/Info.plist;
@@ -676,6 +684,7 @@
 			baseConfigurationReference = 70F986996E3218D755A9790F /* Pods-Charm.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Charm/Charm.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = ZJ769HHQS2;
 				INFOPLIST_FILE = Charm/Info.plist;

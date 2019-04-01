@@ -157,6 +157,8 @@ class DetailChartViewController: UIViewController {
                 // add chart data
                 if let value = item.adjustedAverage {
                     chartData.append([index, value])
+                } else {
+                    chartData.append([index, 0])
                 }
             }
             
@@ -375,7 +377,7 @@ extension DetailChartViewController: UITableViewDelegate, UITableViewDataSource 
             label.point.xAxis = 0
             label.point.yAxis = 0
             label.point.x = item[0] as? NSNumber
-            label.point.y = item[1] as? NSNumber
+            label.point.y = item[1] as? NSNumber ?? 0
             label.text = words
             annotations.labels.append(label)
             annotations.id = "annotation"
