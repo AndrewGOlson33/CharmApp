@@ -33,36 +33,41 @@ class ReviewSummaryViewController: UIViewController {
         
         // setup date formatter
         dFormatter.dateStyle = .medium
-        
-        // load summary data
-        guard let data = UserSnapshotData.shared.snapshots.first else {
-            viewNoSnapshots.alpha = 0.0
-            viewNoSnapshots.isHidden = false
-            UIView.animate(withDuration: 0.25) {
-                self.viewNoSnapshots.alpha = 1.0
-            }
-            
-            // disable tab bar buttons
-            if let items = tabBarController?.tabBar.items {
-                for item in items {
-                    item.isEnabled = false
-                }
-            }
-            
-            return
-        }
-        
-        // Set data
-        snapshot = data
-        UserSnapshotData.shared.selectedSnapshot = snapshot
-        
-        // setup chart
-        setupSummaryChart()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         tabBarController?.navigationItem.title = "Summary"
+        
+        // load summary data
+        if snapshot == nil {
+            guard let data = UserSnapshotData.shared.snapshots.first else {
+                viewNoSnapshots.alpha = 0.0
+                viewNoSnapshots.isHidden = false
+                UIView.animate(withDuration: 0.25) {
+                    self.viewNoSnapshots.alpha = 1.0
+                }
+                
+                // disable tab bar buttons
+                if let items = tabBarController?.tabBar.items {
+                    for item in items {
+                        item.isEnabled = false
+                    }
+                }
+                
+                return
+            }
+            
+            // Set data
+            snapshot = data
+            UserSnapshotData.shared.selectedSnapshot = snapshot
+        } else {
+            snapshot = UserSnapshotData.shared.selectedSnapshot
+        }
+        
+        
+        // setup chart
+        setupSummaryChart()
     }
     
 
@@ -72,6 +77,9 @@ class ReviewSummaryViewController: UIViewController {
             // No data case is handled in load methods (will show a screen overlay with label saying there are no snapshots)
             return
         }
+        
+        // clear out cell info array so we don't add a ton of unwanted cell
+        cellInfo = []
         
         // Setup Chart
         let options = HIOptions()
@@ -259,6 +267,8 @@ extension ReviewSummaryViewController: UITableViewDelegate, UITableViewDataSourc
         
         if indexPath.row < 4 {
             tabBarController?.selectedIndex = indexPath.row + 1
+        } else if indexPath.row == 5 {
+            performSegue(withIdentifier: SegueID.SnapshotsList, sender: self)
         }
     }
     

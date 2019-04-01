@@ -16,6 +16,7 @@
 		650E9F532245443A000EADEE /* ConversationTrainingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 650E9F522245443A000EADEE /* ConversationTrainingViewController.swift */; };
 		650E9F55224550AA000EADEE /* ChatTrainingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 650E9F54224550AA000EADEE /* ChatTrainingViewModel.swift */; };
 		650E9F5722455885000EADEE /* ScorePhrase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 650E9F5622455885000EADEE /* ScorePhrase.swift */; };
+		654382FE224A8D860020336A /* SnapshotsListTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 654382FD224A8D860020336A /* SnapshotsListTableViewController.swift */; };
 		6543FF0F223A8462003FC625 /* LearningTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6543FF0E223A8462003FC625 /* LearningTableViewController.swift */; };
 		6543FF11223A8AAB003FC625 /* LearningVideo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6543FF10223A8AAB003FC625 /* LearningVideo.swift */; };
 		6543FF13223A8D02003FC625 /* LearningVideoViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6543FF12223A8D02003FC625 /* LearningVideoViewModel.swift */; };
@@ -63,6 +64,7 @@
 		650E9F522245443A000EADEE /* ConversationTrainingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationTrainingViewController.swift; sourceTree = "<group>"; };
 		650E9F54224550AA000EADEE /* ChatTrainingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatTrainingViewModel.swift; sourceTree = "<group>"; };
 		650E9F5622455885000EADEE /* ScorePhrase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScorePhrase.swift; sourceTree = "<group>"; };
+		654382FD224A8D860020336A /* SnapshotsListTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnapshotsListTableViewController.swift; sourceTree = "<group>"; };
 		6543FF0E223A8462003FC625 /* LearningTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LearningTableViewController.swift; sourceTree = "<group>"; };
 		6543FF10223A8AAB003FC625 /* LearningVideo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LearningVideo.swift; sourceTree = "<group>"; };
 		6543FF12223A8D02003FC625 /* LearningVideoViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LearningVideoViewModel.swift; sourceTree = "<group>"; };
@@ -140,6 +142,7 @@
 				657330DB224164490066624B /* ConnectionViewController.swift */,
 				654B5D132241754900C34352 /* EmotionsViewController.swift */,
 				654B5D1522417A8E00C34352 /* WordChoiceViewController.swift */,
+				654382FD224A8D860020336A /* SnapshotsListTableViewController.swift */,
 			);
 			path = Review;
 			sourceTree = "<group>";
@@ -346,6 +349,7 @@
 				TargetAttributes = {
 					65F5A01D222FF8A8001262FB = {
 						CreatedOnToolsVersion = 10.1;
+						LastSwiftMigration = 1020;
 					};
 				};
 			};
@@ -483,6 +487,7 @@
 				65C1705C223FCD030081B55F /* CharmData.swift in Sources */,
 				65C55C1C22315EED00336243 /* FriendListTableViewController.swift in Sources */,
 				65EADDD522302FE900593F9D /* Protocols.swift in Sources */,
+				654382FE224A8D860020336A /* SnapshotsListTableViewController.swift in Sources */,
 				657330D4224149FA0066624B /* BackAndForthViewController.swift in Sources */,
 				65030B78224948FE00079AFC /* ConcreteChatViewController.swift in Sources */,
 				6572642222300640008D9ED4 /* MainMenuViewController.swift in Sources */,
@@ -661,7 +666,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.charismaanalytics.Charm;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -681,7 +686,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.charismaanalytics.Charm;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;

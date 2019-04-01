@@ -11,7 +11,13 @@ import Firebase
 import CodableFirebase
 
 struct UserSnapshotData {
-    var snapshots: [Snapshot] = []
+    var snapshots: [Snapshot] = [] {
+        didSet {
+            snapshots.sort { (lhs, rhs) -> Bool in
+                lhs.date ?? Date.distantPast > rhs.date ?? Date.distantPast
+            }
+        }
+    }
     var selectedSnapshot: Snapshot? = nil
     
     static var shared = UserSnapshotData()

@@ -24,6 +24,7 @@ enum SegueID {
     static let VideoCall = "sid_videocall"
     static let DetailChart = "sid_detailchart"
     static let TrainingChart = "sid_trainingchart"
+    static let SnapshotsList = "sid_allsnapshots"
 }
 
 enum StoryboardID {
@@ -41,6 +42,7 @@ enum CellID {
     static let ViewPrevious = "cid_previous"
     static let ScaleBar = "cid_scalebar"
     static let Transcript = "cid_transcript"
+    static let SnapshotList = "cid_allsnapshots"
 }
 
 enum Image {

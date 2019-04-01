@@ -132,7 +132,7 @@ class FriendListTableViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         guard let cell = tableView.cellForRow(at: indexPath) as? FriendListTableViewCell else { return }
-        if !cell.btnApprove.isHidden { cell.approveButtonTapped(cell.btnApprove) }
+        if !cell.btnApprove.isHidden { cell.approveButtonTapped(cell.btnApprove!) }
     }
     
     // prevent extra table view lines
@@ -193,7 +193,7 @@ extension FriendListTableViewController: UISearchResultsUpdating, UISearchBarDel
         return searchController.isActive && !searchBarIsEmpty()
     }
     
-    fileprivate func searchBarShouldEndEditing(_ searchBar: UISearchBar) -> Bool {
+    internal func searchBarShouldEndEditing(_ searchBar: UISearchBar) -> Bool {
         searchController.searchBar.resignFirstResponder()
         return true
     }

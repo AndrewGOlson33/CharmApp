@@ -47,6 +47,8 @@ class DetailChartViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        chartView.plugins = ["annotations"]
+        
         if let delegate = UIApplication.shared.delegate as? AppDelegate, let window = delegate.window, let nav = window.rootViewController as? UINavigationController {
             let constant = nav.navigationBar.frame.height
             chartViewHeight.constant = constant
@@ -301,6 +303,7 @@ class DetailChartViewController: UIViewController {
         
         chartView.options = options
         tableView.reloadData()
+        
     }
 
 }
@@ -354,6 +357,30 @@ extension DetailChartViewController: UITableViewDelegate, UITableViewDataSource 
         tableView.deselectRow(at: indexPath, animated: false)
         if let cell = tableView.cellForRow(at: indexPath) as? ScaleBarTableViewCell {
             setupPopover(for: cell)
+        } else if let cell = tableView.cellForRow(at: indexPath) as? TranscriptTableViewCell {
+            
+            // remove any old annotations
+            chartView.removeAnnotation(byId: "annotation")
+            
+            guard chartView.options.series[0].data.count > indexPath.row else { return }
+            
+            let words = cell.lblTranscriptText.text
+            let item = chartView.options.series[0].data[indexPath.row] as! [Any]
+            
+            let annotations = HIAnnotations()
+            annotations.labels = [HILabels]()
+            let label = HILabels()
+            label.align = "top"
+            label.point = HIPoint()
+            label.point.xAxis = 0
+            label.point.yAxis = 0
+            label.point.x = item[0] as? NSNumber
+            label.point.y = item[1] as? NSNumber
+            label.text = words
+            annotations.labels.append(label)
+            annotations.id = "annotation"
+            
+            self.chartView.addAnnotation(annotations, redraw: true)
         }
     }
     
