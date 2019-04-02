@@ -16,6 +16,7 @@ class MainMenuViewController: UIViewController {
     
     var isFirebaseConnected: Bool = true
     var firstSetup: Bool = true
+    var loadingFriendFromNotification: Bool = false
     
     // private vars for posting notifications
     private var shouldPostTrainingHistoryNotification: Bool = false
@@ -29,11 +30,31 @@ class MainMenuViewController: UIViewController {
         // Setup user observer
         setupUser()
         
+        // Setup added friend observer
+        NotificationCenter.default.addObserver(self, selector: #selector(addFriend(_:)), name: FirebaseNotification.GotFriendFromLink, object: nil)
+        
         // Setup user's snapshot data observer
         setupDataObserver()
         
         // Setup user's training history observer
         setupTrainingHistoryObserver()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        guard (UIApplication.shared.delegate as! AppDelegate).user != nil else {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                self.viewDidAppear(animated)
+                return
+            }
+            return
+        }
+        
+        if !self.loadingFriendFromNotification && !(UIApplication.shared.delegate as! AppDelegate).friendID.isEmpty {
+            print("~>Going to add friend using id.")
+            self.addFriend(withID: (UIApplication.shared.delegate as! AppDelegate).friendID)
+        }
     }
     
     // MARK: - Private Setup Functions
@@ -99,7 +120,7 @@ class MainMenuViewController: UIViewController {
                         } else if call.status == .rejected {
                             // remove the value first
                             if let videoVC = self.navigationController!.topViewController! as? VideoCallViewController {
-                                videoVC.endCallButtonTapped(videoVC.btnEndCall)
+                                videoVC.endCallButtonTapped(videoVC.btnEndCall!)
                             } else {
                                 call.myCallRef.removeValue()
                             }
@@ -199,6 +220,66 @@ class MainMenuViewController: UIViewController {
     
     @IBAction func chatButtonTapped(_ sender: Any) {
         performSegue(withIdentifier: SegueID.FriendList, sender: self)
+    }
+    
+    // MARK: - Add Friend From Deep Link
+    
+    @objc fileprivate func addFriend(_ notification: Notification) {
+        loadingFriendFromNotification = true
+        guard let id = notification.object as? String else { return }
+        addFriend(withID: id)
+    }
+    
+    fileprivate func addFriend(withID id: String) {
+        DispatchQueue.main.async {
+            // first move friend from received to current friends
+            guard var user = (UIApplication.shared.delegate as! AppDelegate).user else { return }
+            
+            if user.friendList?.currentFriends == nil { user.friendList?.currentFriends = [] }
+            
+            if user.friendList?.currentFriends?.contains(where: { (friend) -> Bool in
+                return friend.id == id
+            }) ?? false {
+                // friend already exists in list
+                print("~>That user is already your friend.")
+                let alert = UIAlertController(title: "Already Friends", message: "You are trying to add a friend that already exists in your contact list.", preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                self.navigationController?.present(alert, animated: true, completion: nil)
+                return
+            }
+            
+            // write data to firebase
+            
+            // finally move user from sent to current friends on friend's friend list'
+            guard let myID = user.id else { return }
+            
+            Database.database().reference().child(FirebaseStructure.Users).child(id).observeSingleEvent(of: .value) { (snapshot) in
+                guard let value = snapshot.value else { return }
+                // get the user object
+                var friendUser = try! FirebaseDecoder().decode(CharmUser.self, from: value)
+                if friendUser.friendList?.currentFriends == nil { friendUser.friendList?.currentFriends = [] }
+                let friendObject = Friend(id: id, first: friendUser.userProfile.firstName, last: friendUser.userProfile.lastName, email: friendUser.userProfile.email)
+                let meAsFriend = Friend(id: myID, first: user.userProfile.firstName, last: user.userProfile.lastName, email: user.userProfile.email)
+                
+                friendUser.friendList?.currentFriends?.append(meAsFriend)
+                user.friendList?.currentFriends?.append(friendObject)
+                
+                // write changes to firebase
+                do {
+                    let friendCurrent = try FirebaseEncoder().encode(friendUser.friendList!.currentFriends!)
+                    let myCurrent = try FirebaseEncoder().encode(user.friendList!.currentFriends!)
+                    Database.database().reference().child(FirebaseStructure.Users).child(id).child(FirebaseStructure.CharmUser.Friends).child(FirebaseStructure.CharmUser.FriendList.CurrentFriends).setValue(friendCurrent)
+                    
+                    Database.database().reference().child(FirebaseStructure.Users).child(myID).child(FirebaseStructure.CharmUser.Friends).child(FirebaseStructure.CharmUser.FriendList.CurrentFriends).setValue(myCurrent)
+                    
+                    self.loadingFriendFromNotification = false
+                    (UIApplication.shared.delegate as! AppDelegate).friendID = ""
+                    
+                } catch let error {
+                    print("~>Got an error: \(error)")
+                }
+            }
+        }
     }
 
 }
