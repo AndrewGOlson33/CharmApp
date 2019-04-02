@@ -241,8 +241,23 @@ class MainMenuViewController: UIViewController {
                 return friend.id == id
             }) ?? false {
                 // friend already exists in list
-                print("~>That user is already your friend.")
                 let alert = UIAlertController(title: "Already Friends", message: "You are trying to add a friend that already exists in your contact list.", preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                self.navigationController?.present(alert, animated: true, completion: nil)
+                return
+            } else if user.friendList?.pendingSentApproval?.contains(where: { (friend) -> Bool in
+                return friend.id == id
+            }) ?? false {
+                // friend already exists in list
+                let alert = UIAlertController(title: "Already Have Pending Request", message: "You have already sent this user a friend request.", preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                self.navigationController?.present(alert, animated: true, completion: nil)
+                return
+            } else if user.friendList?.pendingReceivedApproval?.contains(where: { (friend) -> Bool in
+                return friend.id == id
+            }) ?? false {
+                // friend already exists in list
+                let alert = UIAlertController(title: "Already Have Pending Request", message: "You already have a pending friend request from this user.  Please approve the request on your contacts list.", preferredStyle: .alert)
                 alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
                 self.navigationController?.present(alert, animated: true, completion: nil)
                 return
