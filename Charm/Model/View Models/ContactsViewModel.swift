@@ -607,34 +607,93 @@ extension ContactsViewModel: FriendManagementDelegate {
     }
     
     func sendTextRequest(toFriend friend: Friend) {
-        let navVC = (UIApplication.shared.delegate as! AppDelegate).window!.rootViewController as! UINavigationController
-        let alert = UIAlertController(title: "", message: "", preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: nil))
         
-        guard MFMessageComposeViewController.canSendText() else {
-            alert.title = "Error Adding Friend"
-            alert.message = "This device is not setup for sending text messages."
-            return
+        // setup deep link
+        guard let id = user?.id, let me = user?.userProfile, let url = URL(string: "https://blaumagier.com/friendinvite?id=\(id)") else { return }
+        guard let deepComponents = DynamicLinkComponents(link: url, domainURIPrefix: FirebaseStructure.DeepLinks.PrefixURL) else {
+            print("~>Unable to create deep components.")
+            return }
+        
+        // start activity
+        
+        let window = UIApplication.shared.keyWindow!
+        let viewActivity = UIActivityIndicatorView(style: .whiteLarge)
+        viewActivity.center = window.center
+        viewActivity.color = #colorLiteral(red: 0.2799556553, green: 0.2767689228, blue: 0.3593277335, alpha: 1)
+        viewActivity.hidesWhenStopped = true
+        
+        window.addSubview(viewActivity)
+        window.bringSubviewToFront(viewActivity)
+        
+        viewActivity.startAnimating()
+        
+        let iOSParams = DynamicLinkIOSParameters(bundleID: FirebaseStructure.DeepLinks.BundleID)
+        iOSParams.minimumAppVersion = FirebaseStructure.DeepLinks.MinAppVersion
+        iOSParams.appStoreID = FirebaseStructure.DeepLinks.AppStoreID
+        deepComponents.iOSParameters = iOSParams
+        
+        // setup social media meta tags
+        let metaTags = DynamicLinkSocialMetaTagParameters()
+        metaTags.title = "Become Friends With: \(me.firstName) on Charm"
+        metaTags.descriptionText = "If you have Charm installed, tapping on the button will open the app, and add \(me.firstName) as a friend.\nIf you don't have Charm installed, you will be taken to the app store, and \(me.firstName) will be added after you launch Charm for the first time."
+        metaTags.imageURL = URL(string: "https://vignette.wikia.nocookie.net/megaman/images/3/30/MM11-MegaMan.png/revision/latest?cb=20180910220201")
+        deepComponents.socialMetaTagParameters = metaTags
+        
+        // build a short dynamic link
+        let options = DynamicLinkComponentsOptions()
+        options.pathLength = .unguessable
+        deepComponents.options = options
+        
+        deepComponents.shorten { (shorturl, warnings, error) in
+            
+            if let error = error {
+                print(error.localizedDescription)
+                print(error)
+                viewActivity.stopAnimating()
+                return
+            }
+            
+            guard let shortLink = shorturl else {
+                print("Unable to get short link url, even though there was no error")
+                viewActivity.stopAnimating()
+                return
+            }
+            
+            let navVC = (UIApplication.shared.delegate as! AppDelegate).window!.rootViewController as! UINavigationController
+            let alert = UIAlertController(title: "", message: "", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: nil))
+            
+            guard MFMessageComposeViewController.canSendText() else {
+                alert.title = "Error Adding Friend"
+                alert.message = "This device is not setup for sending text messages."
+                navVC.present(alert, animated: true, completion: nil)
+                viewActivity.stopAnimating()
+                return
+            }
+            
+            // this should succeed 100% of the time, so user will never see this error
+            guard let phone = friend.phone else {
+                alert.title = "Error Adding Friend"
+                alert.message = "Unable to add friend at this time.  Please restart the app and try again."
+                navVC.present(alert, animated: true, completion: nil)
+                viewActivity.stopAnimating()
+                return
+            }
+            
+            // setup message
+            let composeVC = MFMessageComposeViewController()
+            composeVC.messageComposeDelegate = self
+            
+            // Configure the fields of the interface.
+            composeVC.recipients = [phone]
+            //        let url = "https://www.blaumagier.com"
+            composeVC.body = "Click the link to add me as a friend on Charm, the app that teaches you how to be more charming!  If you don't have Charm, the link will open the App Store page so you can download it first.\n\n\(shortLink)"
+            
+            // Present the view controller modally.
+            navVC.present(composeVC, animated: true, completion: {
+                viewActivity.stopAnimating()
+            })
         }
-        
-        // this should succeed 100% of the time, so user will never see this error
-        guard let phone = friend.phone else {
-            alert.title = "Error Adding Friend"
-            alert.message = "Unable to add friend at this time.  Please restart the app and try again."
-            return
-        }
-        
-        // setup message
-        let composeVC = MFMessageComposeViewController()
-        composeVC.messageComposeDelegate = self
-        
-        // Configure the fields of the interface.
-        composeVC.recipients = [phone]
-        let url = "https://www.blaumagier.com"
-        composeVC.body = "Click the link to add me as a friend on Charm, the app that teaches you how to be more charming!  If you don't have Charm, the link will open the App Store page so you can download it first.\n\(url)"
-        
-        // Present the view controller modally.
-        navVC.present(composeVC, animated: true, completion: nil)
     }
     
 }

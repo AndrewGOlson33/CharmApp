@@ -143,6 +143,13 @@ enum FirebaseStructure {
         static let ConcreteHistory = "concreteAverage"
         static let SandboxHistory = "sandboxHistory"
     }
+    
+    enum DeepLinks {
+        static let PrefixURL = "https://charismaanalytics.page.link"
+        static let BundleID = "com.charismaanalytics.Charm"
+        static let MinAppVersion = "1.0"
+        static let AppStoreID = "1458415097"
+    }
 }
 
 // MARK: - Notifications
@@ -152,6 +159,7 @@ enum FirebaseNotification {
     static let CharmUserIncomingCall = Notification.Name("notificationCharmUserHasIncomingCall")
     static let TrainingModelLoaded = Notification.Name("flashcardsModelHasLoaded")
     static let TrainingHistoryUpdated = Notification.Name("trainingHistoryHasUpdates")
+    static let GotFriendFromLink = Notification.Name("gotFriendFromLink")
 }
 
 // MARK: - Database Constants

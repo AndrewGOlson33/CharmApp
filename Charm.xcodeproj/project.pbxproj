@@ -36,8 +36,8 @@
 		657E72022243DF50001EE828 /* ConcreteFlashcardsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 657E72012243DF50001EE828 /* ConcreteFlashcardsViewController.swift */; };
 		657E72062243F41B001EE828 /* FlashcardsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 657E72052243F41B001EE828 /* FlashcardsViewModel.swift */; };
 		657E72082243F4A7001EE828 /* TrainingData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 657E72072243F4A7001EE828 /* TrainingData.swift */; };
+		65AC04002253CD8D0051B4C2 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 65AC03FF2253CD8D0051B4C2 /* GoogleService-Info.plist */; };
 		65B872A822302BE0001705B3 /* CharmUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65B872A722302BE0001705B3 /* CharmUser.swift */; };
-		65B872AA22302CF2001705B3 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 65B872A922302CF1001705B3 /* GoogleService-Info.plist */; };
 		65C1705C223FCD030081B55F /* CharmData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65C1705B223FCD030081B55F /* CharmData.swift */; };
 		65C55C1A22314C7A00336243 /* ChatTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65C55C1922314C7A00336243 /* ChatTableViewController.swift */; };
 		65C55C1C22315EED00336243 /* FriendListTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65C55C1B22315EED00336243 /* FriendListTableViewController.swift */; };
@@ -84,8 +84,8 @@
 		657E72012243DF50001EE828 /* ConcreteFlashcardsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConcreteFlashcardsViewController.swift; sourceTree = "<group>"; };
 		657E72052243F41B001EE828 /* FlashcardsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlashcardsViewModel.swift; sourceTree = "<group>"; };
 		657E72072243F4A7001EE828 /* TrainingData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainingData.swift; sourceTree = "<group>"; };
+		65AC03FF2253CD8D0051B4C2 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		65B872A722302BE0001705B3 /* CharmUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CharmUser.swift; sourceTree = "<group>"; };
-		65B872A922302CF1001705B3 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		65BD506A2252BFE7001E3A66 /* Charm.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Charm.entitlements; sourceTree = "<group>"; };
 		65C1705B223FCD030081B55F /* CharmData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CharmData.swift; sourceTree = "<group>"; };
 		65C55C1922314C7A00336243 /* ChatTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatTableViewController.swift; sourceTree = "<group>"; };
@@ -302,7 +302,7 @@
 				6572641E223004DD008D9ED4 /* View */,
 				65F5A021222FF8A8001262FB /* AppDelegate.swift */,
 				65F5A02D222FF8A9001262FB /* Info.plist */,
-				65B872A922302CF1001705B3 /* GoogleService-Info.plist */,
+				65AC03FF2253CD8D0051B4C2 /* GoogleService-Info.plist */,
 			);
 			path = Charm;
 			sourceTree = "<group>";
@@ -356,6 +356,9 @@
 							com.apple.Push = {
 								enabled = 1;
 							};
+							com.apple.SafariKeychain = {
+								enabled = 1;
+							};
 						};
 					};
 				};
@@ -384,7 +387,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				65F5A02C222FF8A9001262FB /* LaunchScreen.storyboard in Resources */,
-				65B872AA22302CF2001705B3 /* GoogleService-Info.plist in Resources */,
+				65AC04002253CD8D0051B4C2 /* GoogleService-Info.plist in Resources */,
 				65F5A029222FF8A9001262FB /* Assets.xcassets in Resources */,
 				65F5A027222FF8A8001262FB /* Main.storyboard in Resources */,
 			);
