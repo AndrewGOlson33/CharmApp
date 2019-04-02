@@ -42,6 +42,9 @@ class DetailChartViewController: UIViewController {
     var posData: [Any]? = nil
     var negData: [Any]? = nil
     
+    // Timer for hiding the annotation
+    var timer = Timer()
+    
     // MARK: - View Lifecycle Functions
 
     override func viewDidLoad() {
@@ -125,6 +128,8 @@ class DetailChartViewController: UIViewController {
             for (index, item) in backAndForth.enumerated() {
                 if let value = item.adjustedAvg {
                     chartData.append([index, value])
+                } else {
+                    chartData.append([index, 0])
                 }
             }
             
@@ -289,12 +294,15 @@ class DetailChartViewController: UIViewController {
             options.series = [area]
         }
         
+        let tooltip = HITooltip()
+        
         options.chart = chart
         options.title = title
         options.subtitle = subtitle
         options.legend = legend
         options.yAxis = [yaxis]
         options.plotOptions = plotoptions
+        options.tooltip = tooltip
         
         // hide hamburger button
         let navigation = HINavigation()
@@ -363,10 +371,19 @@ extension DetailChartViewController: UITableViewDelegate, UITableViewDataSource 
             
             // remove any old annotations
             chartView.removeAnnotation(byId: "annotation")
-            
             guard chartView.options.series[0].data.count > indexPath.row else { return }
             
-            let words = cell.lblTranscriptText.text
+            // hide the tooltip if it was showing
+            let options = chartView.options
+            options?.tooltip?.enabled = false
+            
+            chartView.update(options!)
+            
+            // enable tooltip to be displayed again
+            options?.tooltip?.enabled = true
+            chartView.update(options!)
+            
+            var words = cell.lblTranscriptText.text
             var item: [Any] = []
             
             if chartType! == .Emotions {
@@ -382,11 +399,40 @@ extension DetailChartViewController: UITableViewDelegate, UITableViewDataSource 
                 }
                 
                 
+            } else if chartType! == .BackAndForth {
+                var wordCount: Int = 0
+                for (index, transcript) in snapshot.transcript.enumerated() {
+                    let wordsToCount = transcript.words.components(separatedBy: .whitespacesAndNewlines).filter { !$0.isEmpty }
+                    if indexPath.row == index {
+                        if wordsToCount.count == 1 {
+                            words = wordsToCount.first!
+                        } else {
+                            words = ""
+                            for (index, word) in wordsToCount.enumerated() {
+                                words = "\(words!)\(word)"
+                                if index == 2 {
+                                    words = "\(words!)..."
+                                    break
+                                } else {
+                                    words = "\(words!) "
+                                }
+                            }
+                        }
+                        
+                        break
+                    } else {
+                        wordCount += wordsToCount.count
+                    }
+                    
+                }
+                
+                // prevent crashing in case the index is out of range
+                if wordCount >= chartView.options.series[0].data.count { wordCount = chartView.options.series[0].data.count - 1 }
+                
+                item = chartView.options.series[0].data[wordCount] as! [Any]
             } else {
                 item = chartView.options.series[0].data[indexPath.row] as! [Any]
             }
-            
-            
             
             let annotations = HIAnnotations()
             annotations.labels = [HILabels]()
@@ -402,6 +448,12 @@ extension DetailChartViewController: UITableViewDelegate, UITableViewDataSource 
             annotations.id = "annotation"
             
             self.chartView.addAnnotation(annotations, redraw: true)
+            
+            if timer.isValid { timer.invalidate() }
+            
+            timer = Timer.scheduledTimer(withTimeInterval: 2.5, repeats: false, block: { (_) in
+                self.chartView.removeAnnotation(byId: "annotation")
+            })
         }
     }
     
