@@ -39,7 +39,7 @@
     {
       "size" : "60x60",
       "idiom" : "iphone",
-      "filename" : "App IconiPhoneApp_60pt@2x-1.png",
+      "filename" : "App IconiPhoneApp_60pt@2x.png",
       "scale" : "2x"
     },
     {
@@ -81,7 +81,7 @@
     {
       "size" : "40x40",
       "idiom" : "ipad",
-      "filename" : "App IconiPadSpootlight7_40pt@2x.png",
+      "filename" : "App IconiPhoneSpootlight7_40pt@2x-1.png",
       "scale" : "2x"
     },
     {

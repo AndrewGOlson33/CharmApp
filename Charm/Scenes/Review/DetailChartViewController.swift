@@ -257,6 +257,19 @@ class DetailChartViewController: UIViewController {
         yaxis.title.text = "Word Score"
         yaxis.visible = true
         
+        switch chartType! {
+        case .BackAndForth, .Connection:
+            yaxis.min = -1.05
+            yaxis.max = 1.05
+            yaxis.tickInterval = 0.21
+        case .WordChoice:
+            yaxis.min = 0.0
+            yaxis.max = 1.05
+            yaxis.tickInterval = 0.21
+        default:
+            break
+        }
+        
         let legend = HILegend()
         legend.enabled = false
         
