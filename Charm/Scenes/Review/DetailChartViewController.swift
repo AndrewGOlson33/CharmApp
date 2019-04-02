@@ -367,7 +367,26 @@ extension DetailChartViewController: UITableViewDelegate, UITableViewDataSource 
             guard chartView.options.series[0].data.count > indexPath.row else { return }
             
             let words = cell.lblTranscriptText.text
-            let item = chartView.options.series[0].data[indexPath.row] as! [Any]
+            var item: [Any] = []
+            
+            if chartType! == .Emotions {
+                // find the correct data point
+                let toneGraph = snapshot.graphTone
+                let rawItem = snapshot.tableViewTone[indexPath.row]
+                for (index, toneItem) in toneGraph.enumerated() {
+                    if toneItem.word == rawItem.word && toneItem.roll3 == rawItem.roll3
+                        && toneItem.rollNeg3 == rawItem.rollNeg3 && toneItem.rollPos3 == rawItem.rollPos3 {
+                        // item was found, link them and be done
+                        item = chartView.options.series[0].data[index] as! [Any]
+                    }
+                }
+                
+                
+            } else {
+                item = chartView.options.series[0].data[indexPath.row] as! [Any]
+            }
+            
+            
             
             let annotations = HIAnnotations()
             annotations.labels = [HILabels]()
