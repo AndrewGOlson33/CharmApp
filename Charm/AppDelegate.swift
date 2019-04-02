@@ -88,10 +88,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, open url: URL, sourceApplication: String?, annotation: Any) -> Bool {
         print("~>Open.")
         if let dynamicLink = DynamicLinks.dynamicLinks().dynamicLink(fromCustomSchemeURL: url) {
-            // Handle the deep link. For example, show the deep-linked content or
-            // apply a promotional offer to the user's account.
-            // ...
-            print("~>Got dynamic link: \(dynamicLink)")
+            
+            guard let link = dynamicLink.url else { return false }
+            
+            let components = URLComponents(url: link, resolvingAgainstBaseURL: false)
+            
+            guard let friendID = components?.queryItems?.first(where: { $0.name == "id" })?.value else {
+                print("unable to get team id from url")
+                return false
+            }
+            
+            handleAddFriend(withID: friendID)
+            
             return true
         }
         return false
