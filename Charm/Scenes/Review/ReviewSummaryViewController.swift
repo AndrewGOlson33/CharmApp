@@ -150,7 +150,7 @@ class ReviewSummaryViewController: UIViewController {
         cellInfo.append(SummaryCellInfo(title: "Concrete Details", score: concreteDetailsEngRaw, percent: concreteDetailsEngRawRaw))
         cellInfo.append(SummaryCellInfo(title: "Back and Forth", score: backAndForthEngRaw, percent: backAndForthEngRawRaw))
         cellInfo.append(SummaryCellInfo(title: "Connection", score: connectionCtnRaw, percent: connectionCtnRawRaw))
-        cellInfo.append(SummaryCellInfo(title: "Tone of Words", score: toneCtnRaw, percent: toneCtnRawRaw))
+        cellInfo.append(SummaryCellInfo(title: "Emotions", score: toneCtnRaw, percent: toneCtnRawRaw))
         cellInfo.append(SummaryCellInfo(title: "Smiling", score: toneCtnRaw, percent: toneCtnRawRaw))
         
         let area = HIArea()
