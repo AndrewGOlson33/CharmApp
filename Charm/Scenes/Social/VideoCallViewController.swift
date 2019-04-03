@@ -15,6 +15,8 @@ class VideoCallViewController: UIViewController {
     
     // MARK: - IBOutlets
     
+    @IBOutlet weak var viewConnecting: UIView!
+    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     @IBOutlet weak var btnEndCall: UIButton!
     
     // MARK: - Properties
@@ -76,6 +78,13 @@ class VideoCallViewController: UIViewController {
         super.viewDidLoad()
       
         doTokenSetup()
+        
+        // round corners of connecting view
+        viewConnecting.layer.cornerRadius = 20
+        viewConnecting.layer.shadowColor = UIColor.white.cgColor
+        viewConnecting.layer.shadowRadius = 8
+        viewConnecting.layer.shadowOpacity = 0.6
+        viewConnecting.layer.shadowOffset = CGSize(width: 2, height: 2)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -102,6 +111,8 @@ class VideoCallViewController: UIViewController {
      * If a session ID is present, use that to start the call with
      */
     fileprivate func doTokenSetup() {
+        viewConnecting.isHidden = false
+        activityIndicator.startAnimating()
         if !kSessionId.isEmpty {
             getTokensForExistingSession()
         } else {
@@ -463,6 +474,14 @@ extension VideoCallViewController: OTSubscriberDelegate {
             subsView.frame = CGRect(x: 0, y: 0, width: kMainScreenWidth, height: kMainScreenHeight)
             view.addSubview(subsView)
             view.sendSubviewToBack(subsView)
+            
+            UIView.animate(withDuration: 0.5, animations: {
+                self.viewConnecting.alpha = 0.0
+                self.activityIndicator.stopAnimating()
+            }) { (_) in
+                self.viewConnecting.alpha = 1.0
+                self.viewConnecting.isHidden = true
+            }
         }
     }
     

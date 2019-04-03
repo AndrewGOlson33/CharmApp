@@ -400,21 +400,50 @@
                                     <action selector="endCallButtonTapped:" destination="M8q-z3-gMC" eventType="touchUpInside" id="NCH-pA-bX9"/>
                                 </connections>
                             </button>
+                            <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="QJq-R3-Z0Z">
+                                <rect key="frame" x="83" y="297" width="248" height="128"/>
+                                <subviews>
+                                    <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="whiteLarge" translatesAutoresizingMaskIntoConstraints="NO" id="N3A-ee-9RI">
+                                        <rect key="frame" x="105.5" y="45.5" width="37" height="37"/>
+                                        <color key="color" red="0.2784313725" green="0.2784313725" blue="0.36078431370000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    </activityIndicatorView>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Connecting Call..." textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3qu-zg-R8f">
+                                        <rect key="frame" x="8" y="90.5" width="232" height="21"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstItem="3qu-zg-R8f" firstAttribute="top" secondItem="N3A-ee-9RI" secondAttribute="bottom" constant="8" id="9o9-dS-B5M"/>
+                                    <constraint firstItem="N3A-ee-9RI" firstAttribute="centerX" secondItem="QJq-R3-Z0Z" secondAttribute="centerX" id="AhG-j1-JSZ"/>
+                                    <constraint firstItem="N3A-ee-9RI" firstAttribute="centerY" secondItem="QJq-R3-Z0Z" secondAttribute="centerY" id="ZcQ-uG-DfU"/>
+                                    <constraint firstAttribute="height" constant="128" id="m7U-rN-wvd"/>
+                                    <constraint firstAttribute="trailing" secondItem="3qu-zg-R8f" secondAttribute="trailing" constant="8" id="mrv-nh-DTt"/>
+                                    <constraint firstItem="3qu-zg-R8f" firstAttribute="leading" secondItem="QJq-R3-Z0Z" secondAttribute="leading" constant="8" id="nln-At-QIN"/>
+                                </constraints>
+                            </view>
                         </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
+                            <constraint firstItem="QJq-R3-Z0Z" firstAttribute="centerY" secondItem="osk-j0-Ppl" secondAttribute="centerY" id="1de-Kh-DDn"/>
+                            <constraint firstItem="QJq-R3-Z0Z" firstAttribute="width" secondItem="7mE-Ca-f23" secondAttribute="width" multiplier="0.6" id="2ho-mH-KfG"/>
+                            <constraint firstItem="QJq-R3-Z0Z" firstAttribute="centerX" secondItem="osk-j0-Ppl" secondAttribute="centerX" id="8hI-4Y-ebi"/>
                             <constraint firstItem="osk-j0-Ppl" firstAttribute="bottom" secondItem="aHz-JH-29W" secondAttribute="bottom" constant="20" id="jfz-rk-gZo"/>
                             <constraint firstItem="aHz-JH-29W" firstAttribute="centerX" secondItem="osk-j0-Ppl" secondAttribute="centerX" id="o26-oo-U2w"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="osk-j0-Ppl"/>
                     </view>
                     <connections>
+                        <outlet property="activityIndicator" destination="N3A-ee-9RI" id="FRf-gb-W6B"/>
                         <outlet property="btnEndCall" destination="aHz-JH-29W" id="KoF-Pf-bkw"/>
+                        <outlet property="viewConnecting" destination="QJq-R3-Z0Z" id="Meq-x4-fpC"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Bjo-HO-Ez9" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2542" y="-574"/>
+            <point key="canvasLocation" x="2540.579710144928" y="-574.55357142857144"/>
         </scene>
         <!--Label Bubble View Controller-->
         <scene sceneID="ysl-Ii-i4J">
