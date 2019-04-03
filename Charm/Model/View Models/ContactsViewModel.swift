@@ -638,7 +638,7 @@ extension ContactsViewModel: FriendManagementDelegate {
         // setup social media meta tags
         let metaTags = DynamicLinkSocialMetaTagParameters()
         metaTags.title = "Become Friends With: \(me.firstName) on Charm"
-        metaTags.descriptionText = "If you have Charm installed the app will launch and add \(me.firstName) as a friend, otherwise it will download the app first."
+        metaTags.descriptionText = "Just launch the app after it has downloaded and \(me.firstName) will be added automatically."
         metaTags.imageURL = URL(string: "https://vignette.wikia.nocookie.net/megaman/images/3/30/MM11-MegaMan.png/revision/latest?cb=20180910220201")
         deepComponents.socialMetaTagParameters = metaTags
         
