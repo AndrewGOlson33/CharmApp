@@ -578,11 +578,14 @@ extension ContactsViewModel: FriendManagementDelegate {
             }
         
             let meAsFriend = Friend(id: self.user!.id!, first: self.user!.userProfile.firstName, last: self.user!.userProfile.lastName, email: self.user!.userProfile.email)
-        
+            
+            
+            if friendUser.friendList!.pendingReceivedApproval == nil { friendUser.friendList!.pendingReceivedApproval = [] }
             friendUser.friendList!.pendingReceivedApproval?.append(meAsFriend)
 
             // set friend user as a friend item, and add them to user's sent requests
             if self.user!.friendList == nil { self.user!.friendList = FriendList() }
+            if self.user!.friendList?.pendingSentApproval == nil { self.user!.friendList!.pendingSentApproval = [] }
             self.user!.friendList!.pendingSentApproval?.append(friend)
 
             do {

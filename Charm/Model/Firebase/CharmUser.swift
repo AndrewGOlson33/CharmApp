@@ -17,6 +17,7 @@ struct CharmUser: Codable, Identifiable {
     var friendList: FriendList?
     var currentCall: Call?
     var trainingData: TrainingHistory?
+    var tokenID: [String : Bool]? = nil
     
     init(first: String, last: String, email: String) {
         userProfile = UserProfile(first: first, last: last, email: email)

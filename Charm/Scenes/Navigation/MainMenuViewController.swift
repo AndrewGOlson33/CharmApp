@@ -38,6 +38,9 @@ class MainMenuViewController: UIViewController {
         
         // Setup user's training history observer
         setupTrainingHistoryObserver()
+        
+        // Upload Device Token
+        uploadDeviceToken()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -213,6 +216,41 @@ class MainMenuViewController: UIViewController {
             
             self.navigationController?.pushViewController(callVC, animated: true)
         }
+    }
+    
+    // MARK: - Upload User's Token For APNS Notifications
+    
+    fileprivate func uploadDeviceToken() {
+        DispatchQueue.main.async {
+            InstanceID.instanceID().instanceID { (result, error) in
+                if let error = error {
+                    print("~>Error fetching remote instance ID: \(error)")
+                } else if let result = result {
+                    
+                    print("~>Remote instance ID token: \(result.token)")
+                    if var user = (UIApplication.shared.delegate as! AppDelegate).user, let id = user.id {
+                        if user.tokenID == nil {
+                            user.tokenID = [result.token : true]
+                        } else if !user.tokenID!.contains(where: { (token) -> Bool in
+                            return token.key == result.token
+                        }) {
+                            user.tokenID![result.token] = true
+                        } else {
+                            // there is no need to be redundant, so just return
+                            return
+                        }
+                        print("~>User token set to: \(String(describing: user.tokenID))")
+                        do {
+                            let data = try FirebaseEncoder().encode(user)
+                            Database.database().reference().child(FirebaseStructure.Users).child(id).setValue(data)
+                        } catch let error {
+                            print("~>There was an error converting user: \(error)")
+                        }
+                    }
+                }
+            }
+        }
+        
     }
     
     
