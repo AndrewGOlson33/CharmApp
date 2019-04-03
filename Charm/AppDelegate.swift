@@ -18,6 +18,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var user: CharmUser! = nil
     var friendID: String = ""
     let gcmMessageIDKey = "gcm.message_id"
+    var restoreFromBackground = false
     
     // MARK: - App Delegate Functions
 
@@ -47,6 +48,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         
         return true
+    }
+    
+    func applicationWillResignActive(_ application: UIApplication) {
+        print("~>Will resign active")
+        restoreFromBackground = true
+    }
+    
+    func applicationDidEnterBackground(_ application: UIApplication) {
+        print("~>Did enter background")
+        restoreFromBackground = true
     }
     
     // [START receive_message]

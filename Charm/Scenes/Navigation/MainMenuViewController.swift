@@ -79,6 +79,11 @@ class MainMenuViewController: UIViewController {
     
     fileprivate func showConnectionAlert() {
         DispatchQueue.main.async {
+            let appDelegate = UIApplication.shared.delegate as! AppDelegate
+            if appDelegate.restoreFromBackground {
+                appDelegate.restoreFromBackground = false
+                return
+            }
             self.isFirebaseConnected = !self.isFirebaseConnected
             let title = self.isFirebaseConnected ? "Connection Restored" : "Connection Lost"
             let message = self.isFirebaseConnected ? "Connection to the database server has been restored." : "Lost connection to databse server.  Please check your internet connection."
