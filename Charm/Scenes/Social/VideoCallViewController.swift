@@ -470,19 +470,22 @@ extension VideoCallViewController: OTSubscriberDelegate {
     func subscriberDidConnect(toStream subscriberKit: OTSubscriberKit) {
         print("~>Subscriber did connect, setting up view.")
         callWasConnected = true
-        if let subsView = subscriber?.view {
-            subsView.frame = CGRect(x: 0, y: 0, width: kMainScreenWidth, height: kMainScreenHeight)
-            view.addSubview(subsView)
-            view.sendSubviewToBack(subsView)
-            
-            UIView.animate(withDuration: 0.5, animations: {
-                self.viewConnecting.alpha = 0.0
-                self.activityIndicator.stopAnimating()
-            }) { (_) in
-                self.viewConnecting.alpha = 1.0
-                self.viewConnecting.isHidden = true
+        DispatchQueue.main.async {
+            if let subsView = self.subscriber?.view {
+                subsView.frame = CGRect(x: 0, y: 0, width: self.kMainScreenWidth, height: self.kMainScreenHeight)
+                self.view.addSubview(subsView)
+                self.view.sendSubviewToBack(subsView)
+                
+                UIView.animate(withDuration: 0.5, animations: {
+                    self.viewConnecting.alpha = 0.0
+                    self.activityIndicator.stopAnimating()
+                }) { (_) in
+                    self.viewConnecting.alpha = 1.0
+                    self.viewConnecting.isHidden = true
+                }
             }
         }
+
     }
     
     func subscriber(_ subscriber: OTSubscriberKit, didFailWithError error: OTError) {
