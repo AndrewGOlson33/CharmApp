@@ -85,7 +85,7 @@ class FlashcardsViewModel: NSObject {
         }
     }
     
-    func getAverageScore(completion: @escaping(_ concreteHistory: ConcreteTrainingHistory) -> Void) {
+    func getAverageConcreteScore(completion: @escaping(_ concreteHistory: ConcreteTrainingHistory) -> Void) {
         // have to do this in main, as app delegate may only be accessed in main
         DispatchQueue.main.async {
             let delegate = UIApplication.shared.delegate as! AppDelegate
@@ -101,24 +101,43 @@ class FlashcardsViewModel: NSObject {
         }
     }
     
+    func getAverageEmotionsScore(completion: @escaping(_ emotionsHistory: EmotionsTrainingHistory) -> Void) {
+        // have to do this in main, as app delegate may only be accessed in main
+        DispatchQueue.main.async {
+            let delegate = UIApplication.shared.delegate as! AppDelegate
+            let user = delegate.user
+            if let trainingHistory = user?.trainingData {
+                if trainingHistory.emotionsAverage.numQuestions == 0 { self.shouldShowNA = true }
+                completion(trainingHistory.emotionsAverage)
+                self.shouldShowNA = false
+            } else {
+                self.shouldShowNA = true
+                completion(EmotionsTrainingHistory())
+            }
+        }
+    }
+    
     func calculateAverageScore(addingCorrect correct: Bool, toType type: FlashCardType = .Concrete) {
         // have to do this in main, as app delegate may only be accessed in main
         DispatchQueue.main.async {
             let delegate = UIApplication.shared.delegate as! AppDelegate
             guard let user = delegate.user, let uid = user.id else { return }
-            if var trainingHistory = user.trainingData {
+            
+            var trainingHistory = user.trainingData != nil ? user.trainingData! : TrainingHistory()
+            
+            switch type {
+            case .Concrete:
                 trainingHistory.concreteAverage.numQuestions += 1
                 if correct { trainingHistory.concreteAverage.numCorrect += 1 }
-                self.upload(trainingHistory: trainingHistory, forUid: uid)
-            } else {
-                var trainingHistory = TrainingHistory()
-                trainingHistory.concreteAverage.numQuestions += 1
-                if correct { trainingHistory.concreteAverage.numCorrect += 1 }
-                self.upload(trainingHistory: trainingHistory, forUid: uid)
+            case .Emotions:
+                trainingHistory.emotionsAverage.numQuestions += 1
+                if correct { trainingHistory.emotionsAverage.numCorrect += 1 }
             }
             
+            self.upload(trainingHistory: trainingHistory, forUid: uid)
         }
     }
+
     
     fileprivate func upload(trainingHistory history: TrainingHistory, forUid uid: String) {
         do {

@@ -72,8 +72,8 @@ class EmotionFlashcardsViewController: UIViewController {
         
         // setup scale bar
         scaleBar.setupBar(ofType: .Green, withValue: 0, andLabelPosition: 0)
-        viewModel.getAverageScore { (concreteScores) in
-            self.scaleBar.update(withValue: concreteScores.scoreValue, andCalculatedValue: concreteScores.averageScore)
+        viewModel.getAverageEmotionsScore { (emotionsScores) in
+            self.scaleBar.update(withValue: emotionsScores.scoreValue, andCalculatedValue: emotionsScores.averageScore)
             let tap = UITapGestureRecognizer(target: self, action: #selector(self.setupPopover))
             tap.numberOfTapsRequired = 1
             tap.numberOfTouchesRequired = 1
@@ -177,11 +177,13 @@ class EmotionFlashcardsViewController: UIViewController {
     // Updates UI When Training Data Updates
     
     @objc private func trainingHistoryUpdated() {
-        viewModel.getAverageScore { (newHistory) in
+        
+        viewModel.getAverageEmotionsScore { (newHistory) in
             DispatchQueue.main.async {
                 self.scaleBar.update(withValue: newHistory.scoreValue, andCalculatedValue: newHistory.averageScore)
             }
         }
+        
     }
     
     // Hande Updates After Answer is Submitted
@@ -193,7 +195,7 @@ class EmotionFlashcardsViewController: UIViewController {
     
     // Updates Score
     private func updateScore(withCorrectAnswer correct: Bool) {
-        viewModel.calculateAverageScore(addingCorrect: correct)
+        viewModel.calculateAverageScore(addingCorrect: correct, toType: .Emotions)
         
     }
     

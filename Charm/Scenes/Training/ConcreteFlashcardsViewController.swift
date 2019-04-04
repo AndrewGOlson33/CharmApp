@@ -69,7 +69,7 @@ class ConcreteFlashcardsViewController: UIViewController {
         
         // setup scale bar
         scaleBar.setupBar(ofType: .Green, withValue: 0, andLabelPosition: 0)
-        viewModel.getAverageScore { (concreteScores) in
+        viewModel.getAverageConcreteScore { (concreteScores) in
             self.scaleBar.update(withValue: concreteScores.scoreValue, andCalculatedValue: concreteScores.averageScore)
             let tap = UITapGestureRecognizer(target: self, action: #selector(self.setupPopover))
             tap.numberOfTapsRequired = 1
@@ -173,7 +173,7 @@ class ConcreteFlashcardsViewController: UIViewController {
     // Updates UI When Training Data Updates
     
     @objc private func trainingHistoryUpdated() {
-        viewModel.getAverageScore { (newHistory) in
+        viewModel.getAverageConcreteScore { (newHistory) in
             DispatchQueue.main.async {
                 self.scaleBar.update(withValue: newHistory.scoreValue, andCalculatedValue: newHistory.averageScore)
             }

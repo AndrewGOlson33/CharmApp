@@ -135,14 +135,42 @@ struct Friend: Codable, Identifiable {
 
 struct TrainingHistory: Codable {
     var concreteAverage: ConcreteTrainingHistory
+    var emotionsAverage: EmotionsTrainingHistory
     var sandboxHistory: SandboxTrainingHistory?
     
     init() {
         concreteAverage = ConcreteTrainingHistory()
+        emotionsAverage = EmotionsTrainingHistory()
     }
 }
 
 struct ConcreteTrainingHistory: Codable {
+    var numQuestions: Int = 0
+    var numCorrect: Int = 0
+    
+    var doubleNumQuestions: Double {
+        return Double(numQuestions)
+    }
+    
+    var doubleNumCorrect: Double {
+        return Double(numCorrect)
+    }
+    
+    // computed vars
+    var numWrong: Int {
+        return numQuestions - numCorrect
+    }
+    
+    var averageScore: Double {
+        return numQuestions == 0 ? 0.0 : Double(doubleNumCorrect / doubleNumQuestions)
+    }
+    
+    var scoreValue: Double {
+        return ceil(averageScore*100)/100
+    }
+}
+
+struct EmotionsTrainingHistory: Codable {
     var numQuestions: Int = 0
     var numCorrect: Int = 0
     

@@ -235,6 +235,7 @@ class SandboxViewController: UIViewController {
                 // append new data to the current user
                 // append process automatically removes anything past 10
                 // and also updates firebase
+                
                 if let sandboxHistory = history.sandboxHistory {
                     sandbox = sandboxHistory
                     sandbox.append(lastData)
