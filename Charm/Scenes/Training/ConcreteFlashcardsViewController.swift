@@ -320,6 +320,8 @@ extension ConcreteFlashcardsViewController: UIGestureRecognizerDelegate {
                 } else {
                     animate(view: btnAbstract, withLabel: lblAbstract, withColor: .black, toFrame: abstractFrame)
                 }
+                
+                lastTouchedButton = nil
             }
         } else if lastTouchedButton != nil {
             if lastTouchedButton == btnConcrete {
@@ -327,6 +329,8 @@ extension ConcreteFlashcardsViewController: UIGestureRecognizerDelegate {
             } else {
                 animate(view: btnAbstract, withLabel: lblAbstract, withColor: .black, toFrame: abstractFrame)
             }
+            
+            lastTouchedButton = nil
         }
     }
     

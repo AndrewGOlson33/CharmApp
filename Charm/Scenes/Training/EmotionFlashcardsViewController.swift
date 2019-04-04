@@ -82,7 +82,7 @@ class EmotionFlashcardsViewController: UIViewController {
         
         
         // Start animating activity view and turn on firebase listener
-        if viewModel.trainingModel.model.concreteNouns.count == 0 || viewModel.trainingModel.model.abstractNouns.count == 0 {
+        if viewModel.trainingModel.model.positiveWords.count == 0 || viewModel.trainingModel.model.negativeWords.count == 0 || viewModel.trainingModel.model.abstractNouns.count == 0 {
             viewLoading.layer.cornerRadius = 20
             viewLoading.isHidden = false
             activityIndicator.startAnimating()
@@ -268,6 +268,9 @@ extension EmotionFlashcardsViewController: UIGestureRecognizerDelegate {
             } else if neutralFrame.contains(touch.location(in: view)) {
                 animate(view: btnNeutral, withLabel: lblNeutral, withColor: .gray, toFrame: CGRect(x: neutralFrame.minX + 4, y: neutralFrame.minY + 4, width: neutralFrame.width, height: neutralFrame.height))
                 lastTouchedButton = btnNeutral
+            } else if negativeFrame.contains(touch.location(in: view)) {
+                animate(view: btnNegative, withLabel: lblNegative, withColor: .gray, toFrame: CGRect(x: negativeFrame.minX + 4, y: negativeFrame.minY + 4, width: negativeFrame.width, height: negativeFrame.height))
+                lastTouchedButton = btnNegative
             }
             
         }
@@ -291,6 +294,13 @@ extension EmotionFlashcardsViewController: UIGestureRecognizerDelegate {
                 // submit answer and get response
                 let response = viewModel.getResponse(answeredWith: .Neutral, forFlashcardType: .Emotions)
                 handle(response: response)
+            } else if negativeFrame.contains(touch.location(in: view)) {
+                animate(view: btnNegative, withLabel: lblNegative, withColor: .black, toFrame: negativeFrame)
+                lastTouchedButton = nil
+                
+                // submit answer and get response
+                let response = viewModel.getResponse(answeredWith: .Negative, forFlashcardType: .Emotions)
+                handle(response: response)
             }
         }
     }
@@ -303,7 +313,12 @@ extension EmotionFlashcardsViewController: UIGestureRecognizerDelegate {
                     
                     // if the last button was not nil, that means the user has slid off of another button
                     if lastTouchedButton != nil {
-                        animate(view: btnNeutral, withLabel: lblNeutral, withColor: .black, toFrame: neutralFrame)
+                        if lastTouchedButton == btnNeutral {
+                            animate(view: btnNeutral, withLabel: lblNeutral, withColor: .black, toFrame: neutralFrame)
+                        } else {
+                            animate(view: btnNegative, withLabel: lblNegative, withColor: .black, toFrame: negativeFrame)
+                        }
+                        
                     }
                     
                     // no matter what, the last touched button now becomes...
@@ -315,24 +330,52 @@ extension EmotionFlashcardsViewController: UIGestureRecognizerDelegate {
                     
                     // animate any deslection needed
                     if lastTouchedButton != nil {
-                        animate(view: btnPositive, withLabel: lblPositive, withColor: .black, toFrame: positiveFrame)
+                        if lastTouchedButton == btnPositive {
+                            animate(view: btnPositive, withLabel: lblPositive, withColor: .black, toFrame: positiveFrame)
+                        } else {
+                            animate(view: btnNegative, withLabel: lblNegative, withColor: .black, toFrame: negativeFrame)
+                        }
+                        
                     }
                     
                     lastTouchedButton = btnNeutral
                 }
+            } else if negativeFrame.contains(touch.location(in: view)) {
+                if lastTouchedButton != btnNegative {
+                    animate(view: btnNegative, withLabel: lblNegative, withColor: .gray, toFrame: CGRect(x: negativeFrame.minX + 4, y: negativeFrame.minY + 4, width: negativeFrame.width, height: negativeFrame.height))
+                    
+                    // animate any deslection needed
+                    if lastTouchedButton != nil {
+                        if lastTouchedButton == btnPositive {
+                            animate(view: btnPositive, withLabel: lblPositive, withColor: .black, toFrame: positiveFrame)
+                        } else {
+                            animate(view: btnNeutral, withLabel: lblNeutral, withColor: .black, toFrame: neutralFrame)
+                        }
+                    }
+                    
+                    lastTouchedButton = btnNegative
+                }
             } else if lastTouchedButton != nil {
                 if lastTouchedButton == btnPositive {
                     animate(view: btnPositive, withLabel: lblPositive, withColor: .black, toFrame: positiveFrame)
-                } else {
+                } else if lastTouchedButton == btnNeutral {
                     animate(view: btnNeutral, withLabel: lblNeutral, withColor: .black, toFrame: neutralFrame)
+                } else {
+                    animate(view: btnNegative, withLabel: lblNegative, withColor: .black, toFrame: negativeFrame)
                 }
+                
+                lastTouchedButton = nil
             }
         } else if lastTouchedButton != nil {
             if lastTouchedButton == btnPositive {
                 animate(view: btnPositive, withLabel: lblPositive, withColor: .black, toFrame: positiveFrame)
-            } else {
+            } else if lastTouchedButton == btnNeutral {
                 animate(view: btnNeutral, withLabel: lblNeutral, withColor: .black, toFrame: neutralFrame)
+            } else {
+                animate(view: btnNegative, withLabel: lblNegative, withColor: .black, toFrame: negativeFrame)
             }
+            
+            lastTouchedButton = nil
         }
     }
     
