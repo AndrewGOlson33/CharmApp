@@ -52,7 +52,7 @@ class ScaleBar: UIView {
             let percent = Int(value * 100)
             return "\(percent)%"
         } else {
-            return "\(value)%"
+            return value == 1.0 ? "100%" : "\(value)%"
         }
     }
     
