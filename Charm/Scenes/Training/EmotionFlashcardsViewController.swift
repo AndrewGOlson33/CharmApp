@@ -160,7 +160,7 @@ class EmotionFlashcardsViewController: UIViewController {
         NotificationCenter.default.removeObserver(self, name: FirebaseNotification.TrainingModelLoaded, object: nil)
         
         // setup first flashcard
-        lblWord.text = viewModel.getFlashCard().capitalizedFirst
+        lblWord.text = viewModel.getFlashCard(ofType: .Emotions).capitalizedFirst
         lblWord.alpha = 0.0
         lblWord.isHidden = false
         
@@ -218,7 +218,7 @@ class EmotionFlashcardsViewController: UIViewController {
     
     // Animation helper to setup new word
     private func updateFlashcard() {
-        let newWord = viewModel.getFlashCard().capitalizedFirst
+        let newWord = viewModel.getFlashCard(ofType: .Emotions).capitalizedFirst
         UIView.animate(withDuration: 0.25, delay: 0.25, animations: {
             self.lblWord.alpha = 0.0
         }) { (_) in
@@ -279,7 +279,7 @@ extension EmotionFlashcardsViewController: UIGestureRecognizerDelegate {
                 lastTouchedButton = nil
                 
                 // submit answer and get response
-                let response = viewModel.getResponse(answeredConcrete: true)
+                let response = viewModel.getResponse(answeredWith: .Positive, forFlashcardType: .Emotions)
                 handle(response: response)
                 
             } else if neutralFrame.contains(touch.location(in: view)) {
@@ -287,7 +287,7 @@ extension EmotionFlashcardsViewController: UIGestureRecognizerDelegate {
                 lastTouchedButton = nil
                 
                 // submit answer and get response
-                let response = viewModel.getResponse(answeredConcrete: false)
+                let response = viewModel.getResponse(answeredWith: .Neutral, forFlashcardType: .Emotions)
                 handle(response: response)
             }
         }

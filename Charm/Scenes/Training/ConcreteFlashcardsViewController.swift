@@ -275,7 +275,7 @@ extension ConcreteFlashcardsViewController: UIGestureRecognizerDelegate {
                 lastTouchedButton = nil
                 
                 // submit answer and get response
-                let response = viewModel.getResponse(answeredConcrete: true)
+                let response = viewModel.getResponse(answeredWith: .Concrete, forFlashcardType: .Concrete)
                 handle(response: response)
                 
             } else if abstractFrame.contains(touch.location(in: view)) {
@@ -283,7 +283,7 @@ extension ConcreteFlashcardsViewController: UIGestureRecognizerDelegate {
                 lastTouchedButton = nil
                 
                 // submit answer and get response
-                let response = viewModel.getResponse(answeredConcrete: false)
+                let response = viewModel.getResponse(answeredWith: .Abstract, forFlashcardType: .Concrete)
                 handle(response: response)
             }
         }

@@ -71,6 +71,22 @@ struct AbstractNoun: Codable {
     }
 }
 
+struct PositiveWord: Codable {
+    var word: String
+    
+    enum CodingKeys: String, CodingKey {
+        case word = "X3"
+    }
+}
+
+struct NegativeWord: Codable {
+    var word: String
+    
+    enum CodingKeys: String, CodingKey {
+        case word = "X3"
+    }
+}
+
 struct ConversationPrompts: Codable {
     var youSaid: String?
     var theySaid: String
