@@ -44,11 +44,12 @@ class LearningVideoViewModel: NSObject {
         cell.lblTitle?.text = "\(lesson) - \(video.title)"
         
         if cell.thumbnailImage == nil {
-            video.getThumbnailImage { (image) in
-                if let image = image {
+            if let image = video.thumbnailImage {
+                print("~>There is already an image.")
+                cell.thumbnailImage = image
+            } else {
+                video.getThumbnailImage { (image) in
                     cell.thumbnailImage = image
-                } else {
-                    print("~>Couldn't get image")
                 }
             }
         }

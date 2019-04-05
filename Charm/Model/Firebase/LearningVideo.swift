@@ -19,28 +19,48 @@ struct VideoSection: Codable {
     var videos: [LearningVideo]
 }
 
-struct LearningVideo: Codable {
+class LearningVideo: Codable {
     
     var title: String
     var url: String
     var thumbnail: String
     
+    private var imageData: Data?
+    var thumbnailImage: UIImage? {
+        if let data = imageData {
+            return UIImage(data: data)
+        } else {
+            return nil
+        }
+    }
+    
     // image to display
     func getThumbnailImage(completion: @escaping(_ image: UIImage?)->Void) {
-        let storageRef = Storage.storage()
-        storageRef.reference(forURL: thumbnail).downloadURL { (url, error) in
-            if let error = error {
-                print("~>Error getting reference url: \(error)")
-                completion(nil)
-            }
+        DispatchQueue.global(qos: .background).async {
             
-            let data = try? Data(contentsOf: url!)
-            if let realData = data {
+            let storageRef = Storage.storage()
+            
+            let imageRef = storageRef.reference(forURL: self.thumbnail)
+            
+            imageRef.getData(maxSize: 2 * 1024 * 1024, completion: { (data, error) in
+                if let error = error {
+                    print("~>There was an error: \(error)")
+                    completion(nil)
+                    return
+                }
+                
+                guard let realData = data else {
+                    completion(nil)
+                    return
+                }
+                
+                self.imageData = realData
                 completion(UIImage(data: realData))
-            } else {
-                completion(nil)
-            }
+                return
+                
+            })
         }
+        
         
     }
     
