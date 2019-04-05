@@ -23,12 +23,12 @@ class VideoTableViewCell: UITableViewCell {
     
     override func awakeFromNib() {
         super.awakeFromNib()
-        imgThumbnail.image = thumbnailImage ?? nil
+        imgThumbnail.image = thumbnailImage ?? UIImage(named: Image.Placeholder) ?? nil
         lblTitle.text = ""
     }
 
     override func prepareForReuse() {
-        imgThumbnail.image = thumbnailImage ?? nil
+        imgThumbnail.image = thumbnailImage ?? UIImage(named: Image.Placeholder) ?? nil
         lblTitle.text = ""
     }
 

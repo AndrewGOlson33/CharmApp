@@ -44,7 +44,6 @@ class LearningVideoViewModel: NSObject {
         if cell.thumbnailImage == nil {
             video.getThumbnailImage { (image) in
                 if let image = image {
-                    print("~>Got an image!")
                     cell.thumbnailImage = image
                 } else {
                     print("~>Couldn't get image")
