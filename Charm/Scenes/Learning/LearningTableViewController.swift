@@ -12,7 +12,7 @@ import Firebase
 
 class LearningTableViewController: UITableViewController {
     
-    let viewModel = LearningVideoViewModel()
+    let viewModel = LearningVideoViewModel.shared
 
     override func viewDidLoad() {
         super.viewDidLoad()

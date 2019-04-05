@@ -21,6 +21,8 @@ class LearningVideoViewModel: NSObject {
         return sections?.sections.count ?? 0
     }
     
+    static var shared = LearningVideoViewModel()
+    
     // MARK: - Class Init
     
     override init() {
