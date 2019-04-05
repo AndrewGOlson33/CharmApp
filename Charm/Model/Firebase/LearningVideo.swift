@@ -27,7 +27,6 @@ struct LearningVideo: Codable {
     
     // image to display
     func getThumbnailImage(completion: @escaping(_ image: UIImage?)->Void) {
-        print("~>Loading thumbnail from: \(thumbnail)")
         let storageRef = Storage.storage()
         storageRef.reference(forURL: thumbnail).downloadURL { (url, error) in
             if let error = error {
