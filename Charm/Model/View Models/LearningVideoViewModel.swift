@@ -34,12 +34,25 @@ class LearningVideoViewModel: NSObject {
         return sections.sections[section].videos.count
     }
     
-    func configure(cell: UITableViewCell, forIndexPath indexPath: IndexPath) -> UITableViewCell {
+    func configure(cell: VideoTableViewCell, forIndexPath indexPath: IndexPath) -> VideoTableViewCell {
         let video: LearningVideo = sections.sections[indexPath.section].videos[indexPath.row]
         
         let lessonNumber = indexPath.row + 1
         let lesson = "Lesson \(lessonNumber)"
-        cell.textLabel?.text = "\(lesson) - \(video.title)"
+        cell.lblTitle?.text = "\(lesson) - \(video.title)"
+        
+        if cell.thumbnailImage == nil {
+            video.getThumbnailImage { (image) in
+                if let image = image {
+                    print("~>Got an image!")
+                    cell.thumbnailImage = image
+                } else {
+                    print("~>Couldn't get image")
+                }
+            }
+        }
+        
+        
         return cell
     }
     

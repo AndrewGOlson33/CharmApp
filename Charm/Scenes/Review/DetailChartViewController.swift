@@ -474,6 +474,12 @@ extension DetailChartViewController: UITableViewDelegate, UITableViewDataSource 
         return 64
     }
     
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        if let cell = tableView.visibleCells.first, let indexPath = tableView.indexPath(for: cell) {
+            tableView(tableView, didSelectRowAt: indexPath)
+        }
+    }
+    
     private func getX(for bar: ScaleBar) -> CGFloat {
         let value = CGFloat(bar.calculatedValue)
         return bar.bounds.width * value

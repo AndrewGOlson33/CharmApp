@@ -23,5 +23,26 @@ struct LearningVideo: Codable {
     
     var title: String
     var url: String
+    var thumbnail: String
+    
+    // image to display
+    func getThumbnailImage(completion: @escaping(_ image: UIImage?)->Void) {
+        print("~>Loading thumbnail from: \(thumbnail)")
+        let storageRef = Storage.storage()
+        storageRef.reference(forURL: thumbnail).downloadURL { (url, error) in
+            if let error = error {
+                print("~>Error getting reference url: \(error)")
+                completion(nil)
+            }
+            
+            let data = try? Data(contentsOf: url!)
+            if let realData = data {
+                completion(UIImage(data: realData))
+            } else {
+                completion(nil)
+            }
+        }
+        
+    }
     
 }

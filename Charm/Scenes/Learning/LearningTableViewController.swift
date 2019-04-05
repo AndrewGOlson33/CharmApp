@@ -32,7 +32,7 @@ class LearningTableViewController: UITableViewController {
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: CellID.VideoList, for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: CellID.VideoList, for: indexPath) as! VideoTableViewCell
         
         return viewModel.configure(cell: cell, forIndexPath: indexPath)
     }
