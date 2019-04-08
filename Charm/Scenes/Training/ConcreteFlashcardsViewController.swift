@@ -44,6 +44,9 @@ class ConcreteFlashcardsViewController: UIViewController {
     
     var lastTouchedButton: UIView? = nil
     
+    // Popover view
+    var popoverView: LabelBubbleView!
+    
     // MARK: - View Lifecycle
     
     override func viewDidLoad() {
@@ -71,10 +74,11 @@ class ConcreteFlashcardsViewController: UIViewController {
         scaleBar.setupBar(ofType: .Green, withValue: 0, andLabelPosition: 0)
         viewModel.getAverageConcreteScore { (concreteScores) in
             self.scaleBar.update(withValue: concreteScores.scoreValue, andCalculatedValue: concreteScores.averageScore)
-            let tap = UITapGestureRecognizer(target: self, action: #selector(self.setupPopover))
-            tap.numberOfTapsRequired = 1
-            tap.numberOfTouchesRequired = 1
-            self.scaleBar.addGestureRecognizer(tap)
+            self.setupPopover()
+//            let tap = UITapGestureRecognizer(target: self, action: #selector(self.setupPopover))
+//            tap.numberOfTapsRequired = 1
+//            tap.numberOfTouchesRequired = 1
+//            self.scaleBar.addGestureRecognizer(tap)
         }
         
         
@@ -123,31 +127,18 @@ class ConcreteFlashcardsViewController: UIViewController {
     }
     
     // Setup Popover View
-    @objc private func setupPopover() {
-        let popoverContent = self.storyboard?.instantiateViewController(withIdentifier: StoryboardID.LabelPopover) as? LabelBubbleViewController
-        popoverContent?.modalPresentationStyle = .popover
-        popoverContent?.labelText = viewModel.shouldShowNA ? "N/A" : scaleBar.getStringValue(showPercentOnGreen: true)
+    private func setupPopover() {
         
-        let testView = LabelBubbleView(frame: CGRect(x: getX(for: scaleBar) + scaleBar.frame.origin.x, y: scaleBar.frame.origin.y, width: 56, height: 32), withText: "100%")
-        view.addSubview(testView)
-        view.bringSubviewToFront(testView)
+        let text = viewModel.shouldShowNA ? "N/A" : scaleBar.getStringValue(showPercentOnGreen: true)
+        let frame = CGRect(x: getX(for: scaleBar) + scaleBar.frame.origin.x, y: scaleBar.frame.origin.y, width: 56, height: 32)
         
-        testView.updateLabel(withText: "200%")
-        
-//        if let bubble = popoverContent?.popoverPresentationController {
-//            bubble.permittedArrowDirections = .down
-//            bubble.backgroundColor = #colorLiteral(red: 0.7843906283, green: 0.784409225, blue: 0.7843992114, alpha: 1)
-//            bubble.sourceView = scaleBar
-//            bubble.sourceRect = CGRect(x: getX(for: scaleBar), y: 0, width: 0, height: 0)
-//            bubble.delegate = self
-//            if let popoverController = popoverContent {
-//                present(popoverController, animated: true, completion: {
-//                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0, execute: {
-//                        popoverController.dismiss(animated: true, completion: nil)
-//                    })
-//                })
-//            }
-//        }
+        if popoverView == nil {
+            popoverView = LabelBubbleView(frame: frame, withText: text)
+            view.addSubview(popoverView)
+            view.bringSubviewToFront(popoverView)
+        } else {
+            popoverView.updateLabel(withText: text, frame: frame)
+        }
     }
     
     // Get calculated x coord for scalebar
@@ -182,11 +173,12 @@ class ConcreteFlashcardsViewController: UIViewController {
         viewModel.getAverageConcreteScore { (newHistory) in
             DispatchQueue.main.async {
                 self.scaleBar.update(withValue: newHistory.scoreValue, andCalculatedValue: newHistory.averageScore)
+                self.setupPopover()
             }
         }
     }
     
-    // Hande Updates After Answer is Submitted
+    // Handle Updates After Answer is Submitted
     
     private func handle(response: (response: String, correct: Bool)) {
         animate(responseText: response.response)
@@ -196,7 +188,6 @@ class ConcreteFlashcardsViewController: UIViewController {
     // Updates Score
     private func updateScore(withCorrectAnswer correct: Bool) {
         viewModel.calculateAverageScore(addingCorrect: correct)
-        
     }
     
     // Animation Helper Function For Response
@@ -340,22 +331,4 @@ extension ConcreteFlashcardsViewController: UIGestureRecognizerDelegate {
         }
     }
     
-}
-
-// MARK: - Popover Delegate
-
-extension ConcreteFlashcardsViewController: UIPopoverPresentationControllerDelegate {
-    //UIPopoverPresentationControllerDelegate inherits from UIAdaptivePresentationControllerDelegate, we will use this method to define the presentation style for popover presentation controller
-    func adaptivePresentationStyle(for controller: UIPresentationController) -> UIModalPresentationStyle {
-        return .none
-    }
-    
-    //UIPopoverPresentationControllerDelegate
-    func popoverPresentationControllerDidDismissPopover(_ popoverPresentationController: UIPopoverPresentationController) {
-        
-    }
-    
-    func popoverPresentationControllerShouldDismissPopover(_ popoverPresentationController: UIPopoverPresentationController) -> Bool {
-        return true
-    }
 }

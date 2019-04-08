@@ -77,7 +77,7 @@ class ScaleBar: UIView {
             setupRedRightQuarter()
         }
         
-        setupScoreLocation()
+//        setupScoreLocation()
         
     }
     
@@ -87,7 +87,7 @@ class ScaleBar: UIView {
         self.value = value
         calculatedValue = calculated
         
-        setupScoreLocation()
+//        setupScoreLocation()
     }
     
     fileprivate func setupScoreLocation() {

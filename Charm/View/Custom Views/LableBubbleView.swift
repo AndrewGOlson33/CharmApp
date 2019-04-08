@@ -56,7 +56,7 @@ class LabelBubbleView: UIView {
         self.label?.frame = outterFrame
         let outterView = UIView(frame: outterFrame)
         outterView.addSubview(self.label!)
-        outterView.backgroundColor = UIColor.lightGray.withAlphaComponent(0.6)
+        outterView.backgroundColor = #colorLiteral(red: 0.7843906283, green: 0.784409225, blue: 0.7843992114, alpha: 1)
         outterView.layer.cornerRadius = outterFrame.height * 0.33
         
         // get frame values
@@ -75,10 +75,9 @@ class LabelBubbleView: UIView {
         
         // Setup Triangle
         let triangleWidth = outterFrame.width * 0.2
-        let triangleHeight = triangleWidth * 2
-        let triangleX = self.frame.width / 4
+        let triangleHeight: CGFloat = 16
+        let triangleX = self.frame.width / 5
         let triangleY = labelFrame!.height / 2 + 0.95
-        
         let triangle = drawTriangle(insideRect: CGRect(x: triangleX, y: triangleY, width: triangleWidth, height: triangleHeight))
         addSubview(triangle)
     }
@@ -88,7 +87,7 @@ class LabelBubbleView: UIView {
         let triangle = CAShapeLayer()
         let view = UIView(frame: rect)
         triangle.lineJoin = .round
-        triangle.fillColor = UIColor.lightGray.withAlphaComponent(0.6).cgColor
+        triangle.fillColor = #colorLiteral(red: 0.7843906283, green: 0.784409225, blue: 0.7843992114, alpha: 1)
         
         // draw triangle path
         let path = UIBezierPath()
