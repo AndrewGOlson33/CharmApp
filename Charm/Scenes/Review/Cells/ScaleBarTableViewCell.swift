@@ -15,6 +15,9 @@ class ScaleBarTableViewCell: UITableViewCell {
     @IBOutlet weak var scaleBar: ScaleBar!
     @IBOutlet weak var lblDescription: UILabel!
     
+    // Popover view
+    var popoverView: LabelBubbleView!
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code

@@ -47,6 +47,9 @@ class EmotionFlashcardsViewController: UIViewController {
     
     var lastTouchedButton: UIView? = nil
     
+    // Popover view
+    var popoverView: LabelBubbleView!
+    
     // MARK: - View Lifecycle
     
     override func viewDidLoad() {
@@ -74,10 +77,7 @@ class EmotionFlashcardsViewController: UIViewController {
         scaleBar.setupBar(ofType: .Green, withValue: 0, andLabelPosition: 0)
         viewModel.getAverageEmotionsScore { (emotionsScores) in
             self.scaleBar.update(withValue: emotionsScores.scoreValue, andCalculatedValue: emotionsScores.averageScore)
-            let tap = UITapGestureRecognizer(target: self, action: #selector(self.setupPopover))
-            tap.numberOfTapsRequired = 1
-            tap.numberOfTouchesRequired = 1
-            self.scaleBar.addGestureRecognizer(tap)
+            self.setupPopover()
         }
         
         
@@ -128,23 +128,15 @@ class EmotionFlashcardsViewController: UIViewController {
     
     // Setup Popover View
     @objc private func setupPopover() {
-        let popoverContent = self.storyboard?.instantiateViewController(withIdentifier: StoryboardID.LabelPopover) as? LabelBubbleViewController
-        popoverContent?.modalPresentationStyle = .popover
-        popoverContent?.labelText = viewModel.shouldShowNA ? "N/A" : scaleBar.getStringValue(showPercentOnGreen: true)
+        let text = viewModel.shouldShowNA ? "N/A" : scaleBar.getStringValue(showPercentOnGreen: true)
+        let frame = CGRect(x: getX(for: scaleBar) + scaleBar.frame.origin.x, y: scaleBar.frame.origin.y, width: 56, height: 32)
         
-        if let bubble = popoverContent?.popoverPresentationController {
-            bubble.permittedArrowDirections = .down
-            bubble.backgroundColor = #colorLiteral(red: 0.7843906283, green: 0.784409225, blue: 0.7843992114, alpha: 1)
-            bubble.sourceView = scaleBar
-            bubble.sourceRect = CGRect(x: getX(for: scaleBar), y: 0, width: 0, height: 0)
-            bubble.delegate = self
-            if let popoverController = popoverContent {
-                present(popoverController, animated: true, completion: {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0, execute: {
-                        popoverController.dismiss(animated: true, completion: nil)
-                    })
-                })
-            }
+        if popoverView == nil {
+            popoverView = LabelBubbleView(frame: frame, withText: text)
+            view.addSubview(popoverView)
+            view.bringSubviewToFront(popoverView)
+        } else {
+            popoverView.updateLabel(withText: text, frame: frame)
         }
     }
     
@@ -181,6 +173,7 @@ class EmotionFlashcardsViewController: UIViewController {
         viewModel.getAverageEmotionsScore { (newHistory) in
             DispatchQueue.main.async {
                 self.scaleBar.update(withValue: newHistory.scoreValue, andCalculatedValue: newHistory.averageScore)
+                self.setupPopover()
             }
         }
         
@@ -380,22 +373,3 @@ extension EmotionFlashcardsViewController: UIGestureRecognizerDelegate {
     }
     
 }
-
-// MARK: - Popover Delegate
-
-extension EmotionFlashcardsViewController: UIPopoverPresentationControllerDelegate {
-    //UIPopoverPresentationControllerDelegate inherits from UIAdaptivePresentationControllerDelegate, we will use this method to define the presentation style for popover presentation controller
-    func adaptivePresentationStyle(for controller: UIPresentationController) -> UIModalPresentationStyle {
-        return .none
-    }
-    
-    //UIPopoverPresentationControllerDelegate
-    func popoverPresentationControllerDidDismissPopover(_ popoverPresentationController: UIPopoverPresentationController) {
-        
-    }
-    
-    func popoverPresentationControllerShouldDismissPopover(_ popoverPresentationController: UIPopoverPresentationController) -> Bool {
-        return true
-    }
-}
-

@@ -75,10 +75,6 @@ class ConcreteFlashcardsViewController: UIViewController {
         viewModel.getAverageConcreteScore { (concreteScores) in
             self.scaleBar.update(withValue: concreteScores.scoreValue, andCalculatedValue: concreteScores.averageScore)
             self.setupPopover()
-//            let tap = UITapGestureRecognizer(target: self, action: #selector(self.setupPopover))
-//            tap.numberOfTapsRequired = 1
-//            tap.numberOfTouchesRequired = 1
-//            self.scaleBar.addGestureRecognizer(tap)
         }
         
         

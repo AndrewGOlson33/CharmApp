@@ -111,9 +111,14 @@ class FlashcardsViewModel: NSObject {
             let delegate = UIApplication.shared.delegate as! AppDelegate
             let user = delegate.user
             if let trainingHistory = user?.trainingData {
-                if trainingHistory.emotionsAverage.numQuestions == 0 { self.shouldShowNA = true }
+                if trainingHistory.emotionsAverage.numQuestions == 0 {
+                    self.shouldShowNA = true
+                    
+                } else {
+                    self.shouldShowNA = false
+                }
+                
                 completion(trainingHistory.emotionsAverage)
-                self.shouldShowNA = false
             } else {
                 self.shouldShowNA = true
                 completion(EmotionsTrainingHistory())
