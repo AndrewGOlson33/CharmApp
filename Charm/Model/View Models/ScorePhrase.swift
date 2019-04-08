@@ -8,6 +8,7 @@
 
 import Foundation
 import UIKit
+import Firebase
 
 class ScorePhraseModel: NSObject {
     
@@ -39,11 +40,13 @@ class ScorePhraseModel: NSObject {
     public private(set) var unclassified: Int = 0
     public private(set) var repeatedWords: Int = 0
     private var words: [String] = []
+    private var unclassifiedArray: [String] = []
     
     func calculateScore(fromPhrase text: String) {
         
         unclassified = 0
         repeatedWords = 0
+        unclassifiedArray = []
         
         let tagger = NSLinguisticTagger(tagSchemes: [.lexicalClass], options: 0)
         tagger.string = text
@@ -57,6 +60,8 @@ class ScorePhraseModel: NSObject {
         var secondCount: Int = 0
         var positiveScore: Int = 0
         var negativeScore: Int = 0
+        
+        print("~>Model has unclassified words: \(String(describing: model.model.unclassifiedNouns))")
         
         tagger.enumerateTags(in: range, unit: .word, scheme: .lexicalClass, options: optionsTagger) { tag, tokenRange, _ in
 
@@ -77,6 +82,8 @@ class ScorePhraseModel: NSObject {
             
             if !classified, let tag = tag, tag.rawValue == "Noun" {
                 unclassified += 1
+                unclassifiedArray.append(word)
+                concreteCount += 1 // scoring as concrete for now
             }
             
             if checkFirstPerson(word: word) { firstCount += 1 }
@@ -89,7 +96,7 @@ class ScorePhraseModel: NSObject {
             words.append(word)
         }
         
-        let score = getEstimatedPhraseStrength(length: wordCount, concrete: concreteCount, abstract: abstractCount, first: firstCount, second: secondCount)
+        let score = getEstimatedPhraseStrength(length: wordCount, concrete: concreteCount, first: firstCount, second: secondCount)
         
         
         strenth = getChatScore(for: .Strength, withScore: score)
@@ -101,7 +108,25 @@ class ScorePhraseModel: NSObject {
         positive = getChatScore(for: .Positive, withScore: positiveScore)
         negative = getChatScore(for: .Negative, withScore: negativeScore)
         
-        print("~>I counted: \(wordCount) words, and had a concrete count of: \(concreteCount), abstract count of: \(abstractCount), first count of: \(firstCount), second count of: \(secondCount), positive score: \(positiveScore), negative score: \(negativeScore) with an estimated phrase strength of: \(score)")
+        print("~>I counted: \(wordCount) words, and had a concrete count of: \(concreteCount), abstract count of: \(abstractCount), first count of: \(firstCount), second count of: \(secondCount), positive score: \(positiveScore), negative score: \(negativeScore) with an estimated phrase strength of: \(score), and \(unclassified) unclassified words.")
+        
+        if unclassified > 0 { uploadUnclassified(nouns: unclassifiedArray) }
+    }
+    
+    private func uploadUnclassified(nouns: [String]) {
+        var upload: [String] = []
+        if let existing = model.model.unclassifiedNouns {
+            upload = existing
+            for word in nouns {
+                if !existing.contains(word.lowercased()) { upload.append(word.lowercased()) }
+            }
+        } else {
+            upload = nouns.map { $0.lowercased() }
+        }
+        
+        DispatchQueue.global(qos: .utility).async {
+            Database.database().reference().child(FirebaseStructure.Training.TrainingDatabase).child(FirebaseStructure.Training.UnclassifiedNouns).setValue(upload)
+        }
     }
     
     func getSandboxScore() -> SandboxScore {
@@ -159,13 +184,13 @@ class ScorePhraseModel: NSObject {
         }
     }
     
-    private func getEstimatedPhraseStrength(length: Int, concrete: Int, abstract: Int, first: Int, second: Int) -> Int {
+    private func getEstimatedPhraseStrength(length: Int, concrete: Int, first: Int, second: Int) -> Int {
         
         var score = 5
         score += length >= 7 ? 1 : 0
-        score += concrete > 1 ? 1 : 0
-        score += abstract > 1 ? 1 : 0
-        score += second > 1 ? 1 : 0
+        score += concrete >= 1 ? 1 : 0
+        score += first >= 1 ? 1 : 0
+        score += second >= 1 ? 1 : 0
         
         return score
         

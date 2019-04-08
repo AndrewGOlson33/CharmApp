@@ -689,8 +689,12 @@ extension ContactsViewModel: FriendManagementDelegate {
             
             // Configure the fields of the interface.
             composeVC.recipients = [phone]
-            //        let url = "https://www.blaumagier.com"
-            composeVC.body = "Click the link to add me as a friend on Charm, the app that teaches you how to be more charming!  If you don't have Charm, the link will open the App Store page so you can download it first.\n\n\(shortLink)"
+            var userName = ""
+            if let user = self.user {
+                userName = " \(user.userProfile.firstName)"
+            }
+            
+            composeVC.body = "Hello \(friend.firstName), your friend\(userName) has invited you Charm. Charm is an app that helps people have more engaging conversations and create a deep connection. Download now.\n\n\(shortLink)"
             
             // Present the view controller modally.
             navVC.present(composeVC, animated: true, completion: {

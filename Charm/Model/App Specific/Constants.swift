@@ -143,6 +143,7 @@ enum FirebaseStructure {
         static let TrainingDatabase = "trainingData"
         static let ConcreteHistory = "concreteAverage"
         static let SandboxHistory = "sandboxHistory"
+        static let UnclassifiedNouns = "unclassifiedNouns"
     }
     
     enum DeepLinks {

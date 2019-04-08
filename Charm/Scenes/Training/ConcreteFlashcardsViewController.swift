@@ -128,20 +128,26 @@ class ConcreteFlashcardsViewController: UIViewController {
         popoverContent?.modalPresentationStyle = .popover
         popoverContent?.labelText = viewModel.shouldShowNA ? "N/A" : scaleBar.getStringValue(showPercentOnGreen: true)
         
-        if let bubble = popoverContent?.popoverPresentationController {
-            bubble.permittedArrowDirections = .down
-            bubble.backgroundColor = #colorLiteral(red: 0.7843906283, green: 0.784409225, blue: 0.7843992114, alpha: 1)
-            bubble.sourceView = scaleBar
-            bubble.sourceRect = CGRect(x: getX(for: scaleBar), y: 0, width: 0, height: 0)
-            bubble.delegate = self
-            if let popoverController = popoverContent {
-                present(popoverController, animated: true, completion: {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0, execute: {
-                        popoverController.dismiss(animated: true, completion: nil)
-                    })
-                })
-            }
-        }
+        let testView = LabelBubbleView(frame: CGRect(x: getX(for: scaleBar) + scaleBar.frame.origin.x, y: scaleBar.frame.origin.y, width: 56, height: 32), withText: "100%")
+        view.addSubview(testView)
+        view.bringSubviewToFront(testView)
+        
+        testView.updateLabel(withText: "200%")
+        
+//        if let bubble = popoverContent?.popoverPresentationController {
+//            bubble.permittedArrowDirections = .down
+//            bubble.backgroundColor = #colorLiteral(red: 0.7843906283, green: 0.784409225, blue: 0.7843992114, alpha: 1)
+//            bubble.sourceView = scaleBar
+//            bubble.sourceRect = CGRect(x: getX(for: scaleBar), y: 0, width: 0, height: 0)
+//            bubble.delegate = self
+//            if let popoverController = popoverContent {
+//                present(popoverController, animated: true, completion: {
+//                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0, execute: {
+//                        popoverController.dismiss(animated: true, completion: nil)
+//                    })
+//                })
+//            }
+//        }
     }
     
     // Get calculated x coord for scalebar

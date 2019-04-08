@@ -50,6 +50,7 @@ struct TrainingData: Codable {
     var positiveWords: [ScoredWord] = []
     var negativeWords: [ScoredWord] = []
     var converstaionPrompt: [ConversationPrompts] = []
+    var unclassifiedNouns: [String]? = []
 }
 
 struct ConcreteNoun: Codable {
