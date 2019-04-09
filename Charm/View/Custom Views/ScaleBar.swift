@@ -15,9 +15,21 @@ enum BarType {
     case RedRightQuarter
 }
 
+enum LabelType {
+    case NA
+    case Percent
+    case RawValue
+    case IntValue
+}
+
 class ScaleBar: UIView {
     
     var type: BarType = .Green
+    var labelType: LabelType = .NA
+    
+    var labelText: String {
+        return getStringValue(forLabelType: labelType)
+    }
     
     var value: Double = -1.0
     var calculatedValue: Double = 0.5
@@ -26,7 +38,7 @@ class ScaleBar: UIView {
     let blueColors: [UIColor] = [#colorLiteral(red: 0.3418416381, green: 0.6355850101, blue: 0.9122640491, alpha: 1), #colorLiteral(red: 0.3310806155, green: 0.6119198799, blue: 0.8886095881, alpha: 1), #colorLiteral(red: 0.316000998, green: 0.5882632136, blue: 0.8649668694, alpha: 1)]
     
     // location dot
-    var scoreLocation: UIView? = nil
+    var scoreLocation: LabelBubbleView? = nil
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -36,7 +48,7 @@ class ScaleBar: UIView {
         super.init(coder: coder)
     }
     
-    func setupBar(ofType type: BarType,withValue value: Double, andLabelPosition labelValue: Double) {
+    func setupBar(ofType type: BarType, withValue value: Double, andLabelPosition labelValue: Double) {
         self.type = type
         self.value = value
         calculatedValue = labelValue
@@ -53,6 +65,24 @@ class ScaleBar: UIView {
             return "\(percent)%"
         } else {
             return value == 1.0 ? "100%" : "\(value)%"
+        }
+    }
+    
+    func getStringValue(forLabelType type: LabelType) -> String {
+        switch type {
+        case .NA:
+            return "N/A"
+        case .Percent:
+            if value < 1 {
+                let percent = Int(value * 100)
+                return "\(percent)%"
+            } else {
+                return value == 1.0 ? "100%" : "\(value)%"
+            }
+        case .RawValue:
+            return "\(value)"
+        case .IntValue:
+            return "\(Int(value))"
         }
     }
     
@@ -77,7 +107,7 @@ class ScaleBar: UIView {
             setupRedRightQuarter()
         }
         
-//        setupScoreLocation()
+        setupScoreLocation()
         
     }
     
@@ -87,17 +117,27 @@ class ScaleBar: UIView {
         self.value = value
         calculatedValue = calculated
         
-//        setupScoreLocation()
+        setupScoreLocation()
     }
     
     fileprivate func setupScoreLocation() {
         if scoreLocation != nil {
             scoreLocation?.removeFromSuperview()
         }
-        scoreLocation = calculatedValue == 0 ? UIView(frame: CGRect(x: frame.width * CGFloat(calculatedValue) + (frame.height / 2), y: frame.height / 4, width: frame.height / 2, height: frame.height / 2)) : UIView(frame: CGRect(x: frame.width * CGFloat(calculatedValue) - (frame.height / 2), y: frame.height / 4, width: frame.height / 2, height: frame.height / 2))
         
-        scoreLocation!.backgroundColor = .black
-        scoreLocation!.layer.cornerRadius = scoreLocation!.frame.height / 2
+//        scoreLocation = calculatedValue == 0 ? UIView(frame: CGRect(x: frame.width * CGFloat(calculatedValue) + (frame.height / 2), y: frame.height / 4, width: frame.height / 2, height: frame.height / 2)) : UIView(frame: CGRect(x: frame.width * CGFloat(calculatedValue) - (frame.height / 2), y: frame.height / 4, width: frame.height / 2, height: frame.height / 2))
+        
+        print("~>Calculated value: \(calculatedValue)")
+        
+        scoreLocation = calculatedValue == 0 ? LabelBubbleView(frame: CGRect(x: frame.width * CGFloat(calculatedValue) + (frame.height / 2), y: 1, width: frame.height * 1.6, height: 14), withText: labelText) : LabelBubbleView(frame: CGRect(x: frame.width * CGFloat(calculatedValue) - (frame.height / 2), y: 1, width: frame.height * 1.6, height: 14), withText: labelText)
+        
+        
+        if calculatedValue == 1.0 {
+            scoreLocation!.frame.origin.x -= scoreLocation!.frame.width / 2 + (frame.height / 2)
+        }
+        
+//        scoreLocation!.backgroundColor = .black
+//        scoreLocation!.layer.cornerRadius = scoreLocation!.frame.height / 2
         addSubview(scoreLocation!)
         bringSubviewToFront(scoreLocation!)
     }

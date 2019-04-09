@@ -236,6 +236,7 @@ extension ConversationTrainingViewController: UITableViewDelegate, UITableViewDa
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: CellID.ScaleBar, for: indexPath) as! ScaleBarTableViewCell
+        cell.scaleBar.labelType = .IntValue
         
         switch indexPath.row {
         case 0:
@@ -273,8 +274,6 @@ extension ConversationTrainingViewController: UITableViewDelegate, UITableViewDa
         default:
             print("~>Should not be possible to get here.")
         }
-        
-        setupPopover(for: cell)
         return cell
     }
     

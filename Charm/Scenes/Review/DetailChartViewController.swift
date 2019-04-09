@@ -526,9 +526,17 @@ extension DetailChartViewController: UITableViewDelegate, UITableViewDataSource 
             // setup scalebar
             let cell = tableView.dequeueReusableCell(withIdentifier: CellID.ScaleBar, for: indexPath) as! ScaleBarTableViewCell
             let info = scalebarData[indexPath.row]
+            
+            switch indexPath.row {
+            case 0:
+                cell.scaleBar.labelType = .IntValue
+            default:
+                cell.scaleBar.labelType = .Percent
+            }
+            
             cell.scaleBar.setupBar(ofType: info.type, withValue: info.score, andLabelPosition: info.position)
             cell.lblDescription.text = info.title
-            setupPopover(for: cell)
+//            setupPopover(for: cell)
             return cell
         default:
             // setup transcript

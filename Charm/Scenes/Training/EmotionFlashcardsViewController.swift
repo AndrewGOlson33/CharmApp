@@ -76,8 +76,9 @@ class EmotionFlashcardsViewController: UIViewController {
         // setup scale bar
         scaleBar.setupBar(ofType: .Green, withValue: 0, andLabelPosition: 0)
         viewModel.getAverageEmotionsScore { (emotionsScores) in
+            self.scaleBar.labelType = self.viewModel.shouldShowNA ? .NA : .Percent
             self.scaleBar.update(withValue: emotionsScores.scoreValue, andCalculatedValue: emotionsScores.averageScore)
-            self.setupPopover()
+//            self.setupPopover()
         }
         
         
@@ -172,8 +173,9 @@ class EmotionFlashcardsViewController: UIViewController {
         
         viewModel.getAverageEmotionsScore { (newHistory) in
             DispatchQueue.main.async {
+                self.scaleBar.labelType = self.viewModel.shouldShowNA ? .NA : .Percent
                 self.scaleBar.update(withValue: newHistory.scoreValue, andCalculatedValue: newHistory.averageScore)
-                self.setupPopover()
+//                self.setupPopover()
             }
         }
         

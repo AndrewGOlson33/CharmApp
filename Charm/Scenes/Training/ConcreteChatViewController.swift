@@ -210,6 +210,7 @@ extension ConcreteChatViewController: UITableViewDelegate, UITableViewDataSource
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: CellID.ScaleBar, for: indexPath) as! ScaleBarTableViewCell
+        cell.scaleBar.labelType = .IntValue
         
         switch indexPath.row {
         case 0:
@@ -248,7 +249,7 @@ extension ConcreteChatViewController: UITableViewDelegate, UITableViewDataSource
             print("~>Should not be possible to get here.")
         }
         
-        setupPopover(for: cell)
+//        setupPopover(for: cell)
         return cell
     }
     
