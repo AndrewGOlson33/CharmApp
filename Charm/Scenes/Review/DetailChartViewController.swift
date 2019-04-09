@@ -38,9 +38,9 @@ class DetailChartViewController: UIViewController {
     var chartType: ChartType!
     
     // data used for creating chart
-    var chartData: [Any] = []
-    var posData: [Any]? = nil
-    var negData: [Any]? = nil
+    var chartData: [HIPoint] = []
+    var posData: [HIPoint]? = nil
+    var negData: [HIPoint]? = nil
     
     // Timer for hiding the annotation
     var timer = Timer()
@@ -110,7 +110,11 @@ class DetailChartViewController: UIViewController {
             let wordChoice = snapshot.wordChoice
             // setup chart data
             for (index, item) in wordChoice.enumerated() {
-                chartData.append([index, item.score])
+//                chartData.append([index, item.score])
+                let point = HIPoint()
+                point.x = index as NSNumber
+                point.y = item.score as NSNumber
+                chartData.append(point)
                 transcript.append(TranscriptCellInfo(withText: "[\(index)]: \(item.word)"))
             }
             
@@ -129,11 +133,22 @@ class DetailChartViewController: UIViewController {
             let backAndForth = snapshot.backAndForth
             // setup chart data
             for (index, item) in backAndForth.enumerated() {
+//                if let value = item.adjustedAvg {
+//                    chartData.append([index, value])
+//                } else {
+//                    chartData.append([index, 0])
+//                }
+                
+                let point = HIPoint()
+                point.x = index as NSNumber
+                
                 if let value = item.adjustedAvg {
-                    chartData.append([index, value])
+                    point.y = value as NSNumber
                 } else {
-                    chartData.append([index, 0])
+                    point.y = 0
                 }
+                
+                chartData.append(point)
             }
             
             // setup scale bar data
@@ -149,7 +164,7 @@ class DetailChartViewController: UIViewController {
             
             // setup transcript
             for item in snapshot.transcript {
-                let text = "[\(item.person)]: \(item.words)"
+                let text = "[\(String(describing: item.person))]: \(item.words)"
                 transcript.append(TranscriptCellInfo(withText: text))
             }
             
@@ -163,11 +178,21 @@ class DetailChartViewController: UIViewController {
                 transcript.append(TranscriptCellInfo(withText: text))
                 
                 // add chart data
+//                if let value = item.adjustedAverage {
+//                    chartData.append([index, value])
+//                } else {
+//                    chartData.append([index, 0])
+//                }
+                
+                let point = HIPoint()
+                point.x = index as NSNumber
                 if let value = item.adjustedAverage {
-                    chartData.append([index, value])
+                    point.y = value as NSNumber
                 } else {
-                    chartData.append([index, 0])
+                    point.y = 0
                 }
+                
+                chartData.append(point)
             }
             
             // setup scale bar data
@@ -189,9 +214,25 @@ class DetailChartViewController: UIViewController {
             // setup chart data
             for (index, item) in toneGraph.enumerated() {
                 // add chart data
-                chartData.append([index, item.roll3])
-                posData?.append([index, item.rollPos3])
-                negData?.append([index, item.rollNeg3])
+//                chartData.append([index, item.roll3])
+//                posData?.append([index, item.rollPos3])
+//                negData?.append([index, item.rollNeg3])
+                
+                let dataPoint = HIPoint()
+                let posPoint = HIPoint()
+                let negPoint = HIPoint()
+                
+                dataPoint.x = index as NSNumber
+                posPoint.x = index as NSNumber
+                negPoint.x = index as NSNumber
+                
+                dataPoint.y = item.roll3 as NSNumber
+                posPoint.y = item.rollPos3 as NSNumber
+                negPoint.y = item.rollNeg3 as NSNumber
+                
+                chartData.append(dataPoint)
+                posData?.append(posPoint)
+                negData?.append(negPoint)
             }
             
             // setup scale bar data
@@ -240,37 +281,38 @@ class DetailChartViewController: UIViewController {
         
         let options = HIOptions()
         let title = HITitle()
+        title.reserveSpace = false
+        title.text = ""
         
         // get date to use for title
-        if let date = snapshot.date {
-            let dateString = dFormatter.string(from: date)
-            title.text = "Your Snapshot from \(dateString)"
-        } else {
-            title.text = "Your Latest Snapshot"
-        }
+//        if let date = snapshot.date {
+//            let dateString = dFormatter.string(from: date)
+//            title.text = "Your Snapshot from \(dateString)"
+//        } else {
+//            title.text = "Your Latest Snapshot"
+//        }
         
-        let subtitle = HISubtitle()
-        subtitle.text = "Click and drag in the plot area to zoom in"
+//        let subtitle = HISubtitle()
+//        subtitle.text = "Click and drag in the plot area to zoom in"
         
         let chart = HIChart()
         chart.zoomType = "x"
         
         let yaxis = HIYAxis()
         yaxis.title = HITitle()
-        yaxis.title.text = "Word Score"
+        yaxis.title.text = ""
+        yaxis.title.reserveSpace = false
         yaxis.visible = true
         
         switch chartType! {
-        case .BackAndForth, .Connection:
+        case .WordChoice, .BackAndForth, .Connection:
             yaxis.min = -1.05
             yaxis.max = 1.05
             yaxis.tickInterval = 0.21
-        case .WordChoice:
-            yaxis.min = 0.0
-            yaxis.max = 1.05
-            yaxis.tickInterval = 0.21
-        default:
-            break
+        case .Emotions:
+            yaxis.min = -0.5
+            yaxis.max = 0.5
+            yaxis.tickInterval = 0.1
         }
         
         let legend = HILegend()
@@ -296,6 +338,57 @@ class DetailChartViewController: UIViewController {
         area.name = chartType.rawValue
         area.data = chartData
         
+        let events = HIEvents()
+        let clickClosure: HIClosure =  { (context: HIChartContext?) in
+            print("~>Got click event.")
+            if let row = context?.getProperty("this.x") as? Int {
+                print("~>This location: \(row)")
+                var indexPath: IndexPath = IndexPath(row: 0, section: 0)
+                switch self.chartType! {
+                case .BackAndForth:
+                    print("~>Back and forth")
+                    // back and forth is the word number
+                    if row == 0 {
+                        indexPath = IndexPath(row: 0, section: 1)
+                        break
+                    }
+                    var wordCount = 0
+                    var shouldContinue = true
+                    for (index, transcript) in self.snapshot.transcript.enumerated() {
+                        if !shouldContinue { break }
+                        let wordsToCount = transcript.words.components(separatedBy: .whitespacesAndNewlines).filter { !$0.isEmpty }
+                        for _ in wordsToCount {
+                            wordCount += 1
+                            if wordCount == row {
+                                indexPath = IndexPath(row: index, section: 1)
+                                shouldContinue = false
+                                break
+                            }
+                        }
+                    }
+                default:
+                    print("~>Default")
+                    indexPath = IndexPath(row: row, section: 1)
+                }
+                
+                self.tableView.selectRow(at: indexPath, animated: false, scrollPosition: .top)
+                self.tableView(self.tableView, didSelectRowAt: indexPath)
+                
+                let point = self.chartView.options.series[0].data[row] as! HIPoint
+                point.select(false)
+            }
+            
+        }
+        events.click = HIFunction(closure: clickClosure, properties: ["this.x"])
+        
+        for point in area.data {
+            guard let point = point as? HIPoint else {
+                print("~>Not a point")
+                continue
+            }
+            point.events = events
+        }
+        
         if let pos = posData, let neg = negData {
             let posArea = HIArea()
             let negArea = HIArea()
@@ -311,10 +404,11 @@ class DetailChartViewController: UIViewController {
         }
         
         let tooltip = HITooltip()
+        tooltip.enabled = false
         
         options.chart = chart
         options.title = title
-        options.subtitle = subtitle
+//        options.subtitle = subtitle
         options.legend = legend
         options.yAxis = [yaxis]
         options.plotOptions = plotoptions
@@ -329,7 +423,6 @@ class DetailChartViewController: UIViewController {
         
         chartView.options = options
         tableView.reloadData()
-        
     }
 
 }
@@ -384,23 +477,20 @@ extension DetailChartViewController: UITableViewDelegate, UITableViewDataSource 
         tableView.deselectRow(at: indexPath, animated: false)
         
         if let cell = tableView.cellForRow(at: indexPath) as? TranscriptTableViewCell {
-            
             // remove any old annotations
             chartView.removeAnnotation(byId: "annotation")
             guard chartView.options.series[0].data.count > indexPath.row else { return }
             
             // hide the tooltip if it was showing
-            let options = chartView.options
-            options?.tooltip?.enabled = false
-            
-            chartView.update(options!)
-            
-            // enable tooltip to be displayed again
-            options?.tooltip?.enabled = true
-            chartView.update(options!)
-            
+//            let options = HIOptions()
+//            let toolTip = HITooltip()
+//            toolTip.enabled = false
+//            options.tooltip = toolTip
+//
+//            chartView.update(options)
+//
             var words = cell.lblTranscriptText.text
-            var item: [Any] = []
+            var item: HIPoint = HIPoint()
             
             if chartType! == .Emotions {
                 // find the correct data point
@@ -410,7 +500,7 @@ extension DetailChartViewController: UITableViewDelegate, UITableViewDataSource 
                     if toneItem.word == rawItem.word && toneItem.roll3 == rawItem.roll3
                         && toneItem.rollNeg3 == rawItem.rollNeg3 && toneItem.rollPos3 == rawItem.rollPos3 {
                         // item was found, link them and be done
-                        item = chartView.options.series[0].data[index] as! [Any]
+                        item = chartView.options.series[0].data[index] as! HIPoint
                     }
                 }
                 
@@ -445,9 +535,9 @@ extension DetailChartViewController: UITableViewDelegate, UITableViewDataSource 
                 // prevent crashing in case the index is out of range
                 if wordCount >= chartView.options.series[0].data.count { wordCount = chartView.options.series[0].data.count - 1 }
                 
-                item = chartView.options.series[0].data[wordCount] as! [Any]
+                item = chartView.options.series[0].data[wordCount] as! HIPoint
             } else {
-                item = chartView.options.series[0].data[indexPath.row] as! [Any]
+                item = chartView.options.series[0].data[indexPath.row] as! HIPoint
             }
             
             let annotations = HIAnnotations()
@@ -457,8 +547,8 @@ extension DetailChartViewController: UITableViewDelegate, UITableViewDataSource 
             label.point = HIPoint()
             label.point.xAxis = 0
             label.point.yAxis = 0
-            label.point.x = item[0] as? NSNumber
-            label.point.y = item[1] as? NSNumber ?? 0
+            label.point.x = item.x
+            label.point.y = item.y
             label.text = words
             annotations.labels.append(label)
             annotations.id = "annotation"
