@@ -342,6 +342,7 @@ class DetailChartViewController: UIViewController {
         let clickClosure: HIClosure =  { (context: HIChartContext?) in
             print("~>Got click event.")
             if let row = context?.getProperty("this.x") as? Int {
+                var shouldScroll = false
                 print("~>This location: \(row)")
                 var indexPath: IndexPath = IndexPath(row: 0, section: 0)
                 switch self.chartType! {
@@ -361,25 +362,78 @@ class DetailChartViewController: UIViewController {
                             wordCount += 1
                             if wordCount == row {
                                 indexPath = IndexPath(row: index, section: 1)
+                                shouldScroll = true
                                 shouldContinue = false
                                 break
                             }
                         }
                     }
+                case .Emotions:
+                    print("~>Emotions.")
+                    let tone = self.snapshot.graphTone[row]
+                    print("~>Word is: \(tone.word)")
+                    var didFind = false
+                    for (index, tableItem) in self.snapshot.tableViewTone.enumerated() {
+                        if tableItem.word == tone.word && tone.roll3 == tableItem.roll3 && tone.rollNeg3 == tableItem.rollNeg3 && tone.rollPos3 == tableItem.rollPos3 {
+                            indexPath = IndexPath(row: index, section: 1)
+                            didFind = true
+                            shouldScroll = true
+                            break
+                        }
+                    }
+                    
+                    if !didFind {
+                        // create our own annotation
+                        
+                        // remove any old annotations
+                        self.chartView.removeAnnotation(byId: "annotation")
+                        
+                        // create new one
+                        let annotations = HIAnnotations()
+                        annotations.labels = [HILabels]()
+                        let label = HILabels()
+                        label.align = "top"
+                        label.point = HIPoint()
+                        label.point.xAxis = 0
+                        label.point.yAxis = 0
+                        label.point.x = row as NSNumber
+                        
+                        if let yValue = context?.getProperty("this.y") as? NSNumber {
+                            label.point.y = yValue
+                        } else {
+                            label.point.y = tone.roll3 as NSNumber
+                        }
+                        
+                        label.text = tone.word
+                        annotations.labels.append(label)
+                        annotations.id = "annotation"
+                        
+                        self.chartView.addAnnotation(annotations, redraw: true)
+                        
+                        if self.timer.isValid { self.timer.invalidate() }
+                        
+                        self.timer = Timer.scheduledTimer(withTimeInterval: 2.5, repeats: false, block: { (_) in
+                            self.chartView.removeAnnotation(byId: "annotation")
+                        })
+                    }
                 default:
                     print("~>Default")
                     indexPath = IndexPath(row: row, section: 1)
+                    shouldScroll = true
                 }
                 
-                self.tableView.selectRow(at: indexPath, animated: false, scrollPosition: .top)
-                self.tableView(self.tableView, didSelectRowAt: indexPath)
+                if shouldScroll {
+                    self.tableView.selectRow(at: indexPath, animated: false, scrollPosition: .top)
+                    self.tableView(self.tableView, didSelectRowAt: indexPath)
+                }
+                
                 
                 let point = self.chartView.options.series[0].data[row] as! HIPoint
                 point.select(false)
             }
             
         }
-        events.click = HIFunction(closure: clickClosure, properties: ["this.x"])
+        events.click = HIFunction(closure: clickClosure, properties: ["this.x", "this.y"])
         
         for point in area.data {
             guard let point = point as? HIPoint else {
@@ -397,6 +451,24 @@ class DetailChartViewController: UIViewController {
             negArea.name = "Negative Word Score"
             posArea.data = pos
             negArea.data = neg
+            
+            // setup interaction for pos and neg graphs
+            for point in posArea.data {
+                guard let point = point as? HIPoint else {
+                    print("~>Not a point")
+                    continue
+                }
+                point.events = events
+            }
+            
+            for point in negArea.data {
+                guard let point = point as? HIPoint else {
+                    print("~>Not a point")
+                    continue
+                }
+                point.events = events
+            }
+            
             options.series = [area, posArea, negArea]
             legend.enabled = true
         } else {
