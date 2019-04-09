@@ -245,12 +245,7 @@ class MainMenuViewController: UIViewController {
                             return
                         }
                         print("~>User token set to: \(String(describing: user.tokenID))")
-                        do {
-                            let data = try FirebaseEncoder().encode(user)
-                            Database.database().reference().child(FirebaseStructure.Users).child(id).setValue(data)
-                        } catch let error {
-                            print("~>There was an error converting user: \(error)")
-                        }
+                        Database.database().reference().child(FirebaseStructure.Users).child(id).child(FirebaseStructure.CharmUser.Token).setValue(user.tokenID)
                     }
                 }
             }

@@ -101,6 +101,9 @@ enum FirebaseStructure {
             static let TopLevelMetrics = "topLevelMetrics"
         }
         
+        // token id
+        static let Token = "tokenID"
+        
     }
     
     enum Friend {
