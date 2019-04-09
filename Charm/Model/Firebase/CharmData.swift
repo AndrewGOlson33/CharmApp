@@ -51,10 +51,10 @@ struct Snapshot: Codable {
         case topLevelMetrics = "topLevelMetrics"
         case wordChoice = "Concrete"
         case backAndForth = "BackandForth"
-        case connection = "PersonalPronouns"
-        case graphTone = "sentimentAll"
-        case tableViewTone = "sentimentRaw"
-        case transcript = "Transcript"
+        case connection = "Connection"  // used to be PersonalPronouns
+        case graphTone = "Sentiment" // used to be sentimentAll
+        case tableViewTone = "Sentiment_Raw" // used to be sentimentRaw
+        case transcript = "Transcipt" // used to be Transcript
     }
     
     // Snapshot Value Getters
@@ -109,7 +109,7 @@ struct WordChoice: Codable {
     
     // coding keys to how data is stored on firebase
     enum CodingKeys: String, CodingKey {
-        case score = "ema3"
+        case score = "Score"  // used to be ema3
         case word = "word"
     }
 }
@@ -168,7 +168,7 @@ struct Sentiment: Codable {
 // MARK: - Transcript
 
 struct Transcript: Codable {
-    var person: String
+    var person: String? = ""
     var words: String
     
     enum CodingKeys: String, CodingKey {

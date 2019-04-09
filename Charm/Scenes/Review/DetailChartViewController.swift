@@ -45,6 +45,9 @@ class DetailChartViewController: UIViewController {
     // Timer for hiding the annotation
     var timer = Timer()
     
+    // Counter that helps animate scrolling
+    var scrollCounter = 0
+    
     // MARK: - View Lifecycle Functions
 
     override func viewDidLoad() {
@@ -474,10 +477,28 @@ extension DetailChartViewController: UITableViewDelegate, UITableViewDataSource 
         return 64
     }
     
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         if let cell = tableView.visibleCells.first, let indexPath = tableView.indexPath(for: cell) {
             tableView(tableView, didSelectRowAt: indexPath)
         }
+    }
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        if scrollCounter == 20, let cell = tableView.visibleCells.first, let indexPath = tableView.indexPath(for: cell) {
+            tableView(tableView, didSelectRowAt: indexPath)
+            scrollCounter = 0
+        } else {
+            scrollCounter += 1
+        }
+        
+    }
+    
+    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        if let cell = tableView.visibleCells.first, let indexPath = tableView.indexPath(for: cell) {
+            tableView(tableView, didSelectRowAt: indexPath)
+        }
+        
+        scrollCounter = 0
     }
     
     private func getX(for bar: ScaleBar) -> CGFloat {
