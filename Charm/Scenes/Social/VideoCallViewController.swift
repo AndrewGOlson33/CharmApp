@@ -72,6 +72,8 @@ class VideoCallViewController: UIViewController {
     // variable set to true if user is the one initiating call
     var isInitiatingUser: Bool = false
     
+    var tap: UITapGestureRecognizer! = nil
+    
     // MARK: - View Lifecycle Functions
 
     override func viewDidLoad() {
@@ -86,14 +88,15 @@ class VideoCallViewController: UIViewController {
         viewConnecting.layer.shadowOpacity = 0.6
         viewConnecting.layer.shadowOffset = CGSize(width: 2, height: 2)
         
-        // setup tap gesture
-        let tap = UITapGestureRecognizer(target: self, action: #selector(handleScreenTap(_:)))
-        tap.numberOfTapsRequired = 1
-        tap.numberOfTouchesRequired = 1
-        view.addGestureRecognizer(tap)
-        
         // Fade cancel button
         hideButton()
+        
+        // setup tap gesture
+        tap = UITapGestureRecognizer(target: self, action: #selector(handleScreenTap(_:)))
+        tap.numberOfTapsRequired = 1
+        tap.numberOfTouchesRequired = 1
+        tap.delegate = self
+        view.addGestureRecognizer(tap)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -107,20 +110,19 @@ class VideoCallViewController: UIViewController {
     
     @objc private func handleScreenTap(_ notification: UITapGestureRecognizer) {
         if self.btnEndCall.alpha == 0 {
-            UIView.animate(withDuration: 0.25, delay: 0.0, options: [.curveEaseIn], animations: {
+            UIView.animate(withDuration: 0.25, delay: 0.0, options: [.curveEaseIn, .allowUserInteraction], animations: {
                 self.btnEndCall.alpha = 1.0
             }) { (_) in
-                self.btnEndCall.isEnabled = true
                 self.hideButton()
             }
         }
     }
     
     private func hideButton() {
-        UIView.animate(withDuration: 0.8, delay: 5.0, options: [.curveEaseIn], animations: {
-            self.btnEndCall.alpha = 0.0
-        }) { (_) in
-            self.btnEndCall.isEnabled = false
+        DispatchQueue.main.asyncAfter(deadline: .now() + 5.0) {
+            UIView.animate(withDuration: 0.8, delay: 0.0, options: [.curveEaseIn, .allowUserInteraction], animations: {
+                self.btnEndCall.alpha = 0.0
+            })
         }
     }
     
@@ -397,6 +399,7 @@ class VideoCallViewController: UIViewController {
     
     // Disconnects from the session
     @IBAction func endCallButtonTapped(_ sender: Any) {
+        print("~>End call button tapped")
         disconnecting = true
         var error: OTError?
         defer {
@@ -519,4 +522,12 @@ extension VideoCallViewController: OTSubscriberDelegate {
     func subscriber(_ subscriber: OTSubscriberKit, didFailWithError error: OTError) {
         print("~>Subscriber failed: \(error.localizedDescription)")
     }
+}
+
+extension VideoCallViewController: UIGestureRecognizerDelegate {
+    
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+        return !touch.view!.isKind(of: UIButton.self)
+    }
+    
 }
