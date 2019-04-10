@@ -92,6 +92,10 @@ class ReviewSummaryViewController: UIViewController {
         let legend = HILegend()
         legend.enabled = false
         
+        // setup pane so polygon is facing up
+        let pane = HIPane()
+        pane.startAngle = 180
+        
         // get date to use for title
         if let date = snapshot.date {
             let dateString = dFormatter.string(from: date)
@@ -184,6 +188,7 @@ class ReviewSummaryViewController: UIViewController {
         options.title = title
         options.tooltip = tooltip
         options.legend = legend
+        options.pane = pane
         options.yAxis = [yAxis]
         options.xAxis = [xAxis]
         options.series = [area, line]
