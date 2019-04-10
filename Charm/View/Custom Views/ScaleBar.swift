@@ -127,7 +127,7 @@ class ScaleBar: UIView {
         
 //        scoreLocation = calculatedValue == 0 ? UIView(frame: CGRect(x: frame.width * CGFloat(calculatedValue) + (frame.height / 2), y: frame.height / 4, width: frame.height / 2, height: frame.height / 2)) : UIView(frame: CGRect(x: frame.width * CGFloat(calculatedValue) - (frame.height / 2), y: frame.height / 4, width: frame.height / 2, height: frame.height / 2))
         
-        print("~>Calculated value: \(calculatedValue)")
+//        print("~>Calculated value: \(calculatedValue)")
         
         scoreLocation = calculatedValue == 0 ? LabelBubbleView(frame: CGRect(x: frame.width * CGFloat(calculatedValue) + (frame.height / 2), y: 1, width: frame.height * 1.6, height: 14), withText: labelText) : LabelBubbleView(frame: CGRect(x: frame.width * CGFloat(calculatedValue) - (frame.height / 2), y: 1, width: frame.height * 1.6, height: 14), withText: labelText)
         

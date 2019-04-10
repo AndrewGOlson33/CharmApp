@@ -24,7 +24,7 @@ class FriendListTableViewController: UITableViewController {
     let searchController = UISearchController(searchResultsController: nil)
     
     // User object that holds friend list
-    let viewModel = ContactsViewModel()
+    let viewModel = ContactsViewModel.shared
     
     // toggle for display contacts or add contacts views
     var isContactsViewShowing: Bool = true {

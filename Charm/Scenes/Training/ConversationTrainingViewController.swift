@@ -36,7 +36,14 @@ class ConversationTrainingViewController: UIViewController {
     var speechModel: SpeechRecognitionModel = SpeechRecognitionModel()
     
     // For speaking text
-    let speaker = AVSpeechSynthesizer()
+    var speaker: AVSpeechSynthesizer!
+    let audioSession = AVAudioSession.sharedInstance()
+    var volumeWasZero = false
+    
+    private struct Observation {
+        static let VolumeKey = "outputVolume"
+        static var Context = 0
+    }
 
     // Detect if we are in score or reset mode
     private var shouldReset = false
@@ -44,6 +51,8 @@ class ConversationTrainingViewController: UIViewController {
     // Button Images
     
     let mic = UIImage(named: Image.Mic)!
+    let replay = UIImage(named: Image.Speaker)!
+    let mute = UIImage(named: Image.Mute)!
     let stop = UIImage(named: Image.Stop)!
     let chart = UIImage(named: Image.Chart)!
     let reset = UIImage(named: Image.Reset)!
@@ -52,6 +61,9 @@ class ConversationTrainingViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        // load speech
+        speaker = AVSpeechSynthesizer()
 
         // Load initial prompts
         updatePrompts()
@@ -91,6 +103,14 @@ class ConversationTrainingViewController: UIViewController {
         tabBarController?.navigationItem.title = "Conversation"
         let info = UIBarButtonItem(image: UIImage(named: Image.Info), style: .plain, target: self, action: #selector(infoButtonTapped))
         tabBarController?.navigationItem.rightBarButtonItem = info
+        
+        do {
+            try audioSession.setActive(true)
+            startObservingVolumeChanges()
+        }
+        catch {
+            print("~>Failed to activate audio session")
+        }
     }
     
     // Make sure speech is not going on when leaving the view
@@ -99,6 +119,7 @@ class ConversationTrainingViewController: UIViewController {
         super.viewWillDisappear(animated)
         
         if speaker.isSpeaking { speaker.stopSpeaking(at: .immediate) }
+        audioSession.removeObserver(self, forKeyPath: Observation.VolumeKey)
     }
     
     // MARK: - UI Setup Functions
@@ -147,6 +168,7 @@ class ConversationTrainingViewController: UIViewController {
             let phrase = "\(yousaid) \(pause) \(self.lblTheySaid.text ?? "")"
             if self.speaker.isSpeaking { self.speaker.stopSpeaking(at: .immediate) }
             let utterance = AVSpeechUtterance(string: phrase)
+            utterance.voice = AVSpeechSynthesisVoice(language: "en-US")
             self.speaker.speak(utterance)
         }
     }
@@ -207,6 +229,27 @@ class ConversationTrainingViewController: UIViewController {
     
     @objc private func infoButtonTapped() {
         print("~>Info button tapped.")
+    }
+    
+    // Volume change helpers
+    
+    func startObservingVolumeChanges() {
+        audioSession.addObserver(self, forKeyPath: Observation.VolumeKey, options: [.initial ,.new], context: &Observation.Context)
+    }
+    
+    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
+        if keyPath == "outputVolume"{
+            let volume = (change?[NSKeyValueChangeKey.newKey] as!
+                NSNumber).floatValue
+            print("~>volume " + volume.description)
+            if volume == 0.0 && !volumeWasZero {
+                animate(button: btnReplay, toImage: mute)
+                volumeWasZero = true
+            } else if volume != 0 && volumeWasZero {
+                animate(button: btnReplay, toImage: replay)
+                volumeWasZero = false
+            }
+        }
     }
     
     // Animation Helpers

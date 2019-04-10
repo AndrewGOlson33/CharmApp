@@ -22,6 +22,8 @@ class ContactsViewModel: NSObject {
         case AddByPhone
     }
     
+    static let shared = ContactsViewModel()
+    
     // delegate for updating table view
     var delegate: TableViewRefreshDelegate? = nil
     
@@ -111,8 +113,10 @@ class ContactsViewModel: NSObject {
         
         // load contact list
         loadContacts()
-        delegate?.updateTableView()
         setupAddFriendsArrays()
+        
+        // refresh table view
+        delegate?.updateTableView()
     }
     
     // MARK: - Data Access
@@ -222,7 +226,7 @@ class ContactsViewModel: NSObject {
             // do request
             do {
                 try store.enumerateContacts(with: request, usingBlock: { (contact, stop) in
-                    self.contacts.append(contact)
+                    if !self.contacts.contains(contact) { self.contacts.append(contact) }
                     self.checkFriendList(for: contact)
                 })
             } catch let error {
@@ -352,7 +356,18 @@ class ContactsViewModel: NSObject {
                         found = true
                         let friendUser = try! FirebaseDecoder().decode(CharmUser.self, from: first)
                         let friend = Friend(id: friendUser.id!, first: friendUser.userProfile.firstName, last: friendUser.userProfile.lastName, email: friendUser.userProfile.email)
-                        self.existingUsers.append(friend)
+                        print("~>Existing in contacts: \(friend.firstName)")
+                        if !self.existingUsers.contains(where: { (existing) -> Bool in
+                            return existing.email == friend.email
+                        }) && !self.pendingReceived.contains(where: { (existing) -> Bool in
+                            return existing.email == friend.email
+                        }) && !self.pendingSent.contains(where: { (existing) -> Bool in
+                            return existing.email == friend.email
+                        }) {
+                            self.existingUsers.append(friend)
+                        }
+                        
+                        self.delegate?.updateTableView()
                     }
                 }
             }
@@ -386,7 +401,14 @@ class ContactsViewModel: NSObject {
                 guard !firstName.isEmpty && !phone.isEmpty else { continue }
                 var friend = Friend(id: "N/A", first: firstName, last: lastName, email: emailAddress)
                 friend.phone = phone
-                usersToInvite.append(friend)
+                if !usersToInvite.contains(where: { (existing) -> Bool in
+                    return existing.email == friend.email && existing.phone == friend.phone && existing.firstName == existing.firstName && existing.lastName == friend.lastName
+                }) && !self.pendingReceived.contains(where: { (existing) -> Bool in
+                    return existing.email == friend.email && existing.phone == friend.phone && existing.firstName == existing.firstName && existing.lastName == friend.lastName
+                }) && !self.pendingSent.contains(where: { (existing) -> Bool in
+                    return existing.email == friend.email && existing.phone == friend.phone && existing.firstName == existing.firstName && existing.lastName == friend.lastName
+                })  { usersToInvite.append(friend) }
+                
             }
         }
     }
@@ -398,6 +420,12 @@ class ContactsViewModel: NSObject {
     @objc private func updatedUser(_ sender: Notification) {
         guard let updatedUser = sender.object as? CharmUser else { return }
         user = updatedUser
+        
+        // load contact list
+        loadContacts()
+        setupAddFriendsArrays()
+        
+        // refresh table view
         delegate?.updateTableView()
     }
 }
@@ -600,6 +628,10 @@ extension ContactsViewModel: FriendManagementDelegate {
                 alert.title = "Sent Request"
                 alert.message = "Your friend request has been sent.  Once the request has been approved by your friend, they will show up on your friends list."
                 navVC.present(alert, animated: true, completion: nil)
+                self.existingUsers.removeAll(where: { (existing) -> Bool in
+                    return existing.email == friend.email
+                })
+                self.delegate?.updateTableView()
             } catch let error {
                 alert.title = "Request Failed"
                 alert.message = "Your friend request failed.  Please try again later."

@@ -47,6 +47,8 @@ enum CellID {
 
 enum Image {
     static let Mic = "icn_mic"
+    static let Speaker = "icn_speaker"
+    static let Mute = "icn_mute"
     static let Stop = "icn_stop"
     static let Chart = "icn_chart"
     static let Reset = "icn_reset"
