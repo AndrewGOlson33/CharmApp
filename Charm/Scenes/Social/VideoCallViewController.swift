@@ -85,6 +85,15 @@ class VideoCallViewController: UIViewController {
         viewConnecting.layer.shadowRadius = 8
         viewConnecting.layer.shadowOpacity = 0.6
         viewConnecting.layer.shadowOffset = CGSize(width: 2, height: 2)
+        
+        // setup tap gesture
+        let tap = UITapGestureRecognizer(target: self, action: #selector(handleScreenTap(_:)))
+        tap.numberOfTapsRequired = 1
+        tap.numberOfTouchesRequired = 1
+        view.addGestureRecognizer(tap)
+        
+        // Fade cancel button
+        hideButton()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -95,6 +104,25 @@ class VideoCallViewController: UIViewController {
     }
     
     // MARK: - Private Helper Functions
+    
+    @objc private func handleScreenTap(_ notification: UITapGestureRecognizer) {
+        if self.btnEndCall.alpha == 0 {
+            UIView.animate(withDuration: 0.25, delay: 0.0, options: [.curveEaseIn], animations: {
+                self.btnEndCall.alpha = 1.0
+            }) { (_) in
+                self.btnEndCall.isEnabled = true
+                self.hideButton()
+            }
+        }
+    }
+    
+    private func hideButton() {
+        UIView.animate(withDuration: 0.8, delay: 5.0, options: [.curveEaseIn], animations: {
+            self.btnEndCall.alpha = 0.0
+        }) { (_) in
+            self.btnEndCall.isEnabled = false
+        }
+    }
     
     fileprivate func showCallErrorAlert() {
         DispatchQueue.main.async {
