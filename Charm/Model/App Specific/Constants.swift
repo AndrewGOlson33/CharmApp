@@ -25,6 +25,9 @@ enum SegueID {
     static let DetailChart = "sid_detailchart"
     static let TrainingChart = "sid_trainingchart"
     static let SnapshotsList = "sid_allsnapshots"
+    static let MetricsTab = "sid_metrics"
+    static let VideoTraining = "sid_videotraining"
+    static let TrainingTab = "sid_training"
 }
 
 enum StoryboardID {

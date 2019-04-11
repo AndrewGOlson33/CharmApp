@@ -12,6 +12,10 @@ import CodableFirebase
 
 class MainMenuViewController: UIViewController {
     
+    // MARK: - IBOutlets
+    
+    @IBOutlet var buttonViewGroup: [UIView]!
+    
     // MARK: - Properties
     
     var isFirebaseConnected: Bool = true
@@ -23,6 +27,9 @@ class MainMenuViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        // Setup buttons
+        setupButtons()
         
         // Setup loss of internet observer
         setupConnetionObserver()
@@ -64,6 +71,40 @@ class MainMenuViewController: UIViewController {
     }
     
     // MARK: - Private Setup Functions
+    
+    // UI Related
+    
+    fileprivate func setupButtons() {
+        for (index, button) in buttonViewGroup.enumerated() {
+            
+            button.layer.cornerRadius = 18
+            button.layer.borderColor = UIColor.white.cgColor
+            button.layer.borderWidth = 1.0
+            button.layer.shadowColor = UIColor.black.cgColor
+            button.layer.shadowOpacity = 0.6
+            button.layer.shadowRadius = 8.0
+            button.layer.shadowOffset = CGSize(width: 2, height: 2)
+            button.alpha = 0.9
+            
+            var tap: UITapGestureRecognizer!
+            
+            switch index {
+            case 0:
+                tap = UITapGestureRecognizer(target: self, action: #selector(chatButtonTapped(_:)))
+            case 1:
+                tap = UITapGestureRecognizer(target: self, action: #selector(metricsButtonTapped(_:)))
+            case 2:
+                tap = UITapGestureRecognizer(target: self, action: #selector(learnButtonTapped(_:)))
+            default:
+                tap = UITapGestureRecognizer(target: self, action: #selector(trainButtonTapped(_:)))
+            }
+            
+            button.addGestureRecognizer(tap)
+            
+        }
+    }
+    
+    // Firebase Related
     
     fileprivate func setupConnetionObserver() {
         let connectedRef = Database.database().reference(withPath: ".info/connected")
@@ -259,8 +300,20 @@ class MainMenuViewController: UIViewController {
     
     // MARK: - Button Handling
     
-    @IBAction func chatButtonTapped(_ sender: Any) {
+    @objc func chatButtonTapped(_ sender: Any) {
         performSegue(withIdentifier: SegueID.FriendList, sender: self)
+    }
+    
+    @objc func metricsButtonTapped(_ sender: Any) {
+        performSegue(withIdentifier: SegueID.MetricsTab, sender: self)
+    }
+    
+    @objc func learnButtonTapped(_ sender: Any) {
+        performSegue(withIdentifier: SegueID.VideoTraining, sender: self)
+    }
+    
+    @objc func trainButtonTapped(_ sender: Any) {
+        performSegue(withIdentifier: SegueID.TrainingTab, sender: self)
     }
     
     // MARK: - Add Friend From Deep Link
