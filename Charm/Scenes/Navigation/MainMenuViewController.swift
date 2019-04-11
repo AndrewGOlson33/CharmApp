@@ -48,9 +48,6 @@ class MainMenuViewController: UIViewController {
         
         // Upload Device Token
         uploadDeviceToken()
-        
-        // Pre-Load contacts model
-        print(ContactsViewModel.shared.contacts)
     }
     
     override func viewDidAppear(_ animated: Bool) {

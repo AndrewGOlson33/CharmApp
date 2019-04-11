@@ -257,9 +257,14 @@ class ContactsViewModel: NSObject {
     fileprivate func checkFriendList(for contact: CNContact) {
         
         var emailAddresses: [String] = []
+        var phoneNumbers: [String] = []
         
         for email in contact.emailAddresses {
             emailAddresses.append(email.value as String)
+        }
+        
+        for phone in contact.phoneNumbers {
+            phoneNumbers.append(phone.value.stringValue.filter("0123456789".contains))
         }
         
         guard let contacts = user?.friendList?.currentFriends else {
@@ -267,7 +272,7 @@ class ContactsViewModel: NSObject {
             return
         }
         if !contacts.enumerated().contains(where: { (index, friend) -> Bool in
-            return emailAddresses.contains(friend.email)
+            return emailAddresses.contains(friend.email) || phoneNumbers.contains(friend.phone ?? "")
         }) {
             notInContacts.append(contact)
         }
@@ -343,16 +348,25 @@ class ContactsViewModel: NSObject {
     fileprivate func setupAddFriendsArrays() {
         let ref = Database.database().reference().child(FirebaseStructure.Users)
         
+        let contactsGroup = DispatchGroup()
+        
         // only loop through contacts we know are not in the user's friend list
         for contact in notInContacts {
             var found: Bool = false
+            contactsGroup.enter()
+            let contactGroup = DispatchGroup()
             
             // TODO: - Prevent showing the user's own email (Do near end, as this is needed for testing right now)
             
             for email in contact.emailAddresses {
+                contactGroup.enter()
                 let value = email.value as String
                 let emailQuery = ref.queryOrdered(byChild: "userProfile/email").queryEqual(toValue: value).queryLimited(toFirst: 1)
                 emailQuery.observeSingleEvent(of: .value) { (snapshot) in
+                    if !snapshot.exists() {
+                        contactGroup.leave()
+                        return
+                    }
                     if let results = snapshot.value as? [AnyHashable:Any], let first = results.first?.value {
                         found = true
                         let friendUser = try! FirebaseDecoder().decode(CharmUser.self, from: first)
@@ -368,15 +382,20 @@ class ContactsViewModel: NSObject {
                             self.existingUsers.append(friend)
                         }
                         
-                        self.delegate?.updateTableView()
+                        contactGroup.leave()
                     }
                 }
             }
             
             for number in contact.phoneNumbers {
+                contactGroup.enter()
                 let phone = number.value.stringValue.filter("0123456789".contains)
                 let phoneQuery = ref.queryOrdered(byChild: "userProfile/phone").queryEqual(toValue: phone).queryLimited(toFirst: 1)
                 phoneQuery.observeSingleEvent(of: .value) { (snapshot) in
+                    if !snapshot.exists() {
+                        contactGroup.leave()
+                        return
+                    }
                     
                     if let results = snapshot.value as? [AnyHashable:Any], let first = results.first?.value {
                         print("~>Phone number found: \(first)")
@@ -393,56 +412,70 @@ class ContactsViewModel: NSObject {
                             }) {
                                 self.existingUsers.append(friend)
                             }
-                            
-                            self.delegate?.updateTableView()
+                            contactGroup.leave()
                         } catch let error {
                             print("~>There was an error: \(error)")
+                            contactGroup.leave()
                         }
                         
                     }
                 }
             }
             
-            if !found {
-                let firstName = contact.givenName
-                let lastName = contact.familyName
-                var emailAddress = ""
-                if let emailItem = contact.emailAddresses.first {
-                    emailAddress = emailItem.value as String
-                }
-
-                
-                var phone: String = ""
-                var found: Bool = false
-                
-                for number in contact.phoneNumbers {
-                    guard let label = number.label else { continue }
-                    if label.lowercased().contains("iphone") || label.lowercased().contains("mobile") || label.lowercased().contains("iphone") || label.lowercased().contains("main") {
-                        phone = number.value.stringValue
-                        found = true
-                        break
-                    }
-                }
-                
+            contactGroup.notify(queue: .main) {
                 if !found {
-                    phone = contact.phoneNumbers.first?.value.stringValue ?? ""
+                    let firstName = contact.givenName
+                    let lastName = contact.familyName
+                    var emailAddress = ""
+                    if let emailItem = contact.emailAddresses.first {
+                        emailAddress = emailItem.value as String
+                    }
+                    
+                    
+                    var phone: String = ""
+                    var found: Bool = false
+                    
+                    for number in contact.phoneNumbers {
+                        guard let label = number.label else { continue }
+                        if label.lowercased().contains("iphone") || label.lowercased().contains("mobile") || label.lowercased().contains("iphone") || label.lowercased().contains("main") {
+                            phone = number.value.stringValue
+                            found = true
+                            break
+                        }
+                    }
+                    
+                    if !found {
+                        phone = contact.phoneNumbers.first?.value.stringValue ?? ""
+                    }
+                    
+                    
+                    guard !firstName.isEmpty && !phone.isEmpty && !self.currentFriends.contains(where: { (friend) -> Bool in
+                        return friend.email == emailAddress || friend.phone == phone
+                    }) else {
+                        contactsGroup.leave()
+                        return
+                    }
+                    var friend = Friend(id: "N/A", first: firstName, last: lastName, email: emailAddress)
+                    friend.phone = phone
+                    if !self.usersToInvite.contains(where: { (existing) -> Bool in
+                        return existing.email == friend.email && existing.phone == friend.phone && existing.firstName == existing.firstName && existing.lastName == friend.lastName
+                    }) && !self.pendingReceived.contains(where: { (existing) -> Bool in
+                        return existing.email == friend.email && existing.phone == friend.phone && existing.firstName == existing.firstName && existing.lastName == friend.lastName
+                    }) && !self.pendingSent.contains(where: { (existing) -> Bool in
+                        return existing.email == friend.email && existing.phone == friend.phone && existing.firstName == existing.firstName && existing.lastName == friend.lastName
+                    })  { self.usersToInvite.append(friend) }
+                    contactsGroup.leave()
+                } else {
+                    contactsGroup.leave()
                 }
-                
-                
-                guard !firstName.isEmpty && !phone.isEmpty && !currentFriends.contains(where: { (friend) -> Bool in
-                    return friend.email == emailAddress || friend.phone == phone
-                }) else { continue }
-                var friend = Friend(id: "N/A", first: firstName, last: lastName, email: emailAddress)
-                friend.phone = phone
-                if !usersToInvite.contains(where: { (existing) -> Bool in
-                    return existing.email == friend.email && existing.phone == friend.phone && existing.firstName == existing.firstName && existing.lastName == friend.lastName
-                }) && !self.pendingReceived.contains(where: { (existing) -> Bool in
-                    return existing.email == friend.email && existing.phone == friend.phone && existing.firstName == existing.firstName && existing.lastName == friend.lastName
-                }) && !self.pendingSent.contains(where: { (existing) -> Bool in
-                    return existing.email == friend.email && existing.phone == friend.phone && existing.firstName == existing.firstName && existing.lastName == friend.lastName
-                })  { usersToInvite.append(friend) }
-                
             }
+            
+            
+        }
+        
+        contactsGroup.notify(queue: .main) {
+            print("~>Contacts group finished.")
+            self.delegate?.updateTableView()
         }
     }
     
