@@ -37,9 +37,22 @@ struct UserProfile: Codable {
     var firstName: String
     var lastName: String
     var email: String
+    var phone: String?
     var numCredits: Int
     var renewDate: Date
     var membershipStatus: MembershipStatus
+    
+    // Calculated Variables
+    
+    var credits: String {
+        return "\(numCredits)"
+    }
+    
+    var renewDateString: String {
+        let dFormatter = DateFormatter()
+        dFormatter.dateStyle = .short
+        return dFormatter.string(from: renewDate)
+    }
     
     init(first: String, last: String, email: String) {
         firstName = first

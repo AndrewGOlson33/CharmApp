@@ -74,6 +74,7 @@ enum FirebaseStructure {
             static let Email = "email"
             static let FirstName = "firstName"
             static let LastName = "lastName"
+            static let Phone = "phone"
             static let MembershipStatus = "membershipStatus"
             static let NumCredits = "numCredits"
             static let RenewDate = "renewDate"

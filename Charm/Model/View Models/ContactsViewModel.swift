@@ -341,6 +341,8 @@ class ContactsViewModel: NSObject {
     
     // setup the arrays for adding contacts
     fileprivate func setupAddFriendsArrays() {
+        let ref = Database.database().reference().child(FirebaseStructure.Users)
+        
         // only loop through contacts we know are not in the user's friend list
         for contact in notInContacts {
             var found: Bool = false
@@ -349,8 +351,7 @@ class ContactsViewModel: NSObject {
             
             for email in contact.emailAddresses {
                 let value = email.value as String
-                let ref = Database.database().reference()
-                let emailQuery = ref.child(FirebaseStructure.Users).queryOrdered(byChild: "userProfile/email").queryEqual(toValue: value).queryLimited(toFirst: 1)
+                let emailQuery = ref.queryOrdered(byChild: "userProfile/email").queryEqual(toValue: value).queryLimited(toFirst: 1)
                 emailQuery.observeSingleEvent(of: .value) { (snapshot) in
                     if let results = snapshot.value as? [AnyHashable:Any], let first = results.first?.value {
                         found = true
@@ -368,6 +369,36 @@ class ContactsViewModel: NSObject {
                         }
                         
                         self.delegate?.updateTableView()
+                    }
+                }
+            }
+            
+            for number in contact.phoneNumbers {
+                let phone = number.value.stringValue.filter("0123456789".contains)
+                let phoneQuery = ref.queryOrdered(byChild: "userProfile/phone").queryEqual(toValue: phone).queryLimited(toFirst: 1)
+                phoneQuery.observeSingleEvent(of: .value) { (snapshot) in
+                    
+                    if let results = snapshot.value as? [AnyHashable:Any], let first = results.first?.value {
+                        print("~>Phone number found: \(first)")
+                        do {
+                            let friendUser = try FirebaseDecoder().decode(CharmUser.self, from: first)
+                            let friend = Friend(id: friendUser.id!, first: friendUser.userProfile.firstName, last: friendUser.userProfile.lastName, email: friendUser.userProfile.email)
+                            print("~>Existing phone number in contacts: \(friend.firstName) \(friend.lastName) \(friend.email)")
+                            if !self.existingUsers.contains(where: { (existing) -> Bool in
+                                return existing.email == friend.email
+                            }) && !self.pendingReceived.contains(where: { (existing) -> Bool in
+                                return existing.email == friend.email
+                            }) && !self.pendingSent.contains(where: { (existing) -> Bool in
+                                return existing.email == friend.email
+                            }) {
+                                self.existingUsers.append(friend)
+                            }
+                            
+                            self.delegate?.updateTableView()
+                        } catch let error {
+                            print("~>There was an error: \(error)")
+                        }
+                        
                     }
                 }
             }
@@ -398,7 +429,9 @@ class ContactsViewModel: NSObject {
                 }
                 
                 
-                guard !firstName.isEmpty && !phone.isEmpty else { continue }
+                guard !firstName.isEmpty && !phone.isEmpty && !currentFriends.contains(where: { (friend) -> Bool in
+                    return friend.email == emailAddress || friend.phone == phone
+                }) else { continue }
                 var friend = Friend(id: "N/A", first: firstName, last: lastName, email: emailAddress)
                 friend.phone = phone
                 if !usersToInvite.contains(where: { (existing) -> Bool in
@@ -412,7 +445,6 @@ class ContactsViewModel: NSObject {
             }
         }
     }
-    
     
     // MARK: - Notifications
     
