@@ -48,6 +48,9 @@ class MainMenuViewController: UIViewController {
         
         // Upload Device Token
         uploadDeviceToken()
+        
+        // Start loading contacts list
+        let _ = ContactsViewModel.shared.contacts
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -311,6 +314,15 @@ class MainMenuViewController: UIViewController {
     
     @objc func trainButtonTapped(_ sender: Any) {
         performSegue(withIdentifier: SegueID.TrainingTab, sender: self)
+    }
+    
+    // MARK: - Prepare For Segue
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        print("~>Going to segue with id: \(String(describing: segue.identifier))")
+        if segue.identifier == SegueID.FriendList, let friendsVC = segue.destination as? FriendListTableViewController {
+            friendsVC.showContacts = false
+        }
     }
     
     // MARK: - Add Friend From Deep Link

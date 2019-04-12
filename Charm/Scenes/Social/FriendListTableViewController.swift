@@ -25,6 +25,7 @@ class FriendListTableViewController: UITableViewController {
     
     // User object that holds friend list
     let viewModel = ContactsViewModel.shared
+    var showContacts: Bool = true
     
     // toggle for display contacts or add contacts views
     var isContactsViewShowing: Bool = true {
@@ -40,9 +41,18 @@ class FriendListTableViewController: UITableViewController {
         
         tableView.allowsSelection = false
         
-        // disable contacts button on launch
-        btnContacts.isEnabled = false
-
+        isContactsViewShowing = showContacts
+        
+        if !showContacts {
+            btnContacts.tintColor = .clear
+            btnAddContact.tintColor = .clear
+            btnContacts.isEnabled = false
+            btnAddContact.isEnabled = false
+        } else {
+            // disable contacts button on launch
+            btnContacts.isEnabled = false
+        }
+        
         // allow view model to refresh tableview
         viewModel.delegate = self
         
@@ -208,6 +218,7 @@ extension FriendListTableViewController: UISearchResultsUpdating, UISearchBarDel
 extension FriendListTableViewController: TableViewRefreshDelegate {
     
     func updateTableView() {
+        print("~>Reloading data.")
         tableView.reloadData()
     }
     

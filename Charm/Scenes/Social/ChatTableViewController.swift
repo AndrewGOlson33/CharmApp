@@ -131,6 +131,8 @@ class ChatTableViewController: UITableViewController {
         if segue.identifier == SegueID.VideoCall, let videoVC = segue.destination as? VideoCallViewController, let friend = sender as? Friend {
             videoVC.friend = friend
             videoVC.myUser = viewModel.user!
+        } else if segue.identifier == SegueID.FriendList, let friendVC = segue.destination as? FriendListTableViewController {
+            friendVC.showContacts = false
         }
     }
 
