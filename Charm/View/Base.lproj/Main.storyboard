@@ -2107,6 +2107,9 @@
                                     <constraint firstAttribute="width" secondItem="sDf-tO-MK3" secondAttribute="height" multiplier="1:1" id="5bk-pl-tt2"/>
                                 </constraints>
                                 <state key="normal" image="icn_refresh"/>
+                                <connections>
+                                    <action selector="resetButtonTapped:" destination="zID-eW-GWb" eventType="touchUpInside" id="cuA-b7-kdU"/>
+                                </connections>
                             </button>
                             <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Response Phrase" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="SFw-sC-GwV">
                                 <rect key="frame" x="151" y="368" width="112" height="17"/>

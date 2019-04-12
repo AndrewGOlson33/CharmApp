@@ -83,7 +83,7 @@ class EmotionFlashcardsViewController: UIViewController {
         viewModel.getAverageEmotionsScore { (emotionsScores) in
             self.scaleBar.labelType = self.viewModel.shouldShowNA ? .NA : .Percent
             self.scaleBar.update(withValue: emotionsScores.scoreValue, andCalculatedValue: emotionsScores.averageScore)
-//            self.setupPopover()
+            self.setupPopover()
         }
         
         
@@ -134,8 +134,8 @@ class EmotionFlashcardsViewController: UIViewController {
     
     // Setup Popover View
     @objc private func setupPopover() {
-        let text = viewModel.shouldShowNA ? "N/A" : scaleBar.getStringValue(showPercentOnGreen: true)
-        let frame = CGRect(x: getX(for: scaleBar) + scaleBar.frame.origin.x, y: scaleBar.frame.origin.y, width: 56, height: 32)
+        let text = viewModel.shouldShowNA ? "N/A" : scaleBar.labelText
+        let frame = CGRect(x: getX(for: scaleBar) + scaleBar.frame.origin.x, y: scaleBar.frame.origin.y - ((20 - scaleBar.frame.height) / 2), width: 56, height: 20)
         
         if popoverView == nil {
             popoverView = LabelBubbleView(frame: frame, withText: text)
@@ -143,6 +143,15 @@ class EmotionFlashcardsViewController: UIViewController {
             view.bringSubviewToFront(popoverView)
         } else {
             popoverView.updateLabel(withText: text, frame: frame)
+        }
+        
+        // adjust frame if needed
+        if popoverView.frame.maxX >= scaleBar.frame.maxX {
+            popoverView.frame.origin.x -= popoverView.frame.maxX - scaleBar.frame.maxX
+        }
+        
+        if popoverView.frame.minX <= scaleBar.frame.minX {
+            popoverView.frame.origin.x += scaleBar.frame.minX - popoverView.frame.minX
         }
     }
     
@@ -180,7 +189,7 @@ class EmotionFlashcardsViewController: UIViewController {
             DispatchQueue.main.async {
                 self.scaleBar.labelType = self.viewModel.shouldShowNA ? .NA : .Percent
                 self.scaleBar.update(withValue: newHistory.scoreValue, andCalculatedValue: newHistory.averageScore)
-//                self.setupPopover()
+                self.setupPopover()
             }
         }
         
@@ -243,10 +252,10 @@ class EmotionFlashcardsViewController: UIViewController {
     
     @IBAction func resetButtonTapped(_ sender: Any) {
         // overwrite old data with new data
-        let blankHistory = ConcreteTrainingHistory()
+        let blankHistory = EmotionsTrainingHistory()
         do {
             let data = try FirebaseEncoder().encode(blankHistory)
-            Database.database().reference().child(FirebaseStructure.Users).child(Auth.auth().currentUser!.uid).child(FirebaseStructure.Training.TrainingDatabase).child(FirebaseStructure.Training.ConcreteHistory).setValue(data)
+            Database.database().reference().child(FirebaseStructure.Users).child(Auth.auth().currentUser!.uid).child(FirebaseStructure.Training.TrainingDatabase).child(FirebaseStructure.Training.EmotionHistory).setValue(data)
         } catch let errror {
             print("~>Got an error trying to encode a blank history: \(errror)")
             let alert = UIAlertController(title: "Unable to Reset", message: "Unable to reset scores at this time.  Please try again later.", preferredStyle: .alert)

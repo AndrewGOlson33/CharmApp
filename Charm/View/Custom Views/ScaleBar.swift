@@ -95,6 +95,7 @@ class ScaleBar: UIView {
         layer.borderWidth = 1.0
         layer.cornerRadius = frame.height / 2
         layer.masksToBounds = true
+        clipsToBounds = false
         
         switch type {
         case .Green:
@@ -107,7 +108,7 @@ class ScaleBar: UIView {
             setupRedRightQuarter()
         }
         
-        setupScoreLocation()
+//        setupScoreLocation()
         
     }
     
@@ -117,7 +118,7 @@ class ScaleBar: UIView {
         self.value = value
         calculatedValue = calculated
         
-        setupScoreLocation()
+//        setupScoreLocation()
     }
     
     fileprivate func setupScoreLocation() {
@@ -125,19 +126,14 @@ class ScaleBar: UIView {
             scoreLocation?.removeFromSuperview()
         }
         
-//        scoreLocation = calculatedValue == 0 ? UIView(frame: CGRect(x: frame.width * CGFloat(calculatedValue) + (frame.height / 2), y: frame.height / 4, width: frame.height / 2, height: frame.height / 2)) : UIView(frame: CGRect(x: frame.width * CGFloat(calculatedValue) - (frame.height / 2), y: frame.height / 4, width: frame.height / 2, height: frame.height / 2))
-        
-//        print("~>Calculated value: \(calculatedValue)")
-        
-        scoreLocation = calculatedValue == 0 ? LabelBubbleView(frame: CGRect(x: frame.width * CGFloat(calculatedValue) + (frame.height / 2), y: 1, width: frame.height * 1.6, height: 14), withText: labelText) : LabelBubbleView(frame: CGRect(x: frame.width * CGFloat(calculatedValue) - (frame.height / 2), y: 1, width: frame.height * 1.6, height: 14), withText: labelText)
-        
+        scoreLocation = calculatedValue == 0 ? LabelBubbleView(frame: CGRect(x: frame.width * CGFloat(calculatedValue) + (frame.height / 2), y: -4, width: frame.height * 1.6, height: 24), withText: labelText) : LabelBubbleView(frame: CGRect(x: frame.width * CGFloat(calculatedValue) - (frame.height / 2), y: -4, width: frame.height * 1.6, height: 24), withText: labelText)
         
         if calculatedValue == 1.0 {
             scoreLocation!.frame.origin.x -= scoreLocation!.frame.width / 2 + (frame.height / 2)
         }
         
-//        scoreLocation!.backgroundColor = .black
-//        scoreLocation!.layer.cornerRadius = scoreLocation!.frame.height / 2
+        scoreLocation?.backgroundColor = .white
+        
         addSubview(scoreLocation!)
         bringSubviewToFront(scoreLocation!)
     }
@@ -152,6 +148,14 @@ class ScaleBar: UIView {
             let segment = UIView(frame: segmentFrame)
             let segmentColor: UIColor = greenColors[index]
             segment.backgroundColor = segmentColor
+            
+            if index == 0 || index == 3 {
+                segment.clipsToBounds = true
+                segment.layer.cornerRadius = self.layer.cornerRadius
+                segment.layer.maskedCorners = index == 0 ? [.layerMinXMaxYCorner, .layerMinXMinYCorner] : [.layerMaxXMaxYCorner, .layerMaxXMinYCorner]
+            }
+            
+            
             addSubview(segment)
         }
     }
@@ -162,9 +166,19 @@ class ScaleBar: UIView {
         let segmentWidth = width / 6
         
         for index in 0 ..< 6 {
+            
             let segmentFrame = CGRect(origin: CGPoint(x: CGFloat(index) * segmentWidth, y: 0), size: CGSize(width: segmentWidth, height: frame.height))
             let segment = UIView(frame: segmentFrame)
             var segmentColor: UIColor = .white
+            
+            if index == 0 || index == 5 {
+                segment.clipsToBounds = true
+                segment.layer.cornerRadius = self.layer.cornerRadius
+                segment.layer.maskedCorners = index == 0 ? [.layerMinXMaxYCorner, .layerMinXMinYCorner] : [.layerMaxXMaxYCorner, .layerMaxXMinYCorner]
+                if index == 5 {
+                    segment.frame = CGRect(x: segment.frame.origin.x - 1, y: segment.frame.origin.y, width: segment.frame.width + 1, height: segment.frame.height)
+                }
+            }
             
             // setup color
             switch index {
@@ -192,6 +206,13 @@ class ScaleBar: UIView {
             let segmentFrame = CGRect(origin: CGPoint(x: CGFloat(index) * segmentWidth, y: 0), size: CGSize(width: segmentWidth, height: frame.height))
             let segment = UIView(frame: segmentFrame)
             var segmentColor: UIColor = .white
+            
+            if index == 0 || index == 48 {
+                segment.clipsToBounds = true
+                segment.layer.cornerRadius = self.layer.cornerRadius
+                segment.layer.maskedCorners = index == 0 ? [.layerMinXMaxYCorner, .layerMinXMinYCorner] : [.layerMaxXMaxYCorner, .layerMaxXMinYCorner]
+            }
+            
             switch index {
             case 15...17:
                 segmentColor = blueColors[0]
@@ -220,6 +241,12 @@ class ScaleBar: UIView {
             let segmentFrame = CGRect(origin: CGPoint(x: CGFloat(index) * segmentWidth, y: 0), size: CGSize(width: segmentWidth, height: frame.height))
             let segment = UIView(frame: segmentFrame)
             let segmentColor: UIColor = index == 3 ? .red : .white
+            
+            if index == 0 || index == 3 {
+                segment.clipsToBounds = true
+                segment.layer.cornerRadius = self.layer.cornerRadius
+                segment.layer.maskedCorners = index == 0 ? [.layerMinXMaxYCorner, .layerMinXMinYCorner] : [.layerMaxXMaxYCorner, .layerMaxXMinYCorner]
+            }
             
             segment.backgroundColor = segmentColor
             addSubview(segment)

@@ -75,7 +75,7 @@ class ConcreteFlashcardsViewController: UIViewController {
         scaleBar.setupBar(ofType: .Green, withValue: 0, andLabelPosition: 0)
         viewModel.getAverageConcreteScore { (concreteScores) in
             self.scaleBar.update(withValue: concreteScores.scoreValue, andCalculatedValue: concreteScores.averageScore)
-//            self.setupPopover()
+            self.setupPopover()
         }
         
         
@@ -125,16 +125,25 @@ class ConcreteFlashcardsViewController: UIViewController {
     
     // Setup Popover View
     private func setupPopover() {
-        
-        let text = viewModel.shouldShowNA ? "N/A" : scaleBar.getStringValue(showPercentOnGreen: true)
-        let frame = CGRect(x: getX(for: scaleBar) + scaleBar.frame.origin.x, y: scaleBar.frame.origin.y, width: 56, height: 32)
+        let text = viewModel.shouldShowNA ? "N/A" : scaleBar.labelText
+        let frame = CGRect(x: getX(for: scaleBar) + scaleBar.frame.origin.x, y: scaleBar.frame.origin.y - ((20 - scaleBar.frame.height) / 2), width: 56, height: 20)
         
         if popoverView == nil {
             popoverView = LabelBubbleView(frame: frame, withText: text)
+  
             view.addSubview(popoverView)
             view.bringSubviewToFront(popoverView)
         } else {
             popoverView.updateLabel(withText: text, frame: frame)
+        }
+        
+        // adjust frame if needed
+        if popoverView.frame.maxX >= scaleBar.frame.maxX {
+            popoverView.frame.origin.x -= popoverView.frame.maxX - scaleBar.frame.maxX
+        }
+        
+        if popoverView.frame.minX <= scaleBar.frame.minX {
+            popoverView.frame.origin.x += scaleBar.frame.minX - popoverView.frame.minX
         }
     }
     
@@ -171,7 +180,7 @@ class ConcreteFlashcardsViewController: UIViewController {
             DispatchQueue.main.async {
                 self.scaleBar.labelType = self.viewModel.shouldShowNA ? .NA : .Percent
                 self.scaleBar.update(withValue: newHistory.scoreValue, andCalculatedValue: newHistory.averageScore)
-//                self.setupPopover()
+                self.setupPopover()
             }
         }
     }

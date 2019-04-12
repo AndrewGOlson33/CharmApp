@@ -154,6 +154,7 @@ enum FirebaseStructure {
     enum Training {
         static let TrainingDatabase = "trainingData"
         static let ConcreteHistory = "concreteAverage"
+        static let EmotionHistory = "emotionsAverage"
         static let SandboxHistory = "sandboxHistory"
         static let UnclassifiedNouns = "unclassifiedNouns"
     }

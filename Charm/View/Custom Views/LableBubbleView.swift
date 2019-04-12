@@ -19,7 +19,6 @@ class LabelBubbleView: UIView {
         originalFrame = frame
         super.init(frame: .zero)
         backgroundColor = .clear
-        
         drawView()
     }
     
@@ -61,27 +60,10 @@ class LabelBubbleView: UIView {
         outterView.clipsToBounds = true
         outterView.layer.cornerRadius = outterFrame.height * 0.33
         
-        // get frame values
-//        let frameWidth = outterFrame.width
-//        let frameHeight = outterFrame.height * 1.25
-//        var frameX = originalFrame.origin.x - labelFrame!.width * 0.5 + 4
-//        let frameY = originalFrame.origin.y - frameHeight
-//
-//        if frameX < 8 { frameX = 8.0 }
-//        if frameX > UIScreen.main.bounds.width - 8 - frameWidth {
-//            frameX = UIScreen.main.bounds.width - 8 - frameWidth
-//        }
+        let changeInWidth = originalFrame.width - outterFrame.width / 2
         
-        self.frame = CGRect(origin: originalFrame.origin, size: CGSize(width: outterFrame.width, height: outterFrame.height))
+        self.frame = CGRect(origin: CGPoint(x: originalFrame.origin.x - changeInWidth, y: originalFrame.origin.y), size: CGSize(width: outterFrame.width, height: outterFrame.height))
         addSubview(outterView)
-        
-//        // Setup Triangle
-//        let triangleWidth = outterFrame.width * 0.2
-//        let triangleHeight: CGFloat = 16
-//        let triangleX = self.frame.width / 5
-//        let triangleY = labelFrame!.height / 2 + 0.95
-//        let triangle = drawTriangle(insideRect: CGRect(x: triangleX, y: triangleY, width: triangleWidth, height: triangleHeight))
-//        addSubview(triangle)
     }
     
     // Draws the downward triangle

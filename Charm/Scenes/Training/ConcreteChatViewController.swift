@@ -292,7 +292,7 @@ extension ConcreteChatViewController: UITableViewDelegate, UITableViewDataSource
             print("~>Should not be possible to get here.")
         }
         
-//        setupPopover(for: cell)
+        setupPopover(for: cell)
         return cell
     }
     
@@ -309,8 +309,8 @@ extension ConcreteChatViewController: UITableViewDelegate, UITableViewDataSource
     }
     
     private func setupPopover(for cell: ScaleBarTableViewCell) {
-        let text = cell.scaleBar.getStringValue(showScoreOnOther: true)
-        let frame = CGRect(x: getX(for: cell.scaleBar), y: cell.scaleBar.frame.minY - 2, width: 0, height: 0)
+        let text = cell.scaleBar.labelText
+        let frame = CGRect(x: getX(for: cell.scaleBar), y: cell.scaleBar.frame.origin.y - ((20 - cell.scaleBar.frame.height) / 2), width: 56, height: 20)
         
         if cell.popoverView == nil {
             cell.popoverView = LabelBubbleView(frame: frame, withText: text)

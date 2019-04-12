@@ -549,7 +549,7 @@ extension DetailChartViewController: UITableViewDelegate, UITableViewDataSource 
             
             cell.scaleBar.setupBar(ofType: info.type, withValue: info.score, andLabelPosition: info.position)
             cell.lblDescription.text = info.title
-//            setupPopover(for: cell)
+            setupPopover(for: cell)
             return cell
         default:
             // setup transcript
@@ -698,9 +698,8 @@ extension DetailChartViewController: UITableViewDelegate, UITableViewDataSource 
     }
     
     private func setupPopover(for cell: ScaleBarTableViewCell) {
-        
-        let text = cell.scaleBar.getStringValue()
-        let frame = CGRect(x: getX(for: cell.scaleBar), y: cell.scaleBar.frame.minY - 2, width: 0, height: 0)
+        let text = cell.scaleBar.labelText
+        let frame = CGRect(x: getX(for: cell.scaleBar), y: cell.scaleBar.frame.origin.y - ((20 - cell.scaleBar.frame.height) / 2), width: 56, height: 20)
         
         if cell.popoverView == nil {
             cell.popoverView = LabelBubbleView(frame: frame, withText: text)
@@ -708,6 +707,5 @@ extension DetailChartViewController: UITableViewDelegate, UITableViewDataSource 
             cell.bringSubviewToFront(cell.popoverView)
         } else {
             cell.popoverView.updateLabel(withText: text, frame: frame)
-        }
-    }
+        }    }
 }
