@@ -51,6 +51,9 @@
 		65EADDD522302FE900593F9D /* Protocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65EADDD422302FE900593F9D /* Protocols.swift */; };
 		65EADDD722303A1C00593F9D /* CharmSignInViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65EADDD622303A1C00593F9D /* CharmSignInViewController.swift */; };
 		65F1C195225FA9A600F0BD69 /* SettingsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65F1C194225FA9A600F0BD69 /* SettingsTableViewController.swift */; };
+		65F1C1972260BB3B00F0BD69 /* InfoModuleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65F1C1962260BB3B00F0BD69 /* InfoModuleViewController.swift */; };
+		65F1C1992260C28600F0BD69 /* SendFeedbackViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65F1C1982260C28600F0BD69 /* SendFeedbackViewController.swift */; };
+		65F1C19B2260C38C00F0BD69 /* CharmBugReports.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65F1C19A2260C38C00F0BD69 /* CharmBugReports.swift */; };
 		65F5A022222FF8A8001262FB /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65F5A021222FF8A8001262FB /* AppDelegate.swift */; };
 		65F5A027222FF8A8001262FB /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 65F5A025222FF8A8001262FB /* Main.storyboard */; };
 		65F5A029222FF8A9001262FB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 65F5A028222FF8A9001262FB /* Assets.xcassets */; };
@@ -104,6 +107,9 @@
 		65EADDD422302FE900593F9D /* Protocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Protocols.swift; sourceTree = "<group>"; };
 		65EADDD622303A1C00593F9D /* CharmSignInViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CharmSignInViewController.swift; sourceTree = "<group>"; };
 		65F1C194225FA9A600F0BD69 /* SettingsTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsTableViewController.swift; sourceTree = "<group>"; };
+		65F1C1962260BB3B00F0BD69 /* InfoModuleViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoModuleViewController.swift; sourceTree = "<group>"; };
+		65F1C1982260C28600F0BD69 /* SendFeedbackViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendFeedbackViewController.swift; sourceTree = "<group>"; };
+		65F1C19A2260C38C00F0BD69 /* CharmBugReports.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CharmBugReports.swift; sourceTree = "<group>"; };
 		65F5A01E222FF8A8001262FB /* Charm.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Charm.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		65F5A021222FF8A8001262FB /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		65F5A026222FF8A8001262FB /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -196,6 +202,8 @@
 				6572642122300640008D9ED4 /* MainMenuViewController.swift */,
 				65EADDD622303A1C00593F9D /* CharmSignInViewController.swift */,
 				65F1C194225FA9A600F0BD69 /* SettingsTableViewController.swift */,
+				65F1C1962260BB3B00F0BD69 /* InfoModuleViewController.swift */,
+				65F1C1982260C28600F0BD69 /* SendFeedbackViewController.swift */,
 			);
 			path = Navigation;
 			sourceTree = "<group>";
@@ -291,6 +299,7 @@
 				6543FF10223A8AAB003FC625 /* LearningVideo.swift */,
 				65C1705B223FCD030081B55F /* CharmData.swift */,
 				657E72072243F4A7001EE828 /* TrainingData.swift */,
+				65F1C19A2260C38C00F0BD69 /* CharmBugReports.swift */,
 			);
 			path = Firebase;
 			sourceTree = "<group>";
@@ -481,7 +490,9 @@
 			files = (
 				657330DC224164490066624B /* ConnectionViewController.swift in Sources */,
 				65C55C2122318BE300336243 /* VideoCallViewController.swift in Sources */,
+				65F1C1972260BB3B00F0BD69 /* InfoModuleViewController.swift in Sources */,
 				657330CE22411A2D0066624B /* LabelBubbleViewController.swift in Sources */,
+				65F1C19B2260C38C00F0BD69 /* CharmBugReports.swift in Sources */,
 				65C7FB1B22383D7500A150BF /* ChatFriendListTableViewCell.swift in Sources */,
 				650D400C223957B30023D983 /* ArchiveSession.swift in Sources */,
 				6528D85222565F540058D0DC /* EmotionFlashcardsViewController.swift in Sources */,
@@ -497,6 +508,7 @@
 				65C1705C223FCD030081B55F /* CharmData.swift in Sources */,
 				65C55C1C22315EED00336243 /* FriendListTableViewController.swift in Sources */,
 				65EADDD522302FE900593F9D /* Protocols.swift in Sources */,
+				65F1C1992260C28600F0BD69 /* SendFeedbackViewController.swift in Sources */,
 				654382FE224A8D860020336A /* SnapshotsListTableViewController.swift in Sources */,
 				6590F59B225B931F00CF4854 /* LableBubbleView.swift in Sources */,
 				657330D4224149FA0066624B /* BackAndForthViewController.swift in Sources */,

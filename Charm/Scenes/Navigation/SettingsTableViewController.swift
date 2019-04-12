@@ -10,6 +10,11 @@ import UIKit
 import Firebase
 import CodableFirebase
 
+enum DocumentType {
+    case PrivacyPolicy
+    case TermsOfUse
+}
+
 class SettingsTableViewController: UITableViewController {
     
     // IBOutlets
@@ -72,28 +77,61 @@ class SettingsTableViewController: UITableViewController {
     
     @IBAction func contactsButtonTapped(_ sender: Any) {
         print("~>Contacts")
+        performSegue(withIdentifier: SegueID.FriendList, sender: self)
     }
     
     @IBAction func logoutButtonTapped(_ sender: Any) {
         print("~>Logout")
+        let logoutAlert = UIAlertController(title: "Confirm Logout", message: "Are you sure you want to log out?", preferredStyle: .alert)
+        logoutAlert.addAction(UIAlertAction(title: "No", style: .cancel, handler: nil))
+        logoutAlert.addAction(UIAlertAction(title: "Yes", style: .destructive, handler: { (_) in
+            do {
+                try Auth.auth().signOut()
+                self.showLoginScreen()
+            } catch let error {
+                print("~>There was an error logging out: \(error)")
+                let logoutError = UIAlertController(title: "Error", message: "There was an error logging out, please try again later.", preferredStyle: .alert)
+                logoutAlert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                self.present(logoutError, animated: true, completion: nil)
+            }
+        }))
+        
+        present(logoutAlert, animated: true, completion: nil)
     }
     
     @IBAction func phoneNumberToggled(_ sender: Any) {
         guard let sender = sender as? UISwitch else { return }
         txtPhone.isEnabled = sender.isOn
-        print("~>Phone number toggled")
     }
     
     @IBAction func submitBugReportTapped(_ sender: Any) {
-        print("~>Submit bug report")
+        performSegue(withIdentifier: SegueID.BugReport, sender: self)
     }
     
     @IBAction func termsOfUseTapped(_ sender: Any) {
-        print("~>Terms of Use")
+        performSegue(withIdentifier: SegueID.ShowInfo, sender: DocumentType.TermsOfUse)
     }
     
     @IBAction func privacyPolicyTapped(_ sender: Any) {
-        print("~>Privacy Policy")
+        performSegue(withIdentifier: SegueID.ShowInfo, sender: DocumentType.PrivacyPolicy)
+    }
+    
+    // MARK: - Private Helper Functions
+    
+    private func showLoginScreen() {
+        DispatchQueue.main.async {
+            let login = self.storyboard?.instantiateViewController(withIdentifier: StoryboardID.Login)
+            let appDelegate = (UIApplication.shared.delegate as! AppDelegate)
+            // clear out any calls as needed
+            appDelegate.window?.rootViewController = login
+            appDelegate.window?.makeKeyAndVisible()
+        }
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == SegueID.ShowInfo, let infoVC = segue.destination as? InfoModuleViewController, let type = sender as? DocumentType {
+            infoVC.documentType = type
+        }
     }
 
 }

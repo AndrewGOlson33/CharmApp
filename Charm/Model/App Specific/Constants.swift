@@ -28,12 +28,15 @@ enum SegueID {
     static let MetricsTab = "sid_metrics"
     static let VideoTraining = "sid_videotraining"
     static let TrainingTab = "sid_training"
+    static let ShowInfo = "sid_infopopup"
+    static let BugReport = "sid_bugreport"
 }
 
 enum StoryboardID {
     static let NavigationHome = "vc_navhome"
     static let VideoCall = "vc_videocall"
     static let LabelPopover = "vc_labelpopover"
+    static let Login = "vc_signon"
 }
 
 enum CellID {
@@ -161,6 +164,9 @@ enum FirebaseStructure {
         static let MinAppVersion = "1.0"
         static let AppStoreID = "1458415097"
     }
+    
+    // Bug Reports
+    static let Bugs = "bugReports"
 }
 
 // MARK: - Notifications

@@ -66,7 +66,6 @@ class CharmSignInViewController: UIViewController {
             appDelegate.window?.rootViewController = nav
             appDelegate.window?.makeKeyAndVisible()
         }
-        
     }
     
     private func showLoginError() {
