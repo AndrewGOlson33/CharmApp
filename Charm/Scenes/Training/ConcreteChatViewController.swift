@@ -319,6 +319,15 @@ extension ConcreteChatViewController: UITableViewDelegate, UITableViewDataSource
         } else {
             cell.popoverView.updateLabel(withText: text, frame: frame)
         }
+        
+        // adjust frame if needed
+        if cell.popoverView.frame.maxX >= cell.scaleBar.frame.maxX {
+            cell.popoverView.frame.origin.x -= cell.popoverView.frame.maxX - cell.scaleBar.frame.maxX
+        }
+        
+        if cell.popoverView.frame.minX <= cell.scaleBar.frame.minX {
+            cell.popoverView.frame.origin.x += cell.scaleBar.frame.minX - cell.popoverView.frame.minX
+        }
     }
 }
 

@@ -48,6 +48,9 @@ class DetailChartViewController: UIViewController {
     // Counter that helps animate scrolling
     var scrollCounter = 0
     
+    // Helps deal with layout glitches caused by highcharts
+    var chartDidLoad: Bool = false
+    
     // MARK: - View Lifecycle Functions
 
     override func viewDidLoad() {
@@ -77,6 +80,12 @@ class DetailChartViewController: UIViewController {
                 self.viewNoSnapshots.alpha = 1.0
             }
             return
+        }
+        
+        // Resolve layout issues caused by highcharts
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+            self.chartDidLoad = true
+            self.tableView.reloadData()
         }
     }
     
@@ -490,7 +499,6 @@ class DetailChartViewController: UIViewController {
         
         let tooltip = HITooltip()
         tooltip.enabled = false
-        
         options.chart = chart
         options.title = title
 //        options.subtitle = subtitle
@@ -508,6 +516,7 @@ class DetailChartViewController: UIViewController {
         
         chartView.options = options
         tableView.reloadData()
+        
     }
 
 }
@@ -549,7 +558,11 @@ extension DetailChartViewController: UITableViewDelegate, UITableViewDataSource 
             
             cell.scaleBar.setupBar(ofType: info.type, withValue: info.score, andLabelPosition: info.position)
             cell.lblDescription.text = info.title
-            setupPopover(for: cell)
+            
+            if chartDidLoad {
+                setupPopover(for: cell)
+            }
+            
             return cell
         default:
             // setup transcript
@@ -703,9 +716,23 @@ extension DetailChartViewController: UITableViewDelegate, UITableViewDataSource 
         
         if cell.popoverView == nil {
             cell.popoverView = LabelBubbleView(frame: frame, withText: text)
+            cell.popoverView.alpha = 0.0
             cell.addSubview(cell.popoverView)
             cell.bringSubviewToFront(cell.popoverView)
+            UIView.animate(withDuration: 0.25) {
+                cell.popoverView.alpha = 1.0
+            }
         } else {
             cell.popoverView.updateLabel(withText: text, frame: frame)
-        }    }
+        }
+        
+        // adjust frame if needed
+        if cell.popoverView.frame.maxX >= cell.scaleBar.frame.maxX {
+            cell.popoverView.frame.origin.x -= cell.popoverView.frame.maxX - cell.scaleBar.frame.maxX
+        }
+        
+        if cell.popoverView.frame.minX <= cell.scaleBar.frame.minX {
+            cell.popoverView.frame.origin.x += cell.scaleBar.frame.minX - cell.popoverView.frame.minX
+        }
+    }
 }
