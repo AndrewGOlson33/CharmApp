@@ -89,13 +89,13 @@ class FriendListTableViewController: UITableViewController {
 
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         
-        if isContactsViewShowing { return "" }
-        
         switch section {
         case 0:
-            return viewModel.existingUsers.count == 0 ? "" : "Users in My Contacts"
+            return isContactsViewShowing ? isFiltering() ? viewModel.filteredFriends.count == 0 ? "" : "Contacts" : viewModel.currentFriends.count == 0 ? "" : "Contacts" : isFiltering() ? viewModel.filteredPendingReceived.count == 0 ? "" : "Friend Invites" :  viewModel.pendingReceived.count == 0 ? "" : "Friend Invites"
+        case 1:
+            return isContactsViewShowing ? isFiltering() ? viewModel.filteredPendingSent.count == 0 ? "" : "Pending Friend Approval" : viewModel.pendingSent.count == 0 ? "" : "Pending Friend Approval" : isFiltering() ? viewModel.filteredExistingUsers.count == 0 ? "" : "Users in My Contacts" :  viewModel.existingUsers.count == 0 ? "" : "Users in My Contacts"
         default:
-            return viewModel.usersToInvite.count == 0 ? "" : "Add by Phone Number"
+            return isFiltering() ? viewModel.filteredUsersToInvite.count == 0 ? "" : "Add by Phone Number" : viewModel.usersToInvite.count == 0 ? "" : "Add by Phone Number"
         }
     }
     
@@ -106,18 +106,18 @@ class FriendListTableViewController: UITableViewController {
 
     override func numberOfSections(in tableView: UITableView) -> Int {
         // #warning Incomplete implementation, return the number of sections
-        return isContactsViewShowing ? 3 : 2
+        return isContactsViewShowing ? 2 : 3
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
         switch section {
         case 0:
-            return isContactsViewShowing ? isFiltering() ? viewModel.filteredFriends.count : viewModel.currentFriends.count : isFiltering() ? viewModel.filteredExistingUsers.count :  viewModel.existingUsers.count
+            return isContactsViewShowing ? isFiltering() ? viewModel.filteredFriends.count : viewModel.currentFriends.count : isFiltering() ? viewModel.filteredPendingReceived.count :  viewModel.pendingReceived.count
         case 1:
-            return isContactsViewShowing ? isFiltering() ? viewModel.filteredPendingReceived.count : viewModel.pendingReceived.count : isFiltering() ? viewModel.filteredUsersToInvite.count : viewModel.usersToInvite.count
+            return isContactsViewShowing ? isFiltering() ? viewModel.filteredPendingSent.count : viewModel.pendingSent.count : isFiltering() ? viewModel.filteredExistingUsers.count :  viewModel.existingUsers.count
         default:
-            return isFiltering() ? viewModel.filteredPendingSent.count : viewModel.pendingSent.count
+            return isFiltering() ? viewModel.filteredUsersToInvite.count : viewModel.usersToInvite.count
         }
     }
 
@@ -126,16 +126,16 @@ class FriendListTableViewController: UITableViewController {
         var cell = tableView.dequeueReusableCell(withIdentifier: CellID.FriendList, for: indexPath) as! FriendListTableViewCell
         
         let filtered = isFiltering()
-
+        
         switch indexPath.section {
         case 0:
-            cell = isContactsViewShowing ? viewModel.configureCell(atIndex: indexPath.row, withCell: cell, forType: .Current, filtered: filtered) : viewModel.configureCell(atIndex: indexPath.row, withCell: cell, forType: .ExistingNotInContacts, filtered: filtered)
+            cell = isContactsViewShowing ? viewModel.configureCell(atIndex: indexPath.row, withCell: cell, forType: .Current, filtered: filtered) : viewModel.configureCell(atIndex: indexPath.row, withCell: cell, forType: .PendingReceived, filtered: filtered)
         case 1:
-            cell = isContactsViewShowing ? viewModel.configureCell(atIndex: indexPath.row, withCell: cell, forType: .PendingReceived, filtered: filtered) : viewModel.configureCell(atIndex: indexPath.row, withCell: cell, forType: .AddByPhone, filtered: filtered)
+            cell = isContactsViewShowing ? viewModel.configureCell(atIndex: indexPath.row, withCell: cell, forType: .PendingSent, filtered: filtered) : viewModel.configureCell(atIndex: indexPath.row, withCell: cell, forType: .ExistingNotInContacts, filtered: filtered)
         default:
-            cell = viewModel.configureCell(atIndex: indexPath.row, withCell: cell, forType: .PendingSent, filtered: filtered)
+            cell = viewModel.configureCell(atIndex: indexPath.row, withCell: cell, forType: .AddByPhone, filtered: filtered)
         }
-    
+        
         return cell
     }
     
