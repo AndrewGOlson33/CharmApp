@@ -10,9 +10,17 @@ import Foundation
 import Firebase
 import CodableFirebase
 
+enum WordType: String {
+    case Concrete = "Concrete"
+    case Abstract = "Abstract"
+}
+
 class TrainingModelCapsule {
     
     var model: TrainingData = TrainingData()
+    var isModelLoaded: Bool {
+        return model.abstractNouns.count > 0 && model.concreteNouns.count > 0 && model.converstaionPrompt.count > 0 && model.negativeWords.count > 0 && model.positiveWords.count > 0
+    }
     
     init() {
         // start observing firebase
@@ -33,6 +41,71 @@ class TrainingModelCapsule {
     }
     
     static var shared = TrainingModelCapsule()
+    
+    func checkType(of word: String) -> WordType {
+        
+        if model.abstractNouns.contains(where: { (abstract) -> Bool in
+            return abstract.word.lowercased() == word.lowercased()
+        }) {
+            return .Abstract
+        }
+        
+        if model.concreteNouns.contains(where: { (concrete) -> Bool in
+            return concrete.word.lowercased() == word.lowercased()
+        }) {
+            return .Concrete
+        }
+        
+        // add to the unknown list
+        uploadUnclassified(nouns: [word])
+        return .Concrete
+    }
+    
+    func checkTypes(from wordChoices: [WordChoice], completion: @escaping(_ wordTypes: [WordType]) -> Void) {
+        
+        var unclassified: [String] = []
+        var types: [WordType] = []
+        
+        for word in wordChoices {
+            if model.abstractNouns.contains(where: { (abstract) -> Bool in
+                return abstract.word.lowercased() == word.word.lowercased()
+            }) {
+                types.append(.Abstract)
+                continue
+            } else if model.concreteNouns.contains(where: { (concrete) -> Bool in
+                return concrete.word.lowercased() == word.word.lowercased()
+            }) {
+                types.append(.Concrete)
+            } else {
+                types.append(.Concrete)
+                unclassified.append(word.word)
+            }
+        }
+        
+        // add to the unknown list
+        
+        if unclassified.count > 0 {
+            uploadUnclassified(nouns: unclassified)
+        }
+        
+        completion(types)
+    }
+    
+    private func uploadUnclassified(nouns: [String]) {
+        var upload: [String] = []
+        if let existing = model.unclassifiedNouns {
+            upload = existing
+            for word in nouns {
+                if !existing.contains(word.lowercased()) { upload.append(word.lowercased()) }
+            }
+        } else {
+            upload = nouns.map { $0.lowercased() }
+        }
+        
+        DispatchQueue.global(qos: .utility).async {
+            Database.database().reference().child(FirebaseStructure.Training.TrainingDatabase).child(FirebaseStructure.Training.UnclassifiedNouns).setValue(upload)
+        }
+    }
     
 }
 

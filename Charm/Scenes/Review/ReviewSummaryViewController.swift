@@ -33,6 +33,9 @@ class ReviewSummaryViewController: UIViewController {
         
         // setup date formatter
         dFormatter.dateStyle = .medium
+        
+        // Start pulling training data
+        let _ = TrainingModelCapsule.shared.model.abstractNouns
     }
     
     override func viewWillAppear(_ animated: Bool) {

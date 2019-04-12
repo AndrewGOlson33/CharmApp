@@ -57,8 +57,7 @@ class LabelBubbleView: UIView {
         self.label?.frame = outterFrame
         let outterView = UIView(frame: outterFrame)
         outterView.addSubview(self.label!)
-//        outterView.backgroundColor = #colorLiteral(red: 0.7843906283, green: 0.784409225, blue: 0.7843992114, alpha: 1)
-        setGradientBackground(colorTop: .white, colorBottom: #colorLiteral(red: 0.7843906283, green: 0.784409225, blue: 0.7843992114, alpha: 1), into: outterView)
+        outterView.setGradientBackground(colorTop: .white, colorBottom: #colorLiteral(red: 0.7843906283, green: 0.784409225, blue: 0.7843992114, alpha: 1))
         outterView.clipsToBounds = true
         outterView.layer.cornerRadius = outterFrame.height * 0.33
         
@@ -101,19 +100,6 @@ class LabelBubbleView: UIView {
         triangle.path = path.cgPath
         view.layer.addSublayer(triangle)
         return view
-    }
-    
-    // setup gradient layer
-    
-    private func setGradientBackground(colorTop: UIColor, colorBottom: UIColor, into view: UIView) {
-        let gradientLayer = CAGradientLayer()
-        gradientLayer.colors = [colorBottom.cgColor, colorTop.cgColor]
-        gradientLayer.startPoint = CGPoint(x: 0.5, y: 1.0)
-        gradientLayer.endPoint = CGPoint(x: 0.5, y: 0.0)
-        gradientLayer.locations = [0, 1]
-        gradientLayer.frame = view.bounds
-        
-        view.layer.insertSublayer(gradientLayer, at: 0)
     }
     
 }

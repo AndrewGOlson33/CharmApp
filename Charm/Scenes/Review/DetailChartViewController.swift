@@ -107,27 +107,40 @@ class DetailChartViewController: UIViewController {
         // setup data based on type
         switch chartType! {
         case .WordChoice:
+            if !TrainingModelCapsule.shared.isModelLoaded {
+                print("~>Not yet loaded...")
+                chartView.showLoading("Loading")
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    self.loadData()
+                }
+            } else {
+                print("~>Loaded")
+                chartView.hideLoading()
+            }
             let wordChoice = snapshot.wordChoice
-            // setup chart data
-            for (index, item) in wordChoice.enumerated() {
-//                chartData.append([index, item.score])
-                let point = HIPoint()
-                point.x = index as NSNumber
-                point.y = item.score as NSNumber
-                chartData.append(point)
-                transcript.append(TranscriptCellInfo(withText: "[\(index)]: \(item.word)"))
+            TrainingModelCapsule.shared.checkTypes(from: wordChoice) { (types) in
+                // setup chart data
+                for (index, item) in wordChoice.enumerated() {
+                    //                chartData.append([index, item.score])
+                    let point = HIPoint()
+                    point.x = index as NSNumber
+                    point.y = item.score as NSNumber
+                    self.chartData.append(point)
+                    self.transcript.append(TranscriptCellInfo(withText: "[\(index)]: \(item.word) (\(types[index]))"))
+                }
+                
+                // setup scale bar data
+                if let engagementRaw = self.snapshot.getTopLevelRawValue(forSummaryItem: .WordChoice), let engagementLevel = self.snapshot.getTopLevelRawLevelValue(forSummaryItem: .WordChoice) {
+                    let cellInfo = ScalebarCellInfo(type: .Green, title: "Estimated Engagement", score: engagementRaw, position: engagementLevel)
+                    self.scalebarData.append(cellInfo)
+                }
+                
+                if let concreteRaw = self.snapshot.getTopLevelRawValue(forSummaryItem: .ConcretePercentage), let concreteLevel = self.snapshot.getTopLevelRawLevelValue(forSummaryItem: .ConcretePercentage) {
+                    let cellInfo = ScalebarCellInfo(type: .BlueRight, title: "Concrete Details(%)", score: concreteRaw, position: concreteLevel)
+                    self.scalebarData.append(cellInfo)
+                }
             }
             
-            // setup scale bar data
-            if let engagementRaw = snapshot.getTopLevelRawValue(forSummaryItem: .WordChoice), let engagementLevel = snapshot.getTopLevelRawLevelValue(forSummaryItem: .WordChoice) {
-                let cellInfo = ScalebarCellInfo(type: .Green, title: "Estimated Engagement", score: engagementRaw, position: engagementLevel)
-                scalebarData.append(cellInfo)
-            }
-            
-            if let concreteRaw = snapshot.getTopLevelRawValue(forSummaryItem: .ConcretePercentage), let concreteLevel = snapshot.getTopLevelRawLevelValue(forSummaryItem: .ConcretePercentage) {
-                let cellInfo = ScalebarCellInfo(type: .BlueRight, title: "Concrete Details(%)", score: concreteRaw, position: concreteLevel)
-                scalebarData.append(cellInfo)
-            }
             
         case .BackAndForth:
             let backAndForth = snapshot.backAndForth

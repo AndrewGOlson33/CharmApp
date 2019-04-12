@@ -71,7 +71,12 @@ class EmotionFlashcardsViewController: UIViewController {
             button.layer.shadowRadius = 2.0
             button.layer.shadowOffset = CGSize(width: 2, height: 2)
             button.layer.shadowOpacity = 0.5
+            button.layer.masksToBounds = false
         }
+        
+        btnPositive.setGradientBackground(colorTop: #colorLiteral(red: 0.2968337834, green: 0.4757083654, blue: 0.2566408515, alpha: 1), colorBottom: #colorLiteral(red: 0.2968337834, green: 0.4757083654, blue: 0.2566408515, alpha: 0.8019049658))
+        btnNeutral.setGradientBackground(colorTop: #colorLiteral(red: 0.6313157678, green: 0.6314089298, blue: 0.6312955022, alpha: 1), colorBottom: #colorLiteral(red: 0.6313157678, green: 0.6314089298, blue: 0.6312955022, alpha: 0.8009952911))
+        btnNegative.setGradientBackground(colorTop: #colorLiteral(red: 0.7257528305, green: 0.3471282721, blue: 0.3915748596, alpha: 1), colorBottom: #colorLiteral(red: 0.7257528305, green: 0.3471282721, blue: 0.3915748596, alpha: 0.794921875))
         
         // setup scale bar
         scaleBar.setupBar(ofType: .Green, withValue: 0, andLabelPosition: 0)
