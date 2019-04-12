@@ -159,7 +159,7 @@ class FriendListTableViewController: UITableViewController {
     // MARK: - Handle Deleting Friends
     
     override func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCell.EditingStyle {
-        if isContactsViewShowing { return .delete }
+        if indexPath.section == 0 { return .delete }
 
         return .none
     }
@@ -173,16 +173,15 @@ class FriendListTableViewController: UITableViewController {
                 // get friend object
                 guard let friend = (tableView.cellForRow(at: indexPath) as! FriendListTableViewCell).friend else { return }
                 var type: ContactsViewModel.ContactType!
-                switch indexPath.section {
-                case 0:
+                
+                if indexPath.section == 0 && self.isContactsViewShowing {
                     type = .Current
-                case 1:
+                } else if indexPath.section == 0 {
                     type = .PendingReceived
-                case 2:
-                    type = .PendingSent
-                default:
+                } else {
                     return
                 }
+            
                 self.viewModel.delete(friend: friend, fromTableView: self.tableView, atIndexPath: indexPath, ofType: type)
             }))
             present(deleteAlert, animated: true, completion: nil)

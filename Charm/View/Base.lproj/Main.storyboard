@@ -741,23 +741,17 @@
                                                 <constraint firstAttribute="width" constant="53" id="iNU-Je-5Bj"/>
                                             </constraints>
                                         </imageView>
-                                        <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="lOk-G8-ZuA">
+                                        <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="lOk-G8-ZuA">
                                             <rect key="frame" x="81" y="8" width="222" height="64.5"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="252" verticalHuggingPriority="251" verticalCompressionResistancePriority="751" text="Name" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rMA-PL-deH">
-                                                    <rect key="frame" x="0.0" y="0.0" width="222" height="19.5"/>
+                                                    <rect key="frame" x="0.0" y="0.0" width="222" height="32.5"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="252" verticalCompressionResistancePriority="752" text="Email" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="94c-QK-tLo">
-                                                    <rect key="frame" x="0.0" y="27.5" width="222" height="14.5"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="12"/>
-                                                    <nil key="textColor"/>
-                                                    <nil key="highlightedColor"/>
-                                                </label>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="252" verticalHuggingPriority="251" verticalCompressionResistancePriority="752" text="Detail" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="f2V-Rt-LNW">
-                                                    <rect key="frame" x="0.0" y="50" width="222" height="14.5"/>
+                                                    <rect key="frame" x="0.0" y="32.5" width="222" height="32"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
@@ -791,7 +785,6 @@
                                     <outlet property="btnApprove" destination="Iwx-Fc-7O1" id="vjF-dw-XUn"/>
                                     <outlet property="imgProfile" destination="QqD-5f-eEX" id="USv-t4-vIS"/>
                                     <outlet property="lblDetail" destination="f2V-Rt-LNW" id="ElW-8j-Zon"/>
-                                    <outlet property="lblEmail" destination="94c-QK-tLo" id="YgM-rF-aZ7"/>
                                     <outlet property="lblName" destination="rMA-PL-deH" id="4Af-qs-emB"/>
                                 </connections>
                             </tableViewCell>

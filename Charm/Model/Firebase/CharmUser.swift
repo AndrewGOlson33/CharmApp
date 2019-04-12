@@ -119,6 +119,14 @@ struct FriendList: Codable {
         }
     }
     
+    var sentText: [Friend]? = [] {
+        didSet {
+            sentText?.sort(by: { (lhs, rhs) -> Bool in
+                return lhs.lastName < rhs.lastName
+            })
+        }
+    }
+    
     var count: Int {
         var count = 0
         if let current = currentFriends { count += current.count }

@@ -46,6 +46,11 @@ class ContactsViewModel: NSObject {
         return pending
     }
     
+    var sentText: [Friend] {
+        guard let thisUser = user, let friendsList = thisUser.friendList, let sent = friendsList.sentText else { return [] }
+        return sent
+    }
+    
     // contacts
     var contacts: [CNContact] = []
     var notInContacts: [CNContact] = []
@@ -168,7 +173,7 @@ class ContactsViewModel: NSObject {
             cell.addMethod = .Email
         case .AddByPhone:
             friend = filtered ? filteredUsersToInvite[index] : usersToInvite[index]
-            cell.lblDetail.text = "Invite to Charm"
+            cell.lblDetail.text = friend.phone
             cell.btnApprove.setTitle("+ Add", for: .normal)
             cell.btnApprove.isHidden = false
             cell.addMethod = .Phone
@@ -176,7 +181,6 @@ class ContactsViewModel: NSObject {
         
         // configure cell data
         cell.lblName.text = "\(friend.firstName) \(friend.lastName)"
-        cell.lblEmail.text = type == .AddByPhone ? friend.phone! : friend.email
         
         // check to see if contacts has an image
         
@@ -462,6 +466,8 @@ class ContactsViewModel: NSObject {
                     }) && !self.pendingReceived.contains(where: { (existing) -> Bool in
                         return existing.email == friend.email && existing.phone == friend.phone && existing.firstName == existing.firstName && existing.lastName == friend.lastName
                     }) && !self.pendingSent.contains(where: { (existing) -> Bool in
+                        return existing.email == friend.email && existing.phone == friend.phone && existing.firstName == existing.firstName && existing.lastName == friend.lastName
+                    }) && !self.sentText.contains(where: { (existing) -> Bool in
                         return existing.email == friend.email && existing.phone == friend.phone && existing.firstName == existing.firstName && existing.lastName == friend.lastName
                     })  { self.usersToInvite.append(friend) }
                     contactsGroup.leave()
@@ -787,16 +793,36 @@ extension ContactsViewModel: FriendManagementDelegate {
             // Configure the fields of the interface.
             composeVC.recipients = [phone]
             var userName = ""
-            if let user = self.user {
+            if let user = self.user, let uid = user.id {
                 userName = " \(user.userProfile.firstName)"
+                if var friendList = user.friendList, let _ = friendList.sentText {
+                    friendList.sentText!.append(friend)
+                    self.updateSentText(with: friendList, forUid: uid)
+                } else if var friendList = user.friendList {
+                    friendList.sentText = [friend]
+                    self.updateSentText(with: friendList, forUid: uid)
+                } else {
+                    let friendList = FriendList(currentFriends: [], pendingSentApproval: [], pendingReceivedApproval: [], sentText: [friend])
+                    self.updateSentText(with: friendList, forUid: uid)
+                }
             }
             
             composeVC.body = "Hello \(friend.firstName), your friend\(userName) has invited you Charm. Charm is an app that helps people have more engaging conversations and create a deep connection. Download now.\n\n\(shortLink)"
+        
             
             // Present the view controller modally.
             navVC.present(composeVC, animated: true, completion: {
                 viewActivity.stopAnimating()
             })
+        }
+    }
+    
+    fileprivate func updateSentText(with friendList: FriendList, forUid uid: String) {
+        do {
+           let data = try FirebaseEncoder().encode(friendList)
+            Database.database().reference().child(FirebaseStructure.Users).child(uid).child(FirebaseStructure.CharmUser.Friends).setValue(data)
+        } catch let error {
+            print("~>There was an error trying to convert friendlist: \(error)")
         }
     }
     

@@ -89,6 +89,7 @@ enum FirebaseStructure {
             static let CurrentFriends = "currentFriends"
             static let PendingSentApproval = "pendingSentApproval"
             static let PendingReceivedApproval = "pendingReceivedApproval"
+            static let SentText = "sentText"
         }
         
         // calls

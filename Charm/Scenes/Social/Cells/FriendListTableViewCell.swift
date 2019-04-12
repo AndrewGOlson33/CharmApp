@@ -22,7 +22,6 @@ class FriendListTableViewCell: UITableViewCell {
 
     @IBOutlet weak var imgProfile: UIImageView!
     @IBOutlet weak var lblName: UILabel!
-    @IBOutlet weak var lblEmail: UILabel!
     @IBOutlet weak var lblDetail: UILabel!
     @IBOutlet weak var btnApprove: UIButton!
     
