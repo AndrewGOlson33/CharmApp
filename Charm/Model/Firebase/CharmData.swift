@@ -16,6 +16,8 @@ struct UserSnapshotData {
             snapshots.sort { (lhs, rhs) -> Bool in
                 lhs.date ?? Date.distantPast > rhs.date ?? Date.distantPast
             }
+            
+            NotificationCenter.default.post(name: FirebaseNotification.SnapshotLoaded, object: nil)
         }
     }
     var selectedSnapshot: Snapshot? = nil

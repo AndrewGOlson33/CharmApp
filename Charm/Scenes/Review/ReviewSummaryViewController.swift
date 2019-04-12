@@ -51,6 +51,8 @@ class ReviewSummaryViewController: UIViewController {
                     self.viewNoSnapshots.alpha = 1.0
                 }
                 
+                NotificationCenter.default.addObserver(self, selector: #selector(gotNotification(_:)), name: FirebaseNotification.SnapshotLoaded, object: nil)
+                
                 // disable tab bar buttons
                 if let items = tabBarController?.tabBar.items {
                     for item in items {
@@ -71,6 +73,28 @@ class ReviewSummaryViewController: UIViewController {
         
         // setup chart
         setupSummaryChart()
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        removeSnapshotObserver()
+    }
+    
+    // MARK: - Private Helper Functions
+    
+    @objc private func gotNotification(_ sender: Notification) {
+        if let items = tabBarController?.tabBar.items {
+            for item in items {
+                item.isEnabled = true
+            }
+        }
+        
+        viewWillAppear(true)
+        removeSnapshotObserver()
+    }
+    
+    fileprivate func removeSnapshotObserver() {
+        NotificationCenter.default.removeObserver(self, name: FirebaseNotification.SnapshotLoaded, object: nil)
     }
     
 

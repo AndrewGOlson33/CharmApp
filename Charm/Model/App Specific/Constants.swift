@@ -178,6 +178,7 @@ enum FirebaseNotification {
     static let TrainingModelLoaded = Notification.Name("flashcardsModelHasLoaded")
     static let TrainingHistoryUpdated = Notification.Name("trainingHistoryHasUpdates")
     static let GotFriendFromLink = Notification.Name("gotFriendFromLink")
+    static let SnapshotLoaded = Notification.Name("snapshotDataLoaded")
 }
 
 // MARK: - Database Constants
