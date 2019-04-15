@@ -19,6 +19,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var friendID: String = ""
     let gcmMessageIDKey = "gcm.message_id"
     var restoreFromBackground = false
+    var showContactListFromNotification: Bool = false
     
     // MARK: - App Delegate Functions
 
@@ -69,11 +70,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Messaging.messaging().appDidReceiveMessage(userInfo)
         // Print message ID.
         if let messageID = userInfo[gcmMessageIDKey] {
-            print("Message ID: \(messageID)")
+            print("~>did receive remote Message ID: \(messageID)")
         }
         
         // Print full message.
         print(userInfo)
+        
+        if let aps = userInfo["aps"] as? [AnyHashable:Any], let alert = aps["alert"] as? [AnyHashable:Any], let title = alert["title"] as? String {
+            print("~>Got a title: \(title)")
+            if title.contains("friend request") { showContactListFromNotification = true }
+        } else {
+            print("~>Something is invalid.")
+        }
     }
     
     func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable: Any],
@@ -85,11 +93,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Messaging.messaging().appDidReceiveMessage(userInfo)
         // Print message ID.
         if let messageID = userInfo[gcmMessageIDKey] {
-            print("Message ID: \(messageID)")
+            print("~>fetch completion Message ID: \(messageID)")
         }
         
         // Print full message.
         print(userInfo)
+        
+        if let aps = userInfo["aps"] as? [AnyHashable:Any], let alert = aps["alert"] as? [AnyHashable:Any], let title = alert["title"] as? String {
+            print("~>Got a title: \(title)")
+            if title.contains("friend request") { showContactListFromNotification = true }
+        } else {
+            print("~>Something is invalid.")
+        }
         
         completionHandler(UIBackgroundFetchResult.newData)
     }
@@ -209,11 +224,17 @@ extension AppDelegate : UNUserNotificationCenterDelegate {
         // Messaging.messaging().appDidReceiveMessage(userInfo)
         // Print message ID.
         if let messageID = userInfo[gcmMessageIDKey] {
-            print("Message ID: \(messageID)")
+            print("~> un notification center Message ID: \(messageID)")
         }
         
         // Print full message.
         print(userInfo)
+        if let aps = userInfo["aps"] as? [AnyHashable:Any], let alert = aps["alert"] as? [AnyHashable:Any], let title = alert["title"] as? String {
+            print("~>Got a title: \(title)")
+//            if title.contains("friend request") { showContactListFromNotification = true }
+        } else {
+            print("~>Something is invalid.")
+        }
         
         // Change this to your preferred presentation option
         completionHandler([])
@@ -225,11 +246,17 @@ extension AppDelegate : UNUserNotificationCenterDelegate {
         let userInfo = response.notification.request.content.userInfo
         // Print message ID.
         if let messageID = userInfo[gcmMessageIDKey] {
-            print("Message ID: \(messageID)")
+            print("~>Message ID: \(messageID)")
         }
         
         // Print full message.
         print(userInfo)
+        if let aps = userInfo["aps"] as? [AnyHashable:Any], let alert = aps["alert"] as? [AnyHashable:Any], let title = alert["title"] as? String {
+            print("~>Got a title: \(title)")
+            if title.contains("friend request") { showContactListFromNotification = true }
+        } else {
+            print("~>Something is invalid.")
+        }
         
         completionHandler()
     }

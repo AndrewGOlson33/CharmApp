@@ -402,7 +402,6 @@ class ContactsViewModel: NSObject {
                     }
                     
                     if let results = snapshot.value as? [AnyHashable:Any], let first = results.first?.value {
-                        print("~>Phone number found: \(first)")
                         do {
                             let friendUser = try FirebaseDecoder().decode(CharmUser.self, from: first)
                             let friend = Friend(id: friendUser.id!, first: friendUser.userProfile.firstName, last: friendUser.userProfile.lastName, email: friendUser.userProfile.email)
@@ -490,6 +489,7 @@ class ContactsViewModel: NSObject {
     
     // updates should be live
     @objc private func updatedUser(_ sender: Notification) {
+        print("~>Updated user in contacts model.")
         guard let updatedUser = sender.object as? CharmUser else { return }
         user = updatedUser
         
@@ -567,7 +567,14 @@ extension ContactsViewModel: FriendManagementDelegate {
                     let myFriendData = try FirebaseEncoder().encode(myNewFriends)
                     let friendsData = try FirebaseEncoder().encode(friendsFriendlist)
                     
-                    myRef.setValue(myFriendData)
+                    myRef.setValue(myFriendData) {
+                        (error:Error?, ref:DatabaseReference) in
+                        if let error = error {
+                            print("~>Data could not be saved: \(error).")
+                        } else {
+                            print("~>Data saved successfully!")
+                        }
+                    }
                     friendRef.setValue(friendsData)
                 } catch let error {
                     print("~>There was an error converting friend lists to delete: \(error)")
@@ -578,9 +585,11 @@ extension ContactsViewModel: FriendManagementDelegate {
         
     }
     
+    // TODO: - Update so setvalue is called only once per user
+    
     func approveFriendRequest(withId id: String) {
         // first move friend from received to current friends
-        guard var user = user else {
+        guard var user = user, let myID = user.id else {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                 self.approveFriendRequest(withId: id)
                 return
@@ -588,6 +597,9 @@ extension ContactsViewModel: FriendManagementDelegate {
             return
         }
         
+        // set base reference
+        let ref = Database.database().reference()
+
         let received = user.friendList!.pendingReceivedApproval
         if user.friendList?.currentFriends == nil { user.friendList?.currentFriends = [] }
         
@@ -607,9 +619,7 @@ extension ContactsViewModel: FriendManagementDelegate {
         do {
             let friendList = try FirebaseEncoder().encode(user.friendList!)
             print("~>Setting uid: \(user.id!) friendlist: \(friendList)")
-            let myRef = Database.database().reference().child(FirebaseStructure.Users).child(user.id!).child(FirebaseStructure.CharmUser.Friends)
-            print("~>Reference is: \(myRef.description())")
-            Database.database().reference().child(FirebaseStructure.Users).child(user.id!).child(FirebaseStructure.CharmUser.Friends).setValue(friendList) {
+            ref.child(FirebaseStructure.Users).child(user.id!).child(FirebaseStructure.CharmUser.Friends).setValue(friendList) {
                 (error:Error?, ref:DatabaseReference) in
                 if let error = error {
                     print("~>Data could not be saved: \(error).")
@@ -623,16 +633,15 @@ extension ContactsViewModel: FriendManagementDelegate {
             return
         }
         
-        // update table
-        delegate?.updateTableView()
-        
         // finally move user from sent to current friends on friend's friend list
-        guard let myID = user.id else { return }
-        Database.database().reference().child(FirebaseStructure.Users).child(id).observeSingleEvent(of: .value) { (snapshot) in
+       
+        ref.child(FirebaseStructure.Users).child(id).observeSingleEvent(of: .value) { (snapshot) in
             guard let value = snapshot.value else {
                 print("~>Unable to get snapshot value for friend.")
                 return
             }
+            
+            print("~>Got friend's snapshot, now going to update friend list.")
             // get the user object
             var friendUser = try! FirebaseDecoder().decode(CharmUser.self, from: value)
             if friendUser.friendList == nil { friendUser.friendList = FriendList() }
@@ -650,7 +659,7 @@ extension ContactsViewModel: FriendManagementDelegate {
                     meFriend = user
                     friendUser.friendList!.pendingSentApproval!.remove(at: index)
                     friendUser.friendList?.currentFriends?.append(meFriend)
-                    print("~>Removed item.")
+                    print("~>Removed item from friend's friend list.")
                     break
                 }
             }
@@ -660,8 +669,8 @@ extension ContactsViewModel: FriendManagementDelegate {
             // write changes to firebase
             do {
                 let friendsFriendList = try FirebaseEncoder().encode(friendUser.friendList!)
-                print("~>Goint to set friend user's friends list: \(friendsFriendList)")
-                Database.database().reference().child(FirebaseStructure.Users).child(id).child(FirebaseStructure.CharmUser.Friends).setValue(friendsFriendList) {
+                print("~>Going to set friend user's friends list: \(friendsFriendList)")
+                ref.child(FirebaseStructure.Users).child(id).child(FirebaseStructure.CharmUser.Friends).setValue(friendsFriendList) {
                     (error:Error?, ref:DatabaseReference) in
                     if let error = error {
                         print("~>Data could not be saved: \(error).")
@@ -751,6 +760,12 @@ extension ContactsViewModel: FriendManagementDelegate {
             }
         }
         
+        // Do it all over again very two minutes in the background
+        
+        DispatchQueue.global().asyncAfter(deadline: .now() + 120) {
+            self.performFriendListMaintenence()
+        }
+        
     }
     
     private func checkFriendList(for id: String, atLocation location: ContactType) {
@@ -789,7 +804,14 @@ extension ContactsViewModel: FriendManagementDelegate {
                         
                         let data = try FirebaseEncoder().encode(list)
                         
-                        ref.setValue(data)
+                        ref.setValue(data) {
+                            (error:Error?, ref:DatabaseReference) in
+                            if let error = error {
+                                print("~>Data could not be saved: \(error).")
+                            } else {
+                                print("~>Data saved successfully!")
+                            }
+                        }
                     }
                     
                 case .PendingReceived:
@@ -816,7 +838,14 @@ extension ContactsViewModel: FriendManagementDelegate {
                         
                         let data = try FirebaseEncoder().encode(list)
                         
-                        ref.setValue(data)
+                        ref.setValue(data) {
+                            (error:Error?, ref:DatabaseReference) in
+                            if let error = error {
+                                print("~>Data could not be saved: \(error).")
+                            } else {
+                                print("~>Data saved successfully!")
+                            }
+                        }
                     }
                     
                 case .PendingSent:
@@ -843,7 +872,14 @@ extension ContactsViewModel: FriendManagementDelegate {
                         
                         let data = try FirebaseEncoder().encode(list)
                         
-                        ref.setValue(data)
+                        ref.setValue(data) {
+                            (error:Error?, ref:DatabaseReference) in
+                            if let error = error {
+                                print("~>Data could not be saved: \(error).")
+                            } else {
+                                print("~>Data saved successfully!")
+                            }
+                        }
                     }
                 default:
                     print("~>Default")
@@ -908,7 +944,6 @@ extension ContactsViewModel: FriendManagementDelegate {
             do {
                 let myData = try FirebaseEncoder().encode(friendUser.friendList!.pendingReceivedApproval)
                 let friendData = try FirebaseEncoder().encode(self.user!.friendList!.pendingSentApproval)
-
                 // Write data to firebase
                 ref.child(FirebaseStructure.Users).child(friendUser.id!).child(FirebaseStructure.CharmUser.Friends).child(FirebaseStructure.CharmUser.FriendList.PendingReceivedApproval).setValue(myData) {
                     (error:Error?, ref:DatabaseReference) in

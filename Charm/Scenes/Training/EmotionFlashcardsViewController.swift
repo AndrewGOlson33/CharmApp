@@ -256,8 +256,8 @@ class EmotionFlashcardsViewController: UIViewController {
         do {
             let data = try FirebaseEncoder().encode(blankHistory)
             Database.database().reference().child(FirebaseStructure.Users).child(Auth.auth().currentUser!.uid).child(FirebaseStructure.Training.TrainingDatabase).child(FirebaseStructure.Training.EmotionHistory).setValue(data)
-        } catch let errror {
-            print("~>Got an error trying to encode a blank history: \(errror)")
+        } catch let error {
+            print("~>Got an error trying to encode a blank history: \(error)")
             let alert = UIAlertController(title: "Unable to Reset", message: "Unable to reset scores at this time.  Please try again later.", preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
             present(alert, animated: true, completion: nil)

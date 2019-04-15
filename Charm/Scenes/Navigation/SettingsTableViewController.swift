@@ -160,7 +160,6 @@ extension SettingsTableViewController: UITextFieldDelegate {
             }
             
             if let results = snapshot.value as? [AnyHashable:Any], let first = results.first?.value {
-                print("~>Phone number found: \(first)")
                 do {
                     let charmUser = try FirebaseDecoder().decode(CharmUser.self, from: first)
                     self.handleFound(charmUser)
@@ -174,7 +173,7 @@ extension SettingsTableViewController: UITextFieldDelegate {
     }
     
     fileprivate func handleFound(_ user: CharmUser) {
-        print("~>Found: \(user)")
+//        print("~>Found: \(user)")
         // nothing changed, so just return
         if user.id == self.user.id { return }
         
@@ -198,7 +197,7 @@ extension SettingsTableViewController: UITextFieldDelegate {
         
         do {
             let profile = try FirebaseEncoder().encode(user.userProfile)
-            print("~>Got the profile: \(profile)")
+//            print("~>Got the profile: \(profile)")
             Database.database().reference().child(FirebaseStructure.Users).child(uid).child(FirebaseStructure.CharmUser.Profile).setValue(profile)
         } catch let error {
             print("~>There was an error trying to encode the phone user profile: \(error)")

@@ -147,6 +147,7 @@ class MainMenuViewController: UIViewController {
                     (UIApplication.shared.delegate as! AppDelegate).user = user
                     // Post a notification that the user changed, along with the user obejct
                     NotificationCenter.default.post(name: FirebaseNotification.CharmUserDidUpdate, object: user)
+                    print("~>Posting user did update.")
                     // post training history notification if needed
                     if self.shouldPostTrainingHistoryNotification {
                         NotificationCenter.default.post(name: FirebaseNotification.TrainingHistoryUpdated, object: nil)
@@ -183,6 +184,10 @@ class MainMenuViewController: UIViewController {
                         }
                     }
                     self.firstSetup = false
+                    if (UIApplication.shared.delegate as! AppDelegate).showContactListFromNotification {
+                        (UIApplication.shared.delegate as! AppDelegate).showContactListFromNotification = false
+                        self.performSegue(withIdentifier: SegueID.FriendList, sender: self)
+                    }
                 } catch let error {
                     print("~>There was an error: \(error)")
                     return
@@ -301,7 +306,7 @@ class MainMenuViewController: UIViewController {
     // MARK: - Button Handling
     
     @objc func chatButtonTapped(_ sender: Any) {
-        performSegue(withIdentifier: SegueID.FriendList, sender: self)
+        performSegue(withIdentifier: SegueID.Chat, sender: self)
     }
     
     @objc func metricsButtonTapped(_ sender: Any) {
@@ -319,7 +324,7 @@ class MainMenuViewController: UIViewController {
     // MARK: - Prepare For Segue
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        print("~>Going to segue with id: \(String(describing: segue.identifier))")
+        print("~>Going to segue with id: \(String(describing: segue.identifier)) and destination: \(segue.destination))")
         if segue.identifier == SegueID.FriendList, let friendsVC = segue.destination as? FriendListTableViewController {
             friendsVC.showContacts = false
         }

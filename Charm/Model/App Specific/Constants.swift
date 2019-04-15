@@ -21,6 +21,7 @@ enum Server {
 // MARK: - UI Related
 enum SegueID {
     static let FriendList = "sid_friendlist"
+    static let Chat = "sid_chat"
     static let VideoCall = "sid_videocall"
     static let DetailChart = "sid_detailchart"
     static let TrainingChart = "sid_trainingchart"

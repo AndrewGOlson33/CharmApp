@@ -211,7 +211,7 @@
                         <outletCollection property="buttonViewGroup" destination="AKZ-bQ-4Hy" collectionClass="NSMutableArray" id="fi1-Q5-Jxv"/>
                         <outletCollection property="buttonViewGroup" destination="BQ9-4M-OTD" collectionClass="NSMutableArray" id="hET-1z-W3F"/>
                         <outletCollection property="buttonViewGroup" destination="TyS-TJ-h0Y" collectionClass="NSMutableArray" id="cNC-p3-buC"/>
-                        <segue destination="hps-G3-QtS" kind="show" identifier="sid_friendlist" id="cJb-R5-kAt"/>
+                        <segue destination="hps-G3-QtS" kind="show" identifier="sid_chat" id="cJb-R5-kAt"/>
                         <segue destination="wdo-Mh-E6y" kind="show" identifier="sid_metrics" id="Pww-Ao-hWC"/>
                         <segue destination="nvJ-Sr-Ieo" kind="show" identifier="sid_videotraining" id="cqq-py-nLH"/>
                         <segue destination="VkZ-AG-eJ3" kind="show" identifier="sid_training" id="7i0-FY-UD5"/>
