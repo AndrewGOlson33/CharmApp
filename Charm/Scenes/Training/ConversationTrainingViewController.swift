@@ -54,7 +54,7 @@ class ConversationTrainingViewController: UIViewController {
     let replay = UIImage(named: Image.Speaker)!
     let mute = UIImage(named: Image.Mute)!
     let stop = UIImage(named: Image.Stop)!
-    let chart = UIImage(named: Image.Chart)!
+    let chart = UIImage(named: Image.Update)!
     let reset = UIImage(named: Image.Reset)!
     
     // MARK: - View Lifecycle Functions

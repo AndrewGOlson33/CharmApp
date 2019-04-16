@@ -1632,7 +1632,7 @@
                                             <accessibilityTraits key="traits" button="YES" image="YES"/>
                                         </accessibility>
                                     </imageView>
-                                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="icn_chart" translatesAutoresizingMaskIntoConstraints="NO" id="eRC-fI-BAO">
+                                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="icn_update" translatesAutoresizingMaskIntoConstraints="NO" id="eRC-fI-BAO">
                                         <rect key="frame" x="249.5" y="0.0" width="124.5" height="38"/>
                                         <accessibility key="accessibilityConfiguration">
                                             <accessibilityTraits key="traits" button="YES" image="YES"/>
@@ -1763,7 +1763,7 @@
                                             <accessibilityTraits key="traits" button="YES" image="YES"/>
                                         </accessibility>
                                     </imageView>
-                                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="icn_chart" translatesAutoresizingMaskIntoConstraints="NO" id="FkW-M5-CSl">
+                                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="icn_update" translatesAutoresizingMaskIntoConstraints="NO" id="FkW-M5-CSl">
                                         <rect key="frame" x="187" y="0.0" width="187" height="38"/>
                                         <accessibility key="accessibilityConfiguration">
                                             <accessibilityTraits key="traits" button="YES" image="YES"/>
@@ -1977,7 +1977,7 @@
                                             <accessibilityTraits key="traits" button="YES" image="YES"/>
                                         </accessibility>
                                     </imageView>
-                                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="icn_chart" translatesAutoresizingMaskIntoConstraints="NO" id="qEJ-F5-CEH">
+                                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="icn_update" translatesAutoresizingMaskIntoConstraints="NO" id="qEJ-F5-CEH">
                                         <rect key="frame" x="249.5" y="0.0" width="124.5" height="38"/>
                                         <accessibility key="accessibilityConfiguration">
                                             <accessibilityTraits key="traits" button="YES" image="YES"/>
@@ -2294,7 +2294,6 @@
         <image name="icn_backforth" width="23" height="23"/>
         <image name="icn_barchart" width="23" height="23"/>
         <image name="icn_cancel" width="144" height="144"/>
-        <image name="icn_chart" width="120" height="120"/>
         <image name="icn_chat" width="60" height="60"/>
         <image name="icn_concrete" width="48" height="48"/>
         <image name="icn_connection" width="23" height="23"/>
@@ -2312,6 +2311,7 @@
         <image name="icn_speaker" width="60" height="45"/>
         <image name="icn_train" width="60" height="60"/>
         <image name="icn_tricycle" width="24" height="24"/>
+        <image name="icn_update" width="120" height="120"/>
         <image name="icn_wordchoice" width="23" height="23"/>
         <image name="img_background" width="1068" height="1900"/>
         <image name="img_placeholder" width="1280" height="720"/>

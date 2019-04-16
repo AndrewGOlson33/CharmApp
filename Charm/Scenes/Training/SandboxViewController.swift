@@ -32,7 +32,7 @@ class SandboxViewController: UIViewController {
     
     let mic = UIImage(named: Image.Mic)!
     let stop = UIImage(named: Image.Stop)!
-    let chart = UIImage(named: Image.Chart)!
+    let chart = UIImage(named: Image.Update)!
     let reset = UIImage(named: Image.Reset)!
     
     // MARK: - View Lifecycle

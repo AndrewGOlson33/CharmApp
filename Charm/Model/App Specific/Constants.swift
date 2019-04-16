@@ -58,6 +58,7 @@ enum Image {
     static let Mute = "icn_mute"
     static let Stop = "icn_stop"
     static let Chart = "icn_chart"
+    static let Update = "icn_update"
     static let Reset = "icn_reset"
     static let Info = "icn_info"
     static let Placeholder = "img_placeholder"
