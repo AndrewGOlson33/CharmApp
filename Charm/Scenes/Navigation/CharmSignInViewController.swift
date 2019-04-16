@@ -10,6 +10,7 @@ import UIKit
 import Firebase
 import FirebaseUI
 import CodableFirebase
+import Contacts
 
 class CharmSignInViewController: UIViewController {
     
@@ -21,6 +22,14 @@ class CharmSignInViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        let status = CNContactStore.authorizationStatus(for: .contacts)
+        let store = CNContactStore()
+        if status == .notDetermined {
+            store.requestAccess(for: .contacts) {  (granted, error) in
+                print("~>Access granted: \(granted)")
+            }
+        }
 
         authUI = FUIAuth.defaultAuthUI()
         authUI.providers = [FUIEmailAuth()]
