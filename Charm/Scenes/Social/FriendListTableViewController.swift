@@ -48,9 +48,11 @@ class FriendListTableViewController: UITableViewController {
             btnAddContact.tintColor = .clear
             btnContacts.isEnabled = false
             btnAddContact.isEnabled = false
+            title = "Add Friends"
         } else {
             // disable contacts button on launch
             btnContacts.isEnabled = false
+            title = "Contacts"
         }
         
         // allow view model to refresh tableview
@@ -66,6 +68,13 @@ class FriendListTableViewController: UITableViewController {
         
     }
     
+//    override func viewDidAppear(_ animated: Bool) {
+//        super.viewDidAppear(animated)
+//        if !showContacts {
+//            navigationController?.navigationItem.title = "Add Friends"
+//        }
+//    }
+    
     // MARK: - Button Handling
     
     @IBAction func contactsButtonTapped(_ sender: Any) {
@@ -73,6 +82,7 @@ class FriendListTableViewController: UITableViewController {
         btnContacts.isEnabled = false
         btnAddContact.isEnabled = true
         isContactsViewShowing = true
+        title = "Contacts"
         tableView.reloadData()
     }
     
@@ -81,6 +91,7 @@ class FriendListTableViewController: UITableViewController {
         btnContacts.isEnabled = true
         btnAddContact.isEnabled = false
         isContactsViewShowing = false
+        title = "Add Friends"
         tableView.reloadData()
     }
     

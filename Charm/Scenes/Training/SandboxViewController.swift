@@ -171,7 +171,7 @@ class SandboxViewController: UIViewController {
         
         let plotOptions = HIPlotOptions()
         plotOptions.bar = HIBar()
-        plotOptions.bar.dataLabels = HIDataLabels()
+        plotOptions.bar.dataLabels = HIDataLabelsOptionsObject()
         plotOptions.bar.dataLabels.enabled = true
         
         let legend = HILegend()

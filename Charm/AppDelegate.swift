@@ -26,6 +26,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Configure Firebase
         FirebaseApp.configure()
+        Database.database().isPersistenceEnabled = true
         DynamicLinks.performDiagnostics(completion: nil)
         
         Messaging.messaging().delegate = self

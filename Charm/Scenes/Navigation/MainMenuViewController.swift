@@ -112,10 +112,12 @@ class MainMenuViewController: UIViewController {
             if let boolean = connected.value as? Bool, boolean == true {
                 print("~>Connected")
                 if !self.isFirebaseConnected {
+                    if self.firstSetup { return }
                     self.showConnectionAlert()
                 }
             } else {
                 print("~>Not connected")
+                if self.firstSetup { return }
                 self.showConnectionAlert()
             }
         })

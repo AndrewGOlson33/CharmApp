@@ -195,6 +195,7 @@
                     <navigationItem key="navigationItem" title="Charm" id="m6I-pG-5gz">
                         <rightBarButtonItems>
                             <barButtonItem image="icn_settings" id="BVd-qd-fhx">
+                                <color key="tintColor" red="0.73009079694747925" green="0.71364849805831909" blue="0.71345466375350952" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <connections>
                                     <segue destination="Ipq-O9-RLN" kind="show" id="lUu-00-Sjb"/>
                                 </connections>
