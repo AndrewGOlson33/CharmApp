@@ -131,7 +131,6 @@ class ContactsViewModel: NSObject {
         let friend = currentFriends[index]
         
         cell.lblName.text = "\(friend.firstName) \(friend.lastName)"
-        cell.lblEmail.text = friend.email
         
         // check to see if contacts has an image
         

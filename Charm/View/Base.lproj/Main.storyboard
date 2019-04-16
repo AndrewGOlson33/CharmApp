@@ -842,33 +842,22 @@
                                             </constraints>
                                         </imageView>
                                         <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="TfI-If-pVt">
-                                            <rect key="frame" x="64" y="8" width="334" height="21"/>
+                                            <rect key="frame" x="64" y="19.5" width="334" height="21"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                            <nil key="textColor"/>
-                                            <nil key="highlightedColor"/>
-                                        </label>
-                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Subtitle" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zm0-kg-1Ot">
-                                            <rect key="frame" x="64" y="37" width="334" height="15"/>
-                                            <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
                                     </subviews>
                                     <constraints>
+                                        <constraint firstItem="TfI-If-pVt" firstAttribute="centerY" secondItem="Ls4-Ei-eEY" secondAttribute="centerY" id="4R8-KE-b8d"/>
                                         <constraint firstItem="TfI-If-pVt" firstAttribute="leading" secondItem="3JA-8H-PZP" secondAttribute="trailing" constant="8" id="5Cb-om-FIo"/>
-                                        <constraint firstItem="TfI-If-pVt" firstAttribute="top" secondItem="Ls4-Ei-eEY" secondAttribute="top" constant="8" id="5TD-UC-7pH"/>
-                                        <constraint firstItem="zm0-kg-1Ot" firstAttribute="leading" secondItem="3JA-8H-PZP" secondAttribute="trailing" constant="8" id="EcN-wK-Ylf"/>
                                         <constraint firstAttribute="trailing" secondItem="TfI-If-pVt" secondAttribute="trailing" constant="16" id="TeB-1Z-Cg8"/>
                                         <constraint firstItem="3JA-8H-PZP" firstAttribute="leading" secondItem="Ls4-Ei-eEY" secondAttribute="leading" constant="16" id="VnB-3e-0r7"/>
-                                        <constraint firstAttribute="bottom" secondItem="zm0-kg-1Ot" secondAttribute="bottom" constant="7.5" id="cD4-VU-WWR"/>
-                                        <constraint firstAttribute="trailing" secondItem="zm0-kg-1Ot" secondAttribute="trailing" constant="16" id="fT5-HS-FQC"/>
                                         <constraint firstItem="3JA-8H-PZP" firstAttribute="centerY" secondItem="Ls4-Ei-eEY" secondAttribute="centerY" id="h3k-M6-nx8"/>
-                                        <constraint firstItem="zm0-kg-1Ot" firstAttribute="top" secondItem="TfI-If-pVt" secondAttribute="bottom" constant="8" id="iWu-zb-DkU"/>
                                     </constraints>
                                 </tableViewCellContentView>
                                 <connections>
                                     <outlet property="imgProfile" destination="3JA-8H-PZP" id="dTD-eD-t2e"/>
-                                    <outlet property="lblEmail" destination="zm0-kg-1Ot" id="sS2-Wd-Oyf"/>
                                     <outlet property="lblName" destination="TfI-If-pVt" id="sPK-XV-jtz"/>
                                 </connections>
                             </tableViewCell>
@@ -2318,6 +2307,6 @@
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="RVB-Hc-N14"/>
-        <segue reference="Tm4-2t-woS"/>
+        <segue reference="tbo-GU-nKp"/>
     </inferredMetricsTieBreakers>
 </document>
