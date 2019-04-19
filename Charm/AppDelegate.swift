@@ -10,6 +10,15 @@ import UIKit
 import Firebase
 import FirebaseUI
 import UserNotificationsUI
+import StoreKit
+
+class AppStatus {
+    var validLicense: Bool = UserDefaults.standard.bool(forKey: Defaults.validLicense)
+    var notFirstLaunch: Bool = UserDefaults.standard.bool(forKey: Defaults.notFirstLaunch)
+    
+    static var shared = AppStatus()
+    
+}
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -47,7 +56,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         application.registerForRemoteNotifications()
         
+        // Setup Payment Delegate
+        SKPaymentQueue.default().add(self)
         
+        // start loading subscription
+        SubscriptionService.shared.loadSubscriptionOptions()
+        
+        if AppStatus.shared.notFirstLaunch {
+            checkStatusChange()
+        } else {
+            // load tutorial
+        }
         
         return true
     }
@@ -282,4 +301,126 @@ extension AppDelegate: MessagingDelegate {
         print("Received data message: \(remoteMessage.appData)")
     }
     // [END ios_10_data_message]
+}
+
+// MARK: - SKPaymentTransactionObserver
+
+extension AppDelegate: SKPaymentTransactionObserver {
+    
+    // check to see if user
+    private func checkStatusChange() {
+        SubscriptionService.shared.uploadReceipt { (success) in
+            if success, let current = SubscriptionService.shared.currentSubscription {
+                guard !current.isActive else { return }
+                UserDefaults.standard.set(false, forKey: Defaults.validLicense)
+                AppStatus.shared.validLicense = false
+                print("~>Set status to false.")
+            }
+        }
+    }
+    
+    func paymentQueue(_ queue: SKPaymentQueue,
+                      updatedTransactions transactions: [SKPaymentTransaction]) {
+        
+        for transaction in transactions {
+            switch transaction.transactionState {
+            case .purchasing:
+                handlePurchasingState(for: transaction, in: queue)
+            case .purchased:
+                handlePurchasedState(for: transaction, in: queue)
+            case .restored:
+                handleRestoredState(for: transaction, in: queue)
+            case .failed:
+                handleFailedState(for: transaction, in: queue)
+            case .deferred:
+                handleDeferredState(for: transaction, in: queue)
+            @unknown default:
+                print("~>Unknown default reached from payment queue updated transactions.")
+            }
+        }
+    }
+    
+    func handlePurchasingState(for transaction: SKPaymentTransaction, in queue: SKPaymentQueue) {
+        print("User is attempting to purchase product id: \(transaction.payment.productIdentifier)")
+    }
+    
+    func handlePurchasedState(for transaction: SKPaymentTransaction, in queue: SKPaymentQueue) {
+        print("User purchased product id: \(transaction.payment.productIdentifier)")
+        
+        queue.finishTransaction(transaction)
+        SubscriptionService.shared.uploadReceipt { (success) in
+            if success, let current = SubscriptionService.shared.currentSubscription, current.isActive {
+                DispatchQueue.main.async {
+                    NotificationCenter.default.post(name: SubscriptionService.purchaseSuccessfulNotification, object: nil)
+                }
+            } else {
+                DispatchQueue.main.async {
+                    NotificationCenter.default.post(name: SubscriptionService.userCancelledNotification, object: nil)
+                }
+            }
+            
+        }
+    }
+    
+    func handleRestoredState(for transaction: SKPaymentTransaction, in queue: SKPaymentQueue) {
+        print("Purchase restored for product id: \(transaction.payment.productIdentifier)")
+        queue.finishTransaction(transaction)
+        SubscriptionService.shared.uploadReceipt { (success) in
+            DispatchQueue.main.async {
+                NotificationCenter.default.post(name: SubscriptionService.restoreSuccessfulNotification, object: nil)
+            }
+        }
+    }
+    
+    func handleFailedState(for transaction: SKPaymentTransaction, in queue: SKPaymentQueue) {
+        print("Purchase failed for product id: \(transaction.payment.productIdentifier)")
+        // domain code 0 = not signed in
+        // domain code 2 = cancelled
+        
+        if let error = transaction.error as? SKError {
+            switch error.code {
+            case .clientInvalid:
+                print("~>Client invalid")
+            case .cloudServiceNetworkConnectionFailed:
+                print("~>Cloud service network connection failed")
+            case .cloudServicePermissionDenied:
+                print("~>Cloud service permission denied")
+            case .cloudServiceRevoked:
+                print("~>Cloud service revoked")
+            case .paymentCancelled:
+                print("~>Payment cancelled")
+            case .paymentInvalid:
+                print("~>Payment invalid")
+            case .paymentNotAllowed:
+                print("~>Payment not allowed")
+            case .storeProductNotAvailable:
+                print("~>Product not available.")
+            case .unknown:
+                print("~>Unknown error.")
+            case .privacyAcknowledgementRequired:
+                print("~>Privacy Acknowledgement Requred")
+            case .unauthorizedRequestData:
+                print("~>unauthorizedRequestData")
+            case .invalidOfferIdentifier:
+                print("~>invalidOfferIdentifier")
+            case .invalidSignature:
+                print("~>invalidSignature")
+            case .missingOfferParams:
+                print("~>missingOfferParams")
+            case .invalidOfferPrice:
+                print("~>invalidOfferPrice")
+            @unknown default:
+                print("~>unknown default")
+            }
+            NotificationCenter.default.post(name: SubscriptionService.userCancelledNotification, object: error)
+            
+        }
+        
+        queue.finishTransaction(transaction)
+        
+    }
+    
+    func handleDeferredState(for transaction: SKPaymentTransaction, in queue: SKPaymentQueue) {
+        print("Purchase deferred for product id: \(transaction.payment.productIdentifier)")
+    }
 }

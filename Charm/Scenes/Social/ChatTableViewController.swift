@@ -28,7 +28,7 @@ class ChatTableViewController: UITableViewController {
     
     // MARK: - Private Helper Functions
     
-    fileprivate func check(isFriendBusy friend: Friend, completion: @escaping(_ isBusy: Bool) -> Void) {
+    fileprivate func check(isFriendBusy friend: Friend, showBusyAlert: Bool, completion: @escaping(_ isBusy: Bool) -> Void) {
         let usersRef = Database.database().reference().child(FirebaseStructure.Users)
         var hasCompleted: Bool = false
         
@@ -47,7 +47,7 @@ class ChatTableViewController: UITableViewController {
                 do {
                     let friendCurrentCall = try FirebaseDecoder().decode(Call.self, from: value)
                     // check if user is already on a call
-                    if friendCurrentCall.status == .connected {
+                    if friendCurrentCall.status == .connected && showBusyAlert {
                         let busyAlert = UIAlertController(title: "Busy", message: "\(friend.firstName) is currently on another call.  Please try calling later.", preferredStyle: .alert)
                         busyAlert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
                         self.present(busyAlert, animated: true, completion: nil)
@@ -106,9 +106,17 @@ class ChatTableViewController: UITableViewController {
         
         viewActivity.startAnimating()
         
-        check(isFriendBusy: friend) { (busy) in
+        check(isFriendBusy: friend, showBusyAlert: false) { (busy) in
             viewActivity.stopAnimating()
-            guard !busy else { return }
+            guard !busy else {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: {
+                    self.check(isFriendBusy: friend, showBusyAlert: true, completion: { (busy) in
+                        guard !busy else { return }
+                        self.performSegue(withIdentifier: SegueID.VideoCall, sender: friend)
+                    })
+                })
+                return
+            }
             self.performSegue(withIdentifier: SegueID.VideoCall, sender: friend)
         }
         

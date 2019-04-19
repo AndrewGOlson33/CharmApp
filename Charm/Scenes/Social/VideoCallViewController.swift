@@ -42,6 +42,9 @@ class VideoCallViewController: UIViewController {
     var subscriber: OTSubscriber?
     var callWasConnected: Bool = false
     
+    // Token Consumption Timer
+    var useTokenTimer: Timer = Timer()
+    
     // OpenTok API key
     var kApiKey = ""
     // Generated session ID will be loaded here
@@ -108,6 +111,9 @@ class VideoCallViewController: UIViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         self.navigationController?.navigationBar.isHidden = false
+        
+        if useTokenTimer.isValid { useTokenTimer.invalidate() }
+        
         if !disconnecting && (session.sessionConnectionStatus == .connected || session.sessionConnectionStatus == .connecting || session.sessionConnectionStatus == .disconnecting) {
             endCallButtonTapped(self)
         }
@@ -409,6 +415,7 @@ class VideoCallViewController: UIViewController {
         print("~>End call button tapped")
         disconnecting = true
         var error: OTError?
+        if useTokenTimer.isValid { useTokenTimer.invalidate() }
         defer {
             processError(error)
             if error == nil, let _ = sender as? UIButton { navigationController?.popViewController(animated: true) }
@@ -523,6 +530,20 @@ extension VideoCallViewController: OTSubscriberDelegate {
                 }
             }
         }
+        
+        useTokenTimer = Timer.scheduledTimer(withTimeInterval: 5.0, repeats: false, block: { (_) in
+            switch self.isInitiatingUser {
+            case true:
+                print("~>Should be taking away a token.")
+                self.myUser.userProfile.numCredits -= 1
+                let tokens = self.myUser.userProfile.numCredits < 0 ? 0 : self.myUser.userProfile.numCredits
+                Database.database().reference().child(FirebaseStructure.Users).child(self.myUser.id!).child(FirebaseStructure.CharmUser.Profile).child(FirebaseStructure.CharmUser.UserProfile.NumCredits).setValue(tokens)
+            case false:
+                print("~>Not the initiating user.")
+            }
+            
+            self.useTokenTimer.invalidate()
+        })
 
     }
     

@@ -373,9 +373,6 @@ class ContactsViewModel: NSObject {
                         found = true
                         let friendUser = try! FirebaseDecoder().decode(CharmUser.self, from: first)
                         let friend = Friend(id: friendUser.id!, first: friendUser.userProfile.firstName, last: friendUser.userProfile.lastName, email: friendUser.userProfile.email)
-                        print("~>Existing user in contacts: \(friend.firstName) email: \(friend.email) and id: \(String(describing: friend.id))")
-                        print("~>My id: \(String(describing: self.user?.id))")
-                        print("~>Found self: \(friend.id == self.user?.id)")
                         if !(friend.id == self.user?.id) && !self.existingUsers.contains(where: { (existing) -> Bool in
                             return existing.email == friend.email
                         }) && !self.pendingReceived.contains(where: { (existing) -> Bool in
@@ -779,7 +776,6 @@ extension ContactsViewModel: FriendManagementDelegate {
             guard let value = snapshot.value else { return }
             do {
                 var list = try FirebaseDecoder().decode(FriendList.self, from: value)
-                print("~>Got friend list for maintenence.")
                 let meAsFriend = Friend(id: self.user!.id!, first: self.user!.userProfile.firstName, last: self.user!.userProfile.lastName, email: self.user!.userProfile.email)
                 
                 switch location {

@@ -228,3 +228,10 @@ enum ChartType: String {
     case Connection = "Connection"
     case Emotions = "Emotions"
 }
+
+// MARK: - User Defaults
+
+enum Defaults {
+    static let validLicense = "_validLicense"
+    static let notFirstLaunch = "_notFirstLaunch"
+}

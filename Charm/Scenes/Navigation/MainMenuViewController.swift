@@ -9,6 +9,7 @@
 import UIKit
 import Firebase
 import CodableFirebase
+import StoreKit
 
 class MainMenuViewController: UIViewController {
     
@@ -24,6 +25,10 @@ class MainMenuViewController: UIViewController {
     
     // private vars for posting notifications
     private var shouldPostTrainingHistoryNotification: Bool = false
+    
+    // temp values
+    var requestProd = SKProductsRequest()
+    var products = [SKProduct]()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -51,6 +56,8 @@ class MainMenuViewController: UIViewController {
         
         // Start loading contacts list
         let _ = ContactsViewModel.shared.contacts
+        
+        validateProductIdentifiers()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -407,4 +414,28 @@ class MainMenuViewController: UIViewController {
         }
     }
 
+}
+
+extension MainMenuViewController: SKProductsRequestDelegate {
+    
+    func validateProductIdentifiers() {
+        print("~>Validating product ID's.")
+        let productsRequest = SKProductsRequest(productIdentifiers: Set(["com.charismaanalytics.Charm.sub.fiveTokens.monthly", "com.charismaanalytics.Charm.sub.threetokens.monthly"]))
+        
+        // Keep a strong reference to the request.
+        self.requestProd = productsRequest
+        productsRequest.delegate = self
+        productsRequest.start()
+    }
+    
+    // SKProductsRequestDelegate protocol method
+    public func productsRequest(_ request: SKProductsRequest, didReceive response: SKProductsResponse) {
+        
+        self.products = response.products
+        
+        for invalidIdentifier in response.invalidProductIdentifiers {
+            print("~>Invalid ID: \(invalidIdentifier)")
+        }
+        
+    }
 }
