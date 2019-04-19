@@ -31,7 +31,10 @@ struct CharmUser: Codable, Identifiable {
 
 struct UserProfile: Codable {
     enum MembershipStatus: Int, Codable {
-        case unknown = 1
+        case unknown = 0
+        case notSubscribed = 1
+        case currentSubscriber = 2
+        case formerSubscriber = 3
     }
     
     var firstName: String

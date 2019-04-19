@@ -93,6 +93,18 @@ class ChatTableViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
+        
+        guard viewModel.user?.userProfile.numCredits ?? 0 > 0 else {
+            print("~>Not enough credits to make a call.")
+            let creditsAlert = UIAlertController(title: "Insufficient Credits", message: "You are out of credits. Please choose a subscription plan if you wish to continue making video calls.", preferredStyle: .alert)
+            creditsAlert.addAction(UIAlertAction(title: "Subscribe", style: .default, handler: { (_) in
+                // show subscription window
+            }))
+            creditsAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+            self.present(creditsAlert, animated: true, completion: nil)
+            return
+        }
+        
         let friend = viewModel.currentFriends[indexPath.row]
         
         let window = UIApplication.shared.keyWindow!
