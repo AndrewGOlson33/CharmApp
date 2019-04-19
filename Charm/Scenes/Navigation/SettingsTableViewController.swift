@@ -24,6 +24,7 @@ class SettingsTableViewController: UITableViewController {
     @IBOutlet weak var lblRenewDate: UILabel!
     @IBOutlet weak var tglPhoneNumber: UISwitch!
     @IBOutlet weak var txtPhone: UITextField!
+    @IBOutlet weak var lblSubscription: UILabel!
     
     var appDelegate: AppDelegate!
     var user: CharmUser!
@@ -36,6 +37,12 @@ class SettingsTableViewController: UITableViewController {
         txtPhone.text = ""
         txtPhone.delegate = self
         txtPhone.isEnabled = false
+        
+        if let current = SubscriptionService.shared.currentSubscription {
+            lblSubscription.text = current.level.rawValue
+        } else {
+            lblSubscription.text = "Not Subscribed"
+        }
         
         // setup done button
         let numberToolbar = UIToolbar(frame:CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 50))

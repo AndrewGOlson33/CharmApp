@@ -66,6 +66,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             checkStatusChange()
         } else {
             // load tutorial
+            // TODO: - Remove before launch
+            checkStatusChange()
         }
         
         return true

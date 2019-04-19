@@ -98,7 +98,7 @@ class ChatTableViewController: UITableViewController {
             print("~>Not enough credits to make a call.")
             let creditsAlert = UIAlertController(title: "Insufficient Credits", message: "You are out of credits. Please choose a subscription plan if you wish to continue making video calls.", preferredStyle: .alert)
             creditsAlert.addAction(UIAlertAction(title: "Subscribe", style: .default, handler: { (_) in
-                // show subscription window
+                self.performSegue(withIdentifier: SegueID.Subscriptions, sender: self)
             }))
             creditsAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
             self.present(creditsAlert, animated: true, completion: nil)

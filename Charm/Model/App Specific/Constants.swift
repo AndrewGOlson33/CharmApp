@@ -31,6 +31,7 @@ enum SegueID {
     static let TrainingTab = "sid_training"
     static let ShowInfo = "sid_infopopup"
     static let BugReport = "sid_bugreport"
+    static let Subscriptions = "sid_showsubscriptions"
 }
 
 enum StoryboardID {
@@ -50,6 +51,7 @@ enum CellID {
     static let ScaleBar = "cid_scalebar"
     static let Transcript = "cid_transcript"
     static let SnapshotList = "cid_allsnapshots"
+    static let SubscriptionsList = "cid_subscription"
 }
 
 enum Image {

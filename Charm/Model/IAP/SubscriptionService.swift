@@ -74,6 +74,9 @@ class SubscriptionService: NSObject {
                     completion?(false)
                 }
             }
+        } else {
+            print("~>There are no receipts.")
+            completion?(false)
         }
     }
     

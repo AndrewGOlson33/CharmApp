@@ -17,10 +17,10 @@ private let dateFormatter: DateFormatter = {
 
 public struct PaidSubscription {
     
-    public enum Level {
-        case threeMonthly
-        case fiveMonthly
-        case none
+    public enum Level: String {
+        case threeMonthly = "Three Credits Per Month"
+        case fiveMonthly = "Five Credits Per Month"
+        case none = "Not Subscribed"
         
         init(productId: String) {
             if productId.contains("threecreditsmonthly") {
