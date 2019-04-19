@@ -59,10 +59,8 @@ class LabelBubbleView: UIView {
         outterView.setGradientBackground(colorTop: .white, colorBottom: #colorLiteral(red: 0.7843906283, green: 0.784409225, blue: 0.7843992114, alpha: 1))
         outterView.clipsToBounds = true
         outterView.layer.cornerRadius = outterFrame.height * 0.33
-        
-        let changeInWidth = originalFrame.width - outterFrame.width / 2
-        
-        self.frame = CGRect(origin: CGPoint(x: originalFrame.origin.x - changeInWidth, y: originalFrame.origin.y), size: CGSize(width: outterFrame.width, height: outterFrame.height))
+                
+        self.frame = CGRect(origin: CGPoint(x: originalFrame.origin.x, y: originalFrame.origin.y), size: CGSize(width: outterFrame.width, height: outterFrame.height))
         addSubview(outterView)
     }
     

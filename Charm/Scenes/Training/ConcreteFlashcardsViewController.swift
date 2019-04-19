@@ -145,11 +145,14 @@ class ConcreteFlashcardsViewController: UIViewController {
         if popoverView.frame.minX <= scaleBar.frame.minX {
             popoverView.frame.origin.x += scaleBar.frame.minX - popoverView.frame.minX
         }
+        
+        print("~>Added popover at: \(popoverView.frame.origin.x)")
     }
     
     // Get calculated x coord for scalebar
     private func getX(for bar: ScaleBar) -> CGFloat {
         let value = CGFloat(bar.calculatedValue)
+        print("~>Value: \(value) point: \(bar.bounds.width * value + bar.frame.origin.x) midX: \(bar.frame.midX)")
         return bar.bounds.width * value
     }
     

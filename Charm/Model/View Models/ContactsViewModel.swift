@@ -359,8 +359,6 @@ class ContactsViewModel: NSObject {
             contactsGroup.enter()
             let contactGroup = DispatchGroup()
             
-            // TODO: - Prevent showing the user's own email (Do near end, as this is needed for testing right now)
-            
             for email in contact.emailAddresses {
                 contactGroup.enter()
                 let value = email.value as String
@@ -370,12 +368,15 @@ class ContactsViewModel: NSObject {
                         contactGroup.leave()
                         return
                     }
+                    
                     if let results = snapshot.value as? [AnyHashable:Any], let first = results.first?.value {
                         found = true
                         let friendUser = try! FirebaseDecoder().decode(CharmUser.self, from: first)
                         let friend = Friend(id: friendUser.id!, first: friendUser.userProfile.firstName, last: friendUser.userProfile.lastName, email: friendUser.userProfile.email)
-                        print("~>Existing in contacts: \(friend.firstName)")
-                        if !self.existingUsers.contains(where: { (existing) -> Bool in
+                        print("~>Existing user in contacts: \(friend.firstName) email: \(friend.email) and id: \(String(describing: friend.id))")
+                        print("~>My id: \(String(describing: self.user?.id))")
+                        print("~>Found self: \(friend.id == self.user?.id)")
+                        if !(friend.id == self.user?.id) && !self.existingUsers.contains(where: { (existing) -> Bool in
                             return existing.email == friend.email
                         }) && !self.pendingReceived.contains(where: { (existing) -> Bool in
                             return existing.email == friend.email
@@ -405,7 +406,7 @@ class ContactsViewModel: NSObject {
                             let friendUser = try FirebaseDecoder().decode(CharmUser.self, from: first)
                             let friend = Friend(id: friendUser.id!, first: friendUser.userProfile.firstName, last: friendUser.userProfile.lastName, email: friendUser.userProfile.email)
                             print("~>Existing phone number in contacts: \(friend.firstName) \(friend.lastName) \(friend.email)")
-                            if !self.existingUsers.contains(where: { (existing) -> Bool in
+                            if !(friend.id == self.user?.id) && !self.existingUsers.contains(where: { (existing) -> Bool in
                                 return existing.email == friend.email
                             }) && !self.pendingReceived.contains(where: { (existing) -> Bool in
                                 return existing.email == friend.email
@@ -469,8 +470,10 @@ class ContactsViewModel: NSObject {
                         return existing.email == friend.email && existing.phone == friend.phone && existing.firstName == existing.firstName && existing.lastName == friend.lastName
                     })  { self.usersToInvite.append(friend) }
                     contactsGroup.leave()
+                    self.delegate?.updateTableView()
                 } else {
                     contactsGroup.leave()
+                    self.delegate?.updateTableView()
                 }
             }
             
@@ -481,6 +484,7 @@ class ContactsViewModel: NSObject {
             print("~>Contacts group finished.")
             self.delegate?.updateTableView()
             self.performFriendListMaintenence()
+            print("~>Pending: \(self.pendingReceived)")
         }
     }
     

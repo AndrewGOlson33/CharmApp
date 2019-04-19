@@ -17,6 +17,7 @@
 		650E9F55224550AA000EADEE /* ChatTrainingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 650E9F54224550AA000EADEE /* ChatTrainingViewModel.swift */; };
 		650E9F5722455885000EADEE /* ScorePhrase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 650E9F5622455885000EADEE /* ScorePhrase.swift */; };
 		6528D85222565F540058D0DC /* EmotionFlashcardsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6528D85122565F540058D0DC /* EmotionFlashcardsViewController.swift */; };
+		6534C2C92269F7520051F6D1 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6534C2C82269F7520051F6D1 /* GoogleService-Info.plist */; };
 		654382FE224A8D860020336A /* SnapshotsListTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 654382FD224A8D860020336A /* SnapshotsListTableViewController.swift */; };
 		6543FF0F223A8462003FC625 /* LearningTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6543FF0E223A8462003FC625 /* LearningTableViewController.swift */; };
 		6543FF11223A8AAB003FC625 /* LearningVideo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6543FF10223A8AAB003FC625 /* LearningVideo.swift */; };
@@ -39,7 +40,6 @@
 		657E72062243F41B001EE828 /* FlashcardsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 657E72052243F41B001EE828 /* FlashcardsViewModel.swift */; };
 		657E72082243F4A7001EE828 /* TrainingData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 657E72072243F4A7001EE828 /* TrainingData.swift */; };
 		6590F59B225B931F00CF4854 /* LableBubbleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6590F59A225B931F00CF4854 /* LableBubbleView.swift */; };
-		65AC04002253CD8D0051B4C2 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 65AC03FF2253CD8D0051B4C2 /* GoogleService-Info.plist */; };
 		65B872A822302BE0001705B3 /* CharmUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65B872A722302BE0001705B3 /* CharmUser.swift */; };
 		65C1705C223FCD030081B55F /* CharmData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65C1705B223FCD030081B55F /* CharmData.swift */; };
 		65C55C1A22314C7A00336243 /* ChatTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65C55C1922314C7A00336243 /* ChatTableViewController.swift */; };
@@ -72,6 +72,7 @@
 		650E9F54224550AA000EADEE /* ChatTrainingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatTrainingViewModel.swift; sourceTree = "<group>"; };
 		650E9F5622455885000EADEE /* ScorePhrase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScorePhrase.swift; sourceTree = "<group>"; };
 		6528D85122565F540058D0DC /* EmotionFlashcardsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmotionFlashcardsViewController.swift; sourceTree = "<group>"; };
+		6534C2C82269F7520051F6D1 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		654382FD224A8D860020336A /* SnapshotsListTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnapshotsListTableViewController.swift; sourceTree = "<group>"; };
 		6543FF0E223A8462003FC625 /* LearningTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LearningTableViewController.swift; sourceTree = "<group>"; };
 		6543FF10223A8AAB003FC625 /* LearningVideo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LearningVideo.swift; sourceTree = "<group>"; };
@@ -94,7 +95,6 @@
 		657E72052243F41B001EE828 /* FlashcardsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlashcardsViewModel.swift; sourceTree = "<group>"; };
 		657E72072243F4A7001EE828 /* TrainingData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainingData.swift; sourceTree = "<group>"; };
 		6590F59A225B931F00CF4854 /* LableBubbleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LableBubbleView.swift; sourceTree = "<group>"; };
-		65AC03FF2253CD8D0051B4C2 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		65B872A722302BE0001705B3 /* CharmUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CharmUser.swift; sourceTree = "<group>"; };
 		65BD506A2252BFE7001E3A66 /* Charm.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Charm.entitlements; sourceTree = "<group>"; };
 		65C1705B223FCD030081B55F /* CharmData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CharmData.swift; sourceTree = "<group>"; };
@@ -331,7 +331,7 @@
 				6572641E223004DD008D9ED4 /* View */,
 				65F5A021222FF8A8001262FB /* AppDelegate.swift */,
 				65F5A02D222FF8A9001262FB /* Info.plist */,
-				65AC03FF2253CD8D0051B4C2 /* GoogleService-Info.plist */,
+				6534C2C82269F7520051F6D1 /* GoogleService-Info.plist */,
 			);
 			path = Charm;
 			sourceTree = "<group>";
@@ -416,7 +416,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				65F5A02C222FF8A9001262FB /* LaunchScreen.storyboard in Resources */,
-				65AC04002253CD8D0051B4C2 /* GoogleService-Info.plist in Resources */,
+				6534C2C92269F7520051F6D1 /* GoogleService-Info.plist in Resources */,
 				65F5A029222FF8A9001262FB /* Assets.xcassets in Resources */,
 				65F5A027222FF8A8001262FB /* Main.storyboard in Resources */,
 			);
@@ -681,8 +681,9 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Charm/Charm.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = ZJ769HHQS2;
+				DEVELOPMENT_TEAM = XQ7XD4KVM7;
 				INFOPLIST_FILE = Charm/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -691,6 +692,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.charismaanalytics.Charm;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
@@ -702,8 +704,9 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Charm/Charm.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = ZJ769HHQS2;
+				DEVELOPMENT_TEAM = XQ7XD4KVM7;
 				INFOPLIST_FILE = Charm/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -712,6 +715,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.charismaanalytics.Charm;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
 			};

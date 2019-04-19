@@ -58,7 +58,8 @@ class VideoCallViewController: UIViewController {
     }
     
     var kMainScreenHeight: CGFloat {
-        return view.safeAreaLayoutGuide.layoutFrame.height
+        return view.frame.height
+//        return view.safeAreaLayoutGuide.layoutFrame.height
     }
     
     var kMyScreenWidth: CGFloat {
