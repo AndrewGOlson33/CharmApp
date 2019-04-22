@@ -104,14 +104,17 @@ class MainMenuViewController: UIViewController {
     // Status Update
     
     fileprivate func checkStatus() {
+        print("~>Entered Checking status.")
         guard CharmUser.shared != nil && SubscriptionService.shared.receiptsCurrent else {
+            SubscriptionService.shared.uploadReceipt()
             DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
                 self.checkStatus()
                 return
             }
             return
         }
-        
+        print("~>Checking status and have receipts.")
+        print("~>Have a membership status of: \(CharmUser.shared.userProfile.membershipStatus)")
         if let subscription = SubscriptionService.shared.currentSubscription, !subscription.isActive {
             switch CharmUser.shared.userProfile.membershipStatus {
             case .currentSubscriber:
@@ -121,6 +124,7 @@ class MainMenuViewController: UIViewController {
                 CharmUser.shared.userProfile.membershipStatus = .notSubscribed
                 saveUserProfileToFirebase()
             case .notSubscribed, .formerSubscriber:
+                saveUserProfileToFirebase()
                 return
             }
         } else if let subscription = SubscriptionService.shared.currentSubscription, !subscription.isActive {
@@ -131,7 +135,6 @@ class MainMenuViewController: UIViewController {
         } else {
             if CharmUser.shared.userProfile.membershipStatus != .notSubscribed {
                 CharmUser.shared.userProfile.membershipStatus = .notSubscribed
-                saveUserProfileToFirebase()
             }
         }
         
