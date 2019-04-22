@@ -64,10 +64,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         if AppStatus.shared.notFirstLaunch {
             checkStatusChange()
-        } else {
-            // load tutorial
-            // TODO: - Remove before launch
-            checkStatusChange()
         }
         
         return true
@@ -87,7 +83,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable: Any]) {
         // If you are receiving a notification message while your app is in the background,
         // this callback will not be fired till the user taps on the notification launching the application.
-        // TODO: Handle data of notification
         // With swizzling disabled you must let Messaging know about the message, for Analytics
         // Messaging.messaging().appDidReceiveMessage(userInfo)
         // Print message ID.
@@ -110,7 +105,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                      fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
         // If you are receiving a notification message while your app is in the background,
         // this callback will not be fired till the user taps on the notification launching the application.
-        // TODO: Handle data of notification
         // With swizzling disabled you must let Messaging know about the message, for Analytics
         // Messaging.messaging().appDidReceiveMessage(userInfo)
         // Print message ID.
@@ -292,7 +286,6 @@ extension AppDelegate: MessagingDelegate {
         
         let dataDict:[String: String] = ["token": fcmToken]
         NotificationCenter.default.post(name: Notification.Name("FCMToken"), object: nil, userInfo: dataDict)
-        // TODO: If necessary send token to application server.
         // Note: This callback is fired at each app startup and whenever a new token is generated.
     }
     // [END refresh_token]

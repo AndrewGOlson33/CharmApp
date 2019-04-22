@@ -18,6 +18,7 @@ class SubscriptionsViewController: UIViewController {
     @IBOutlet weak var outterView: UIView!
     @IBOutlet weak var viewActivity: UIActivityIndicatorView!
     @IBOutlet weak var btnRestore: UIButton!
+    @IBOutlet weak var txtSubscriptionInfo: UITextView!
     
     // MARK: - Properties
     
@@ -41,7 +42,10 @@ class SubscriptionsViewController: UIViewController {
             btnRestore.isEnabled = false
             btnRestore.setTitleColor(.gray, for: .normal)
         }
-        
+    }
+    
+    override func viewDidLayoutSubviews() {
+        txtSubscriptionInfo.setContentOffset(.zero, animated: false)
     }
     
     // MARK: - Button Handling
@@ -201,7 +205,7 @@ extension SubscriptionsViewController: UITableViewDelegate, UITableViewDataSourc
         
         cell.textLabel?.text = option.product.localizedTitle
         cell.textLabel?.textColor = .black
-        cell.detailTextLabel?.text = option.formattedPrice
+        cell.detailTextLabel?.text = "\(option.formattedPrice) / Month"
         cell.detailTextLabel?.textColor = .black
         
         if let current = SubscriptionService.shared.currentSubscription, current.isActive {

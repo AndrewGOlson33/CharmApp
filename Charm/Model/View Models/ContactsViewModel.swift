@@ -585,8 +585,6 @@ extension ContactsViewModel: FriendManagementDelegate {
         
     }
     
-    // TODO: - Update so setvalue is called only once per user
-    
     func approveFriendRequest(withId id: String) {
         // first move friend from received to current friends
         guard var user = user, let myID = user.id else {

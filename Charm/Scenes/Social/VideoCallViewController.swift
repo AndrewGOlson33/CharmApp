@@ -531,7 +531,7 @@ extension VideoCallViewController: OTSubscriberDelegate {
             }
         }
         
-        useTokenTimer = Timer.scheduledTimer(withTimeInterval: 5.0, repeats: false, block: { (_) in
+        useTokenTimer = Timer.scheduledTimer(withTimeInterval: 420.0, repeats: false, block: { (_) in
             switch self.isInitiatingUser {
             case true:
                 print("~>Should be taking away a token.")

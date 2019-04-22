@@ -121,7 +121,6 @@ class ConcreteChatViewController: UIViewController {
     // MARK: - UI Setup Functions
     private func updatePrompts() {
         
-        // TODO: - Update to get rid of theysaid verbiage
         guard let prompt = trainingViewModel.getRandomWordPrompt() else { return }
         UIView.animate(withDuration: 0.25, animations: {
             self.lblWord.alpha = 0
