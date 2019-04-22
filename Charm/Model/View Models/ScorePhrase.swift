@@ -136,8 +136,7 @@ class ScorePhraseModel: NSObject {
     }
     
     func getSandboxAverage() -> SandboxAverage {
-        let appDelegate = UIApplication.shared.delegate as! AppDelegate
-        if let user = appDelegate.user, let trainingData = user.trainingData, let history = trainingData.sandboxHistory {
+        if let user = CharmUser.shared, let trainingData = user.trainingData, let history = trainingData.sandboxHistory {
             return history.average
         } else {
             return SandboxAverage(length: 0, concrete: 0, abstract: 0, unclassified: 0, first: 0, second: 0, positive: 0, negative: 0, repeated: 0)

@@ -20,6 +20,8 @@ struct CharmUser: Codable, Identifiable {
     var tokenID: [String : Bool]? = nil
 //    var snapshotData: [String:Snapshot]? = nil
     
+    static var shared: CharmUser!
+    
     init(first: String, last: String, email: String) {
         userProfile = UserProfile(first: first, last: last, email: email)
         friendList = FriendList()

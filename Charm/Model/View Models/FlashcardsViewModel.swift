@@ -87,64 +87,53 @@ class FlashcardsViewModel: NSObject {
     
     func getAverageConcreteScore(completion: @escaping(_ concreteHistory: ConcreteTrainingHistory) -> Void) {
         // have to do this in main, as app delegate may only be accessed in main
-        DispatchQueue.main.async {
-            let delegate = UIApplication.shared.delegate as! AppDelegate
-            let user = delegate.user
-            if let trainingHistory = user?.trainingData {
-                if trainingHistory.concreteAverage.numQuestions == 0 {
-                    self.shouldShowNA = true
-                } else {
-                    self.shouldShowNA = false
-                }
-                completion(trainingHistory.concreteAverage)
-                
-            } else {
+        if let trainingHistory = CharmUser.shared.trainingData {
+            if trainingHistory.concreteAverage.numQuestions == 0 {
                 self.shouldShowNA = true
-                completion(ConcreteTrainingHistory())
+            } else {
+                self.shouldShowNA = false
             }
+            completion(trainingHistory.concreteAverage)
+            
+        } else {
+            self.shouldShowNA = true
+            completion(ConcreteTrainingHistory())
         }
     }
     
     func getAverageEmotionsScore(completion: @escaping(_ emotionsHistory: EmotionsTrainingHistory) -> Void) {
         // have to do this in main, as app delegate may only be accessed in main
-        DispatchQueue.main.async {
-            let delegate = UIApplication.shared.delegate as! AppDelegate
-            let user = delegate.user
-            if let trainingHistory = user?.trainingData {
-                if trainingHistory.emotionsAverage.numQuestions == 0 {
-                    self.shouldShowNA = true
-                    
-                } else {
-                    self.shouldShowNA = false
-                }
-                
-                completion(trainingHistory.emotionsAverage)
-            } else {
+        if let trainingHistory = CharmUser.shared.trainingData {
+            if trainingHistory.emotionsAverage.numQuestions == 0 {
                 self.shouldShowNA = true
-                completion(EmotionsTrainingHistory())
+                
+            } else {
+                self.shouldShowNA = false
             }
+            
+            completion(trainingHistory.emotionsAverage)
+        } else {
+            self.shouldShowNA = true
+            completion(EmotionsTrainingHistory())
         }
     }
     
     func calculateAverageScore(addingCorrect correct: Bool, toType type: FlashCardType = .Concrete) {
         // have to do this in main, as app delegate may only be accessed in main
-        DispatchQueue.main.async {
-            let delegate = UIApplication.shared.delegate as! AppDelegate
-            guard let user = delegate.user, let uid = user.id else { return }
-            
-            var trainingHistory = user.trainingData != nil ? user.trainingData! : TrainingHistory()
-            
-            switch type {
-            case .Concrete:
-                trainingHistory.concreteAverage.numQuestions += 1
-                if correct { trainingHistory.concreteAverage.numCorrect += 1 }
-            case .Emotions:
-                trainingHistory.emotionsAverage.numQuestions += 1
-                if correct { trainingHistory.emotionsAverage.numCorrect += 1 }
-            }
-            
-            self.upload(trainingHistory: trainingHistory, forUid: uid)
+        guard let user = CharmUser.shared, let uid = user.id else { return }
+        
+        var trainingHistory = user.trainingData != nil ? user.trainingData! : TrainingHistory()
+        
+        switch type {
+        case .Concrete:
+            trainingHistory.concreteAverage.numQuestions += 1
+            if correct { trainingHistory.concreteAverage.numCorrect += 1 }
+        case .Emotions:
+            trainingHistory.emotionsAverage.numQuestions += 1
+            if correct { trainingHistory.emotionsAverage.numCorrect += 1 }
         }
+        
+        self.upload(trainingHistory: trainingHistory, forUid: uid)
     }
 
     

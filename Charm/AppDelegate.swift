@@ -24,7 +24,7 @@ class AppStatus {
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
-    var user: CharmUser! = nil
+//    var user: CharmUser! = nil
     var friendID: String = ""
     let gcmMessageIDKey = "gcm.message_id"
     var restoreFromBackground = false
@@ -159,7 +159,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     // MARK: - Helper Functions
     
     func removeActiveCalls() {
-        guard let user = self.user else { return }
+        guard let user = CharmUser.shared else { return }
         let myCallsRef = Database.database().reference().child(FirebaseStructure.Users).child(user.id!).child(FirebaseStructure.CharmUser.Call)
         myCallsRef.removeValue()
         print("~>Did remove active calls.")
@@ -321,9 +321,18 @@ extension AppDelegate: SKPaymentTransactionObserver {
         }
     }
     
+    func paymentQueueRestoreCompletedTransactionsFinished(_ queue: SKPaymentQueue) {
+        print("~>Restore comleted transactions finished.")
+        if queue.transactions.count == 0 {
+            print("~>No transactions.")
+            NotificationCenter.default.post(name: SubscriptionService.userCancelledNotification, object: nil)
+        }
+    }
+    
     func paymentQueue(_ queue: SKPaymentQueue,
                       updatedTransactions transactions: [SKPaymentTransaction]) {
         
+        print("~>Updated transactions.")
         for transaction in transactions {
             switch transaction.transactionState {
             case .purchasing:
@@ -414,6 +423,7 @@ extension AppDelegate: SKPaymentTransactionObserver {
             @unknown default:
                 print("~>unknown default")
             }
+            
             NotificationCenter.default.post(name: SubscriptionService.userCancelledNotification, object: error)
             
         }

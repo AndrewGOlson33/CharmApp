@@ -23,9 +23,9 @@ public struct PaidSubscription {
         case none = "Not Subscribed"
         
         init(productId: String) {
-            if productId.contains("threecreditsmonthly") {
+            if productId.contains("threeTokens.monthly") {
                 self = .threeMonthly
-            } else if productId.contains("fivecreditsmonthly") {
+            } else if productId.contains("fiveTokens.monthly") {
                 self = .fiveMonthly
             } else {
                 self = .none
@@ -39,7 +39,7 @@ public struct PaidSubscription {
     public let level: Level
     
     public var isActive: Bool {
-        return (purchaseDate...expiresDate).contains(Date())
+        return Date() <= expiresDate
     }
     
     init?(json: [String: Any]) {

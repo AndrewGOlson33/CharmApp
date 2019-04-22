@@ -80,13 +80,14 @@ class SendFeedbackViewController: UIViewController {
             return
         }
         
-        guard let profile = appDelegate.user?.userProfile else {
+        guard let _ = CharmUser.shared else {
             let noTextAlert = UIAlertController(title: "Connection Error", message: "There was an error submitting your feedback, please try again in a moment.", preferredStyle: .alert)
             noTextAlert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
             present(noTextAlert, animated: true, completion: nil)
             return
         }
-        let email = profile.email
+        
+        let email = CharmUser.shared.userProfile.email
         print("~>Adding feedback: \(text)")
         existingReports.addReport(withText: text, fromUser: email)
         dismiss(animated: true, completion: nil)

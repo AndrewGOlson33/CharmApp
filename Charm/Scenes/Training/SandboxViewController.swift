@@ -228,8 +228,7 @@ class SandboxViewController: UIViewController {
         let lastData = viewModel.getSandboxScore()
         
         if append {
-            let appDelegate = UIApplication.shared.delegate as! AppDelegate
-            if let user = appDelegate.user, let history = user.trainingData {
+            if let user = CharmUser.shared, let history = user.trainingData {
                 var sandbox: SandboxTrainingHistory = SandboxTrainingHistory()
                 
                 // append new data to the current user
@@ -243,7 +242,7 @@ class SandboxViewController: UIViewController {
                     sandbox.append(lastData)
                 }
                 
-                appDelegate.user.trainingData?.sandboxHistory = sandbox
+                CharmUser.shared.trainingData?.sandboxHistory = sandbox
             }
         }
         

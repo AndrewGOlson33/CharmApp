@@ -31,15 +31,19 @@ class SettingsTableViewController: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         lblEmail.text = ""
         lblCredits.text = ""
         lblRenewDate.text = ""
         txtPhone.text = ""
         txtPhone.delegate = self
         txtPhone.isEnabled = false
-        
         if let current = SubscriptionService.shared.currentSubscription {
             lblSubscription.text = current.level.rawValue
+            if CharmUser.shared.userProfile.renewDate > Date() {
+                let status = SubscriptionService.shared.updateCredits()
+                print("~>Attempted to update credits and got status: \(status)")
+            }
         } else {
             lblSubscription.text = "Not Subscribed"
         }
@@ -62,12 +66,18 @@ class SettingsTableViewController: UITableViewController {
                 return
             }
             
-            self.user = self.appDelegate.user
+            self.user = CharmUser.shared
             
             // setup labels
             self.lblEmail.text = self.user.userProfile.email
             self.lblCredits.text = self.user.userProfile.credits
-            self.lblRenewDate.text = self.user.userProfile.renewDateString
+            
+            // setup renew date
+            if let current = SubscriptionService.shared.currentSubscription, current.isActive {
+                self.lblRenewDate.text = self.user.userProfile.renewDateString
+            } else {
+                self.lblRenewDate.text = "N/A"
+            }
             
             // setup phone number toggle
             self.tglPhoneNumber.isOn = self.user.userProfile.phone != nil

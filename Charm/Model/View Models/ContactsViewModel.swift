@@ -28,7 +28,7 @@ class ContactsViewModel: NSObject {
     var delegate: TableViewRefreshDelegate? = nil
     
     // user object
-    var user = (UIApplication.shared.delegate as! AppDelegate).user
+    var user = CharmUser.shared
     
     // compute friends list properties
     var currentFriends: [Friend] {

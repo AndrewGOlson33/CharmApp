@@ -115,7 +115,7 @@ extension CharmSignInViewController: FUIAuthDelegate {
                 DispatchQueue.main.async {
                     do {
                         let user = try FirebaseDecoder().decode(CharmUser.self, from: value)
-                        (UIApplication.shared.delegate as! AppDelegate).user = user
+                        CharmUser.shared = user
                         self.showNavigation()
                     } catch let error {
                         print("~>There was an error creating object: \(error)")
@@ -134,7 +134,7 @@ extension CharmSignInViewController: FUIAuthDelegate {
                     do {
                         let data = try FirebaseEncoder().encode(user)
                         Database.database().reference().child(FirebaseStructure.Users).child(uid).setValue(data)
-                        (UIApplication.shared.delegate as! AppDelegate).user = user
+                        CharmUser.shared = user
                         self.showNavigation()
                     } catch let error {
                         print("~>There was an error encoding user: \(error)")

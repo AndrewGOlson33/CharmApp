@@ -22,6 +22,7 @@ class MainMenuViewController: UIViewController {
     var isFirebaseConnected: Bool = true
     var firstSetup: Bool = true
     var loadingFriendFromNotification: Bool = false
+    var checkedCredits: Bool = false
     
     // private vars for posting notifications
     private var shouldPostTrainingHistoryNotification: Bool = false
@@ -63,7 +64,7 @@ class MainMenuViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        guard (UIApplication.shared.delegate as! AppDelegate).user != nil else {
+        guard CharmUser.shared != nil else {
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                 self.viewDidAppear(animated)
                 return
@@ -75,9 +76,82 @@ class MainMenuViewController: UIViewController {
             print("~>Going to add friend using id.")
             self.addFriend(withID: (UIApplication.shared.delegate as! AppDelegate).friendID)
         }
+        
+        checkCredits()
+        checkStatus()
     }
     
     // MARK: - Private Setup Functions
+    
+    // Credits Update
+    
+    fileprivate func checkCredits () {
+        let status = SubscriptionService.shared.updateCredits()
+        print("~>Attempted to update credits and got status: \(status)")
+        
+        if !checkedCredits && (status == .receiptsNotLoaded || status == .userNotLoaded) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 5.0) {
+                self.checkedCredits = true
+                self.checkCredits()
+                return
+            }
+            return
+        }
+        
+        checkedCredits = true
+    }
+    
+    // Status Update
+    
+    fileprivate func checkStatus() {
+        guard CharmUser.shared != nil && SubscriptionService.shared.receiptsCurrent else {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                self.checkStatus()
+                return
+            }
+            return
+        }
+        
+        if let subscription = SubscriptionService.shared.currentSubscription, !subscription.isActive {
+            switch CharmUser.shared.userProfile.membershipStatus {
+            case .currentSubscriber:
+                CharmUser.shared.userProfile.membershipStatus = .formerSubscriber
+                saveUserProfileToFirebase()
+            case .unknown:
+                CharmUser.shared.userProfile.membershipStatus = .notSubscribed
+                saveUserProfileToFirebase()
+            case .notSubscribed, .formerSubscriber:
+                return
+            }
+        } else if let subscription = SubscriptionService.shared.currentSubscription, !subscription.isActive {
+            if CharmUser.shared.userProfile.membershipStatus != .currentSubscriber {
+                CharmUser.shared.userProfile.membershipStatus = .currentSubscriber
+                saveUserProfileToFirebase()
+            }
+        } else {
+            if CharmUser.shared.userProfile.membershipStatus != .notSubscribed {
+                CharmUser.shared.userProfile.membershipStatus = .notSubscribed
+                saveUserProfileToFirebase()
+            }
+        }
+        
+        
+    }
+    
+    // Update status of user
+    
+    private func saveUserProfileToFirebase() {
+        
+        let profile = CharmUser.shared.userProfile
+        
+        do {
+            let data = try FirebaseEncoder().encode(profile)
+            Database.database().reference().child(FirebaseStructure.Users).child(CharmUser.shared.id!).child(FirebaseStructure.CharmUser.Profile).setValue(data)
+            print("~>Set user profile with new date")
+        } catch let error {
+            print("~>There was an error: \(error)")
+        }
+    }
     
     // UI Related
     
@@ -153,7 +227,7 @@ class MainMenuViewController: UIViewController {
             DispatchQueue.main.async {
                 do {
                     let user = try FirebaseDecoder().decode(CharmUser.self, from: value)
-                    (UIApplication.shared.delegate as! AppDelegate).user = user
+                    CharmUser.shared = user
                     // Post a notification that the user changed, along with the user obejct
                     NotificationCenter.default.post(name: FirebaseNotification.CharmUserDidUpdate, object: user)
                     print("~>Posting user did update.")
@@ -171,7 +245,7 @@ class MainMenuViewController: UIViewController {
                                 self.setupIncoming(call: call)
                             }))
                             alert.addAction(UIAlertAction(title: "Ignore", style: .cancel, handler: { _ in
-                                guard let call = (UIApplication.shared.delegate as! AppDelegate).user.currentCall else { return }
+                                guard let call = CharmUser.shared.currentCall else { return }
                                 self.reject(call: call)
                             }))
                             self.navigationController?.present(alert, animated: true, completion: nil)
@@ -257,9 +331,8 @@ class MainMenuViewController: UIViewController {
     
     fileprivate func setupIncoming(call: Call) {
         DispatchQueue.main.async {
-            let appDelegate = UIApplication.shared.delegate as! AppDelegate
-            let myUser = appDelegate.user!
-            guard let friend = myUser.friendList?.currentFriends?.first(where: { (friend) -> Bool in
+            let myUser = CharmUser.shared
+            guard let friend = myUser?.friendList?.currentFriends?.first(where: { (friend) -> Bool in
                 friend.id! == call.fromUserID
             }) else {
                 let connectionError = UIAlertController(title: "Error", message: "There was an error connecting your call.  Do you want to try again?", preferredStyle: .alert)
@@ -291,7 +364,7 @@ class MainMenuViewController: UIViewController {
                 } else if let result = result {
                     
                     print("~>Remote instance ID token: \(result.token)")
-                    if var user = (UIApplication.shared.delegate as! AppDelegate).user, let id = user.id {
+                    if var user = CharmUser.shared, let id = user.id {
                         if user.tokenID == nil {
                             user.tokenID = [result.token : true]
                         } else if !user.tokenID!.contains(where: { (token) -> Bool in
@@ -350,7 +423,7 @@ class MainMenuViewController: UIViewController {
     fileprivate func addFriend(withID id: String) {
         DispatchQueue.main.async {
             // first move friend from received to current friends
-            guard var user = (UIApplication.shared.delegate as! AppDelegate).user else { return }
+            guard var user = CharmUser.shared else { return }
             
             if user.friendList?.currentFriends == nil { user.friendList?.currentFriends = [] }
             
