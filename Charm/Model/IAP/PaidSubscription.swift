@@ -23,7 +23,7 @@ public struct PaidSubscription {
         case none = "Not Subscribed"
         
         init(productId: String) {
-            if productId.contains("threeTokens.monthly") {
+            if productId.contains("threetokens.monthly") {
                 self = .threeMonthly
             } else if productId.contains("fiveTokens.monthly") {
                 self = .fiveMonthly

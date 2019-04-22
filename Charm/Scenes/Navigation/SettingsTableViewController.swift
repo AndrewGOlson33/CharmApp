@@ -38,15 +38,6 @@ class SettingsTableViewController: UITableViewController {
         txtPhone.text = ""
         txtPhone.delegate = self
         txtPhone.isEnabled = false
-        if let current = SubscriptionService.shared.currentSubscription {
-            lblSubscription.text = current.level.rawValue
-            if CharmUser.shared.userProfile.renewDate > Date() {
-                let status = SubscriptionService.shared.updateCredits()
-                print("~>Attempted to update credits and got status: \(status)")
-            }
-        } else {
-            lblSubscription.text = "Not Subscribed"
-        }
         
         // setup done button
         let numberToolbar = UIToolbar(frame:CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 50))
@@ -66,27 +57,43 @@ class SettingsTableViewController: UITableViewController {
                 return
             }
             
-            self.user = CharmUser.shared
-            
-            // setup labels
-            self.lblEmail.text = self.user.userProfile.email
-            self.lblCredits.text = self.user.userProfile.credits
-            
-            // setup renew date
-            if let current = SubscriptionService.shared.currentSubscription, current.isActive {
-                self.lblRenewDate.text = self.user.userProfile.renewDateString
-            } else {
-                self.lblRenewDate.text = "N/A"
-            }
-            
-            // setup phone number toggle
-            self.tglPhoneNumber.isOn = self.user.userProfile.phone != nil
-            self.txtPhone.isEnabled = self.tglPhoneNumber.isOn
-            
-            if let phone = self.user.userProfile.phone {
-                self.txtPhone.text = phone
-            }
-            
+            self.updateLabels()
+        }
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        NotificationCenter.default.addObserver(self, selector: #selector(updateLabels), name: FirebaseNotification.CharmUserDidUpdate, object: nil)
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        NotificationCenter.default.removeObserver(self, name: FirebaseNotification.CharmUserDidUpdate, object: nil)
+    }
+    
+    @objc private func updateLabels() {
+        print("~>Update labels called.")
+        user = CharmUser.shared
+        
+        // setup labels
+        lblEmail.text = user.userProfile.email
+        lblCredits.text = user.userProfile.credits
+        
+        // setup subscription labels and add credits if needed
+        if let current = SubscriptionService.shared.currentSubscription, current.isActive {
+            lblSubscription.text = current.level.rawValue
+            lblRenewDate.text = user.userProfile.renewDateString
+        } else {
+            lblSubscription.text = "Not Subscribed"
+            lblRenewDate.text = "N/A"
+        }
+        
+        // setup phone number toggle
+        tglPhoneNumber.isOn = user.userProfile.phone != nil
+        txtPhone.isEnabled = tglPhoneNumber.isOn
+        
+        if let phone = self.user.userProfile.phone {
+            self.txtPhone.text = phone
         }
     }
     

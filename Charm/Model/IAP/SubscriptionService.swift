@@ -72,7 +72,10 @@ class SubscriptionService: NSObject {
             return
         }
         let numCredits = numberOfCredits()
-        if numCredits == 0 { return }
+        if numCredits == 0 {
+            print("~>Returning with 0 credits.")
+            return
+        }
         CharmUser.shared.userProfile.numCredits += numCredits
         
         // add a month

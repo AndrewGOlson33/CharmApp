@@ -1462,6 +1462,7 @@
                         <viewLayoutGuide key="safeArea" id="G82-NO-N1I"/>
                     </view>
                     <connections>
+                        <outlet property="btnRestore" destination="gJt-S2-uaZ" id="JaK-FH-OFx"/>
                         <outlet property="outterView" destination="PEP-E4-RBi" id="qb4-4y-eOK"/>
                         <outlet property="viewActivity" destination="drc-fj-UTt" id="Wtp-Yq-Lhz"/>
                     </connections>

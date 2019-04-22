@@ -8,6 +8,8 @@
 
 import UIKit
 import StoreKit
+import Firebase
+import CodableFirebase
 
 class SubscriptionsViewController: UIViewController {
     
@@ -15,11 +17,13 @@ class SubscriptionsViewController: UIViewController {
     
     @IBOutlet weak var outterView: UIView!
     @IBOutlet weak var viewActivity: UIActivityIndicatorView!
+    @IBOutlet weak var btnRestore: UIButton!
     
     // MARK: - Properties
     
-    var tryingRestore: Bool = false
     var restoreFromButton: Bool = false
+    var hasSubscription: Bool = false
+    var shouldAddCredits: Bool = false
     
     // MARK: - Class Lifecycle Functions
 
@@ -32,12 +36,17 @@ class SubscriptionsViewController: UIViewController {
         outterView.layer.shadowRadius = 2.0
         outterView.layer.shadowOffset = CGSize(width: 2, height: 2)
         outterView.layer.shadowOpacity = 0.5
+        
+        if SubscriptionService.shared.currentSubscription?.isActive ?? false {
+            btnRestore.isEnabled = false
+            btnRestore.setTitleColor(.gray, for: .normal)
+        }
+        
     }
     
     // MARK: - Button Handling
     
     @IBAction func restorePurchasesTapped(_ sender: Any) {
-        tryingRestore = true
         restoreFromButton = true
         
         viewActivity.startAnimating()
@@ -81,6 +90,13 @@ class SubscriptionsViewController: UIViewController {
                     if CharmUser.shared.userProfile.renewDate < Date() {
                         let status = SubscriptionService.shared.updateCredits()
                         print("~>Attempted to update credits and got status: \(status)")
+                    } else {
+                        self.saveUserProfileToFirebase()
+                        
+                        if self.restoreFromButton {
+                            print("~>Posting a user updated method to refresh settings screen if needed")
+                            NotificationCenter.default.post(name: FirebaseNotification.CharmUserDidUpdate, object: nil)
+                        }
                     }
                     
                     self.dismiss(animated: true, completion: nil)
@@ -91,15 +107,47 @@ class SubscriptionsViewController: UIViewController {
         
     }
     
+    // Update status of user
+    
+    private func saveUserProfileToFirebase() {
+        
+        guard CharmUser.shared != nil, let id = CharmUser.shared.id else {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 5.0) {
+                self.saveUserProfileToFirebase()
+                return
+            }
+            return
+        }
+        
+        let profile = CharmUser.shared.userProfile
+        
+        do {
+            let data = try FirebaseEncoder().encode(profile)
+            Database.database().reference().child(FirebaseStructure.Users).child(id).child(FirebaseStructure.CharmUser.Profile).setValue(data)
+            print("~>Set user profile with new date")
+        } catch let error {
+            print("~>There was an error: \(error)")
+        }
+    }
+    
     @objc private func purchaseComplete() {
         notificationReceived()
         
         // a new subscription so add credits and set renew date to today
-        if !tryingRestore {
-            let date = Date(timeInterval: -1800, since: Date())
-            CharmUser.shared.userProfile.renewDate = date
+        if !restoreFromButton {
+            if hasSubscription {
+                print("~>Has a current subscription, not going to change date.")
+                if shouldAddCredits {
+                    CharmUser.shared.userProfile.numCredits += 2
+                }
+            } else {
+                let date = Date(timeInterval: -1800, since: Date())
+                CharmUser.shared.userProfile.renewDate = date
+            }
+            
         }
-        createAlert(withTitle: tryingRestore ? "Restore Complete" : "Purchase Complete", andMessage: tryingRestore ? "Your purchase has been restored." : "Congratulations on your purchase!  You may cancel anytime through iTunes.", andDoneButton: "Great!", purchased: true)
+        
+        createAlert(withTitle: restoreFromButton ? "Restore Complete" : "Purchase Complete", andMessage: restoreFromButton ? "Your purchase has been restored." : "Congratulations on your purchase!  You may cancel anytime through iTunes.", andDoneButton: "Great!", purchased: true)
     }
     
     @objc private func purchaseFailed(_ sender: Notification) {
@@ -107,10 +155,8 @@ class SubscriptionsViewController: UIViewController {
         guard let error = sender.object as? SKError else {
             if restoreFromButton {
                 restoreFromButton = false
-                tryingRestore = false
                 createAlert(withTitle: "Restore Failed", andMessage: "Could not find any purchases to restore.  Check your subscriptions in iTunes.", andDoneButton: "OK")
             } else {
-                tryingRestore = false
                 createAlert(withTitle: "Purchase Failed", andMessage: "Unable to make purchse.", andDoneButton: "OK")
             }
             return
@@ -124,18 +170,10 @@ class SubscriptionsViewController: UIViewController {
         case .paymentInvalid:
             createAlert(withTitle: "Payment Error", andMessage: "There is an error with you payment information, verify your payment information stored in iTunes.", andDoneButton: "OK")
         case .paymentCancelled:
-            if !tryingRestore {
-                tryingRestore = true
-                SubscriptionService.shared.restorePurchases()
-            } else if restoreFromButton {
+            if restoreFromButton {
                 restoreFromButton = false
-                tryingRestore = false
                 createAlert(withTitle: "Restore Failed", andMessage: "Could not find any purchases to restore.  Check your subscriptions in iTunes.", andDoneButton: "OK")
-            } else {
-                tryingRestore = false
-                createAlert(withTitle: "Purchase Failed", andMessage: "Unable to make purchse.", andDoneButton: "OK")
             }
-            
             return
         default:
             createAlert(withTitle: "Unknown Error", andMessage: "An unknown error has occured, please check that you are logged into the iTunes store and that you have an internet connection.", andDoneButton: "OK")
@@ -162,7 +200,25 @@ extension SubscriptionsViewController: UITableViewDelegate, UITableViewDataSourc
         }
         
         cell.textLabel?.text = option.product.localizedTitle
+        cell.textLabel?.textColor = .black
         cell.detailTextLabel?.text = option.formattedPrice
+        cell.detailTextLabel?.textColor = .black
+        
+        if let current = SubscriptionService.shared.currentSubscription, current.isActive {
+            let id = current.productId
+            if id == option.product.productIdentifier {
+                cell.textLabel?.text = cell.textLabel?.text ?? "" + "(Subscribed)"
+                cell.textLabel?.textColor = .gray
+                cell.detailTextLabel?.textColor = .gray
+                cell.isUserInteractionEnabled = false
+                hasSubscription = true
+                if current.level == .threeMonthly { shouldAddCredits = true }
+            } else {
+                cell.textLabel?.textColor = .black
+                cell.detailTextLabel?.textColor = .black
+                cell.isUserInteractionEnabled = true
+            }
+        }
         
         return cell
     }

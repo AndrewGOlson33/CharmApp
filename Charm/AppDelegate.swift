@@ -321,13 +321,13 @@ extension AppDelegate: SKPaymentTransactionObserver {
         }
     }
     
-    func paymentQueueRestoreCompletedTransactionsFinished(_ queue: SKPaymentQueue) {
-        print("~>Restore comleted transactions finished.")
-        if queue.transactions.count == 0 {
-            print("~>No transactions.")
-            NotificationCenter.default.post(name: SubscriptionService.userCancelledNotification, object: nil)
-        }
-    }
+//    func paymentQueueRestoreCompletedTransactionsFinished(_ queue: SKPaymentQueue) {
+//        print("~>Restore comleted transactions finished.")
+//        if queue.transactions.count == 0 {
+//            print("~>No transactions.")
+//            NotificationCenter.default.post(name: SubscriptionService.userCancelledNotification, object: nil)
+//        }
+//    }
     
     func paymentQueue(_ queue: SKPaymentQueue,
                       updatedTransactions transactions: [SKPaymentTransaction]) {
@@ -378,7 +378,12 @@ extension AppDelegate: SKPaymentTransactionObserver {
         queue.finishTransaction(transaction)
         SubscriptionService.shared.uploadReceipt { (success) in
             DispatchQueue.main.async {
-                NotificationCenter.default.post(name: SubscriptionService.restoreSuccessfulNotification, object: nil)
+                if let current = SubscriptionService.shared.currentSubscription, current.isActive {
+                    NotificationCenter.default.post(name: SubscriptionService.restoreSuccessfulNotification, object: nil)
+                } else {
+                    NotificationCenter.default.post(name: SubscriptionService.userCancelledNotification, object: nil)
+                }
+                
             }
         }
     }
