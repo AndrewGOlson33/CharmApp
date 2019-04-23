@@ -27,14 +27,6 @@ class CharmSignInViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let status = CNContactStore.authorizationStatus(for: .contacts)
-        let store = CNContactStore()
-        if status == .notDetermined {
-            store.requestAccess(for: .contacts) {  (granted, error) in
-                print("~>Access granted: \(granted)")
-            }
-        }
-        
         // round corners of buttons
         for button in btnGroup {
             button.layer.cornerRadius = 8

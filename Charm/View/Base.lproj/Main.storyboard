@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="anL-bU-PWb">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="YdB-u2-jt9">
     <device id="retina6_1" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
@@ -10,6 +10,41 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
+        <!--Charm Launchpoint View Controller-->
+        <scene sceneID="m0B-3z-VOQ">
+            <objects>
+                <viewController id="YdB-u2-jt9" customClass="CharmLaunchpointViewController" customModule="Charm" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="78g-EY-otu">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="img_background" translatesAutoresizingMaskIntoConstraints="NO" id="t49-Dq-FKW">
+                                <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                            </imageView>
+                            <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="whiteLarge" translatesAutoresizingMaskIntoConstraints="NO" id="KQI-Ju-XQ7">
+                                <rect key="frame" x="188.5" y="434.5" width="37" height="37"/>
+                                <color key="color" red="0.13234293459999999" green="0.1735357642" blue="0.26996999980000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            </activityIndicatorView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="t49-Dq-FKW" firstAttribute="top" secondItem="78g-EY-otu" secondAttribute="top" id="3Op-Y8-BXo"/>
+                            <constraint firstItem="KQI-Ju-XQ7" firstAttribute="centerY" secondItem="ICh-dc-shm" secondAttribute="centerY" id="Das-A5-1JD"/>
+                            <constraint firstAttribute="bottom" secondItem="t49-Dq-FKW" secondAttribute="bottom" id="LqV-7q-iAa"/>
+                            <constraint firstItem="KQI-Ju-XQ7" firstAttribute="centerX" secondItem="ICh-dc-shm" secondAttribute="centerX" id="bD0-Mp-dSK"/>
+                            <constraint firstItem="t49-Dq-FKW" firstAttribute="trailing" secondItem="ICh-dc-shm" secondAttribute="trailing" id="c4t-M8-H84"/>
+                            <constraint firstItem="t49-Dq-FKW" firstAttribute="leading" secondItem="ICh-dc-shm" secondAttribute="leading" id="g7i-xK-H9B"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="ICh-dc-shm"/>
+                    </view>
+                    <connections>
+                        <outlet property="viewActivity" destination="KQI-Ju-XQ7" id="D7P-22-h0o"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="j0J-9c-Rou" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-2419" y="134"/>
+        </scene>
         <!--Charm New User View Controller-->
         <scene sceneID="Upg-Gv-igL">
             <objects>
