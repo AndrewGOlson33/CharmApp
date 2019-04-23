@@ -23,8 +23,6 @@ class SubscriptionsViewController: UIViewController {
     // MARK: - Properties
     
     var restoreFromButton: Bool = false
-    var hasSubscription: Bool = false
-    var shouldAddCredits: Bool = false
     
     // MARK: - Class Lifecycle Functions
 
@@ -96,13 +94,9 @@ class SubscriptionsViewController: UIViewController {
                         print("~>Attempted to update credits and got status: \(status)")
                     } else {
                         self.saveUserProfileToFirebase()
-                        
-                        if self.restoreFromButton {
-                            print("~>Posting a user updated method to refresh settings screen if needed")
-                            NotificationCenter.default.post(name: FirebaseNotification.CharmUserDidUpdate, object: nil)
-                        }
                     }
                     
+                    NotificationCenter.default.post(name: FirebaseNotification.CharmUserDidUpdate, object: nil)
                     self.dismiss(animated: true, completion: nil)
                 }
             }))
@@ -139,16 +133,8 @@ class SubscriptionsViewController: UIViewController {
         
         // a new subscription so add credits and set renew date to today
         if !restoreFromButton {
-            if hasSubscription {
-                print("~>Has a current subscription, not going to change date.")
-                if shouldAddCredits {
-                    CharmUser.shared.userProfile.numCredits += 2
-                }
-            } else {
-                let date = Date(timeInterval: -1800, since: Date())
-                CharmUser.shared.userProfile.renewDate = date
-            }
-            
+            let date = Date(timeInterval: -1800, since: Date())
+            CharmUser.shared.userProfile.renewDate = date
         }
         
         createAlert(withTitle: restoreFromButton ? "Restore Complete" : "Purchase Complete", andMessage: restoreFromButton ? "Your purchase has been restored." : "Congratulations on your purchase!  You may cancel anytime through iTunes.", andDoneButton: "Great!", purchased: true)
@@ -215,8 +201,6 @@ extension SubscriptionsViewController: UITableViewDelegate, UITableViewDataSourc
                 cell.textLabel?.textColor = .gray
                 cell.detailTextLabel?.textColor = .gray
                 cell.isUserInteractionEnabled = false
-                hasSubscription = true
-                if current.level == .threeMonthly { shouldAddCredits = true }
             } else {
                 cell.textLabel?.textColor = .black
                 cell.detailTextLabel?.textColor = .black

@@ -8,15 +8,19 @@
 
 import UIKit
 import Firebase
-import FirebaseUI
+import FirebaseAuth
 import CodableFirebase
 import Contacts
+import AVKit
 
 class CharmSignInViewController: UIViewController {
     
-    // MARK: - Properties
+    // MARK: - IBOutlets
     
-    var authUI: FUIAuth!
+    @IBOutlet weak var txtEmail: UITextField!
+    @IBOutlet weak var txtPassword: UITextField!
+    @IBOutlet var btnGroup: [UIButton]!
+    @IBOutlet weak var viewActivity: UIActivityIndicatorView!
     
     // MARK: - Lifecyle Functions
 
@@ -30,11 +34,15 @@ class CharmSignInViewController: UIViewController {
                 print("~>Access granted: \(granted)")
             }
         }
-
-        authUI = FUIAuth.defaultAuthUI()
-        authUI.providers = [FUIEmailAuth()]
         
-        authUI.delegate = self
+        // round corners of buttons
+        for button in btnGroup {
+            button.layer.cornerRadius = 8
+            button.layer.shadowColor = UIColor.black.cgColor
+            button.layer.shadowOpacity = 0.6
+            button.layer.shadowRadius = 8.0
+            button.layer.shadowOffset = CGSize(width: 2.0, height: 2.0)
+        }
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -42,29 +50,28 @@ class CharmSignInViewController: UIViewController {
         
         // check if user exists
         guard let user = Auth.auth().currentUser else {
-            showLoginScreen()
             return
         }
         
+        startActivity()
+        
         user.getIDTokenResult(forcingRefresh: true) { (result, error) in
+            self.stopActivity()
             if let _ = error {
-                print("~>Need to show login screen.")
-                self.showLoginScreen()
+                print("~>Need to stay here.")
+                self.showAlert(withTitle: "Expired", andMessage: "Your login has expired.  Please login again.")
+                return
             } else {
                 guard let uid = Auth.auth().currentUser?.uid else {
                     print("~>There was an error getting the user's UID.")
                     self.showLoginError()
                     return
                 }
+                
                 self.loadUser(withUID: uid)
             }
         }
         
-    }
-    
-    private func showLoginScreen() {
-        let authViewController = authUI!.authViewController()
-        present(authViewController, animated: true, completion: nil)
     }
     
     private func showNavigation() {
@@ -85,26 +92,153 @@ class CharmSignInViewController: UIViewController {
         }))
         present(loginError, animated: true, completion: nil)
     }
-
-}
-
-// MARK: - Sign in Delegate
-
-extension CharmSignInViewController: FUIAuthDelegate {
     
-    func authUI(_ authUI: FUIAuth, didSignInWith authDataResult: AuthDataResult?, error: Error?) {
-        print("~>Got a result: \(authDataResult.debugDescription)")
-        
-        guard let result = authDataResult else {
-            print("~>Unable to get an auth result.")
-            showLoginError()
-            return
-        }
-        let uid = result.user.uid
-        loadUser(withUID: uid)
+    // MARK: - Private Helper Functions
+    
+    private func showAlert(withTitle title: String, andMessage message:String) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+        self.present(alert, animated: true)
     }
     
-    // MARK: - Load User
+    private func startActivity() {
+        viewActivity.startAnimating()
+        view.isUserInteractionEnabled = false
+    }
+    
+    private func stopActivity() {
+        viewActivity.stopAnimating()
+        view.isUserInteractionEnabled = true
+    }
+    
+    // MARK: - Button Handling
+    
+    @IBAction func loginButtonTapped(_ sender: Any) {
+        
+        view.endEditing(true)
+        startActivity()
+        
+        guard let email = txtEmail.text, !email.isEmpty else {
+            showAlert(withTitle: "Check Email", andMessage: "Please make sure you have entered your e-mail address and try again.")
+            self.stopActivity()
+            return
+        }
+        
+        guard let password = txtPassword.text, !password.isEmpty else {
+            showAlert(withTitle: "Check Password", andMessage: "Please make sure you have entered your password and try again.")
+            self.stopActivity()
+            return
+        }
+        
+        Auth.auth().signIn(withEmail: email, password: password) { (result, error) in
+            
+            self.stopActivity()
+            
+            if let error = error, let errorCode = AuthErrorCode(rawValue: error._code) {
+                switch errorCode {
+                case .invalidEmail:
+                    self.showAlert(withTitle: "Invalid Email", andMessage: "Please check the email address you entered and try again.")
+                    return
+                case .wrongPassword:
+                    self.showAlert(withTitle: "Incorrect Password", andMessage: "Please check the password you entered and try again.")
+                    return
+                case .userNotFound:
+                    self.showAlert(withTitle: "Not Found", andMessage: "An account was not found with the e-mail address provided.  Please check the e-mail address you entered and try again, or click on the create account button to create a new account using this e-mail address.")
+                    return
+                default:
+                    print("~>Unhandled error: \(error) with code: \(errorCode.rawValue)")
+                    self.showAlert(withTitle: "Case Not Handled", andMessage: "ErrorCode: \(errorCode)")
+                }
+            }
+            
+            // no error so log the user in
+            
+            guard let uid = Auth.auth().currentUser?.uid else {
+                self.showAlert(withTitle: "Unknown Error", andMessage: "An unknown error occurred while logging in.  Please try again.")
+                do {
+                    try Auth.auth().signOut()
+                } catch let error {
+                    print("~>Got an error trying to sign out: \(error)")
+                }
+                
+                return
+            }
+            
+            self.loadUser(withUID: uid)
+        }
+        
+    }
+    
+    @IBAction func forgotPasswordButtonTapped(_ sender: Any) {
+        guard let email = txtEmail.text, !email.isEmpty else {
+            showAlert(withTitle: "Check Email", andMessage: "Please make sure you have entered your e-mail address and try again.")
+            return
+        }
+        
+        startActivity()
+        
+        let resetPasswordAlert = UIAlertController(title: "Confirm Reset", message: "Are you sure you want to reset your password?", preferredStyle: .alert)
+        resetPasswordAlert.addAction(UIAlertAction(title: "No", style: .cancel, handler: nil))
+        resetPasswordAlert.addAction(UIAlertAction(title: "Yes", style: .destructive, handler: { (_) in
+            self.stopActivity()
+            Auth.auth().sendPasswordReset(withEmail: email, completion: { (error) in
+                if let error = error, let errorCode = AuthErrorCode(rawValue: error._code) {
+                    switch errorCode {
+                    case .userNotFound:
+                        self.showAlert(withTitle: "Not Found", andMessage: "A user with this e-mail address was not found.")
+                        return
+                    case .invalidEmail:
+                        self.showAlert(withTitle: "Invalid Email", andMessage: "The email address you entered was not valid.")
+                        return
+                    default:
+                        print("~>Unhandled error: \(error) with code: \(errorCode.rawValue)")
+                        self.showAlert(withTitle: "Failed", andMessage: "Your password was not able to be reset at this time.")
+                        return
+                    }
+                } else if let error = error {
+                    print("~>Unhandled error: \(error)")
+                    self.showAlert(withTitle: "Failed", andMessage: "Your password was not able to be reset at this time.")
+                    return
+                } else {
+                    self.showAlert(withTitle: "Success", andMessage: "Please check your inbox for a link to reset your password.")
+                    return
+                }
+            })
+        }))
+        
+        present(resetPasswordAlert, animated: true, completion: nil)
+    }
+    
+    @IBAction func createNewAccountTapped(_ sender: Any) {
+        view.endEditing(true)
+        performSegue(withIdentifier: SegueID.NewUser, sender: self)
+    }
+    
+    @IBAction func productDemoButtonTapped(_ sender: Any) {
+        let avPlayerVC = AVPlayerViewController()
+        avPlayerVC.entersFullScreenWhenPlaybackBegins = true
+        let videoStorage = Storage.storage()
+        
+        let urlString = "gs://charismaanalytics-57703.appspot.com/learning/fundamentals/SampleVideo_1280x720_2mb.mp4"
+        
+        videoStorage.reference(forURL: urlString).downloadURL { (url, error) in
+            if let url = url {
+                let player = AVPlayer(url: url)
+                avPlayerVC.player = player
+                self.present(avPlayerVC, animated: true, completion: nil)
+                // start playing the video as soon as it loads
+                avPlayerVC.player?.play()
+            } else if let error = error {
+                print("~>Unable to get storage url: \(error)")
+                return
+            } else {
+                // this should never happen
+                print("~>An unknown error has occured.")
+            }
+        }
+    }
+    
+    // MARK: - Sign in Functions
     
     private func loadUser(withUID uid: String) {
         // read user
@@ -126,8 +260,10 @@ extension CharmSignInViewController: FUIAuthDelegate {
                 
             } else {
                 // create a new user
+                print("~>Creating a new user")
                 DispatchQueue.main.async {
                     let info = self.getUserInfo()
+                    print("~>User info: \(info)")
                     var user = CharmUser(first: info.first, last: info.last, email: info.email)
                     user.id = uid
                     
@@ -150,7 +286,7 @@ extension CharmSignInViewController: FUIAuthDelegate {
     // MARK: - Parse User's Name
     private func getUserInfo() -> (first: String, last: String, email: String) {
         guard let fullName = Auth.auth().currentUser?.displayName, let email = Auth.auth().currentUser?.email else {
-            print("Unable to get name")
+            print("~>Unable to get name")
             return ("", "", "")
         }
         
@@ -170,5 +306,76 @@ extension CharmSignInViewController: FUIAuthDelegate {
         
         return (firstName, lastName, email)
     }
+
     
+    // MARK: - Navigation
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == SegueID.NewUser, let newVC = segue.destination as? CharmNewUserViewController {
+            if let email = txtEmail.text, !email.isEmpty { newVC.existingEmail = email }
+            if let password = txtPassword.text, !password.isEmpty { newVC.existingPassword = password }
+            newVC.delegate = self
+        }
+    }
+}
+
+// MARK: - New User Delegate
+
+extension CharmSignInViewController: NewUserDelegate {
+    func createUser(withEmail email: String, password: String, firstName: String, lastName: String) {
+        startActivity()
+
+        Auth.auth().createUser(withEmail: email, password: password) { (result, error) in
+
+            if let error = error, let errorCode = AuthErrorCode(rawValue: error._code) {
+                self.stopActivity()
+                switch errorCode {
+                case .invalidEmail:
+                    self.showAlert(withTitle: "Invalid Email", andMessage: "Please check the email address you entered and try again.")
+                    return
+                case .wrongPassword:
+                    self.showAlert(withTitle: "Incorrect Password", andMessage: "Please check the password you entered and try again.")
+                    return
+                case .emailAlreadyInUse:
+                    self.showAlert(withTitle: "Email in Use", andMessage: "The e-mail address you are trying to create an account with is already in use.")
+                    return
+                case .userNotFound:
+                    self.showAlert(withTitle: "Not Found", andMessage: "An account was not found with the e-mail address provided.  Please check the e-mail address you entered and try again, or click on the create account button to create a new account using this e-mail address.")
+                    return
+                case .weakPassword:
+                    self.showAlert(withTitle: "Weak Password", andMessage: "Your password must be at least 6 characters long.")
+                    return
+                default:
+                    print("~>Unhandled error: \(error) with code: \(errorCode.rawValue)")
+                    self.showAlert(withTitle: "Unknown Error", andMessage: "Unable to create an account at this time, please try again.")
+                }
+            }
+
+            // no error so log the user in
+
+            guard let user = Auth.auth().currentUser else {
+                self.showAlert(withTitle: "Unknown Error", andMessage: "An unknown error occurred while logging in.  Please try again.")
+                do {
+                    try Auth.auth().signOut()
+                } catch let error {
+                    print("~>Got an error trying to sign out: \(error)")
+                }
+                self.stopActivity()
+                return
+            }
+
+            let uid = user.uid
+            let change = user.createProfileChangeRequest()
+            change.displayName = "\(firstName) \(lastName)"
+            change.commitChanges(completion: { (error) in
+                self.stopActivity()
+                if let error = error {
+                    print("~>There was an error creating the account: \(error)")
+                } else {
+                    self.loadUser(withUID: uid)
+                }
+            })
+            
+        }
+    }
 }

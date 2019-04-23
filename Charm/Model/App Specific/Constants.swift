@@ -32,6 +32,7 @@ enum SegueID {
     static let ShowInfo = "sid_infopopup"
     static let BugReport = "sid_bugreport"
     static let Subscriptions = "sid_showsubscriptions"
+    static let NewUser = "sid_newaccount"
 }
 
 enum StoryboardID {

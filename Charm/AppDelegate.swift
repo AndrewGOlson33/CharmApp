@@ -62,9 +62,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // start loading subscription
         SubscriptionService.shared.loadSubscriptionOptions()
         
-        if AppStatus.shared.notFirstLaunch {
-            checkStatusChange()
-        }
+//        if AppStatus.shared.notFirstLaunch {
+//            checkStatusChange()
+//        }
+        
+        // TODO: - Remove
+        checkStatusChange()
         
         return true
     }

@@ -18,6 +18,7 @@ class VideoCallViewController: UIViewController {
     @IBOutlet weak var viewConnecting: UIView!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     @IBOutlet weak var btnEndCall: UIButton!
+    @IBOutlet weak var lblCallTimer: UILabel!
     
     // MARK: - Properties
     
@@ -44,6 +45,15 @@ class VideoCallViewController: UIViewController {
     
     // Token Consumption Timer
     var useTokenTimer: Timer = Timer()
+    var endArchiveTimer: Timer = Timer()
+    
+    // bool for if archive is already stopped
+    var archiveHasBeenStopped: Bool = false
+    
+    // call timer
+    var shouldShowCallTimer: Bool = false
+    var callTime: Int = 0
+    var callTimer: Timer = Timer()
     
     // OpenTok API key
     var kApiKey = ""
@@ -62,7 +72,6 @@ class VideoCallViewController: UIViewController {
     
     var kMainScreenHeight: CGFloat {
         return view.frame.height
-//        return view.safeAreaLayoutGuide.layoutFrame.height
     }
     
     var kMyScreenWidth: CGFloat {
@@ -95,12 +104,16 @@ class VideoCallViewController: UIViewController {
         // Fade cancel button
         hideButton()
         
+        // timer alpha should be 0 at the start
+        lblCallTimer.alpha = 0.0
+        
         // setup tap gesture
         tap = UITapGestureRecognizer(target: self, action: #selector(handleScreenTap(_:)))
         tap.numberOfTapsRequired = 1
         tap.numberOfTouchesRequired = 1
         tap.delegate = self
         view.addGestureRecognizer(tap)
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -113,6 +126,8 @@ class VideoCallViewController: UIViewController {
         self.navigationController?.navigationBar.isHidden = false
         
         if useTokenTimer.isValid { useTokenTimer.invalidate() }
+        if endArchiveTimer.isValid { endArchiveTimer.invalidate() }
+        if callTimer.isValid { callTimer.invalidate() }
         
         if !disconnecting && (session.sessionConnectionStatus == .connected || session.sessionConnectionStatus == .connecting || session.sessionConnectionStatus == .disconnecting) {
             endCallButtonTapped(self)
@@ -122,9 +137,14 @@ class VideoCallViewController: UIViewController {
     // MARK: - Private Helper Functions
     
     @objc private func handleScreenTap(_ notification: UITapGestureRecognizer) {
+        if shouldShowCallTimer {
+            lblCallTimer.isHidden = false
+        }
+        
         if self.btnEndCall.alpha == 0 {
             UIView.animate(withDuration: 0.25, delay: 0.0, options: [.curveEaseIn, .allowUserInteraction], animations: {
                 self.btnEndCall.alpha = 1.0
+                self.lblCallTimer.alpha = 1.0
             }) { (_) in
                 self.hideButton()
             }
@@ -135,6 +155,7 @@ class VideoCallViewController: UIViewController {
         DispatchQueue.main.asyncAfter(deadline: .now() + 5.0) {
             UIView.animate(withDuration: 0.8, delay: 0.0, options: [.curveEaseIn, .allowUserInteraction], animations: {
                 self.btnEndCall.alpha = 0.0
+                self.lblCallTimer.alpha = 0.0
             })
         }
     }
@@ -381,6 +402,9 @@ class VideoCallViewController: UIViewController {
 
     
     func stopArchive() {
+        
+        guard !archiveHasBeenStopped else { return }
+        
         let fullURL = "\(Server.BaseURL)\(Server.Archive)/\(archiveId)\(Server.StopArchive)"
         let url = URL(string: fullURL)
         var urlRequest: URLRequest? = nil
@@ -416,6 +440,8 @@ class VideoCallViewController: UIViewController {
         disconnecting = true
         var error: OTError?
         if useTokenTimer.isValid { useTokenTimer.invalidate() }
+        if endArchiveTimer.isValid { endArchiveTimer.invalidate() }
+        if callTimer.isValid { callTimer.invalidate() }
         defer {
             processError(error)
             if error == nil, let _ = sender as? UIButton { navigationController?.popViewController(animated: true) }
@@ -532,6 +558,12 @@ extension VideoCallViewController: OTSubscriberDelegate {
         }
         
         useTokenTimer = Timer.scheduledTimer(withTimeInterval: 420.0, repeats: false, block: { (_) in
+            
+            if self.pendingArchive != nil {
+                print("~>Setting archive to complete")
+                self.pendingArchive?.setArchiveComplete()
+            }
+            
             switch self.isInitiatingUser {
             case true:
                 print("~>Should be taking away a token.")
@@ -543,6 +575,29 @@ extension VideoCallViewController: OTSubscriberDelegate {
             }
             
             self.useTokenTimer.invalidate()
+        })
+        
+        endArchiveTimer = Timer.scheduledTimer(withTimeInterval: 720.0, repeats: false, block: { (_) in
+            self.stopArchive()
+            self.archiveHasBeenStopped = true
+            self.endArchiveTimer.invalidate()
+        })
+        
+        shouldShowCallTimer = true
+        handleScreenTap(UITapGestureRecognizer())
+        
+        callTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true, block: { (_) in
+            self.callTime += 1
+            let minutes = self.callTime / 60
+            let seconds = self.callTime % 60
+            
+            let minString = String(format: "%02d", minutes)
+            let secString = String(format: "%02d", seconds)
+            
+            print("~>Set call time: \(minString):\(secString)")
+            
+            let timeString = "\(minString):\(secString)"
+            self.lblCallTimer.text = timeString
         })
 
     }

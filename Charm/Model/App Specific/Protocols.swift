@@ -28,3 +28,8 @@ protocol FriendManagementDelegate {
 protocol TableViewRefreshDelegate {
     func updateTableView()
 }
+
+// Delegate that sends setup info back to sign in screen
+protocol NewUserDelegate {
+    func createUser(withEmail email: String, password: String, firstName: String, lastName: String)
+}
