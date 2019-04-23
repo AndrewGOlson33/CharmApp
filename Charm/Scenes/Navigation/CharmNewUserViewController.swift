@@ -53,6 +53,17 @@ class CharmNewUserViewController: UIViewController {
         let swipe = UISwipeGestureRecognizer(target: self, action: #selector(swipeDismiss))
         swipe.direction = .down
         viewOutter.addGestureRecognizer(swipe)
+        
+        // setup tap outside gesture
+        let tapOut = UITapGestureRecognizer(target: self, action: #selector(tapOutside))
+        view.addGestureRecognizer(tapOut)
+        
+        // setup textfield delegate
+        txtEmail.delegate = self
+        txtPassword.delegate = self
+        txtConfirmPassword.delegate = self
+        txtFirst.delegate = self
+        txtLast.delegate = self
     }
 
     // MARK: - Action Handling
@@ -98,12 +109,56 @@ class CharmNewUserViewController: UIViewController {
         dismiss(animated: true, completion: nil)
     }
     
+    @objc private func tapOutside() {
+        view.endEditing(true)
+    }
+    
     // MARK: - Private Helper Functions
     
     private func showAlert(withTitle title: String, andMessage message:String) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
         self.present(alert, animated: true)
+    }
+    
+}
+
+extension CharmNewUserViewController: UITextFieldDelegate {
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        if textField == txtEmail {
+            txtPassword.becomeFirstResponder()
+        } else if textField == txtPassword {
+            txtConfirmPassword.becomeFirstResponder()
+        } else if textField == txtConfirmPassword {
+            txtFirst.becomeFirstResponder()
+        } else if textField == txtFirst {
+            txtLast.becomeFirstResponder()
+        } else {
+            textField.resignFirstResponder()
+        }
+        
+        return true
+    }
+    
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        
+        if textField == txtConfirmPassword {
+            view.frame.origin.y = 0
+            view.frame.origin.y -= 30
+        } else if textField == txtFirst {
+            view.frame.origin.y = 0
+            view.frame.origin.y -= 60
+        } else if textField == txtLast {
+            view.frame.origin.y = 0
+            view.frame.origin.y -= 90
+        } else {
+            view.frame.origin.y = 0
+        }
+    }
+    
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        view.frame.origin.y = 0
     }
     
 }

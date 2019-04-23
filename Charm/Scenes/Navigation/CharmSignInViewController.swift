@@ -35,35 +35,18 @@ class CharmSignInViewController: UIViewController {
             button.layer.shadowRadius = 8.0
             button.layer.shadowOffset = CGSize(width: 2.0, height: 2.0)
         }
+        
+        // set delegate methods
+        txtEmail.delegate = self
+        txtPassword.delegate = self
+        
+        // setup tap outside gesture
+        let tapOut = UITapGestureRecognizer(target: self, action: #selector(tapOutside))
+        view.addGestureRecognizer(tapOut)
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        
-        // check if user exists
-        guard let user = Auth.auth().currentUser else {
-            return
-        }
-        
-        startActivity()
-        
-        user.getIDTokenResult(forcingRefresh: true) { (result, error) in
-            self.stopActivity()
-            if let _ = error {
-                print("~>Need to stay here.")
-                self.showAlert(withTitle: "Expired", andMessage: "Your login has expired.  Please login again.")
-                return
-            } else {
-                guard let uid = Auth.auth().currentUser?.uid else {
-                    print("~>There was an error getting the user's UID.")
-                    self.showLoginError()
-                    return
-                }
-                
-                self.loadUser(withUID: uid)
-            }
-        }
-        
+    @objc private func tapOutside() {
+        view.endEditing(true)
     }
     
     private func showNavigation() {
@@ -370,4 +353,37 @@ extension CharmSignInViewController: NewUserDelegate {
             
         }
     }
+}
+
+// MARK: - TextField Delegate
+
+extension CharmSignInViewController: UITextFieldDelegate {
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        if textField == txtEmail {
+            txtPassword.becomeFirstResponder()
+        } else {
+            textField.resignFirstResponder()
+        }
+        
+        return true
+    }
+    
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        print("~>Did begin called.")
+        if textField == txtEmail {
+            view.frame.origin.y = 0
+            view.frame.origin.y -= 60
+        }
+        
+        if textField == txtPassword {
+            view.frame.origin.y = 0
+            view.frame.origin.y -= 90
+        }
+    }
+    
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        view.frame.origin.y = 0
+    }
+    
 }
