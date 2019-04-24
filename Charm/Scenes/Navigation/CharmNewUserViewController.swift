@@ -26,18 +26,16 @@ class CharmNewUserViewController: UIViewController {
     var existingPassword: String = ""
     var delegate: NewUserDelegate? = nil
     
+    // for keyboard
+    
+    var originY: CGFloat = -1.0
+    
     // MARK: - View Lifecycle Functions
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
         // Round corners and setup shadows
-        
-        viewOutter.layer.cornerRadius = 20
-        viewOutter.layer.shadowColor = UIColor.black.cgColor
-        viewOutter.layer.shadowOpacity = 0.6
-        viewOutter.layer.shadowRadius = 16.0
-        viewOutter.layer.shadowOffset = CGSize(width: 2.0, height: 2.0)
         
         btnCreate.layer.cornerRadius = 8
         btnCreate.layer.shadowColor = UIColor.black.cgColor
@@ -48,11 +46,6 @@ class CharmNewUserViewController: UIViewController {
         // Load existing info
         if !existingEmail.isEmpty { txtEmail.text = existingEmail }
         if !existingPassword.isEmpty { txtPassword.text = existingPassword }
-        
-        // setup dismiss gesture
-        let swipe = UISwipeGestureRecognizer(target: self, action: #selector(swipeDismiss))
-        swipe.direction = .down
-        viewOutter.addGestureRecognizer(swipe)
         
         // setup tap outside gesture
         let tapOut = UITapGestureRecognizer(target: self, action: #selector(tapOutside))
@@ -65,7 +58,12 @@ class CharmNewUserViewController: UIViewController {
         txtFirst.delegate = self
         txtLast.delegate = self
     }
-
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        if originY == -1.0 { originY = view.frame.origin.y }
+    }
+    
     // MARK: - Action Handling
     
     @IBAction func createAccountTapped(_ sender: Any) {
@@ -143,22 +141,22 @@ extension CharmNewUserViewController: UITextFieldDelegate {
     
     func textFieldDidBeginEditing(_ textField: UITextField) {
         
-        if textField == txtConfirmPassword {
-            view.frame.origin.y = 0
-            view.frame.origin.y -= 30
+        print("~>Begin editing.")
+        if textField == txtEmail {
+            view.frame.origin.y = 3 * view.frame.height / 5 - txtEmail.frame.origin.y - 16
+        } else if textField == txtPassword {
+            view.frame.origin.y = 3 * view.frame.height / 5 - txtPassword.frame.origin.y
+        } else if textField == txtConfirmPassword {
+            view.frame.origin.y = 3 * view.frame.height / 5 - txtConfirmPassword.frame.origin.y
         } else if textField == txtFirst {
-            view.frame.origin.y = 0
-            view.frame.origin.y -= 60
+            view.frame.origin.y = 3 * view.frame.height / 5 - txtFirst.frame.origin.y
         } else if textField == txtLast {
-            view.frame.origin.y = 0
-            view.frame.origin.y -= 90
-        } else {
-            view.frame.origin.y = 0
+            view.frame.origin.y = 3 * view.frame.height / 5 - txtLast.frame.origin.y
         }
     }
     
     func textFieldDidEndEditing(_ textField: UITextField) {
-        view.frame.origin.y = 0
+        view.frame.origin.y = originY
     }
     
 }

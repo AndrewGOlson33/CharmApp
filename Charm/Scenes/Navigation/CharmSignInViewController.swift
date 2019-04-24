@@ -22,6 +22,10 @@ class CharmSignInViewController: UIViewController {
     @IBOutlet var btnGroup: [UIButton]!
     @IBOutlet weak var viewActivity: UIActivityIndicatorView!
     
+    // MARK: - Properties
+    
+    var originY: CGFloat = -1.0
+    
     // MARK: - Lifecyle Functions
 
     override func viewDidLoad() {
@@ -31,7 +35,7 @@ class CharmSignInViewController: UIViewController {
         for button in btnGroup {
             button.layer.cornerRadius = 8
             button.layer.shadowColor = UIColor.black.cgColor
-            button.layer.shadowOpacity = 0.6
+            button.layer.shadowOpacity = 0.16
             button.layer.shadowRadius = 8.0
             button.layer.shadowOffset = CGSize(width: 2.0, height: 2.0)
         }
@@ -43,6 +47,11 @@ class CharmSignInViewController: UIViewController {
         // setup tap outside gesture
         let tapOut = UITapGestureRecognizer(target: self, action: #selector(tapOutside))
         view.addGestureRecognizer(tapOut)
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        if originY == -1.0 { originY = view.frame.origin.y }
     }
     
     @objc private func tapOutside() {
@@ -372,18 +381,16 @@ extension CharmSignInViewController: UITextFieldDelegate {
     func textFieldDidBeginEditing(_ textField: UITextField) {
         print("~>Did begin called.")
         if textField == txtEmail {
-            view.frame.origin.y = 0
-            view.frame.origin.y -= 60
+            view.frame.origin.y = 3 * view.frame.height / 5 - txtEmail.frame.origin.y - 16
         }
         
         if textField == txtPassword {
-            view.frame.origin.y = 0
-            view.frame.origin.y -= 90
+            view.frame.origin.y = 3 * view.frame.height / 5 - txtPassword.frame.origin.y
         }
     }
     
     func textFieldDidEndEditing(_ textField: UITextField) {
-        view.frame.origin.y = 0
+        view.frame.origin.y = originY
     }
     
 }
