@@ -21,11 +21,11 @@ class CharmSignInViewController: UIViewController {
     @IBOutlet weak var txtPassword: UITextField!
     @IBOutlet var btnGroup: [UIButton]!
     @IBOutlet weak var viewActivity: UIActivityIndicatorView!
+    @IBOutlet weak var viewActivityContainer: UIView!
     
     // MARK: - Properties
     
     var originY: CGFloat = -1.0
-    var keyboardSize: CGRect? = nil
     
     // MARK: - Lifecyle Functions
 
@@ -41,6 +41,8 @@ class CharmSignInViewController: UIViewController {
             button.layer.shadowOffset = CGSize(width: 2.0, height: 2.0)
         }
         
+        viewActivityContainer.layer.cornerRadius = 16
+        
         // set delegate methods
         txtEmail.delegate = self
         txtPassword.delegate = self
@@ -53,25 +55,11 @@ class CharmSignInViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         if originY == -1.0 { originY = view.frame.origin.y }
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardwillShow(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
     }
     
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        NotificationCenter.default.removeObserver(self)
-    }
     
     @objc private func tapOutside() {
         view.endEditing(true)
-    }
-    
-    @objc private func keyboardwillShow(_ sender: Notification) {
-        if let size = (sender.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
-            print("notification: Got size: \(size)")
-            keyboardSize = size
-        }
     }
     
     private func showNavigation() {
@@ -102,13 +90,24 @@ class CharmSignInViewController: UIViewController {
     }
     
     private func startActivity() {
-        viewActivity.startAnimating()
         view.isUserInteractionEnabled = false
+        viewActivityContainer.alpha = 0.0
+        viewActivityContainer.isHidden = false
+        viewActivity.startAnimating()
+        
+        UIView.animate(withDuration: 0.25) {
+            self.viewActivityContainer.alpha = 1.0
+        }
     }
     
     private func stopActivity() {
-        viewActivity.stopAnimating()
-        view.isUserInteractionEnabled = true
+        UIView.animate(withDuration: 0.25, animations: {
+            self.viewActivityContainer.alpha = 0.0
+        }) { (_) in
+            self.viewActivity.stopAnimating()
+            self.viewActivityContainer.isHidden = true
+            self.view.isUserInteractionEnabled = true
+        }
     }
     
     // MARK: - Button Handling
@@ -392,25 +391,6 @@ extension CharmSignInViewController: UITextFieldDelegate {
         }
         
         return true
-    }
-    
-    func textFieldDidBeginEditing(_ textField: UITextField) {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            print("~>Did begin called.")
-            guard let keyboardFrame = self.keyboardSize else {
-                print("~>No keyboard frame size.")
-                self.view.frame.origin.y = self.originY
-                return
-            }
-            
-            let fieldFrame = textField.frame
-            print("~>Field frame y: \(fieldFrame.maxY) keyboard: \(keyboardFrame.origin.y)")
-        }
-        
-    }
-    
-    func textFieldDidEndEditing(_ textField: UITextField) {
-        view.frame.origin.y = originY
     }
     
 }

@@ -15,14 +15,17 @@ class CharmLaunchpointViewController: UIViewController {
     
     // MARK: - IBOutlets
     
+    @IBOutlet weak var viewActivityContainer: UIView!
     @IBOutlet weak var viewActivity: UIActivityIndicatorView!
     
     // MARK: - View Lifecycle Functions
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        viewActivityContainer.layer.cornerRadius = 16
 
-        viewActivity.startAnimating()
+        startActivity()
         
         let status = CNContactStore.authorizationStatus(for: .contacts)
         let store = CNContactStore()
@@ -35,13 +38,13 @@ class CharmLaunchpointViewController: UIViewController {
         // check if user exists
         guard let user = Auth.auth().currentUser else {
             // load login screen
-            viewActivity.stopAnimating()
+            stopActivity()
             showLogin()
             return
         }
         
         user.getIDTokenResult(forcingRefresh: true) { (result, error) in
-            self.viewActivity.stopAnimating()
+            self.stopActivity()
             if let _ = error {
                 print("~>Need to stay here.")
                 self.showAlert(withTitle: "Expired", andMessage: "Your login has expired.  Please login again.")
@@ -55,6 +58,27 @@ class CharmLaunchpointViewController: UIViewController {
                 
                 self.loadUser(withUID: uid)
             }
+        }
+    }
+    
+    // MARK: - Activity Helper Functions
+    
+    private func startActivity() {
+        viewActivityContainer.alpha = 0.0
+        viewActivityContainer.isHidden = false
+        viewActivity.startAnimating()
+        
+        UIView.animate(withDuration: 0.25) {
+            self.viewActivityContainer.alpha = 1.0
+        }
+    }
+    
+    private func stopActivity() {
+        UIView.animate(withDuration: 0.25, animations: {
+            self.viewActivityContainer.alpha = 0.0
+        }) { (_) in
+            self.viewActivity.stopAnimating()
+            self.viewActivityContainer.isHidden = true
         }
     }
     
