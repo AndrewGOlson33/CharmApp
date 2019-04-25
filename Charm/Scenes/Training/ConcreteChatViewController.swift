@@ -97,7 +97,7 @@ class ConcreteChatViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        tabBarController?.navigationItem.title = "Concrete Training"
+        tabBarController?.navigationItem.title = "Reply to Topic"
         let info = UIBarButtonItem(image: UIImage(named: Image.Info), style: .plain, target: self, action: #selector(infoButtonTapped))
         tabBarController?.navigationItem.rightBarButtonItem = info
         

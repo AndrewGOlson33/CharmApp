@@ -349,7 +349,7 @@
                         <rect key="frame" x="0.0" y="44" width="414" height="96"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        <color key="barTintColor" red="0.23921568627450979" green="0.24555063247680664" blue="0.30000153183937073" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="barTintColor" red="0.13234293459999999" green="0.1735357642" blue="0.26996999980000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <textAttributes key="titleTextAttributes">
                             <color key="textColor" red="0.93725490199999995" green="0.93725490199999995" blue="0.95686274510000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         </textAttributes>
@@ -394,7 +394,7 @@
                                         </constraints>
                                     </imageView>
                                 </subviews>
-                                <color key="backgroundColor" red="0.23936092849999999" green="0.2455506325" blue="0.3000015318" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <color key="backgroundColor" red="0.13234293459999999" green="0.1735357642" blue="0.26996999980000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
                                     <constraint firstItem="i50-Oj-8gd" firstAttribute="leading" secondItem="XX5-Hu-9kd" secondAttribute="trailing" constant="30" id="3mW-Vd-D2Y"/>
                                     <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="i50-Oj-8gd" secondAttribute="trailing" constant="8" id="Cyt-SD-gc7"/>
@@ -421,7 +421,7 @@
                                         </constraints>
                                     </imageView>
                                 </subviews>
-                                <color key="backgroundColor" red="0.23936092849999999" green="0.2455506325" blue="0.3000015318" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <color key="backgroundColor" red="0.13234293459999999" green="0.1735357642" blue="0.26996999980000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
                                     <constraint firstItem="mal-za-B6n" firstAttribute="leading" secondItem="5lf-kU-Bgn" secondAttribute="trailing" constant="30" id="BUT-cc-Tvy"/>
                                     <constraint firstAttribute="height" constant="56" id="KX2-8D-oMa"/>
@@ -448,7 +448,7 @@
                                         </constraints>
                                     </imageView>
                                 </subviews>
-                                <color key="backgroundColor" red="0.23936092849999999" green="0.2455506325" blue="0.3000015318" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <color key="backgroundColor" red="0.13234293459999999" green="0.1735357642" blue="0.26996999980000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="5MW-VJ-MuX" secondAttribute="trailing" constant="8" id="RPm-SK-ga2"/>
                                     <constraint firstItem="5MW-VJ-MuX" firstAttribute="leading" secondItem="BQ9-4M-OTD" secondAttribute="centerX" id="Rh1-ji-oHP"/>
@@ -475,7 +475,7 @@
                                         </constraints>
                                     </imageView>
                                 </subviews>
-                                <color key="backgroundColor" red="0.23936092849999999" green="0.2455506325" blue="0.3000015318" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <color key="backgroundColor" red="0.13234293459999999" green="0.1735357642" blue="0.26996999980000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="9JM-eZ-WU6" secondAttribute="trailing" constant="8" id="9Yc-XT-7uk"/>
                                     <constraint firstItem="SzP-cr-6Jh" firstAttribute="centerY" secondItem="9JM-eZ-WU6" secondAttribute="centerY" id="V97-aY-tIO"/>
@@ -545,7 +545,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="49"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        <color key="selectedImageTintColor" red="0.26274509800000001" green="0.25490196079999999" blue="0.25490196079999999" alpha="1" colorSpace="custom" customColorSpace="calibratedRGB"/>
+                        <color key="selectedImageTintColor" red="0.13234293459999999" green="0.1735357642" blue="0.26996999980000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </tabBar>
                     <connections>
                         <segue destination="HkE-k7-xGf" kind="relationship" relationship="viewControllers" id="zVS-M6-gqH"/>
@@ -908,7 +908,7 @@
                                             <subviews>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="IOU-Ic-77u">
                                                     <rect key="frame" x="0.0" y="0.5" width="414" height="43"/>
-                                                    <color key="backgroundColor" red="0.23921568630000001" green="0.2455506325" blue="0.3000015318" alpha="0.90000000000000002" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <color key="backgroundColor" red="0.13234293459999999" green="0.1735357642" blue="0.26996999980000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <state key="normal" title="Subscriptions">
                                                         <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                     </state>
@@ -1009,7 +1009,7 @@
                                             <subviews>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7dz-Eu-LZk">
                                                     <rect key="frame" x="0.0" y="0.5" width="414" height="43"/>
-                                                    <color key="backgroundColor" red="0.23921568627450979" green="0.2455506325" blue="0.3000015318" alpha="0.90000000000000002" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <color key="backgroundColor" red="0.13234293459999999" green="0.1735357642" blue="0.26996999980000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <state key="normal" title="Submit Bug Report">
                                                         <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                     </state>
@@ -1035,7 +1035,7 @@
                                             <subviews>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6Nb-Ho-C7N">
                                                     <rect key="frame" x="0.0" y="0.5" width="414" height="43"/>
-                                                    <color key="backgroundColor" red="0.23936092849999999" green="0.2455506325" blue="0.3000015318" alpha="0.89592251712328763" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <color key="backgroundColor" red="0.13234293459999999" green="0.1735357642" blue="0.26996999980000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <state key="normal" title="Terms of Use">
                                                         <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                     </state>
@@ -1061,7 +1061,7 @@
                                             <subviews>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="X21-zS-mJH">
                                                     <rect key="frame" x="0.0" y="0.5" width="414" height="43"/>
-                                                    <color key="backgroundColor" red="0.23936092849999999" green="0.2455506325" blue="0.3000015318" alpha="0.90000000000000002" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <color key="backgroundColor" red="0.13234293459999999" green="0.1735357642" blue="0.26996999980000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <state key="normal" title="Privacy Policy">
                                                         <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                     </state>
@@ -2352,7 +2352,7 @@ Subscriptions are required to pay for the backend server costs, and also help to
                                             <constraint firstAttribute="width" secondItem="jj8-vv-auX" secondAttribute="height" multiplier="1:1" id="cCw-GX-n3s"/>
                                         </constraints>
                                     </imageView>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Concrete Detail" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vJK-mF-zFs">
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Concrete" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vJK-mF-zFs">
                                         <rect key="frame" x="80" y="19.5" width="152" height="21"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <nil key="textColor"/>
@@ -2379,7 +2379,7 @@ Subscriptions are required to pay for the backend server costs, and also help to
                                             <constraint firstAttribute="width" secondItem="I3R-wq-XBD" secondAttribute="height" multiplier="1:1" id="BgR-xI-YCN"/>
                                         </constraints>
                                     </imageView>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Abstract Idea" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="TIu-d8-UOD">
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Abstract" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="TIu-d8-UOD">
                                         <rect key="frame" x="80" y="19.5" width="152" height="21"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <nil key="textColor"/>
@@ -2484,7 +2484,7 @@ Subscriptions are required to pay for the backend server costs, and also help to
             </objects>
             <point key="canvasLocation" x="1868" y="880"/>
         </scene>
-        <!--Chat-->
+        <!--Phrase-->
         <scene sceneID="3sh-cM-18L">
             <objects>
                 <viewController id="ggN-Ql-Tv5" customClass="ConversationTrainingViewController" customModule="Charm" customModuleProvider="target" sceneMemberID="viewController">
@@ -2505,22 +2505,22 @@ Subscriptions are required to pay for the backend server costs, and also help to
                                 <nil key="highlightedColor"/>
                             </label>
                             <stackView opaque="NO" contentMode="scaleAspectFit" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="7Zl-IK-XIA">
-                                <rect key="frame" x="20" y="627" width="374" height="38"/>
+                                <rect key="frame" x="34" y="615" width="360" height="38"/>
                                 <subviews>
                                     <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="icn_speaker" translatesAutoresizingMaskIntoConstraints="NO" id="zuP-E3-fjh">
-                                        <rect key="frame" x="0.0" y="0.0" width="124.5" height="38"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="120" height="38"/>
                                         <accessibility key="accessibilityConfiguration">
                                             <accessibilityTraits key="traits" button="YES" image="YES"/>
                                         </accessibility>
                                     </imageView>
                                     <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="icn_mic" translatesAutoresizingMaskIntoConstraints="NO" id="Yz5-Tr-cNS">
-                                        <rect key="frame" x="124.5" y="0.0" width="125" height="38"/>
+                                        <rect key="frame" x="120" y="0.0" width="120" height="38"/>
                                         <accessibility key="accessibilityConfiguration">
                                             <accessibilityTraits key="traits" button="YES" image="YES"/>
                                         </accessibility>
                                     </imageView>
                                     <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="icn_update" translatesAutoresizingMaskIntoConstraints="NO" id="eRC-fI-BAO">
-                                        <rect key="frame" x="249.5" y="0.0" width="124.5" height="38"/>
+                                        <rect key="frame" x="240" y="0.0" width="120" height="38"/>
                                         <accessibility key="accessibilityConfiguration">
                                             <accessibilityTraits key="traits" button="YES" image="YES"/>
                                         </accessibility>
@@ -2528,7 +2528,7 @@ Subscriptions are required to pay for the backend server costs, and also help to
                                 </subviews>
                             </stackView>
                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="Uiu-Gi-fIq">
-                                <rect key="frame" x="20" y="497" width="374" height="114"/>
+                                <rect key="frame" x="20" y="497" width="374" height="102"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences" returnKeyType="done"/>
@@ -2586,13 +2586,14 @@ Subscriptions are required to pay for the backend server costs, and also help to
                         <constraints>
                             <constraint firstItem="cxK-T7-J3C" firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="GTw-Jx-7cZ" secondAttribute="trailing" constant="20" id="0kY-fc-rzt"/>
                             <constraint firstItem="Cdx-eK-lU1" firstAttribute="height" secondItem="uhE-84-0e1" secondAttribute="height" multiplier="0.55" id="7Et-Ix-nFZ"/>
+                            <constraint firstItem="cxK-T7-J3C" firstAttribute="bottom" secondItem="7Zl-IK-XIA" secondAttribute="bottom" constant="20" id="C0N-xS-QmO"/>
                             <constraint firstItem="Cdx-eK-lU1" firstAttribute="leading" secondItem="cxK-T7-J3C" secondAttribute="leading" id="DTi-Uz-aaL"/>
                             <constraint firstItem="Uiu-Gi-fIq" firstAttribute="top" secondItem="GTw-Jx-7cZ" secondAttribute="bottom" constant="16" id="Dta-cV-aXG"/>
-                            <constraint firstItem="7Zl-IK-XIA" firstAttribute="leading" secondItem="cxK-T7-J3C" secondAttribute="leading" constant="20" id="EED-pl-WOz"/>
+                            <constraint firstItem="7Zl-IK-XIA" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="cxK-T7-J3C" secondAttribute="leading" constant="8" id="EED-pl-WOz"/>
                             <constraint firstItem="cxK-T7-J3C" firstAttribute="trailing" secondItem="7Zl-IK-XIA" secondAttribute="trailing" constant="20" id="Jpg-yd-Kqd"/>
                             <constraint firstItem="GTw-Jx-7cZ" firstAttribute="leading" secondItem="cxK-T7-J3C" secondAttribute="leading" constant="20" id="LIy-oy-54r"/>
                             <constraint firstItem="GTw-Jx-7cZ" firstAttribute="top" secondItem="Cdx-eK-lU1" secondAttribute="bottom" priority="250" constant="8" id="Qa3-eR-riJ"/>
-                            <constraint firstItem="cxK-T7-J3C" firstAttribute="bottom" secondItem="7Zl-IK-XIA" secondAttribute="bottom" constant="8" id="SCb-lv-Uz0"/>
+                            <constraint firstItem="cxK-T7-J3C" firstAttribute="bottom" secondItem="7Zl-IK-XIA" secondAttribute="bottom" priority="750" constant="20" id="SCb-lv-Uz0"/>
                             <constraint firstItem="Uiu-Gi-fIq" firstAttribute="leading" secondItem="cxK-T7-J3C" secondAttribute="leading" constant="20" id="ZBY-Ng-cRr"/>
                             <constraint firstItem="cxK-T7-J3C" firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="MhL-BW-Yvw" secondAttribute="trailing" constant="20" id="c4h-yO-8gR"/>
                             <constraint firstItem="7Zl-IK-XIA" firstAttribute="top" secondItem="Uiu-Gi-fIq" secondAttribute="bottom" constant="16" id="ceL-HG-0SY"/>
@@ -2606,7 +2607,7 @@ Subscriptions are required to pay for the backend server costs, and also help to
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="cxK-T7-J3C"/>
                     </view>
-                    <tabBarItem key="tabBarItem" title="Chat" image="icn_backforth" id="1X2-Kb-dS3"/>
+                    <tabBarItem key="tabBarItem" title="Phrase" image="icn_backforth" id="1X2-Kb-dS3"/>
                     <connections>
                         <outlet property="btnRecordStop" destination="Yz5-Tr-cNS" id="adO-ox-6D6"/>
                         <outlet property="btnReplay" destination="zuP-E3-fjh" id="IQQ-YX-64U"/>
@@ -2835,7 +2836,7 @@ Subscriptions are required to pay for the backend server costs, and also help to
             </objects>
             <point key="canvasLocation" x="5538" y="805"/>
         </scene>
-        <!--Training-->
+        <!--Topic-->
         <scene sceneID="pCv-tV-QpV">
             <objects>
                 <viewController id="ZT1-6H-RX3" customClass="ConcreteChatViewController" customModule="Charm" customModuleProvider="target" sceneMemberID="viewController">
@@ -2850,7 +2851,7 @@ Subscriptions are required to pay for the backend server costs, and also help to
                                 <nil key="highlightedColor"/>
                             </label>
                             <stackView opaque="NO" contentMode="scaleAspectFit" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="8ov-iS-ivW">
-                                <rect key="frame" x="20" y="627" width="374" height="38"/>
+                                <rect key="frame" x="20" y="615" width="374" height="38"/>
                                 <subviews>
                                     <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="icn_speaker" translatesAutoresizingMaskIntoConstraints="NO" id="ZwG-qz-43y">
                                         <rect key="frame" x="0.0" y="0.0" width="124.5" height="38"/>
@@ -2873,7 +2874,7 @@ Subscriptions are required to pay for the backend server costs, and also help to
                                 </subviews>
                             </stackView>
                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="PGF-uz-YEQ">
-                                <rect key="frame" x="20" y="478.5" width="374" height="132.5"/>
+                                <rect key="frame" x="20" y="478.5" width="374" height="120.5"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences" returnKeyType="done"/>
@@ -2939,15 +2940,16 @@ Subscriptions are required to pay for the backend server costs, and also help to
                             <constraint firstItem="VIe-k3-pCY" firstAttribute="leading" secondItem="kd7-6E-igX" secondAttribute="leading" id="Wd5-rZ-wFG"/>
                             <constraint firstItem="8ov-iS-ivW" firstAttribute="top" secondItem="PGF-uz-YEQ" secondAttribute="bottom" constant="16" id="e1T-kv-pvz"/>
                             <constraint firstItem="8ov-iS-ivW" firstAttribute="height" secondItem="gjz-Wz-KYm" secondAttribute="height" multiplier="0.05" id="fM9-v2-zhh"/>
+                            <constraint firstItem="kd7-6E-igX" firstAttribute="bottom" secondItem="8ov-iS-ivW" secondAttribute="bottom" priority="750" constant="20" id="gFT-Ue-ZhJ"/>
                             <constraint firstItem="WTu-nO-Pzi" firstAttribute="leading" secondItem="kd7-6E-igX" secondAttribute="leading" constant="20" id="m8j-TW-TTn"/>
                             <constraint firstItem="VIe-k3-pCY" firstAttribute="top" secondItem="kd7-6E-igX" secondAttribute="top" id="ofE-3p-cjZ"/>
                             <constraint firstItem="VIe-k3-pCY" firstAttribute="trailing" secondItem="kd7-6E-igX" secondAttribute="trailing" id="rQx-LL-1A5"/>
-                            <constraint firstItem="kd7-6E-igX" firstAttribute="bottom" secondItem="8ov-iS-ivW" secondAttribute="bottom" constant="8" id="yee-eG-08a"/>
+                            <constraint firstItem="kd7-6E-igX" firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="8ov-iS-ivW" secondAttribute="bottom" constant="8" id="yee-eG-08a"/>
                             <constraint firstItem="kd7-6E-igX" firstAttribute="trailing" secondItem="8ov-iS-ivW" secondAttribute="trailing" constant="20" id="zoR-3M-zMS"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="kd7-6E-igX"/>
                     </view>
-                    <tabBarItem key="tabBarItem" title="Training" image="icn_tricycle" id="oUx-kV-C6o"/>
+                    <tabBarItem key="tabBarItem" title="Topic" image="icn_tricycle" id="oUx-kV-C6o"/>
                     <connections>
                         <outlet property="btnRecordStop" destination="5oX-su-niB" id="eyA-nt-hp1"/>
                         <outlet property="btnReplay" destination="ZwG-qz-43y" id="vlz-ab-hIj"/>

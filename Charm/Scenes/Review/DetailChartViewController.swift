@@ -199,13 +199,6 @@ class DetailChartViewController: UIViewController {
                 let text = "[\(index)]: \(item.word) (\(pronoun.description))"
                 transcript.append(TranscriptCellInfo(withText: text))
                 
-                // add chart data
-//                if let value = item.adjustedAverage {
-//                    chartData.append([index, value])
-//                } else {
-//                    chartData.append([index, 0])
-//                }
-                
                 let point = HIPoint()
                 point.x = index as NSNumber
                 if let value = item.adjustedAverage {
@@ -235,10 +228,6 @@ class DetailChartViewController: UIViewController {
             let toneTable = snapshot.tableViewTone
             // setup chart data
             for (index, item) in toneGraph.enumerated() {
-                // add chart data
-//                chartData.append([index, item.roll3])
-//                posData?.append([index, item.rollPos3])
-//                negData?.append([index, item.rollNeg3])
                 
                 let dataPoint = HIPoint()
                 let posPoint = HIPoint()
@@ -259,7 +248,7 @@ class DetailChartViewController: UIViewController {
             
             // setup scale bar data
             if let connectionRaw = snapshot.getTopLevelRawValue(forSummaryItem: .ToneOfWords), let connectionLevel = snapshot.getTopLevelRawLevelValue(forSummaryItem: .ToneOfWords) {
-                let cellInfo = ScalebarCellInfo(type: .Green, title: "Estimated Connection", score: connectionRaw, position: connectionLevel)
+                let cellInfo = ScalebarCellInfo(type: .Green, title: "Estimated Emotional Connection", score: connectionRaw, position: connectionLevel)
                 scalebarData.append(cellInfo)
             }
             
@@ -306,17 +295,6 @@ class DetailChartViewController: UIViewController {
         title.reserveSpace = false
         title.text = ""
         
-        // get date to use for title
-//        if let date = snapshot.date {
-//            let dateString = dFormatter.string(from: date)
-//            title.text = "Your Snapshot from \(dateString)"
-//        } else {
-//            title.text = "Your Latest Snapshot"
-//        }
-        
-//        let subtitle = HISubtitle()
-//        subtitle.text = "Click and drag in the plot area to zoom in"
-        
         let chart = HIChart()
         chart.zoomType = "x"
         
@@ -324,7 +302,7 @@ class DetailChartViewController: UIViewController {
         yaxis.title = HITitle()
         yaxis.title.text = ""
         yaxis.title.reserveSpace = false
-        yaxis.visible = true
+        yaxis.visible = false
         
         switch chartType! {
         case .WordChoice, .BackAndForth, .Connection:
@@ -492,7 +470,7 @@ class DetailChartViewController: UIViewController {
             }
             
             options.series = [area, posArea, negArea]
-            legend.enabled = true
+            legend.enabled = false
         } else {
             options.series = [area]
         }
@@ -501,7 +479,6 @@ class DetailChartViewController: UIViewController {
         tooltip.enabled = false
         options.chart = chart
         options.title = title
-//        options.subtitle = subtitle
         options.legend = legend
         options.yAxis = [yaxis]
         options.plotOptions = plotoptions
