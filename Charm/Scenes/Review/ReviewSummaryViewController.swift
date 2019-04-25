@@ -122,6 +122,7 @@ class ReviewSummaryViewController: UIViewController {
         // setup pane so polygon is facing up
         let pane = HIPane()
         pane.startAngle = 180
+        pane.size = view.frame.width * 0.5
         
         // get date to use for title
         if let date = snapshot.date {
@@ -142,10 +143,10 @@ class ReviewSummaryViewController: UIViewController {
         
         let xAxis = HIXAxis()
         xAxis.categories = [
-            "Concrete Details",
-            "Back and Forth",
-            "Connection",
-            "Positivity",
+            "Idea Engagement",
+            "Conversation Engagement",
+            "Personal Connection",
+            "Emotional Connection",
             "Smiling"
         ]
         xAxis.tickmarkPlacement = "on"
@@ -178,28 +179,28 @@ class ReviewSummaryViewController: UIViewController {
         let toneCtnRawRaw = snapshot.getTopLevelRawLevelValue(forSummaryItem: .ToneOfWords) ?? 0
         
         
-        cellInfo.append(SummaryCellInfo(title: "Concrete Details", score: concreteDetailsEngRaw, percent: concreteDetailsEngRawRaw))
-        cellInfo.append(SummaryCellInfo(title: "Back and Forth", score: backAndForthEngRaw, percent: backAndForthEngRawRaw))
-        cellInfo.append(SummaryCellInfo(title: "Connection", score: connectionCtnRaw, percent: connectionCtnRawRaw))
-        cellInfo.append(SummaryCellInfo(title: "Emotions", score: toneCtnRaw, percent: toneCtnRawRaw))
+        cellInfo.append(SummaryCellInfo(title: "Idea Engagement", score: concreteDetailsEngRaw, percent: concreteDetailsEngRawRaw))
+        cellInfo.append(SummaryCellInfo(title: "Conversation Engagement", score: backAndForthEngRaw, percent: backAndForthEngRawRaw))
+        cellInfo.append(SummaryCellInfo(title: "Personal Connection", score: connectionCtnRaw, percent: connectionCtnRawRaw))
+        cellInfo.append(SummaryCellInfo(title: "Emotional Connection", score: toneCtnRaw, percent: toneCtnRawRaw))
         cellInfo.append(SummaryCellInfo(title: "Smiling", score: toneCtnRaw, percent: toneCtnRawRaw))
-        
+ 
         let area = HIArea()
         area.data = [
-            ["name": "Concrete Details", "y": concreteDetailsEngScore],
-            ["name": "Back and Forth", "y": backAndForthEngScore],
-            ["name": "Connection", "y": connectionCtnScore],
-            ["name": "Positivity", "y": toneCtnScore],
+            ["name": "Idea Engagement", "y": concreteDetailsEngScore],
+            ["name": "Conversation Engagement", "y": backAndForthEngScore],
+            ["name": "Personal Connection", "y": connectionCtnScore],
+            ["name": "Emotional Connection", "y": toneCtnScore],
             ["name": "Smiling", "y": toneCtnScore]
         ]
         area.pointPlacement = "on"
         
         let line = HILine()
         line.data = [
-            ["name": "Concrete Details", "y": concreteDetailsRawScore],
-            ["name": "Back and Forth", "y": backAndForthRawScore],
-            ["name": "Connection", "y": connectionRawScore],
-            ["name": "Positivity", "y": toneRawScore],
+            ["name": "Idea Engagement", "y": concreteDetailsRawScore],
+            ["name": "Conversation Engagement", "y": backAndForthRawScore],
+            ["name": "Personal Connection", "y": connectionRawScore],
+            ["name": "Emotional Connection", "y": toneRawScore],
             ["name": "Smiling", "y": toneCtnScore]
         ]
         
@@ -250,18 +251,18 @@ extension ReviewSummaryViewController: UITableViewDelegate, UITableViewDataSourc
         var header = ""
         
         switch info.title {
-        case "Concrete Details":
+        case "Idea Engagement":
             header = "Estimated Engagement:"
             cell.lblScoreDetail.isHidden = true
-        case "Back and Forth":
+        case "Conversation Engagement":
             cell.lblScoreDetail.text = "Talking Time"
             cell.lblScoreDetail.isHidden = false
             header = "Estimated Engagement:"
-        case "Connection":
+        case "Personal Connection":
             cell.lblScoreDetail.text = "First Person"
             cell.lblScoreDetail.isHidden = false
             header = "Estimated Connection:"
-        case "Positivity":
+        case "Emotional Connection":
             cell.lblScoreDetail.isHidden = true
             header = "Estimated Connection:"
         case "Smiling":

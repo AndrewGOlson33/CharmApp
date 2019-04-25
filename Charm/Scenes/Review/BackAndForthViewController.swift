@@ -15,7 +15,7 @@ class BackAndForthViewController: UIViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         guard segue.identifier == SegueID.DetailChart, let chartVC = segue.destination as? DetailChartViewController else { return }
         chartVC.chartType = .BackAndForth
-        chartVC.navTitle = "Back & Forth"
+        chartVC.navTitle = "Conversation Engagement"
     }
 
 }

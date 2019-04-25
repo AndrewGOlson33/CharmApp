@@ -140,7 +140,7 @@ class DetailChartViewController: UIViewController {
                 
                 // setup scale bar data
                 if let engagementRaw = self.snapshot.getTopLevelRawValue(forSummaryItem: .WordChoice), let engagementLevel = self.snapshot.getTopLevelRawLevelValue(forSummaryItem: .WordChoice) {
-                    let cellInfo = ScalebarCellInfo(type: .Green, title: "Estimated Engagement", score: engagementRaw, position: engagementLevel)
+                    let cellInfo = ScalebarCellInfo(type: .Green, title: "Estimated Idea Engagement", score: engagementRaw, position: engagementLevel)
                     self.scalebarData.append(cellInfo)
                 }
                 
@@ -175,7 +175,7 @@ class DetailChartViewController: UIViewController {
             
             // setup scale bar data
             if let engagementRaw = snapshot.getTopLevelRawValue(forSummaryItem: .BackAndForth), let engagementLevel = snapshot.getTopLevelRawLevelValue(forSummaryItem: .BackAndForth) {
-                let cellInfo = ScalebarCellInfo(type: .Green, title: "Estimated Engagement", score: engagementRaw, position: engagementLevel)
+                let cellInfo = ScalebarCellInfo(type: .Green, title: "Estimated Conversation Engagement", score: engagementRaw, position: engagementLevel)
                 scalebarData.append(cellInfo)
             }
             
@@ -212,7 +212,7 @@ class DetailChartViewController: UIViewController {
             
             // setup scale bar data
             if let connectionRaw = snapshot.getTopLevelRawValue(forSummaryItem: .Connection), let connectionLevel = snapshot.getTopLevelRawLevelValue(forSummaryItem: .Connection) {
-                let cellInfo = ScalebarCellInfo(type: .Green, title: "Estimated Connection", score: connectionRaw, position: connectionLevel)
+                let cellInfo = ScalebarCellInfo(type: .Green, title: "Estimated Personal Engagement", score: connectionRaw, position: connectionLevel)
                 scalebarData.append(cellInfo)
             }
             

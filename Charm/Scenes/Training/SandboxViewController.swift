@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import Highcharts
 import Speech
 import AVKit
 import Firebase
@@ -16,7 +15,7 @@ class SandboxViewController: UIViewController {
     
     // MARK: - IBOutlets
     
-    @IBOutlet weak var chartView: HIChartView!
+    @IBOutlet weak var scoresTableView: UITableView!
     @IBOutlet weak var txtReply: UITextView!
     @IBOutlet weak var btnRecordStop: UIImageView!
     @IBOutlet weak var btnScoreReset: UIImageView!
@@ -26,6 +25,13 @@ class SandboxViewController: UIViewController {
     // View Model
     let viewModel = ScorePhraseModel()
     var speechModel: SpeechRecognitionModel = SpeechRecognitionModel()
+    
+    // arrays for drawing table view
+    var averageScalebarInfo: [ScalebarCellInfo] = []
+    var lastScalebarInfo: [ScalebarCellInfo] = []
+    
+    // Helps deal with layout glitches caused by highcharts
+    var chartDidLoad: Bool = false
     
     // Detect if we are in score or reset mode
     private var shouldReset = false
@@ -64,12 +70,7 @@ class SandboxViewController: UIViewController {
         // set speech model delegate so we can get responses from voice recognition
         speechModel.delegate = self
         
-        setupChart()
-        
-        DispatchQueue.main.async {
-            self.updateChartData(shouldAppend: false)
-        }
-
+        updateScoreData(shouldAppend: true)
     }
     
     // load navigation bar items
@@ -79,6 +80,13 @@ class SandboxViewController: UIViewController {
         tabBarController?.navigationItem.title = "Training Sandbox"
         let info = UIBarButtonItem(image: UIImage(named: Image.Info), style: .plain, target: self, action: #selector(infoButtonTapped))
         tabBarController?.navigationItem.rightBarButtonItem = info
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        // Make sure constraints are finished loading before setting up bubbles
+        chartDidLoad = true
+        scoresTableView.reloadData()
     }
     
     // MARK: - Button Handling
@@ -123,7 +131,7 @@ class SandboxViewController: UIViewController {
             
             DispatchQueue.main.async {
                 self.viewModel.calculateScore(fromPhrase: text)
-                self.updateChartData(shouldAppend: true)
+                self.updateScoreData(shouldAppend: true)
                 self.shouldReset = true
                 self.animate(button: self.btnScoreReset, toImage: self.reset)
             }
@@ -141,91 +149,10 @@ class SandboxViewController: UIViewController {
         
     }
     
-    // MARK: - Chart Setup
+    // MARK: - Score Update Functions
     
-    private func setupChart() {
-        let chart = HIChart()
-        chart.type = "bar"
+    private func updateScoreData(shouldAppend append: Bool) {
         
-        let title = HITitle()
-        title.text = "Instant Training"
-        
-        let xaxis = HIXAxis()
-        xaxis.categories = [
-            "Length",
-            "Concrete",
-            "Abstract",
-            "Unclassified",
-            "I/Me",
-            "You",
-            "Positive",
-            "Negative",
-            "Repeat"
-        ]
-        
-        let yaxis = HIYAxis()
-        yaxis.title = HITitle()
-        yaxis.title.text = ""
-        yaxis.min = 0
-        
-        let tooltip = HITooltip()
-//        tooltip.valuePrefix = "Value: "
-        
-        let plotOptions = HIPlotOptions()
-        plotOptions.bar = HIBar()
-        plotOptions.bar.dataLabels = HIDataLabelsOptionsObject()
-        plotOptions.bar.dataLabels.enabled = true
-        
-        let legend = HILegend()
-        legend.layout = "proximate"
-        legend.align = "right"
-//        legend.verticalAlign = "bottom"
-//        legend.x = -20
-        legend.y = -20
-        legend.floating = true
-        legend.borderWidth = 1
-        legend.backgroundColor = HIColor(uiColor: .white)
-        legend.shadow = true
-        
-        // hide hamburger button
-        let navigation = HINavigation()
-        let buttonOptions = HIButtonOptions()
-        buttonOptions.enabled = false
-        navigation.buttonOptions = buttonOptions
-        
-        let averageBar = HIBar()
-        let lastBar = HIBar()
-        
-        let blankData = [0, 0, 0, 0, 0, 0, 0, 0, 0]
-        averageBar.name = "Average"
-        lastBar.name = "Last Phrase"
-        
-        let average = viewModel.getSandboxAverage()
-        averageBar.data = [average.length, average.concrete, average.abstract, average.unclassified, average.first, average.second, average.positive, average.negative, average.repeated]
-        lastBar.data = blankData
-        
-        let options = HIOptions()
-        options.chart = chart
-        options.title = title
-        options.xAxis = [xaxis]
-        options.yAxis = [yaxis]
-        options.tooltip = tooltip
-        options.plotOptions = plotOptions
-        options.legend = legend
-        options.series = [averageBar, lastBar]
-        options.navigation = navigation
-        
-        chartView.options = options
-        
-    }
-    
-    private func updateChartData(shouldAppend append: Bool) {
-        let averageBar = HIBar()
-        let lastBar = HIBar()
-        
-        averageBar.name = "Average"
-        lastBar.name = "Last Phrase"
-    
         // Get data
         let lastData = viewModel.getSandboxScore()
         
@@ -248,13 +175,56 @@ class SandboxViewController: UIViewController {
             }
         }
         
-        let averageData = viewModel.getSandboxAverage()
-        print("~>Average data is: \(averageData)")
+        updateAverageScores()
+        updateLastScores(withData: lastData)
+        scoresTableView.reloadData()
+    }
+    
+    private func updateLastScores(withData data: SandboxScore) {
+        // clear out old data and enter new data
+        lastScalebarInfo = []
+        lastScalebarInfo.append(ScalebarCellInfo(type: .Green, title: "Length", score: Double(data.length), position: getScorePercent(score: Double(data.length), category: .Length)))
+        lastScalebarInfo.append(ScalebarCellInfo(type: .BlueRight, title: "Concrete", score: Double(data.concrete), position: getScorePercent(score: Double(data.concrete), category: .Concrete)))
+        lastScalebarInfo.append(ScalebarCellInfo(type: .BlueRight, title: "Abstract", score: Double(data.abstract), position: getScorePercent(score: Double(data.abstract), category: .Abstract)))
+        lastScalebarInfo.append(ScalebarCellInfo(type: .Green, title: "Unclassified", score: Double(data.unclassified), position: getScorePercent(score: Double(data.unclassified), category: .Length)))
+        lastScalebarInfo.append(ScalebarCellInfo(type: .BlueRight, title: "I/Me", score: Double(data.first), position: getScorePercent(score: Double(data.first), category: .First)))
+        lastScalebarInfo.append(ScalebarCellInfo(type: .BlueRight, title: "You", score: Double(data.second), position: getScorePercent(score: Double(data.second), category: .Second)))
+        lastScalebarInfo.append(ScalebarCellInfo(type: .BlueRight, title: "Positive", score: Double(data.length), position: getScorePercent(score: Double(data.positive), category: .Positive)))
+        lastScalebarInfo.append(ScalebarCellInfo(type: .RedRightQuarter, title: "Negative", score: Double(data.negative), position: getScorePercent(score: Double(data.negative), category: .Negative)))
+        lastScalebarInfo.append(ScalebarCellInfo(type: .RedRightQuarter, title: "Repeat", score: Double(data.repeated), position: getScorePercent(score: Double(data.repeated), category: .Negative)))
+    }
+    
+    private func updateAverageScores() {
+        // clear out the old data and enter new data
+        averageScalebarInfo = []
+        let average = viewModel.getSandboxAverage()
+        averageScalebarInfo.append(ScalebarCellInfo(type: .Green, title: "Length", score: average.length, position: getScorePercent(score: average.length, category: .Length)))
+        averageScalebarInfo.append(ScalebarCellInfo(type: .BlueRight, title: "Concrete", score: average.concrete, position: getScorePercent(score: average.concrete, category: .Concrete)))
+        averageScalebarInfo.append(ScalebarCellInfo(type: .BlueRight, title: "Abstract", score: average.abstract, position: getScorePercent(score: average.abstract, category: .Abstract)))
+        averageScalebarInfo.append(ScalebarCellInfo(type: .Green, title: "Unclassified", score: average.unclassified, position: getScorePercent(score: average.unclassified, category: .Length)))
+        averageScalebarInfo.append(ScalebarCellInfo(type: .BlueRight, title: "I/Me", score: average.first, position: getScorePercent(score: average.first, category: .First)))
+        averageScalebarInfo.append(ScalebarCellInfo(type: .BlueRight, title: "You", score: average.second, position: getScorePercent(score: average.second, category: .Second)))
+        averageScalebarInfo.append(ScalebarCellInfo(type: .BlueRight, title: "Positive", score: average.length, position: getScorePercent(score: average.positive, category: .Positive)))
+        averageScalebarInfo.append(ScalebarCellInfo(type: .RedRightQuarter, title: "Negative", score: average.negative, position: getScorePercent(score: average.negative, category: .Negative)))
+        averageScalebarInfo.append(ScalebarCellInfo(type: .RedRightQuarter, title: "Repeat", score: average.repeated, position: getScorePercent(score: average.repeated, category: .Negative)))
+    }
+    
+    // helper function to calculate position percent
+    private func getScorePercent(score: Double, category: ScorePhraseModel.ChatScoreCategory) -> Double {
         
-        averageBar.data = [averageData.length, averageData.concrete, averageData.abstract, averageData.unclassified, averageData.first, averageData.second, averageData.positive, averageData.negative, averageData.repeated]
-        lastBar.data = [lastData.length, lastData.concrete, lastData.abstract, lastData.unclassified, lastData.first, lastData.second, lastData.positive, lastData.negative, lastData.repeated]
-        
-        chartView.options.series = [averageBar, lastBar]
+        switch category {
+        case .Strength:
+            return Double(score) / 10.0
+        case .Length:
+            let percent = Double(score) / 15.0
+            return percent > 1 ? 1 : percent
+        case .Positive, .Negative:
+            let percent = Double(abs(score)) / 4.0
+            return percent > 1 ? 1 : percent
+        default:
+            let percent = Double(score) / 2.0
+            return percent > 1 ? 1 : percent
+        }
         
     }
     
@@ -300,6 +270,109 @@ class SandboxViewController: UIViewController {
         }
     }
     
+}
+
+// MARK: - Table View Extension
+
+extension SandboxViewController: UITableViewDelegate, UITableViewDataSource {
+    
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        switch section {
+        case 0:
+            return "Length"
+        case 1:
+            return "Concrete"
+        case 2:
+            return "Abstract"
+        case 3:
+            return "Unclassified"
+        case 4:
+            return "I/Me"
+        case 5:
+            return "You"
+        case 6:
+            return "Positive"
+        case 7:
+            return "Negative"
+        case 8:
+            return "Repeat"
+        default:
+            return ""
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
+        guard let header = view as? UITableViewHeaderFooterView else { return }
+        header.textLabel?.textColor = #colorLiteral(red: 0.1323429346, green: 0.1735357642, blue: 0.2699699998, alpha: 1)
+        header.textLabel?.textAlignment = .natural
+        header.backgroundView?.backgroundColor = .white
+    }
+    
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 9
+    }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return 2
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: CellID.ScaleBar, for: indexPath) as! ScaleBarTableViewCell
+        
+        cell.lblDescription.text = indexPath.row == 0 ? "Average" : "Last Phrase"
+        
+        switch indexPath.row {
+        case 0:
+            guard averageScalebarInfo.count > indexPath.section else { return cell }
+            let info = averageScalebarInfo[indexPath.section]
+            cell.scaleBar.setupBar(ofType: info.type, withValue: info.score, andLabelPosition: info.position)
+            cell.scaleBar.labelType = .RawValue
+        default:
+            guard lastScalebarInfo.count > indexPath.section else { return cell }
+            let info = lastScalebarInfo[indexPath.section]
+            cell.scaleBar.setupBar(ofType: info.type, withValue: info.score, andLabelPosition: info.position)
+            cell.scaleBar.labelType = .IntValue
+        }
+        
+        if chartDidLoad {
+            setupPopover(for: cell)
+        }
+        
+        return cell
+    }
+    
+    // MARK: - Popover Setup functions
+    
+    private func setupPopover(for cell: ScaleBarTableViewCell) {
+        let text = cell.scaleBar.labelText
+        let frame = CGRect(x: getX(for: cell.scaleBar), y: cell.scaleBar.frame.origin.y - ((20 - cell.scaleBar.frame.height) / 2), width: 56, height: 20)
+        
+        if cell.popoverView == nil {
+            cell.popoverView = LabelBubbleView(frame: frame, withText: text)
+            cell.popoverView.alpha = 0.0
+            cell.addSubview(cell.popoverView)
+            cell.bringSubviewToFront(cell.popoverView)
+            UIView.animate(withDuration: 0.25) {
+                cell.popoverView.alpha = 1.0
+            }
+        } else {
+            cell.popoverView.updateLabel(withText: text, frame: frame)
+        }
+        
+        // adjust frame if needed
+        if cell.popoverView.frame.maxX >= cell.scaleBar.frame.maxX {
+            cell.popoverView.frame.origin.x -= cell.popoverView.frame.maxX - cell.scaleBar.frame.maxX
+        }
+        
+        if cell.popoverView.frame.minX <= cell.scaleBar.frame.minX {
+            cell.popoverView.frame.origin.x += cell.scaleBar.frame.minX - cell.popoverView.frame.minX
+        }
+    }
+    
+    private func getX(for bar: ScaleBar) -> CGFloat {
+        let value = CGFloat(bar.calculatedValue)
+        return bar.bounds.width * value
+    }
 }
 
 // MARK: - Speech Delegate
