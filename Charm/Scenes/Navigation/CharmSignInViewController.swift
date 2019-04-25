@@ -25,6 +25,7 @@ class CharmSignInViewController: UIViewController {
     // MARK: - Properties
     
     var originY: CGFloat = -1.0
+    var keyboardSize: CGRect? = nil
     
     // MARK: - Lifecyle Functions
 
@@ -52,10 +53,25 @@ class CharmSignInViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         if originY == -1.0 { originY = view.frame.origin.y }
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardwillShow(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
+    }
+    
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        NotificationCenter.default.removeObserver(self)
     }
     
     @objc private func tapOutside() {
         view.endEditing(true)
+    }
+    
+    @objc private func keyboardwillShow(_ sender: Notification) {
+        if let size = (sender.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
+            print("notification: Got size: \(size)")
+            keyboardSize = size
+        }
     }
     
     private func showNavigation() {
@@ -379,14 +395,18 @@ extension CharmSignInViewController: UITextFieldDelegate {
     }
     
     func textFieldDidBeginEditing(_ textField: UITextField) {
-        print("~>Did begin called.")
-        if textField == txtEmail {
-            view.frame.origin.y = 3 * view.frame.height / 5 - txtEmail.frame.origin.y - 16
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            print("~>Did begin called.")
+            guard let keyboardFrame = self.keyboardSize else {
+                print("~>No keyboard frame size.")
+                self.view.frame.origin.y = self.originY
+                return
+            }
+            
+            let fieldFrame = textField.frame
+            print("~>Field frame y: \(fieldFrame.maxY) keyboard: \(keyboardFrame.origin.y)")
         }
         
-        if textField == txtPassword {
-            view.frame.origin.y = 3 * view.frame.height / 5 - txtPassword.frame.origin.y
-        }
     }
     
     func textFieldDidEndEditing(_ textField: UITextField) {

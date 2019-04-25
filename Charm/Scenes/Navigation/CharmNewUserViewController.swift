@@ -29,6 +29,7 @@ class CharmNewUserViewController: UIViewController {
     // for keyboard
     
     var originY: CGFloat = -1.0
+    var keyboardSize: CGRect? = nil
     
     // MARK: - View Lifecycle Functions
     
@@ -62,6 +63,21 @@ class CharmNewUserViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         if originY == -1.0 { originY = view.frame.origin.y }
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardwillShow(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        NotificationCenter.default.removeObserver(self)
+    }
+    
+    // MARK: - Keyboard frame setting
+    
+    @objc private func keyboardwillShow(_ sender: Notification) {
+        if let size = (sender.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
+            print("notification: Got size: \(size)")
+            keyboardSize = size
+        }
     }
     
     // MARK: - Action Handling
@@ -140,18 +156,20 @@ extension CharmNewUserViewController: UITextFieldDelegate {
     }
     
     func textFieldDidBeginEditing(_ textField: UITextField) {
-        
-        print("~>Begin editing.")
-        if textField == txtEmail {
-            view.frame.origin.y = 3 * view.frame.height / 5 - txtEmail.frame.origin.y - 16
-        } else if textField == txtPassword {
-            view.frame.origin.y = 3 * view.frame.height / 5 - txtPassword.frame.origin.y
-        } else if textField == txtConfirmPassword {
-            view.frame.origin.y = 3 * view.frame.height / 5 - txtConfirmPassword.frame.origin.y
-        } else if textField == txtFirst {
-            view.frame.origin.y = 3 * view.frame.height / 5 - txtFirst.frame.origin.y
-        } else if textField == txtLast {
-            view.frame.origin.y = 3 * view.frame.height / 5 - txtLast.frame.origin.y
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.0) {
+            guard let keyboardFrame = self.keyboardSize else {
+                print("~>No keyboard frame size.")
+                return
+            }
+            
+            let fieldFrame = textField.frame
+            let navigationBarHeight: CGFloat = self.navigationController!.navigationBar.frame.height
+            let difference = keyboardFrame.minY - fieldFrame.maxY - navigationBarHeight - 32
+            print("~>There is a difference of: \(difference)")
+            
+            if difference < 0 {
+                self.view.frame.origin.y += difference
+            }
         }
     }
     
