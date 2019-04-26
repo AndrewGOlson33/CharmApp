@@ -38,7 +38,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     let gcmMessageIDKey = "gcm.message_id"
     var restoreFromBackground = false
     var showContactListFromNotification: Bool = false
-    var showMetricsListFromNotification: Bool = false
     
     // MARK: - App Delegate Functions
 
@@ -106,7 +105,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         if let aps = userInfo["aps"] as? [AnyHashable:Any], let alert = aps["alert"] as? [AnyHashable:Any], let title = alert["title"] as? String {
             print("~>Got a title: \(title)")
             if title.contains("friend request") { showContactListFromNotification = true }
-            if title.contains("Snapshot") { showMetricsListFromNotification = true }
+            if title.contains("Snapshot") { NotificationCenter.default.post(name: FirebaseNotification.NewSnapshot, object: nil) }
         } else {
             print("~>Something is invalid.")
         } 
@@ -129,7 +128,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         if let aps = userInfo["aps"] as? [AnyHashable:Any], let alert = aps["alert"] as? [AnyHashable:Any], let title = alert["title"] as? String {
             print("~>Got a title: \(title)")
             if title.contains("friend request") { showContactListFromNotification = true }
-            if title.contains("Snapshot") { showMetricsListFromNotification = true }
+            if title.contains("Snapshot") { NotificationCenter.default.post(name: FirebaseNotification.NewSnapshot, object: nil) }
         } else {
             print("~>Something is invalid.")
         }
@@ -282,7 +281,7 @@ extension AppDelegate : UNUserNotificationCenterDelegate {
         if let aps = userInfo["aps"] as? [AnyHashable:Any], let alert = aps["alert"] as? [AnyHashable:Any], let title = alert["title"] as? String {
             print("~>Got a title: \(title)")
             if title.contains("friend request") { showContactListFromNotification = true }
-            if title.contains("Snapshot") { showMetricsListFromNotification = true }
+            if title.contains("Snapshot") { NotificationCenter.default.post(name: FirebaseNotification.NewSnapshot, object: nil) }
         } else {
             print("~>Something is invalid.")
         }

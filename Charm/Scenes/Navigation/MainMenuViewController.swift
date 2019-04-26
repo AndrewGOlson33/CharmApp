@@ -59,6 +59,8 @@ class MainMenuViewController: UIViewController {
         let _ = ContactsViewModel.shared.contacts
         
         validateProductIdentifiers()
+        
+        setupMetricsObserver()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -281,9 +283,6 @@ class MainMenuViewController: UIViewController {
                     if (UIApplication.shared.delegate as! AppDelegate).showContactListFromNotification {
                         (UIApplication.shared.delegate as! AppDelegate).showContactListFromNotification = false
                         self.performSegue(withIdentifier: SegueID.FriendList, sender: self)
-                    } else if (UIApplication.shared.delegate as! AppDelegate).showMetricsListFromNotification {
-                        (UIApplication.shared.delegate as! AppDelegate).showMetricsListFromNotification = false
-                        self.performSegue(withIdentifier: SegueID.MetricsTab, sender: self)
                     }
                 } catch let error {
                     print("~>There was an error: \(error)")
@@ -366,6 +365,10 @@ class MainMenuViewController: UIViewController {
             
             self.navigationController?.pushViewController(callVC, animated: true)
         }
+    }
+    
+    fileprivate func setupMetricsObserver() {
+        NotificationCenter.default.addObserver(self, selector: #selector(metricsButtonTapped(_:)), name: FirebaseNotification.NewSnapshot, object: nil)
     }
     
     // MARK: - Upload User's Token For APNS Notifications
