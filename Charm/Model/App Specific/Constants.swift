@@ -70,7 +70,7 @@ enum Image {
 // MARK: - Firebase Related
 
 enum FirebaseStructure {
-    static let Users = "testUsers"
+    static let Users = "users"
     
     enum CharmUser {
         static let ID = "id"
