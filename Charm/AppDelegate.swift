@@ -10,11 +10,20 @@ import UIKit
 import Firebase
 import FirebaseUI
 import UserNotificationsUI
+import UserNotifications
 import StoreKit
 
 class AppStatus {
-    var validLicense: Bool = UserDefaults.standard.bool(forKey: Defaults.validLicense)
-    var notFirstLaunch: Bool = UserDefaults.standard.bool(forKey: Defaults.notFirstLaunch)
+    var validLicense: Bool = UserDefaults.standard.bool(forKey: Defaults.validLicense) {
+        didSet {
+            UserDefaults.standard.set(validLicense, forKey: Defaults.validLicense)
+        }
+    }
+    var notFirstLaunch: Bool = UserDefaults.standard.bool(forKey: Defaults.notFirstLaunch) {
+        didSet {
+            UserDefaults.standard.set(notFirstLaunch, forKey: Defaults.notFirstLaunch)
+        }
+    }
     
     static var shared = AppStatus()
     
@@ -29,6 +38,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     let gcmMessageIDKey = "gcm.message_id"
     var restoreFromBackground = false
     var showContactListFromNotification: Bool = false
+    var showMetricsListFromNotification: Bool = false
     
     // MARK: - App Delegate Functions
 
@@ -62,12 +72,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // start loading subscription
         SubscriptionService.shared.loadSubscriptionOptions()
         
-//        if AppStatus.shared.notFirstLaunch {
-//            checkStatusChange()
-//        }
-        
-        // TODO: - Remove
-        checkStatusChange()
+        if AppStatus.shared.notFirstLaunch {
+            checkStatusChange()
+        }
         
         return true
     }
@@ -99,9 +106,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         if let aps = userInfo["aps"] as? [AnyHashable:Any], let alert = aps["alert"] as? [AnyHashable:Any], let title = alert["title"] as? String {
             print("~>Got a title: \(title)")
             if title.contains("friend request") { showContactListFromNotification = true }
+            if title.contains("Snapshot") { showMetricsListFromNotification = true }
         } else {
             print("~>Something is invalid.")
-        }
+        } 
     }
     
     func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable: Any],
@@ -121,6 +129,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         if let aps = userInfo["aps"] as? [AnyHashable:Any], let alert = aps["alert"] as? [AnyHashable:Any], let title = alert["title"] as? String {
             print("~>Got a title: \(title)")
             if title.contains("friend request") { showContactListFromNotification = true }
+            if title.contains("Snapshot") { showMetricsListFromNotification = true }
         } else {
             print("~>Something is invalid.")
         }
@@ -273,6 +282,7 @@ extension AppDelegate : UNUserNotificationCenterDelegate {
         if let aps = userInfo["aps"] as? [AnyHashable:Any], let alert = aps["alert"] as? [AnyHashable:Any], let title = alert["title"] as? String {
             print("~>Got a title: \(title)")
             if title.contains("friend request") { showContactListFromNotification = true }
+            if title.contains("Snapshot") { showMetricsListFromNotification = true }
         } else {
             print("~>Something is invalid.")
         }

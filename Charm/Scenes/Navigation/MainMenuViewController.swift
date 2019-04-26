@@ -281,6 +281,9 @@ class MainMenuViewController: UIViewController {
                     if (UIApplication.shared.delegate as! AppDelegate).showContactListFromNotification {
                         (UIApplication.shared.delegate as! AppDelegate).showContactListFromNotification = false
                         self.performSegue(withIdentifier: SegueID.FriendList, sender: self)
+                    } else if (UIApplication.shared.delegate as! AppDelegate).showMetricsListFromNotification {
+                        (UIApplication.shared.delegate as! AppDelegate).showMetricsListFromNotification = false
+                        self.performSegue(withIdentifier: SegueID.MetricsTab, sender: self)
                     }
                 } catch let error {
                     print("~>There was an error: \(error)")
