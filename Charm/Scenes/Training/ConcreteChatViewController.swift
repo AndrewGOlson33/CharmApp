@@ -234,6 +234,7 @@ class ConcreteChatViewController: UIViewController {
     
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
         if keyPath == "outputVolume"{
+            print("~>Got volume change")
             let volume = (change?[NSKeyValueChangeKey.newKey] as!
                 NSNumber).floatValue
             print("~>volume " + volume.description)

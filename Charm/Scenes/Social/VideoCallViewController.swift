@@ -26,6 +26,10 @@ class VideoCallViewController: UIViewController {
     var friend: Friend! = nil
     var myUser: CharmUser! = nil
     
+    // Used to set screen brightness back to normal level after call ends
+    var brightness: CGFloat = 0
+    let originalBrightness: CGFloat = UIScreen.main.brightness
+    
     // Bool to check if there is a disconnection happening right now
     var disconnecting: Bool = false
     
@@ -114,6 +118,8 @@ class VideoCallViewController: UIViewController {
         tap.delegate = self
         view.addGestureRecognizer(tap)
         
+        brightness = UIScreen.main.brightness
+        if brightness != 1.0 { increaseScreenBrightness() }
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -125,16 +131,32 @@ class VideoCallViewController: UIViewController {
         super.viewWillDisappear(animated)
         self.navigationController?.navigationBar.isHidden = false
         
+        // Set Brightness back to the original value
+        UIScreen.main.brightness = originalBrightness
+        
         if useTokenTimer.isValid { useTokenTimer.invalidate() }
         if endArchiveTimer.isValid { endArchiveTimer.invalidate() }
         if callTimer.isValid { callTimer.invalidate() }
         
         if !disconnecting && (session.sessionConnectionStatus == .connected || session.sessionConnectionStatus == .connecting || session.sessionConnectionStatus == .disconnecting) {
-            endCallButtonTapped(self)
+            endCall(self)
         }
     }
     
     // MARK: - Private Helper Functions
+    
+    private func increaseScreenBrightness() {
+        guard brightness != 1.0 else { return }
+        
+        brightness += 0.1
+        if brightness > 1.0 { brightness = 1.0 }
+        
+        UIScreen.main.brightness = brightness
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            self.increaseScreenBrightness()
+        }
+    }
     
     @objc private func handleScreenTap(_ notification: UITapGestureRecognizer) {
         if shouldShowCallTimer {
@@ -437,6 +459,15 @@ class VideoCallViewController: UIViewController {
     // Disconnects from the session
     @IBAction func endCallButtonTapped(_ sender: Any) {
         print("~>End call button tapped")
+        let endAlert = UIAlertController(title: "End Call?", message: "Are you sure you want to end the call?", preferredStyle: .alert)
+        endAlert.addAction(UIAlertAction(title: "Yes", style: .default, handler: { (_) in
+            self.endCall(self.btnEndCall!)
+        }))
+        endAlert.addAction(UIAlertAction(title: "No", style: .cancel, handler: nil))
+        present(endAlert, animated: true, completion: nil)
+    }
+    
+    private func endCall(_ sender: Any) {
         disconnecting = true
         var error: OTError?
         if useTokenTimer.isValid { useTokenTimer.invalidate() }
