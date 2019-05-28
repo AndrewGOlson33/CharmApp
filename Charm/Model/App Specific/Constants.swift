@@ -192,7 +192,7 @@ enum FirebaseNotification {
 
 enum SummaryItem: String {
     
-    case WordChoice = "Concrete_Eng"
+    case IdeaEngagement = "ideaEngagement"
     case ConcretePercentage = "Concrete_Raw"
     case BackAndForth = "Talking_Eng"
     case Talking = "Talking_Raw"

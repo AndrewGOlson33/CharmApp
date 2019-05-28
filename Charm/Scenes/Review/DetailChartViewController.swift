@@ -139,7 +139,7 @@ class DetailChartViewController: UIViewController {
                 }
                 
                 // setup scale bar data
-                if let engagementRaw = self.snapshot.getTopLevelRawValue(forSummaryItem: .WordChoice), let engagementLevel = self.snapshot.getTopLevelRawLevelValue(forSummaryItem: .WordChoice) {
+                if let engagementRaw = self.snapshot.getTopLevelRawValue(forSummaryItem: .IdeaEngagement), let engagementLevel = self.snapshot.getTopLevelRawLevelValue(forSummaryItem: .IdeaEngagement) {
                     let cellInfo = ScalebarCellInfo(type: .Green, title: "Estimated Idea Engagement", score: engagementRaw, position: engagementLevel)
                     self.scalebarData.append(cellInfo)
                 }
@@ -185,10 +185,10 @@ class DetailChartViewController: UIViewController {
             }
             
             // setup transcript
-            for item in snapshot.transcript {
-                let text = "[\(String(describing: item.person))]: \(item.words)"
-                transcript.append(TranscriptCellInfo(withText: text))
-            }
+//            for item in snapshot.transcript {
+//                let text = "[\(String(describing: item.person))]: \(item.words)"
+//                transcript.append(TranscriptCellInfo(withText: text))
+//            }
             
         case .Connection:
             let connection = snapshot.connection
@@ -353,21 +353,21 @@ class DetailChartViewController: UIViewController {
                         indexPath = IndexPath(row: 0, section: 1)
                         break
                     }
-                    var wordCount = 0
-                    var shouldContinue = true
-                    for (index, transcript) in self.snapshot.transcript.enumerated() {
-                        if !shouldContinue { break }
-                        let wordsToCount = transcript.words.components(separatedBy: .whitespacesAndNewlines).filter { !$0.isEmpty }
-                        for _ in wordsToCount {
-                            wordCount += 1
-                            if wordCount == row {
-                                indexPath = IndexPath(row: index, section: 1)
-                                shouldScroll = true
-                                shouldContinue = false
-                                break
-                            }
-                        }
-                    }
+//                    var wordCount = 0
+//                    var shouldContinue = true
+//                    for (index, transcript) in self.snapshot.transcript.enumerated() {
+//                        if !shouldContinue { break }
+//                        let wordsToCount = transcript.words.components(separatedBy: .whitespacesAndNewlines).filter { !$0.isEmpty }
+//                        for _ in wordsToCount {
+//                            wordCount += 1
+//                            if wordCount == row {
+//                                indexPath = IndexPath(row: index, section: 1)
+//                                shouldScroll = true
+//                                shouldContinue = false
+//                                break
+//                            }
+//                        }
+//                    }
                 case .Emotions:
                     print("~>Emotions.")
                     let tone = self.snapshot.graphTone[row]
@@ -580,7 +580,7 @@ extension DetailChartViewController: UITableViewDelegate, UITableViewDataSource 
 //
 //            chartView.update(options)
 //
-            var words = cell.lblTranscriptText.text
+//            var words = cell.lblTranscriptText.text
             var item: HIPoint = HIPoint()
             
             if chartType! == .Emotions {
@@ -598,30 +598,30 @@ extension DetailChartViewController: UITableViewDelegate, UITableViewDataSource 
                 
             } else if chartType! == .BackAndForth {
                 var wordCount: Int = 0
-                for (index, transcript) in snapshot.transcript.enumerated() {
-                    let wordsToCount = transcript.words.components(separatedBy: .whitespacesAndNewlines).filter { !$0.isEmpty }
-                    if indexPath.row == index {
-                        if wordsToCount.count == 1 {
-                            words = wordsToCount.first!
-                        } else {
-                            words = ""
-                            for (index, word) in wordsToCount.enumerated() {
-                                words = "\(words!)\(word)"
-                                if index == 2 {
-                                    words = "\(words!)..."
-                                    break
-                                } else {
-                                    words = "\(words!) "
-                                }
-                            }
-                        }
-                        
-                        break
-                    } else {
-                        wordCount += wordsToCount.count
-                    }
-                    
-                }
+//                for (index, transcript) in snapshot.transcript.enumerated() {
+//                    let wordsToCount = transcript.words.components(separatedBy: .whitespacesAndNewlines).filter { !$0.isEmpty }
+//                    if indexPath.row == index {
+//                        if wordsToCount.count == 1 {
+//                            words = wordsToCount.first!
+//                        } else {
+//                            words = ""
+//                            for (index, word) in wordsToCount.enumerated() {
+//                                words = "\(words!)\(word)"
+//                                if index == 2 {
+//                                    words = "\(words!)..."
+//                                    break
+//                                } else {
+//                                    words = "\(words!) "
+//                                }
+//                            }
+//                        }
+//
+//                        break
+//                    } else {
+//                        wordCount += wordsToCount.count
+//                    }
+//
+//                }
                 
                 // prevent crashing in case the index is out of range
                 if wordCount >= chartView.options.series[0].data.count { wordCount = chartView.options.series[0].data.count - 1 }
@@ -640,7 +640,7 @@ extension DetailChartViewController: UITableViewDelegate, UITableViewDataSource 
             label.point.yAxis = 0
             label.point.x = item.x
             label.point.y = item.y
-            label.text = words
+//            label.text = words
             annotations.labels.append(label)
             annotations.id = "annotation"
             

@@ -32,6 +32,7 @@ class VideoCallViewController: UIViewController {
     
     // Bool to check if there is a disconnection happening right now
     var disconnecting: Bool = false
+    var userInitiatedDisconnect: Bool = false
     
     // Session Variables
     lazy var session: OTSession = {
@@ -469,6 +470,7 @@ class VideoCallViewController: UIViewController {
     
     private func endCall(_ sender: Any) {
         disconnecting = true
+        if !userInitiatedDisconnect { userInitiatedDisconnect = true }
         var error: OTError?
         if useTokenTimer.isValid { useTokenTimer.invalidate() }
         if endArchiveTimer.isValid { endArchiveTimer.invalidate() }
@@ -530,6 +532,17 @@ extension VideoCallViewController: OTSessionDelegate {
         print("~>Session streamDestroyed: \(stream.streamId)")
         if let subStream = subscriber?.stream, subStream.streamId == stream.streamId {
             cleanupSubscriber()
+        }
+    }
+    
+    func session(_ session: OTSession, connectionDestroyed connection: OTConnection) {
+        print("~>Connection destroyed.")
+        if !userInitiatedDisconnect {
+            let disconnectAlert = UIAlertController(title: "Call Ended", message: "\(friend.firstName) left the call.", preferredStyle: .alert)
+            disconnectAlert.addAction(UIAlertAction(title: "OK", style: .default, handler: { (_) in
+                self.endCall(self.btnEndCall as Any)
+            }))
+            present(disconnectAlert, animated: true, completion: nil)
         }
     }
     

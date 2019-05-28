@@ -174,6 +174,7 @@ struct TrainingHistory: Codable {
 struct ConcreteTrainingHistory: Codable {
     var numQuestions: Int = 0
     var numCorrect: Int = 0
+    var correctRecord: Int? = 1
     
     var doubleNumQuestions: Double {
         return Double(numQuestions)
@@ -181,6 +182,10 @@ struct ConcreteTrainingHistory: Codable {
     
     var doubleNumCorrect: Double {
         return Double(numCorrect)
+    }
+    
+    var percentOfRecord: Double {
+        return Double(numCorrect) / Double(correctRecord ?? 1)
     }
     
     // computed vars
@@ -200,6 +205,7 @@ struct ConcreteTrainingHistory: Codable {
 struct EmotionsTrainingHistory: Codable {
     var numQuestions: Int = 0
     var numCorrect: Int = 0
+    var correctRecord: Int? = 1
     
     var doubleNumQuestions: Double {
         return Double(numQuestions)
@@ -207,6 +213,10 @@ struct EmotionsTrainingHistory: Codable {
     
     var doubleNumCorrect: Double {
         return Double(numCorrect)
+    }
+    
+    var percentOfRecord: Double {
+        return Double(numCorrect) / Double(correctRecord ?? 1)
     }
     
     // computed vars

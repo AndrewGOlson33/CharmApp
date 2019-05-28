@@ -119,18 +119,55 @@ class FlashcardsViewModel: NSObject {
     }
     
     func calculateAverageScore(addingCorrect correct: Bool, toType type: FlashCardType = .Concrete) {
-        // have to do this in main, as app delegate may only be accessed in main
         guard let user = CharmUser.shared, let uid = user.id else { return }
         
         var trainingHistory = user.trainingData != nil ? user.trainingData! : TrainingHistory()
         
         switch type {
         case .Concrete:
-            trainingHistory.concreteAverage.numQuestions += 1
-            if correct { trainingHistory.concreteAverage.numCorrect += 1 }
+//            trainingHistory.concreteAverage.numQuestions += 1
+//            if correct { trainingHistory.concreteAverage.numCorrect += 1 }
+            if correct {
+                trainingHistory.concreteAverage.numCorrect += 1
+                if var record = trainingHistory.concreteAverage.correctRecord, record <= trainingHistory.concreteAverage.numCorrect {
+                    record = trainingHistory.concreteAverage.numCorrect
+                    trainingHistory.concreteAverage.correctRecord = record
+                } else if trainingHistory.concreteAverage.correctRecord == nil {
+                    trainingHistory.concreteAverage.correctRecord = trainingHistory.concreteAverage.numCorrect
+                }
+            } else {
+                trainingHistory.concreteAverage.numCorrect = 0
+            }
         case .Emotions:
-            trainingHistory.emotionsAverage.numQuestions += 1
-            if correct { trainingHistory.emotionsAverage.numCorrect += 1 }
+//            trainingHistory.emotionsAverage.numQuestions += 1
+//            if correct { trainingHistory.emotionsAverage.numCorrect += 1 }
+            if correct {
+                trainingHistory.emotionsAverage.numCorrect += 1
+                if var record = trainingHistory.emotionsAverage.correctRecord, record <= trainingHistory.emotionsAverage.numCorrect {
+                    record = trainingHistory.emotionsAverage.numCorrect
+                    trainingHistory.emotionsAverage.correctRecord = record
+                } else if trainingHistory.emotionsAverage.correctRecord == nil {
+                    trainingHistory.emotionsAverage.correctRecord = trainingHistory.emotionsAverage.numCorrect
+                }
+            } else {
+                trainingHistory.emotionsAverage.numCorrect = 0
+            }
+        }
+        
+        self.upload(trainingHistory: trainingHistory, forUid: uid)
+    }
+    
+    func resetRecord(forType type: FlashCardType) {
+        guard let user = CharmUser.shared, let uid = user.id else { return }
+        var trainingHistory = user.trainingData != nil ? user.trainingData! : TrainingHistory()
+        
+        switch type {
+        case .Concrete:
+            trainingHistory.concreteAverage.numCorrect = 0
+            trainingHistory.concreteAverage.correctRecord = 1
+        case .Emotions:
+            trainingHistory.emotionsAverage.numCorrect = 0
+            trainingHistory.emotionsAverage.correctRecord = 1
         }
         
         self.upload(trainingHistory: trainingHistory, forUid: uid)

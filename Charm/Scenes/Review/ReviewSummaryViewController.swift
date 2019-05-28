@@ -155,7 +155,7 @@ class ReviewSummaryViewController: UIViewController {
         // get and set data
         
         // ctn / eng score values
-        let concreteDetailsEngScore = snapshot.getTopLevelScoreValue(forSummaryItem: .WordChoice) ?? 0
+        let concreteDetailsEngScore = snapshot.getTopLevelScoreValue(forSummaryItem: .IdeaEngagement) ?? 0
         let backAndForthEngScore = snapshot.getTopLevelScoreValue(forSummaryItem: .BackAndForth) ?? 0
         let connectionCtnScore = snapshot.getTopLevelScoreValue(forSummaryItem: .Connection) ?? 0
         let toneCtnScore = snapshot.getTopLevelScoreValue(forSummaryItem: .ToneOfWords) ?? 0
@@ -167,13 +167,13 @@ class ReviewSummaryViewController: UIViewController {
         let toneRawScore = snapshot.getTopLevelScoreValue(forSummaryItem: .PositiveWords) ?? 0
         
         // ctn / eng raw values
-        let concreteDetailsEngRaw = snapshot.getTopLevelRawValue(forSummaryItem: .WordChoice) ?? 0
+        let concreteDetailsEngRaw = snapshot.getTopLevelRawValue(forSummaryItem: .IdeaEngagement) ?? 0
         let backAndForthEngRaw = snapshot.getTopLevelRawValue(forSummaryItem: .BackAndForth) ?? 0
         let connectionCtnRaw = snapshot.getTopLevelRawValue(forSummaryItem: .Connection) ?? 0
         let toneCtnRaw = snapshot.getTopLevelRawValue(forSummaryItem: .ToneOfWords) ?? 0
         
         // raw raw values
-        let concreteDetailsEngRawRaw = snapshot.getTopLevelRawLevelValue(forSummaryItem: .WordChoice) ?? 0
+        let concreteDetailsEngRawRaw = snapshot.getTopLevelRawLevelValue(forSummaryItem: .IdeaEngagement) ?? 0
         let backAndForthEngRawRaw = snapshot.getTopLevelRawLevelValue(forSummaryItem: .BackAndForth) ?? 0
         let connectionCtnRawRaw = snapshot.getTopLevelRawLevelValue(forSummaryItem: .Connection) ?? 0
         let toneCtnRawRaw = snapshot.getTopLevelRawLevelValue(forSummaryItem: .ToneOfWords) ?? 0

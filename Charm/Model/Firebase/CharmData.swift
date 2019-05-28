@@ -45,7 +45,7 @@ struct Snapshot: Codable {
     var connection: [PersonalPronouns]
     var graphTone: [Sentiment]
     var tableViewTone: [Sentiment]
-    var transcript: [Transcript]
+//    var transcript: [Transcript]
     
     // coding keys
     
@@ -56,7 +56,7 @@ struct Snapshot: Codable {
         case connection = "Connection"  // used to be PersonalPronouns
         case graphTone = "Sentiment" // used to be sentimentAll
         case tableViewTone = "Sentiment_Raw" // used to be sentimentRaw
-        case transcript = "Transcipt" // used to be Transcript
+//        case transcript = "Transcipt" // used to be Transcript
     }
     
     // Snapshot Value Getters
@@ -111,8 +111,8 @@ struct WordChoice: Codable {
     
     // coding keys to how data is stored on firebase
     enum CodingKeys: String, CodingKey {
-        case score = "Score"  // used to be ema3
-        case word = "word"
+        case score = "score"  // used to be ema3
+        case word = "token"
     }
 }
 
@@ -137,14 +137,14 @@ struct PersonalPronouns: Codable {
     var adjustedAverage: Double?
     var pronoun: Int
     var shift: Int?
-    var startTime: Double
+//    var startTime: Double
     var word: String
     
     enum CodingKeys: String, CodingKey {
         case adjustedAverage = "AdjustAvg1"
         case pronoun = "Pronoun"
-        case shift = "Shift"
-        case startTime = "startTime"
+        case shift = "higlight"
+//        case startTime = "startTime"
         case word = "word"
     }
 }

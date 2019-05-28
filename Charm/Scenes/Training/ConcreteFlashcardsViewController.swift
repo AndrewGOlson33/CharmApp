@@ -72,10 +72,10 @@ class ConcreteFlashcardsViewController: UIViewController {
         }
         
         // setup scale bar
-        scaleBar.labelType = self.viewModel.shouldShowNA ? .NA : .Percent
+        scaleBar.labelType = self.viewModel.shouldShowNA ? .NA : .IntValue
         scaleBar.setupBar(ofType: .Green, withValue: 0, andLabelPosition: 0)
         viewModel.getAverageConcreteScore { (concreteScores) in
-            self.scaleBar.update(withValue: concreteScores.scoreValue, andCalculatedValue: concreteScores.averageScore)
+            self.scaleBar.update(withValue: Double(concreteScores.numCorrect), andCalculatedValue: concreteScores.percentOfRecord)
             self.setupPopover()
         }
         
@@ -203,8 +203,8 @@ class ConcreteFlashcardsViewController: UIViewController {
     @objc private func trainingHistoryUpdated() {
         viewModel.getAverageConcreteScore { (newHistory) in
             DispatchQueue.main.async {
-                self.scaleBar.labelType = self.viewModel.shouldShowNA ? .NA : .Percent
-                self.scaleBar.update(withValue: newHistory.scoreValue, andCalculatedValue: newHistory.averageScore)
+                self.scaleBar.labelType = self.viewModel.shouldShowNA ? .NA : .IntValue
+                self.scaleBar.update(withValue: Double(newHistory.numCorrect), andCalculatedValue: newHistory.percentOfRecord)
                 self.setupPopover()
             }
         }
@@ -265,17 +265,18 @@ class ConcreteFlashcardsViewController: UIViewController {
     // MARK: - Button Handling
     
     @IBAction func resetButtonTapped(_ sender: Any) {
-        // overwrite old data with new data
-        let blankHistory = ConcreteTrainingHistory()
-        do {
-            let data = try FirebaseEncoder().encode(blankHistory)
-            Database.database().reference().child(FirebaseStructure.Users).child(Auth.auth().currentUser!.uid).child(FirebaseStructure.Training.TrainingDatabase).child(FirebaseStructure.Training.ConcreteHistory).setValue(data)
-        } catch let error {
-            print("~>Got an error trying to encode a blank history: \(error)")
-            let alert = UIAlertController(title: "Unable to Reset", message: "Unable to reset scores at this time.  Please try again later.", preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-            present(alert, animated: true, completion: nil)
-        }
+        viewModel.resetRecord(forType: .Concrete)
+//        // overwrite old data with new data
+//        let blankHistory = ConcreteTrainingHistory()
+//        do {
+//            let data = try FirebaseEncoder().encode(blankHistory)
+//            Database.database().reference().child(FirebaseStructure.Users).child(Auth.auth().currentUser!.uid).child(FirebaseStructure.Training.TrainingDatabase).child(FirebaseStructure.Training.ConcreteHistory).setValue(data)
+//        } catch let error {
+//            print("~>Got an error trying to encode a blank history: \(error)")
+//            let alert = UIAlertController(title: "Unable to Reset", message: "Unable to reset scores at this time.  Please try again later.", preferredStyle: .alert)
+//            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+//            present(alert, animated: true, completion: nil)
+//        }
     }
     
 }
