@@ -1490,79 +1490,57 @@
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Ws7-k3-FGa">
                                 <rect key="frame" x="0.0" y="424" width="414" height="249"/>
                                 <subviews>
-                                    <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="wNT-rO-jIv">
+                                    <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="wNT-rO-jIv">
                                         <rect key="frame" x="8" y="8" width="398" height="241"/>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <color key="sectionIndexBackgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <prototypes>
-                                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="cid_summary" id="cJW-rt-FHg" customClass="SummaryMetricTableViewCell" customModule="Charm" customModuleProvider="target">
-                                                <rect key="frame" x="0.0" y="28" width="398" height="44"/>
+                                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="cid_summary" rowHeight="72" id="cJW-rt-FHg" customClass="SummaryMetricTableViewCell" customModule="Charm" customModuleProvider="target">
+                                                <rect key="frame" x="0.0" y="28" width="398" height="72"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="cJW-rt-FHg" id="bdv-UG-TJr">
-                                                    <rect key="frame" x="0.0" y="0.0" width="398" height="43.5"/>
+                                                    <rect key="frame" x="0.0" y="0.0" width="398" height="72"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <subviews>
-                                                        <stackView opaque="NO" contentMode="scaleToFill" distribution="fillProportionally" translatesAutoresizingMaskIntoConstraints="NO" id="XIZ-xq-XdR">
-                                                            <rect key="frame" x="8" y="0.0" width="382" height="43.5"/>
-                                                            <subviews>
-                                                                <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillProportionally" translatesAutoresizingMaskIntoConstraints="NO" id="VBj-Fc-05H" userLabel="LHS Stack View">
-                                                                    <rect key="frame" x="0.0" y="0.0" width="183.5" height="43.5"/>
-                                                                    <subviews>
-                                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Metric" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="k6o-5j-4XU">
-                                                                            <rect key="frame" x="0.0" y="0.0" width="183.5" height="27"/>
-                                                                            <fontDescription key="fontDescription" type="system" pointSize="20"/>
-                                                                            <nil key="textColor"/>
-                                                                            <nil key="highlightedColor"/>
-                                                                        </label>
-                                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Score" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="Nla-nz-63R">
-                                                                            <rect key="frame" x="0.0" y="27" width="183.5" height="16.5"/>
-                                                                            <fontDescription key="fontDescription" type="system" pointSize="12"/>
-                                                                            <nil key="textColor"/>
-                                                                            <nil key="highlightedColor"/>
-                                                                        </label>
-                                                                    </subviews>
-                                                                </stackView>
-                                                                <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillProportionally" translatesAutoresizingMaskIntoConstraints="NO" id="8Uc-Vi-Wra" userLabel="RHS Stack View">
-                                                                    <rect key="frame" x="183.5" y="0.0" width="198.5" height="43.5"/>
-                                                                    <subviews>
-                                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0.0" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rEu-p3-VwO">
-                                                                            <rect key="frame" x="0.0" y="0.0" width="198.5" height="27"/>
-                                                                            <fontDescription key="fontDescription" type="system" pointSize="20"/>
-                                                                            <nil key="textColor"/>
-                                                                            <nil key="highlightedColor"/>
-                                                                        </label>
-                                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Detail Text" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="krq-gs-MpK">
-                                                                            <rect key="frame" x="0.0" y="27" width="198.5" height="16.5"/>
-                                                                            <fontDescription key="fontDescription" type="system" pointSize="12"/>
-                                                                            <nil key="textColor"/>
-                                                                            <nil key="highlightedColor"/>
-                                                                        </label>
-                                                                    </subviews>
-                                                                </stackView>
-                                                            </subviews>
-                                                        </stackView>
+                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Metric" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="k6o-5j-4XU">
+                                                            <rect key="frame" x="20" y="11" width="358" height="26"/>
+                                                            <constraints>
+                                                                <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="24" id="KLh-mE-cQl"/>
+                                                            </constraints>
+                                                            <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                                            <nil key="textColor"/>
+                                                            <nil key="highlightedColor"/>
+                                                        </label>
+                                                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="uPq-4d-cLb" customClass="ScaleBar" customModule="Charm" customModuleProvider="target">
+                                                            <rect key="frame" x="20" y="45" width="358" height="16"/>
+                                                            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                            <constraints>
+                                                                <constraint firstAttribute="height" constant="16" id="wbi-Rp-1xZ"/>
+                                                            </constraints>
+                                                        </view>
                                                     </subviews>
                                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                     <constraints>
-                                                        <constraint firstItem="XIZ-xq-XdR" firstAttribute="leading" secondItem="bdv-UG-TJr" secondAttribute="leading" constant="8" id="Q7k-m5-iTN"/>
-                                                        <constraint firstAttribute="trailing" secondItem="XIZ-xq-XdR" secondAttribute="trailing" constant="8" id="WKL-7j-voC"/>
-                                                        <constraint firstAttribute="bottom" secondItem="XIZ-xq-XdR" secondAttribute="bottom" id="XDA-1a-XiM"/>
-                                                        <constraint firstItem="XIZ-xq-XdR" firstAttribute="top" secondItem="bdv-UG-TJr" secondAttribute="top" id="pmx-Ma-eA6"/>
+                                                        <constraint firstItem="k6o-5j-4XU" firstAttribute="trailing" secondItem="bdv-UG-TJr" secondAttribute="trailingMargin" id="ALM-VL-avm"/>
+                                                        <constraint firstAttribute="bottomMargin" secondItem="uPq-4d-cLb" secondAttribute="bottom" id="CDb-0j-Q4I"/>
+                                                        <constraint firstItem="k6o-5j-4XU" firstAttribute="leading" secondItem="bdv-UG-TJr" secondAttribute="leadingMargin" id="HFY-AS-dmu"/>
+                                                        <constraint firstItem="k6o-5j-4XU" firstAttribute="top" secondItem="bdv-UG-TJr" secondAttribute="topMargin" id="InD-8r-jJl"/>
+                                                        <constraint firstItem="uPq-4d-cLb" firstAttribute="trailing" secondItem="bdv-UG-TJr" secondAttribute="trailingMargin" id="bEy-lA-zvD"/>
+                                                        <constraint firstItem="uPq-4d-cLb" firstAttribute="top" secondItem="k6o-5j-4XU" secondAttribute="bottom" constant="8" id="sxq-Hr-OoF"/>
+                                                        <constraint firstItem="uPq-4d-cLb" firstAttribute="leading" secondItem="bdv-UG-TJr" secondAttribute="leadingMargin" id="zFA-Y1-N2E"/>
                                                     </constraints>
                                                 </tableViewCellContentView>
                                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <connections>
                                                     <outlet property="lblMetric" destination="k6o-5j-4XU" id="U63-Fh-U8n"/>
-                                                    <outlet property="lblMetricDetail" destination="Nla-nz-63R" id="naP-F1-SnR"/>
-                                                    <outlet property="lblScore" destination="rEu-p3-VwO" id="7Zz-F7-efT"/>
-                                                    <outlet property="lblScoreDetail" destination="krq-gs-MpK" id="MYS-3u-Bsp"/>
+                                                    <outlet property="scalebar" destination="uPq-4d-cLb" id="Pol-FP-FMf"/>
                                                 </connections>
                                             </tableViewCell>
                                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="cid_previous" id="tdz-tH-W8u" customClass="SummaryMetricTableViewCell" customModule="Charm" customModuleProvider="target">
-                                                <rect key="frame" x="0.0" y="72" width="398" height="44"/>
+                                                <rect key="frame" x="0.0" y="100" width="398" height="44"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="tdz-tH-W8u" id="Oaj-Qf-qMU">
-                                                    <rect key="frame" x="0.0" y="0.0" width="398" height="43.5"/>
+                                                    <rect key="frame" x="0.0" y="0.0" width="398" height="44"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <subviews>
                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="View All" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="w4j-vw-TPG">
@@ -1821,7 +1799,7 @@ Subscriptions automatically add calling credits that allow you to use Charm’s 
 </string>
                                                 <attributes>
                                                     <color key="NSColor" red="0.13234293459999999" green="0.1735357642" blue="0.26996999980000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                                    <font key="NSFont" size="12" name="Helvetica"/>
+                                                    <font key="NSFont" metaFont="user"/>
                                                     <paragraphStyle key="NSParagraphStyle" alignment="center" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0" allowsDefaultTighteningForTruncation="NO">
                                                         <tabStops>
                                                             <textTab alignment="left" location="36">
@@ -1919,7 +1897,7 @@ Subscriptions are required to pay for the backend server costs, and also help to
 </string>
                                                 <attributes>
                                                     <color key="NSColor" red="0.13234293459999999" green="0.1735357642" blue="0.26996999980000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                                    <font key="NSFont" size="12" name="Helvetica"/>
+                                                    <font key="NSFont" metaFont="user"/>
                                                     <paragraphStyle key="NSParagraphStyle" alignment="center" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0" allowsDefaultTighteningForTruncation="NO">
                                                         <tabStops>
                                                             <textTab alignment="left" location="36">
@@ -2015,7 +1993,7 @@ Subscriptions are required to pay for the backend server costs, and also help to
                                                 <string key="content">Payment will be charged to your Apple ID account at the confirmation of purchase.  Subscription automatically renews monthly unless it is cancelled at least 24 hours before the end of the current period.  Your account will be charged for renewal within 24 hours prior to the end of the current period, unless cancelled.  Cancellation must be done via iTunes.  If you need help with cancellation, visit </string>
                                                 <attributes>
                                                     <color key="NSColor" red="0.13234293459999999" green="0.1735357642" blue="0.26996999980000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                                    <font key="NSFont" size="12" name="Helvetica"/>
+                                                    <font key="NSFont" metaFont="user"/>
                                                     <paragraphStyle key="NSParagraphStyle" alignment="center" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0" allowsDefaultTighteningForTruncation="NO">
                                                         <tabStops>
                                                             <textTab alignment="left" location="36">
@@ -2061,7 +2039,7 @@ Subscriptions are required to pay for the backend server costs, and also help to
                                             <fragment content="https://support.apple.com/en-us/HT202039">
                                                 <attributes>
                                                     <color key="NSColor" red="0.13234293459999999" green="0.1735357642" blue="0.26996999980000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                                    <font key="NSFont" size="12" name="Helvetica"/>
+                                                    <font key="NSFont" metaFont="user"/>
                                                     <url key="NSLink" string="https://support.apple.com/en-us/HT202039"/>
                                                     <paragraphStyle key="NSParagraphStyle" alignment="center" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0" allowsDefaultTighteningForTruncation="NO">
                                                         <tabStops>
@@ -2108,7 +2086,7 @@ Subscriptions are required to pay for the backend server costs, and also help to
                                             <fragment content=".">
                                                 <attributes>
                                                     <color key="NSColor" red="0.13234293459999999" green="0.1735357642" blue="0.26996999980000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                                    <font key="NSFont" size="12" name="Helvetica"/>
+                                                    <font key="NSFont" metaFont="user"/>
                                                     <paragraphStyle key="NSParagraphStyle" alignment="center" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0" allowsDefaultTighteningForTruncation="NO">
                                                         <tabStops>
                                                             <textTab alignment="left" location="36">

@@ -61,7 +61,7 @@ class TrainingModelCapsule {
         return .Concrete
     }
     
-    func checkTypes(from wordChoices: [WordChoice], completion: @escaping(_ wordTypes: [WordType]) -> Void) {
+    func checkTypes(from wordChoices: [IdeaEngagement], completion: @escaping(_ wordTypes: [WordType]) -> Void) {
         
         var unclassified: [String] = []
         var types: [WordType] = []

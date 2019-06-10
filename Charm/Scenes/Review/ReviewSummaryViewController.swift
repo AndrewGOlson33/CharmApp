@@ -26,6 +26,9 @@ class ReviewSummaryViewController: UIViewController {
     // date formatter for setting chart title
     let dFormatter = DateFormatter()
     
+    // Helps deal with layout glitches caused by highcharts
+    var chartDidLoad: Bool = false
+    
     // MARK: - View Lifecycle Functions
     
     override func viewDidLoad() {
@@ -36,6 +39,12 @@ class ReviewSummaryViewController: UIViewController {
         
         // Start pulling training data
         let _ = TrainingModelCapsule.shared.model.abstractNouns
+        
+        // Resolve layout issues caused by highcharts
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+            self.chartDidLoad = true
+            self.tableView.reloadData()
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -154,54 +163,51 @@ class ReviewSummaryViewController: UIViewController {
         
         // get and set data
         
-        // ctn / eng score values
-        let concreteDetailsEngScore = snapshot.getTopLevelScoreValue(forSummaryItem: .IdeaEngagement) ?? 0
-        let backAndForthEngScore = snapshot.getTopLevelScoreValue(forSummaryItem: .BackAndForth) ?? 0
-        let connectionCtnScore = snapshot.getTopLevelScoreValue(forSummaryItem: .Connection) ?? 0
-        let toneCtnScore = snapshot.getTopLevelScoreValue(forSummaryItem: .ToneOfWords) ?? 0
+        // get values for area chart
+        let concrete = snapshot.getTopLevelScoreValue(forSummaryItem: .Concrete) ?? 0
+        let talking = snapshot.getTopLevelScoreValue(forSummaryItem: .TalkingPercentage) ?? 0
+        let firstPerson = snapshot.getTopLevelScoreValue(forSummaryItem: .FirstPerson) ?? 0
+        let positiveWords = snapshot.getTopLevelScoreValue(forSummaryItem: .PositiveWords) ?? 0
+        let smiling = snapshot.getTopLevelScoreValue(forSummaryItem: .SmilingPercentage) ?? 0
         
-        // raw score values
-        let concreteDetailsRawScore = snapshot.getTopLevelScoreValue(forSummaryItem: .ConcretePercentage) ?? 0
-        let backAndForthRawScore = snapshot.getTopLevelScoreValue(forSummaryItem: .Talking) ?? 0
-        let connectionRawScore = snapshot.getTopLevelScoreValue(forSummaryItem: .ConnectionFirstPerson) ?? 0
-        let toneRawScore = snapshot.getTopLevelScoreValue(forSummaryItem: .PositiveWords) ?? 0
+        // get values for line chart
+        let ideaEngagement = snapshot.getTopLevelScoreValue(forSummaryItem: .IdeaEngagement) ?? 0
+        let conversationEngagement = snapshot.getTopLevelScoreValue(forSummaryItem: .ConversationEngagement) ?? 0
+        let personalConnection = snapshot.getTopLevelScoreValue(forSummaryItem: .PersonalConnection) ?? 0
+        let emotionalConnection = snapshot.getTopLevelScoreValue(forSummaryItem: .EmotionalConnection) ?? 0
         
-        // ctn / eng raw values
-        let concreteDetailsEngRaw = snapshot.getTopLevelRawValue(forSummaryItem: .IdeaEngagement) ?? 0
-        let backAndForthEngRaw = snapshot.getTopLevelRawValue(forSummaryItem: .BackAndForth) ?? 0
-        let connectionCtnRaw = snapshot.getTopLevelRawValue(forSummaryItem: .Connection) ?? 0
-        let toneCtnRaw = snapshot.getTopLevelRawValue(forSummaryItem: .ToneOfWords) ?? 0
-        
-        // raw raw values
-        let concreteDetailsEngRawRaw = snapshot.getTopLevelRawLevelValue(forSummaryItem: .IdeaEngagement) ?? 0
-        let backAndForthEngRawRaw = snapshot.getTopLevelRawLevelValue(forSummaryItem: .BackAndForth) ?? 0
-        let connectionCtnRawRaw = snapshot.getTopLevelRawLevelValue(forSummaryItem: .Connection) ?? 0
-        let toneCtnRawRaw = snapshot.getTopLevelRawLevelValue(forSummaryItem: .ToneOfWords) ?? 0
-        
-        
-        cellInfo.append(SummaryCellInfo(title: "Idea Engagement", score: concreteDetailsEngRaw, percent: concreteDetailsEngRawRaw))
-        cellInfo.append(SummaryCellInfo(title: "Conversation Engagement", score: backAndForthEngRaw, percent: backAndForthEngRawRaw))
-        cellInfo.append(SummaryCellInfo(title: "Personal Connection", score: connectionCtnRaw, percent: connectionCtnRawRaw))
-        cellInfo.append(SummaryCellInfo(title: "Emotional Connection", score: toneCtnRaw, percent: toneCtnRawRaw))
-        cellInfo.append(SummaryCellInfo(title: "Smiling", score: toneCtnRaw, percent: toneCtnRawRaw))
- 
+        // get scores for cell info
+        let ideaPercent = snapshot.getTopLevelRawValue(forSummaryItem: .IdeaEngagement) ?? 0
+        let conversationPercent = snapshot.getTopLevelRawValue(forSummaryItem: .ConversationEngagement) ?? 0
+        let personalConnectionPercent = snapshot.getTopLevelRawValue(forSummaryItem: .PersonalConnection) ?? 0
+        let emotionalConnectionPercent = snapshot.getTopLevelRawValue(forSummaryItem: .EmotionalConnection) ?? 0
+        let smilingPercent = snapshot.getTopLevelRawValue(forSummaryItem: .SmilingPercentage) ?? 0
+
+        // setup cell info array
+        cellInfo.append(SummaryCellInfo(title: "Idea Engagement", score: ideaEngagement, percent: ideaPercent))
+        cellInfo.append(SummaryCellInfo(title: "Conversation Engagement", score: conversationEngagement, percent: conversationPercent))
+        cellInfo.append(SummaryCellInfo(title: "Personal Connection", score: personalConnection, percent: personalConnectionPercent))
+        cellInfo.append(SummaryCellInfo(title: "Emotional Connection", score: emotionalConnection, percent: emotionalConnectionPercent))
+        cellInfo.append(SummaryCellInfo(title: "Smiling", score: smiling, percent: smilingPercent))
+
+        // setup charts
         let area = HIArea()
         area.data = [
-            ["name": "Idea Engagement", "y": concreteDetailsEngScore],
-            ["name": "Conversation Engagement", "y": backAndForthEngScore],
-            ["name": "Personal Connection", "y": connectionCtnScore],
-            ["name": "Emotional Connection", "y": toneCtnScore],
-            ["name": "Smiling", "y": toneCtnScore]
+            ["name": "Concrete", "y": concrete],
+            ["name": "Talking %", "y": talking],
+            ["name": "First Person", "y": firstPerson],
+            ["name": "Positive Words", "y": positiveWords],
+            ["name": "Smiling %", "y": smiling]
         ]
         area.pointPlacement = "on"
-        
+
         let line = HILine()
         line.data = [
-            ["name": "Idea Engagement", "y": concreteDetailsRawScore],
-            ["name": "Conversation Engagement", "y": backAndForthRawScore],
-            ["name": "Personal Connection", "y": connectionRawScore],
-            ["name": "Emotional Connection", "y": toneRawScore],
-            ["name": "Smiling", "y": toneCtnScore]
+            ["name": "Idea Engagement", "y": ideaEngagement],
+            ["name": "Conversation Engagement", "y": conversationEngagement],
+            ["name": "Personal Connection", "y": personalConnection],
+            ["name": "Emotional Connection", "y": emotionalConnection],
+            ["name": "Smiling %", "y": smiling]
         ]
         
         // hide hamburger button
@@ -247,36 +253,75 @@ extension ReviewSummaryViewController: UITableViewDelegate, UITableViewDataSourc
         let cell = tableView.dequeueReusableCell(withIdentifier: CellID.SummaryMetric, for: indexPath) as! SummaryMetricTableViewCell
         let info = cellInfo[indexPath.row]
         cell.lblMetric.text = info.title
+        cell.scalebar.labelType = .Percent
+        cell.scalebar.setupBar(ofType: info.scalebarType, withValue: info.percent, andLabelPosition: info.percent)
         
-        var header = ""
-        
-        switch info.title {
-        case "Idea Engagement":
-            header = "Estimated Engagement:"
-            cell.lblScoreDetail.isHidden = true
-        case "Conversation Engagement":
-            cell.lblScoreDetail.text = "Talking Time"
-            cell.lblScoreDetail.isHidden = false
-            header = "Estimated Engagement:"
-        case "Personal Connection":
-            cell.lblScoreDetail.text = "First Person"
-            cell.lblScoreDetail.isHidden = false
-            header = "Estimated Connection:"
-        case "Emotional Connection":
-            cell.lblScoreDetail.isHidden = true
-            header = "Estimated Connection:"
-        case "Smiling":
-            cell.lblScoreDetail.isHidden = true
-            header = "Last Snapshot:"
-        default:
-            cell.lblScoreDetail.isHidden = true
+        if chartDidLoad {
+            setupPopover(for: cell)
         }
         
-        cell.lblMetricDetail.text = "\(header) \(info.scoreString)"
-        cell.lblScore.text = info.percentString
+//        var header = ""
+//
+//        switch info.title {
+//        case "Idea Engagement":
+//            header = "Estimated Engagement:"
+//            cell.lblScoreDetail.isHidden = true
+//        case "Conversation Engagement":
+//            cell.lblScoreDetail.text = "Talking Time"
+//            cell.lblScoreDetail.isHidden = false
+//            header = "Estimated Engagement:"
+//        case "Personal Connection":
+//            cell.lblScoreDetail.text = "First Person"
+//            cell.lblScoreDetail.isHidden = false
+//            header = "Estimated Connection:"
+//        case "Emotional Connection":
+//            cell.lblScoreDetail.isHidden = true
+//            header = "Estimated Connection:"
+//        case "Smiling":
+//            cell.lblScoreDetail.isHidden = true
+//            header = "Last Snapshot:"
+//        default:
+//            cell.lblScoreDetail.isHidden = true
+//        }
+//
+//        cell.lblMetricDetail.text = "\(header) \(info.scoreString)"
+//        cell.lblScore.text = info.percentString
         
         
         return cell
+    }
+    
+    // MARK: - Popover Setup Helper Functions
+    
+    private func getX(for bar: ScaleBar) -> CGFloat {
+        let value = CGFloat(bar.calculatedValue)
+        return bar.bounds.width * value
+    }
+    
+    private func setupPopover(for cell: SummaryMetricTableViewCell) {
+        let text = cell.scalebar.labelText
+        let frame = CGRect(x: getX(for: cell.scalebar), y: cell.scalebar.frame.origin.y - ((20 - cell.scalebar.frame.height) / 2), width: 56, height: 20)
+        
+        if cell.popoverView == nil {
+            cell.popoverView = LabelBubbleView(frame: frame, withText: text)
+            cell.popoverView.alpha = 0.0
+            cell.addSubview(cell.popoverView)
+            cell.bringSubviewToFront(cell.popoverView)
+            UIView.animate(withDuration: 0.25) {
+                cell.popoverView.alpha = 1.0
+            }
+        } else {
+            cell.popoverView.updateLabel(withText: text, frame: frame)
+        }
+        
+        // adjust frame if needed
+        if cell.popoverView.frame.maxX >= cell.scalebar.frame.maxX {
+            cell.popoverView.frame.origin.x -= cell.popoverView.frame.maxX - cell.scalebar.frame.maxX
+        }
+        
+        if cell.popoverView.frame.minX <= cell.scalebar.frame.minX {
+            cell.popoverView.frame.origin.x += cell.scalebar.frame.minX - cell.popoverView.frame.minX
+        }
     }
     
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
@@ -288,11 +333,7 @@ extension ReviewSummaryViewController: UITableViewDelegate, UITableViewDataSourc
     func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
         return 1
     }
-    
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return cellInfo.count == indexPath.row ? 44 : 50
-    }
-    
+        
     // MARK: - Handle TableView Actions
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {

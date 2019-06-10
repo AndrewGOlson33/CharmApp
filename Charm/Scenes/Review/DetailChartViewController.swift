@@ -115,7 +115,7 @@ class DetailChartViewController: UIViewController {
         
         // setup data based on type
         switch chartType! {
-        case .WordChoice:
+        case .IdeaEngagement:
             if !TrainingModelCapsule.shared.isModelLoaded {
                 print("~>Not yet loaded...")
                 chartView.showLoading("Loading")
@@ -126,11 +126,10 @@ class DetailChartViewController: UIViewController {
                 print("~>Loaded")
                 chartView.hideLoading()
             }
-            let wordChoice = snapshot.wordChoice
-            TrainingModelCapsule.shared.checkTypes(from: wordChoice) { (types) in
+            let ideaEngagement = snapshot.ideaEngagement
+            TrainingModelCapsule.shared.checkTypes(from: ideaEngagement) { (types) in
                 // setup chart data
-                for (index, item) in wordChoice.enumerated() {
-                    //                chartData.append([index, item.score])
+                for (index, item) in ideaEngagement.enumerated() {
                     let point = HIPoint()
                     point.x = index as NSNumber
                     point.y = item.score as NSNumber
@@ -139,27 +138,23 @@ class DetailChartViewController: UIViewController {
                 }
                 
                 // setup scale bar data
-                if let engagementRaw = self.snapshot.getTopLevelRawValue(forSummaryItem: .IdeaEngagement), let engagementLevel = self.snapshot.getTopLevelRawLevelValue(forSummaryItem: .IdeaEngagement) {
-                    let cellInfo = ScalebarCellInfo(type: .Green, title: "Estimated Idea Engagement", score: engagementRaw, position: engagementLevel)
+                if let position = self.snapshot.getTopLevelRawValue(forSummaryItem: .IdeaEngagement), let score = self.snapshot.getTopLevelScoreValue(forSummaryItem: .IdeaEngagement) {
+                    let cellInfo = ScalebarCellInfo(type: .Green, title: "Estimated Idea Engagement", score: score, position: position)
                     self.scalebarData.append(cellInfo)
                 }
                 
-                if let concreteRaw = self.snapshot.getTopLevelRawValue(forSummaryItem: .ConcretePercentage), let concreteLevel = self.snapshot.getTopLevelRawLevelValue(forSummaryItem: .ConcretePercentage) {
-                    let cellInfo = ScalebarCellInfo(type: .BlueRight, title: "Concrete Details(%)", score: concreteRaw, position: concreteLevel)
+                if let position = self.snapshot.getTopLevelRawValue(forSummaryItem: .Concrete) {
+//                    , let score = self.snapshot.getTopLevelScoreValue(forSummaryItem: .Concrete)
+                    let cellInfo = ScalebarCellInfo(type: .BlueRight, title: "Concrete Details(%)", score: position, position: position)
                     self.scalebarData.append(cellInfo)
                 }
             }
             
             
-        case .BackAndForth:
-            let backAndForth = snapshot.backAndForth
+        case .Conversation:
+            let conversation = snapshot.conversation
             // setup chart data
-            for (index, item) in backAndForth.enumerated() {
-//                if let value = item.adjustedAvg {
-//                    chartData.append([index, value])
-//                } else {
-//                    chartData.append([index, 0])
-//                }
+            for (index, item) in conversation.enumerated() {
                 
                 let point = HIPoint()
                 point.x = index as NSNumber
@@ -174,21 +169,23 @@ class DetailChartViewController: UIViewController {
             }
             
             // setup scale bar data
-            if let engagementRaw = snapshot.getTopLevelRawValue(forSummaryItem: .BackAndForth), let engagementLevel = snapshot.getTopLevelRawLevelValue(forSummaryItem: .BackAndForth) {
-                let cellInfo = ScalebarCellInfo(type: .Green, title: "Estimated Conversation Engagement", score: engagementRaw, position: engagementLevel)
+            if let position = snapshot.getTopLevelRawValue(forSummaryItem: .ConversationEngagement) {
+                // , let engagementLevel = snapshot.getTopLevelRankValue(forSummaryItem: .ConversationEngagement)
+                let cellInfo = ScalebarCellInfo(type: .Green, title: "Estimated Conversation Engagement", score: position, position: position)
                 scalebarData.append(cellInfo)
             }
             
-            if let talkingRaw = snapshot.getTopLevelRawValue(forSummaryItem: .Talking), let talkingLevel = snapshot.getTopLevelRawLevelValue(forSummaryItem: .Talking) {
-                let cellInfo = ScalebarCellInfo(type: .BlueCenter, title: "Talking(%)", score: talkingRaw, position: talkingLevel)
+            if let position = snapshot.getTopLevelRawValue(forSummaryItem: .TalkingPercentage) {
+//                , let talkingLevel = snapshot.getTopLevelRankValue(forSummaryItem: .TalkingPercentage)
+                let cellInfo = ScalebarCellInfo(type: .BlueCenter, title: "Talking(%)", score: position, position: position)
                 scalebarData.append(cellInfo)
             }
             
             // setup transcript
-//            for item in snapshot.transcript {
-//                let text = "[\(String(describing: item.person))]: \(item.words)"
-//                transcript.append(TranscriptCellInfo(withText: text))
-//            }
+            for item in conversation {
+                let text = "[\(String(describing: item.person))]: \(item.word)"
+                transcript.append(TranscriptCellInfo(withText: text))
+            }
             
         case .Connection:
             let connection = snapshot.connection
@@ -211,13 +208,15 @@ class DetailChartViewController: UIViewController {
             }
             
             // setup scale bar data
-            if let connectionRaw = snapshot.getTopLevelRawValue(forSummaryItem: .Connection), let connectionLevel = snapshot.getTopLevelRawLevelValue(forSummaryItem: .Connection) {
-                let cellInfo = ScalebarCellInfo(type: .Green, title: "Estimated Personal Engagement", score: connectionRaw, position: connectionLevel)
+            if let position = snapshot.getTopLevelRawValue(forSummaryItem: .PersonalConnection) {
+//                , let connectionLevel = snapshot.getTopLevelRankValue(forSummaryItem: .PersonalConnection)
+                let cellInfo = ScalebarCellInfo(type: .Green, title: "Estimated Personal Engagement", score: position, position: position)
                 scalebarData.append(cellInfo)
             }
             
-            if let firstPersonRaw = snapshot.getTopLevelRawValue(forSummaryItem: .ConnectionFirstPerson), let firstPersonLevel = snapshot.getTopLevelRawLevelValue(forSummaryItem: .ConnectionFirstPerson) {
-                let cellInfo = ScalebarCellInfo(type: .BlueCenter, title: "First Person(%)", score: firstPersonRaw, position: firstPersonLevel)
+            if let position = snapshot.getTopLevelRawValue(forSummaryItem: .FirstPerson) {
+//                , let firstPersonLevel = snapshot.getTopLevelRankValue(forSummaryItem: .FirstPerson)
+                let cellInfo = ScalebarCellInfo(type: .BlueCenter, title: "First Person(%)", score: position, position: position)
                 scalebarData.append(cellInfo)
             }
         
@@ -247,18 +246,21 @@ class DetailChartViewController: UIViewController {
             }
             
             // setup scale bar data
-            if let connectionRaw = snapshot.getTopLevelRawValue(forSummaryItem: .ToneOfWords), let connectionLevel = snapshot.getTopLevelRawLevelValue(forSummaryItem: .ToneOfWords) {
-                let cellInfo = ScalebarCellInfo(type: .Green, title: "Estimated Emotional Connection", score: connectionRaw, position: connectionLevel)
+            if let position = snapshot.getTopLevelRawValue(forSummaryItem: .EmotionalConnection) {
+//                , let connectionLevel = snapshot.getTopLevelRankValue(forSummaryItem: .EmotionalConnection)
+                let cellInfo = ScalebarCellInfo(type: .Green, title: "Estimated Emotional Connection", score: position, position: position)
                 scalebarData.append(cellInfo)
             }
             
-            if let positiveRaw = snapshot.getTopLevelRawValue(forSummaryItem: .PositiveWords), let positiveLevel = snapshot.getTopLevelRawLevelValue(forSummaryItem: .PositiveWords) {
-                let cellInfo = ScalebarCellInfo(type: .BlueRight, title: "Positive Word(%)", score: positiveRaw, position: positiveLevel)
+            if let position = snapshot.getTopLevelRawValue(forSummaryItem: .PositiveWords) {
+//                , let positiveLevel = snapshot.getTopLevelRankValue(forSummaryItem: .PositiveWords)
+                let cellInfo = ScalebarCellInfo(type: .BlueRight, title: "Positive Word(%)", score: position, position: position)
                 scalebarData.append(cellInfo)
             }
             
-            if let negativeRaw = snapshot.getTopLevelRawValue(forSummaryItem: .NegativeWords), let negativeLevel = snapshot.getTopLevelRawLevelValue(forSummaryItem: .NegativeWords) {
-                let cellInfo = ScalebarCellInfo(type: .BlueCenter, title: "Negative Word(%)", score: negativeRaw, position: negativeLevel)
+            if let position = snapshot.getTopLevelRawValue(forSummaryItem: .NegativeWords) {
+//                , let negativeLevel = snapshot.getTopLevelRankValue(forSummaryItem: .NegativeWords)
+                let cellInfo = ScalebarCellInfo(type: .BlueCenter, title: "Negative Word(%)", score: position, position: position)
                 scalebarData.append(cellInfo)
             }
             
@@ -305,7 +307,7 @@ class DetailChartViewController: UIViewController {
         yaxis.visible = false
         
         switch chartType! {
-        case .WordChoice, .BackAndForth, .Connection:
+        case .IdeaEngagement, .Conversation, .Connection:
             yaxis.min = -1.05
             yaxis.max = 1.05
             yaxis.tickInterval = 0.21
@@ -346,7 +348,7 @@ class DetailChartViewController: UIViewController {
                 print("~>This location: \(row)")
                 var indexPath: IndexPath = IndexPath(row: 0, section: 0)
                 switch self.chartType! {
-                case .BackAndForth:
+                case .Conversation:
                     print("~>Back and forth")
                     // back and forth is the word number
                     if row == 0 {
@@ -567,20 +569,11 @@ extension DetailChartViewController: UITableViewDelegate, UITableViewDataSource 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: false)
         
-        if let cell = tableView.cellForRow(at: indexPath) as? TranscriptTableViewCell {
+        if let _ = tableView.cellForRow(at: indexPath) as? TranscriptTableViewCell {
             // remove any old annotations
             chartView.removeAnnotation(byId: "annotation")
             guard chartView.options.series[0].data.count > indexPath.row else { return }
             
-            // hide the tooltip if it was showing
-//            let options = HIOptions()
-//            let toolTip = HITooltip()
-//            toolTip.enabled = false
-//            options.tooltip = toolTip
-//
-//            chartView.update(options)
-//
-//            var words = cell.lblTranscriptText.text
             var item: HIPoint = HIPoint()
             
             if chartType! == .Emotions {
@@ -596,40 +589,42 @@ extension DetailChartViewController: UITableViewDelegate, UITableViewDataSource 
                 }
                 
                 
-            } else if chartType! == .BackAndForth {
-                var wordCount: Int = 0
-//                for (index, transcript) in snapshot.transcript.enumerated() {
-//                    let wordsToCount = transcript.words.components(separatedBy: .whitespacesAndNewlines).filter { !$0.isEmpty }
-//                    if indexPath.row == index {
-//                        if wordsToCount.count == 1 {
-//                            words = wordsToCount.first!
-//                        } else {
-//                            words = ""
-//                            for (index, word) in wordsToCount.enumerated() {
-//                                words = "\(words!)\(word)"
-//                                if index == 2 {
-//                                    words = "\(words!)..."
-//                                    break
-//                                } else {
-//                                    words = "\(words!) "
-//                                }
-//                            }
-//                        }
-//
-//                        break
-//                    } else {
-//                        wordCount += wordsToCount.count
-//                    }
-//
-//                }
-                
-                // prevent crashing in case the index is out of range
-                if wordCount >= chartView.options.series[0].data.count { wordCount = chartView.options.series[0].data.count - 1 }
-                
-                item = chartView.options.series[0].data[wordCount] as! HIPoint
             } else {
                 item = chartView.options.series[0].data[indexPath.row] as! HIPoint
             }
+            
+//            else if chartType! == .Conversation {
+//                var wordCount: Int = 0
+//                //                for (index, transcript) in snapshot.transcript.enumerated() {
+//                //                    let wordsToCount = transcript.words.components(separatedBy: .whitespacesAndNewlines).filter { !$0.isEmpty }
+//                //                    if indexPath.row == index {
+//                //                        if wordsToCount.count == 1 {
+//                //                            words = wordsToCount.first!
+//                //                        } else {
+//                //                            words = ""
+//                //                            for (index, word) in wordsToCount.enumerated() {
+//                //                                words = "\(words!)\(word)"
+//                //                                if index == 2 {
+//                //                                    words = "\(words!)..."
+//                //                                    break
+//                //                                } else {
+//                //                                    words = "\(words!) "
+//                //                                }
+//                //                            }
+//                //                        }
+//                //
+//                //                        break
+//                //                    } else {
+//                //                        wordCount += wordsToCount.count
+//                //                    }
+//                //
+//                //                }
+//
+//                // prevent crashing in case the index is out of range
+//                if wordCount >= chartView.options.series[0].data.count { wordCount = chartView.options.series[0].data.count - 1 }
+//
+//                item = chartView.options.series[0].data[wordCount] as! HIPoint
+//            }
             
             let annotations = HIAnnotations()
             annotations.labels = [HILabels]()

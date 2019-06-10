@@ -192,15 +192,24 @@ enum FirebaseNotification {
 
 enum SummaryItem: String {
     
+    case Concrete = "concreteRaw"
+    case TalkingPercentage = "talkingPercentage"
+    case FirstPerson = "firstPerson"
+    case PositiveWords = "emotionsPositive"
+    case NegativeWords = "emotionsNegative"
+    case SmilingPercentage = "smilingPercentage"
     case IdeaEngagement = "ideaEngagement"
-    case ConcretePercentage = "Concrete_Raw"
-    case BackAndForth = "Talking_Eng"
-    case Talking = "Talking_Raw"
-    case Connection = "Pronoun_Ctn"
-    case ConnectionFirstPerson = "Pronoun_Raw"
-    case ToneOfWords = "Emo_Ctn"
-    case PositiveWords = "Emo_Pos_Raw"
-    case NegativeWords = "Emo_Neg_Raw"
+    case ConversationEngagement = "conversationEngagement"
+    case PersonalConnection = "personalConnection"
+    case EmotionalConnection = "emotionalConnection"
+//    case ConcretePercentage = "Concrete_Raw"
+//    case BackAndForth = "Talking_Eng"
+//    case Talking = "Talking_Raw"
+//    case Connection = "Pronoun_Ctn"
+//    case ConnectionFirstPerson = "Pronoun_Raw"
+//    case ToneOfWords = "Emo_Ctn"
+//    case PositiveWords = "Emo_Pos_Raw"
+//    case NegativeWords = "Emo_Neg_Raw"
     
 }
 
@@ -227,8 +236,8 @@ enum Pronoun: Int {
 // MARK: - Charts
 
 enum ChartType: String {
-    case WordChoice = "Word Choice"
-    case BackAndForth = "Back and Forth"
+    case IdeaEngagement = "Idea Engagement"
+    case Conversation = "Conversation"
     case Connection = "Connection"
     case Emotions = "Emotions"
 }

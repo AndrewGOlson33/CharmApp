@@ -40,8 +40,8 @@ struct Snapshot: Codable {
     
     var dateString: String?
     var topLevelMetrics: [TopLevelMetric]
-    var wordChoice: [WordChoice]
-    var backAndForth: [BackAndForth]
+    var ideaEngagement: [IdeaEngagement]
+    var conversation: [Conversation]
     var connection: [PersonalPronouns]
     var graphTone: [Sentiment]
     var tableViewTone: [Sentiment]
@@ -51,8 +51,8 @@ struct Snapshot: Codable {
     
     enum CodingKeys: String, CodingKey {
         case topLevelMetrics = "topLevelMetrics"
-        case wordChoice = "Concrete"
-        case backAndForth = "BackandForth"
+        case ideaEngagement = "Concrete"
+        case conversation = "BackandForth"
         case connection = "Connection"  // used to be PersonalPronouns
         case graphTone = "Sentiment" // used to be sentimentAll
         case tableViewTone = "Sentiment_Raw" // used to be sentimentRaw
@@ -69,7 +69,7 @@ struct Snapshot: Codable {
         return summaryItem.raw
     }
     
-    func getTopLevelRawLevelValue(forSummaryItem item: SummaryItem) -> Double? {
+    func getTopLevelRankValue(forSummaryItem item: SummaryItem) -> Double? {
         guard let summaryItem = topLevelMetrics.first(where: { (metric) -> Bool in
             return metric.metric == item.rawValue
         }) else { return nil }
@@ -105,7 +105,7 @@ struct TopLevelMetric: Codable {
 
 // MARK: - Word Choice Data
 
-struct WordChoice: Codable {
+struct IdeaEngagement: Codable {
     var score: Double
     var word: String
     
@@ -118,13 +118,13 @@ struct WordChoice: Codable {
 
 // MARK: - Back and Forth
 
-struct BackAndForth: Codable {
+struct Conversation: Codable {
     var adjustedAvg: Double?
     var person: String
     var word: String
     
     enum CodingKeys: String, CodingKey {
-        case adjustedAvg = "AdjustAvg"
+        case adjustedAvg = "AdjustAvg1"
         case person = "Person"
         case word = "word"
     }
@@ -185,6 +185,7 @@ struct SummaryCellInfo {
     var title: String
     var score: Double
     var percent: Double
+    var scalebarType: BarType
     
     var scoreString: String {
         return "\(score)"
@@ -194,10 +195,11 @@ struct SummaryCellInfo {
         return "\((percent * 100).rounded())%"
     }
     
-    init(title: String, score: Double, percent: Double) {
+    init(title: String, score: Double, percent: Double, barType: BarType = .Green) {
         self.title = title
         self.score = score
         self.percent = percent
+        self.scalebarType = barType
     }
     
 }
