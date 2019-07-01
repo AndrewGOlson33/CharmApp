@@ -22,7 +22,7 @@ struct SessionArchive: Codable, Identifiable {
     init(id: String, callerId: String, calledId: String, callerName: String, calledName: String) {
         self.id = id
         initiatingUserId = callerId
-        initiatingUserFirstName = calledName
+        initiatingUserFirstName = callerName
         receivingUserId = calledId
         receivingUserFirstName = calledName
     }
@@ -32,7 +32,7 @@ struct SessionArchive: Codable, Identifiable {
         do {
             let data = try FirebaseEncoder().encode(self)
             Database.database().reference().child(FirebaseStructure.Archive.Pending).child(id).setValue(data)
-        return true
+            return true
         } catch let error {
             print("~>Got an error trying to add pending: \(error)")
             return false

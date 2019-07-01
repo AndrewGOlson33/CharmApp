@@ -411,9 +411,16 @@ class VideoCallViewController: UIViewController {
                 print("~>Got an error trying to start an archive: \(error)")
             } else {
                 print("~>Archive started.")
-                self.pendingArchive = SessionArchive(id: self.kSessionId, callerId: self.myUser.id!, calledId: self.friend.id!, callerName: self.myUser.userProfile.firstName, calledName: self.friend.firstName)
-                guard let pending = self.pendingArchive else { return }
-                print("~>Added pending to firebase: \(pending.addPending())")
+                if self.isInitiatingUser {
+                    self.pendingArchive = SessionArchive(id: self.kSessionId, callerId: self.myUser.id!, calledId: self.friend.id!, callerName: self.myUser.userProfile.firstName, calledName: self.friend.firstName)
+                    print("~>My name: \(self.myUser.userProfile.firstName) friend name: \(self.friend.firstName)")
+                    print("~>Session id: \(self.kSessionId)")
+                    guard let pending = self.pendingArchive else { return }
+                    print("~>Added pending to firebase: \(pending.addPending())")
+                } else {
+                    print("~>No need to upload to pending twice.")
+                }
+                
             }
         }
         
@@ -443,6 +450,12 @@ class VideoCallViewController: UIViewController {
         
         let dataTask = session.dataTask(with: request) { (data, response, error) in
             print("~>Got response: \(String(describing: response))")
+            
+            if self.pendingArchive != nil {
+                print("~>Setting archive to complete")
+                self.pendingArchive?.setArchiveComplete()
+            }
+            
             if let error = error {
                 print("~>Got an error trying to stop an archive: \(error)")
             } else {
@@ -603,11 +616,6 @@ extension VideoCallViewController: OTSubscriberDelegate {
         
         useTokenTimer = Timer.scheduledTimer(withTimeInterval: 420.0, repeats: false, block: { (_) in
             
-            if self.pendingArchive != nil {
-                print("~>Setting archive to complete")
-                self.pendingArchive?.setArchiveComplete()
-            }
-            
             switch self.isInitiatingUser {
             case true:
                 print("~>Should be taking away a token.")
@@ -637,8 +645,6 @@ extension VideoCallViewController: OTSubscriberDelegate {
             
             let minString = String(format: "%02d", minutes)
             let secString = String(format: "%02d", seconds)
-            
-            print("~>Set call time: \(minString):\(secString)")
             
             let timeString = "\(minString):\(secString)"
             self.lblCallTimer.text = timeString
