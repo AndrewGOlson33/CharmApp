@@ -3021,15 +3021,15 @@ Subscriptions are required to pay for the backend server costs, and also help to
                         <rect key="frame" x="0.0" y="0.0" width="414" height="756"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Fdd-Bc-RSQ" customClass="ScaleBar" customModule="Charm" customModuleProvider="target">
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Fdd-Bc-RSQ" customClass="SliderView" customModule="Charm" customModuleProvider="target">
                                 <rect key="frame" x="20" y="52.5" width="374" height="16"/>
                                 <color key="backgroundColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="16" id="edW-wK-V0a"/>
                                 </constraints>
                             </view>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Average Accuracy" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rmx-LQ-xZu">
-                                <rect key="frame" x="20" y="16" width="138" height="20.5"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Current Streak: 0" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rmx-LQ-xZu">
+                                <rect key="frame" x="20" y="16" width="131.5" height="20.5"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
@@ -3212,9 +3212,10 @@ Subscriptions are required to pay for the backend server costs, and also help to
                         <outlet property="lblNeutral" destination="v77-dW-C0Q" id="Gg9-IL-LJc"/>
                         <outlet property="lblPositive" destination="bMO-gG-1oi" id="4bu-mO-7Yq"/>
                         <outlet property="lblResponsePhrase" destination="SFw-sC-GwV" id="Gw2-Me-zMU"/>
+                        <outlet property="lblStreak" destination="rmx-LQ-xZu" id="OfC-72-cgH"/>
                         <outlet property="lblWord" destination="HUw-Bj-Ehy" id="Lfx-hI-nY1"/>
                         <outlet property="resetButton" destination="sDf-tO-MK3" id="Igm-H5-C8v"/>
-                        <outlet property="scaleBar" destination="Fdd-Bc-RSQ" id="yZ0-LO-dE7"/>
+                        <outlet property="streakBar" destination="Fdd-Bc-RSQ" id="EW8-mB-gHs"/>
                         <outlet property="viewFlashcards" destination="ekB-LK-l2Q" id="2xl-GT-wuK"/>
                         <outlet property="viewLoading" destination="j2x-F6-6ec" id="Bbk-VC-QcD"/>
                         <outletCollection property="buttonCollection" destination="w6Z-uL-hoa" collectionClass="NSMutableArray" id="KIh-gW-SLW"/>
@@ -3282,7 +3283,7 @@ Subscriptions are required to pay for the backend server costs, and also help to
         <image name="img_placeholder" width="1280" height="720"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="ZLg-Dm-URE"/>
+        <segue reference="RVB-Hc-N14"/>
         <segue reference="tb2-Wg-Pgt"/>
         <segue reference="tbo-GU-nKp"/>
     </inferredMetricsTieBreakers>

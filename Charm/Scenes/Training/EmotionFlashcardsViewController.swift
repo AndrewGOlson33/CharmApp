@@ -15,7 +15,8 @@ class EmotionFlashcardsViewController: UIViewController {
 
     // MARK: - IBOutlets
     
-    @IBOutlet weak var scaleBar: ScaleBar!
+    @IBOutlet weak var lblStreak: UILabel!
+    @IBOutlet weak var streakBar: SliderView!
     @IBOutlet weak var resetButton: UIButton!
     @IBOutlet weak var viewFlashcards: UIView!
     @IBOutlet weak var lblWord: UILabel!
@@ -79,14 +80,15 @@ class EmotionFlashcardsViewController: UIViewController {
         btnNeutral.setGradientBackground(colorTop: #colorLiteral(red: 0.6313157678, green: 0.6314089298, blue: 0.6312955022, alpha: 1), colorBottom: #colorLiteral(red: 0.6313157678, green: 0.6314089298, blue: 0.6312955022, alpha: 0.8009952911))
         btnNegative.setGradientBackground(colorTop: #colorLiteral(red: 0.7257528305, green: 0.3471282721, blue: 0.3915748596, alpha: 1), colorBottom: #colorLiteral(red: 0.7257528305, green: 0.3471282721, blue: 0.3915748596, alpha: 0.794921875))
         
-        // setup scale bar
-        scaleBar.setupBar(ofType: .Green, withValue: 0, andLabelPosition: 0)
+        streakBar.setup(for: .fillFromLeft)
         viewModel.getAverageEmotionsScore { (emotionsScores) in
-            self.scaleBar.labelType = self.viewModel.shouldShowNA ? .NA : .IntValue
-            self.scaleBar.update(withValue: Double(emotionsScores.numCorrect), andCalculatedValue: emotionsScores.percentOfRecord)
-            self.setupPopover()
+            // make sure this is done on main thread
+            DispatchQueue.main.async {
+                self.lblStreak.text = "Current Streak: \(emotionsScores.numCorrect)"
+                self.streakBar.updatePosition(to: CGFloat(emotionsScores.percentOfRecord))
+            }
+            
         }
-        
         
         // Start animating activity view and turn on firebase listener
         if viewModel.trainingModel.model.positiveWords.count == 0 || viewModel.trainingModel.model.negativeWords.count == 0 || viewModel.trainingModel.model.abstractNouns.count == 0 {
@@ -154,29 +156,6 @@ class EmotionFlashcardsViewController: UIViewController {
         }
     }
     
-    // Setup Popover View
-    @objc private func setupPopover() {
-        let text = viewModel.shouldShowNA ? "N/A" : scaleBar.labelText
-        let frame = CGRect(x: getX(for: scaleBar) + scaleBar.frame.origin.x, y: scaleBar.frame.origin.y - ((20 - scaleBar.frame.height) / 2), width: 56, height: 20)
-        
-        if popoverView == nil {
-            popoverView = LabelBubbleView(frame: frame, withText: text)
-            view.addSubview(popoverView)
-            view.bringSubviewToFront(popoverView)
-        } else {
-            popoverView.updateLabel(withText: text, frame: frame)
-        }
-        
-        // adjust frame if needed
-        if popoverView.frame.maxX >= scaleBar.frame.maxX {
-            popoverView.frame.origin.x -= popoverView.frame.maxX - scaleBar.frame.maxX
-        }
-        
-        if popoverView.frame.minX <= scaleBar.frame.minX {
-            popoverView.frame.origin.x += scaleBar.frame.minX - popoverView.frame.minX
-        }
-    }
-    
     // Get calculated x coord for scalebar
     private func getX(for bar: ScaleBar) -> CGFloat {
         let value = CGFloat(bar.calculatedValue)
@@ -209,9 +188,8 @@ class EmotionFlashcardsViewController: UIViewController {
         
         viewModel.getAverageEmotionsScore { (newHistory) in
             DispatchQueue.main.async {
-                self.scaleBar.labelType = self.viewModel.shouldShowNA ? .NA : .IntValue
-                self.scaleBar.update(withValue: Double(newHistory.numCorrect), andCalculatedValue: newHistory.percentOfRecord)
-                self.setupPopover()
+                self.lblStreak.text = "Current Streak: \(newHistory.numCorrect)"
+                self.streakBar.updatePosition(to: CGFloat(newHistory.percentOfRecord))
             }
         }
         
@@ -274,17 +252,6 @@ class EmotionFlashcardsViewController: UIViewController {
     
     @IBAction func resetButtonTapped(_ sender: Any) {
         viewModel.resetRecord(forType: .Emotions)
-//        // overwrite old data with new data
-//        let blankHistory = EmotionsTrainingHistory()
-//        do {
-//            let data = try FirebaseEncoder().encode(blankHistory)
-//            Database.database().reference().child(FirebaseStructure.Users).child(Auth.auth().currentUser!.uid).child(FirebaseStructure.Training.TrainingDatabase).child(FirebaseStructure.Training.EmotionHistory).setValue(data)
-//        } catch let error {
-//            print("~>Got an error trying to encode a blank history: \(error)")
-//            let alert = UIAlertController(title: "Unable to Reset", message: "Unable to reset scores at this time.  Please try again later.", preferredStyle: .alert)
-//            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-//            present(alert, animated: true, completion: nil)
-//        }
     }
     
 }

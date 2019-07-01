@@ -254,3 +254,167 @@ class ScaleBar: UIView {
         
     }
 }
+
+enum SliderType {
+    case fillFromLeft, fixed, fillFromRight
+}
+
+class SliderView: UIView {
+    
+    // MARK: - Properties
+    
+    var type: SliderType = .fillFromLeft
+    var position: CGFloat = 0.0
+    var minBluePosition: CGFloat = 0.0
+    var maxBluePosition: CGFloat = 0.0
+    var minRedPosition: CGFloat? = nil
+    var maxRedPosition: CGFloat? = nil
+    
+    // Views that make up slider
+    var backgroundView: UIView!
+    var navyView: UIView!
+    var redView: UIView? = nil
+    var positionView: UIView!
+    
+    // constants
+    let animationDuration = 0.25
+    
+    // MARK: - Init Methods
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+    }
+    
+    required init?(coder: NSCoder) {
+        self.type = .fillFromLeft
+        super.init(coder: coder)
+    }
+    
+    // MARK: - Setup methods
+    
+    func setup(for type: SliderType, at position: CGFloat = 0.0, minBlue: CGFloat = 0.0, maxBlue: CGFloat = 1.0, minRed: CGFloat? = nil, maxRed: CGFloat? = nil) {
+        self.type = type
+        self.position = position
+        minBluePosition = minBlue
+        maxBluePosition = maxBlue
+        minRedPosition = minRed
+        maxRedPosition = maxRed
+        
+        setupBackground()
+        setupPositionIndicator()
+        setupNavyView()
+    }
+    
+    private func setupBackground() {
+        // frame background should be clear
+        backgroundColor = .clear
+        
+        backgroundView = UIView(frame: CGRect(x: 0, y: 0, width: bounds.width, height: bounds.height))
+        backgroundView.clipsToBounds = true
+        backgroundView.layer.cornerRadius = frame.height / 2
+        backgroundView.backgroundColor = #colorLiteral(red: 0.9132656455, green: 0.9216780066, blue: 0.9215492606, alpha: 1)
+        addSubview(backgroundView)
+    }
+    
+    private func setupPositionIndicator() {
+        let size = frame.height * 1.2
+        let startingPosition = (position * frame.width) - (size / 2)
+        
+        positionView = UIView(frame: CGRect(x: startingPosition, y: 0 - frame.height * 0.1, width: size, height: size))
+        positionView.backgroundColor = .clear
+        positionView.layer.shadowColor = UIColor.black.cgColor
+        positionView.layer.shadowRadius = size * 0.1
+        positionView.layer.shadowOpacity = 0.4
+        positionView.layer.shadowOffset = CGSize(width: 0, height: 1)
+        
+        let borderView = UIView(frame: positionView.bounds)
+        borderView.layer.cornerRadius = size / 2
+        borderView.layer.masksToBounds = true
+        borderView.backgroundColor = .white
+        
+        positionView.addSubview(borderView)
+        addSubview(positionView)
+    }
+    
+    private func setupNavyView() {
+        switch type {
+        case .fillFromLeft:
+            drawFillFromLeft(animated: false)
+        case .fillFromRight:
+            print("~>Fill from right not handled yet.")
+        case .fixed:
+            print("~>Fixed not handled yet.")
+        }
+    }
+    
+    private func setupRedView() {
+        guard let minRed = minRedPosition, let maxRed = maxRedPosition else { return }
+        print("~>Min red: \(minRed) max red: \(maxRed)")
+    }
+    
+    func updatePosition(to: CGFloat) {
+        position = to
+        let moveToX = (position * frame.width) - (positionView.frame.width / 2)
+        
+        
+        switch type {
+        case .fillFromLeft:
+            drawFillFromLeft(animated: true)
+        default:
+            print("~>Other types are not yet supported.")
+        }
+        
+        
+        UIView.animate(withDuration: animationDuration, delay: 0.0, usingSpringWithDamping: 0.6, initialSpringVelocity: 0.0, options: [.curveEaseOut], animations: {
+            self.positionView.frame.origin.x = moveToX
+        }, completion: nil)
+    }
+    
+    private func drawFillFromLeft(animated: Bool = true) {
+        // make sure min and max positions are between 0 and 1
+        guard minBluePosition >= 0 && minBluePosition < 1 && maxBluePosition <= 1 && minBluePosition < maxBluePosition else {
+            print("~>Invalid bounds.  Min: \(minBluePosition) Max: \(maxBluePosition)")
+            return
+        }
+        
+        // if position is below min blue, then there shouldn't be a blue line at all
+        guard position >= minBluePosition else {
+            if navyView != nil {
+                navyView.removeFromSuperview()
+                navyView = nil
+            }
+            return
+        }
+        
+        let startingX = frame.width * minBluePosition
+        let endX = position <= maxBluePosition ? frame.width * position : frame.width * maxBluePosition
+        let width = endX - startingX
+        
+        let navyFrame = CGRect(x: startingX, y: 0, width: width, height: frame.height)
+        
+        if animated {
+            UIView.animate(withDuration: animationDuration, delay: 0.0, usingSpringWithDamping: 0.6, initialSpringVelocity: 0.0, options: [.curveEaseOut], animations: {
+                if self.navyView == nil {
+                    self.navyView = UIView(frame: navyFrame)
+                    self.navyView.backgroundColor = #colorLiteral(red: 0.1323429346, green: 0.1735357642, blue: 0.2699699998, alpha: 1)
+                    self.navyView.layer.cornerRadius = self.frame.height / 2
+                    self.backgroundView.addSubview(self.navyView)
+                    return
+                } else {
+                    self.navyView.frame = navyFrame
+                }
+            }, completion: nil)
+        } else {
+            if navyView == nil {
+                navyView = UIView(frame: navyFrame)
+                navyView.backgroundColor = #colorLiteral(red: 0.1323429346, green: 0.1735357642, blue: 0.2699699998, alpha: 1)
+                navyView.layer.cornerRadius = frame.height / 2
+                backgroundView.addSubview(navyView)
+                return
+            } else {
+                navyView.frame = navyFrame
+            }
+        }
+    }
+    
+}
