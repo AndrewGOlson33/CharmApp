@@ -451,11 +451,6 @@ class VideoCallViewController: UIViewController {
         let dataTask = session.dataTask(with: request) { (data, response, error) in
             print("~>Got response: \(String(describing: response))")
             
-            if self.pendingArchive != nil {
-                print("~>Setting archive to complete")
-                self.pendingArchive?.setArchiveComplete()
-            }
-            
             if let error = error {
                 print("~>Got an error trying to stop an archive: \(error)")
             } else {
@@ -622,6 +617,11 @@ extension VideoCallViewController: OTSubscriberDelegate {
                 self.myUser.userProfile.numCredits -= 1
                 let tokens = self.myUser.userProfile.numCredits < 0 ? 0 : self.myUser.userProfile.numCredits
                 Database.database().reference().child(FirebaseStructure.Users).child(self.myUser.id!).child(FirebaseStructure.CharmUser.Profile).child(FirebaseStructure.CharmUser.UserProfile.NumCredits).setValue(tokens)
+                
+                if self.pendingArchive != nil {
+                    print("~>Setting archive to complete")
+                    self.pendingArchive?.setArchiveComplete()
+                }
             case false:
                 print("~>Not the initiating user.")
             }
