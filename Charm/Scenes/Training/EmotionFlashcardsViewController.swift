@@ -81,6 +81,7 @@ class EmotionFlashcardsViewController: UIViewController {
         btnNegative.setGradientBackground(colorTop: #colorLiteral(red: 0.7257528305, green: 0.3471282721, blue: 0.3915748596, alpha: 1), colorBottom: #colorLiteral(red: 0.7257528305, green: 0.3471282721, blue: 0.3915748596, alpha: 0.794921875))
         
         streakBar.setup(for: .fillFromLeft)
+
         viewModel.getAverageEmotionsScore { (emotionsScores) in
             // make sure this is done on main thread
             DispatchQueue.main.async {

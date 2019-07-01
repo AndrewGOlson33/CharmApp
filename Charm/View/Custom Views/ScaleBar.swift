@@ -305,7 +305,7 @@ class SliderView: UIView {
         
         setupBackground()
         setupPositionIndicator()
-        setupNavyView()
+        setupBackgroundBars()
         
         isSetup = true
     }
@@ -343,34 +343,30 @@ class SliderView: UIView {
         addSubview(positionView)
     }
     
-    private func setupNavyView() {
+    private func setupBackgroundBars() {
         guard !isSetup else { return }
         switch type {
         case .fillFromLeft:
             drawFillFromLeft(animated: false)
         case .fillFromRight:
-            print("~>Fill from right not handled yet.")
+            drawFillFromRight(animated: false)
         case .fixed:
             print("~>Fixed not handled yet.")
         }
-    }
-    
-    private func setupRedView() {
-        guard !isSetup else { return }
-        guard let minRed = minRedPosition, let maxRed = maxRedPosition else { return }
-        print("~>Min red: \(minRed) max red: \(maxRed)")
     }
     
     func updatePosition(to: CGFloat) {
         position = to
         let moveToX = (position * frame.width) - (positionView.frame.width / 2)
         
-        
         switch type {
         case .fillFromLeft:
             drawFillFromLeft(animated: true)
-        default:
-            print("~>Other types are not yet supported.")
+        case .fillFromRight:
+            drawFillFromRight(animated: true)
+        case .fixed:
+            // no animation is needed for the navy view so just break out of switch
+            break
         }
         
         
@@ -424,6 +420,97 @@ class SliderView: UIView {
                 return
             } else {
                 navyView.frame = navyFrame
+            }
+        }
+    }
+    
+    private func drawFillFromRight(animated: Bool = true) {
+        // make sure min and max positions are between 0 and 1
+        guard minBluePosition >= 0 && minBluePosition < 1 && maxBluePosition <= 1 && minBluePosition < maxBluePosition else {
+            print("~>Invalid bounds.  Min: \(minBluePosition) Max: \(maxBluePosition)")
+            return
+        }
+        
+        if position > maxBluePosition && navyView != nil {
+            navyView.removeFromSuperview()
+            navyView = nil
+        }
+        
+        if position > maxRedPosition ?? 1.0 && redView != nil {
+            redView!.removeFromSuperview()
+            redView = nil
+        }
+        
+        var navyFrame: CGRect = .zero
+        var redFrame: CGRect = .zero
+        
+        if position < maxBluePosition {
+            print("~>Position: \(position)")
+            let startingBlueX = position >= minBluePosition ? position * frame.width : minBluePosition * frame.width
+            let endingBlueX = frame.width * maxBluePosition
+            let blueWidth = endingBlueX - startingBlueX
+            
+            print("~>Blue width: \(blueWidth) startingX: \(startingBlueX) endingX: \(endingBlueX)")
+            if blueWidth > 0 {
+                navyFrame = CGRect(x: startingBlueX, y: 0, width: blueWidth, height: frame.height)
+            }
+            
+        }
+        
+        if let minRed = minRedPosition, let maxRed = maxRedPosition, position <= maxRed {
+            let offset = position <= maxBluePosition ? frame.height / 2 : 0
+            var startingRedX = position <= minRed ? minRed * frame.width - offset : position * frame.width - offset
+            if startingRedX < 0 { startingRedX = 0 }
+            let endingRedX = maxRed * frame.width
+            let redWidth = endingRedX - startingRedX
+            
+            if redWidth > 0 {
+                redFrame = CGRect(x: startingRedX, y: 0, width: redWidth, height: frame.height)
+            }
+        }
+    
+        if animated {
+            UIView.animate(withDuration: animationDuration, delay: 0.0, usingSpringWithDamping: 0.6, initialSpringVelocity: 0.0, options: [.curveEaseOut], animations: {
+                if self.navyView == nil  && navyFrame != .zero {
+                    self.navyView = UIView(frame: navyFrame)
+                    self.navyView.backgroundColor = #colorLiteral(red: 0.1323429346, green: 0.1735357642, blue: 0.2699699998, alpha: 1)
+                    self.navyView.layer.cornerRadius = self.frame.height / 2
+                    self.navyView.layer.maskedCorners = redFrame == .zero ? [.layerMaxXMaxYCorner, .layerMaxXMinYCorner, .layerMinXMaxYCorner, .layerMinXMinYCorner] : [.layerMinXMaxYCorner, .layerMinXMinYCorner]
+                    self.backgroundView.addSubview(self.navyView)
+                } else if navyFrame != .zero && self.navyView != nil {
+                    self.navyView.frame = navyFrame
+                }
+                
+                if self.redView == nil && redFrame != .zero {
+                    self.redView = UIView(frame: redFrame)
+                    self.redView?.backgroundColor = #colorLiteral(red: 1, green: 0, blue: 0.2761124074, alpha: 1)
+                    self.redView?.layer.cornerRadius = self.frame.height / 2
+                    self.backgroundView.addSubview(self.redView!)
+                    self.backgroundView.bringSubviewToFront(self.redView!)
+                    
+                } else if redFrame != .zero && self.redView != nil {
+                    self.redView!.frame = redFrame
+                }
+            }, completion: nil)
+        } else {
+            if navyView == nil && navyFrame != .zero {
+                navyView = UIView(frame: navyFrame)
+                navyView.backgroundColor = #colorLiteral(red: 0.1323429346, green: 0.1735357642, blue: 0.2699699998, alpha: 1)
+                navyView.layer.cornerRadius = frame.height / 2
+                navyView.layer.maskedCorners = redFrame == .zero ? [.layerMaxXMaxYCorner, .layerMaxXMinYCorner, .layerMinXMaxYCorner, .layerMinXMinYCorner] : [.layerMinXMaxYCorner, .layerMinXMinYCorner]
+                backgroundView.addSubview(navyView)
+            } else if navyFrame != .zero && navyView != nil {
+                navyView.frame = navyFrame
+            }
+            
+            if redView == nil && redFrame != .zero {
+                redView = UIView(frame: redFrame)
+                redView?.backgroundColor = #colorLiteral(red: 1, green: 0, blue: 0.2761124074, alpha: 1)
+                redView?.layer.cornerRadius = frame.height / 2
+                backgroundView.addSubview(redView!)
+                backgroundView.bringSubviewToFront(redView!)
+            } else if redFrame != .zero && redView != nil {
+                self.redView!.frame = redFrame
             }
         }
     }
