@@ -68,13 +68,6 @@ class FriendListTableViewController: UITableViewController {
         
     }
     
-//    override func viewDidAppear(_ animated: Bool) {
-//        super.viewDidAppear(animated)
-//        if !showContacts {
-//            navigationController?.navigationItem.title = "Add Friends"
-//        }
-//    }
-    
     // MARK: - Button Handling
     
     @IBAction func contactsButtonTapped(_ sender: Any) {

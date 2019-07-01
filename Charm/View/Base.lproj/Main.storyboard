@@ -1228,7 +1228,7 @@
             </objects>
             <point key="canvasLocation" x="950" y="-574"/>
         </scene>
-        <!--Chat-->
+        <!--Call Friend-->
         <scene sceneID="5r8-Kl-SlV">
             <objects>
                 <tableViewController id="hps-G3-QtS" customClass="ChatTableViewController" customModule="Charm" customModuleProvider="target" sceneMemberID="viewController">
@@ -1294,7 +1294,7 @@
                             <outlet property="delegate" destination="hps-G3-QtS" id="mDz-ET-V3i"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" title="Chat" id="za4-yU-hpg">
+                    <navigationItem key="navigationItem" title="Call Friend" id="za4-yU-hpg">
                         <barButtonItem key="rightBarButtonItem" image="icn_friendList" id="EFf-2T-bja">
                             <connections>
                                 <segue destination="HGr-Mw-46F" kind="show" identifier="sid_friendlist" id="tbo-GU-nKp"/>
@@ -3283,7 +3283,7 @@ Subscriptions are required to pay for the backend server costs, and also help to
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="ZLg-Dm-URE"/>
-        <segue reference="QgB-77-mX5"/>
-        <segue reference="xje-0s-eyZ"/>
+        <segue reference="tb2-Wg-Pgt"/>
+        <segue reference="tbo-GU-nKp"/>
     </inferredMetricsTieBreakers>
 </document>

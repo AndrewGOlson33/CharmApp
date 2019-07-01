@@ -126,9 +126,9 @@ class ContactsViewModel: NSObject {
     
     // MARK: - Data Access
     
-    func configureCell(atIndex index: Int, withCell cell: ChatFriendListTableViewCell) -> ChatFriendListTableViewCell {
+    func configureCell(atIndex index: Int, withCell cell: ChatFriendListTableViewCell, filtered: Bool) -> ChatFriendListTableViewCell {
         
-        let friend = currentFriends[index]
+        let friend = filtered ? filteredFriends[index] : currentFriends[index]
         
         cell.lblName.text = "\(friend.firstName) \(friend.lastName)"
         
@@ -143,7 +143,7 @@ class ContactsViewModel: NSObject {
         return cell
     }
     
-    func configureCell(atIndex index: Int, withCell cell: FriendListTableViewCell, forType type: ContactType, filtered: Bool) -> FriendListTableViewCell {
+    func configureCell(atIndex index: Int, withCell cell: FriendListTableViewCell, forType type: ContactType, filtered: Bool = false) -> FriendListTableViewCell {
         
         var friend: Friend! = nil
         

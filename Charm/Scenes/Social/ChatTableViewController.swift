@@ -17,6 +17,9 @@ class ChatTableViewController: UITableViewController {
     // User object that holds friend list
     let viewModel = ContactsViewModel()
     
+    // Search controller
+    let searchController = UISearchController(searchResultsController: nil)
+    
     // MARK: - View Lifecycle Functions
 
     override func viewDidLoad() {
@@ -24,6 +27,14 @@ class ChatTableViewController: UITableViewController {
 
         // allow view model to refresh tableview
         viewModel.delegate = self
+        
+        // setup a search bar
+        searchController.searchResultsUpdater = self
+        searchController.obscuresBackgroundDuringPresentation = false
+        searchController.searchBar.placeholder = "Search your friend list..."
+        tableView.tableHeaderView = searchController.searchBar
+        definesPresentationContext = true
+        searchController.searchBar.delegate = self
     }
     
     // MARK: - Private Helper Functions
@@ -80,14 +91,14 @@ class ChatTableViewController: UITableViewController {
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return viewModel.currentFriends.count
+        return isFiltering() ? viewModel.filteredFriends.count : viewModel.currentFriends.count
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         var cell = tableView.dequeueReusableCell(withIdentifier: CellID.ChatList, for: indexPath) as! ChatFriendListTableViewCell
 
-        cell = viewModel.configureCell(atIndex: indexPath.row, withCell: cell)
-
+        cell = viewModel.configureCell(atIndex: indexPath.row, withCell: cell, filtered: isFiltering())
+        
         return cell
     }
     
@@ -105,7 +116,7 @@ class ChatTableViewController: UITableViewController {
             return
         }
         
-        let friend = viewModel.currentFriends[indexPath.row]
+        let friend = isFiltering() ? viewModel.filteredFriends[indexPath.row] : viewModel.currentFriends[indexPath.row]
         
         let window = UIApplication.shared.keyWindow!
         let viewActivity = UIActivityIndicatorView(style: .whiteLarge)
@@ -124,14 +135,23 @@ class ChatTableViewController: UITableViewController {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: {
                     self.check(isFriendBusy: friend, showBusyAlert: true, completion: { (busy) in
                         guard !busy else { return }
-                        self.performSegue(withIdentifier: SegueID.VideoCall, sender: friend)
+                        self.call(friend)
                     })
                 })
                 return
             }
-            self.performSegue(withIdentifier: SegueID.VideoCall, sender: friend)
+            self.call(friend)
         }
         
+    }
+    
+    private func call(_ friend: Friend) {
+        let callAlert = UIAlertController(title: nil, message: "Please confirm talking with \(friend.firstName)\n(Cost = 1 Credit)", preferredStyle: .alert)
+        callAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+        callAlert.addAction(UIAlertAction(title: "Connect", style: .default, handler: { (_) in
+            self.performSegue(withIdentifier: SegueID.VideoCall, sender: friend)
+        }))
+        present(callAlert, animated: true, completion: nil)
     }
     
     // prevent extra table view lines
@@ -141,8 +161,20 @@ class ChatTableViewController: UITableViewController {
         return view
     }
     
+    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        guard let user = viewModel.user else {
+            return "No credits available"
+        }
+        
+        return user.userProfile.numCredits == 0 ? "No credits available" : "Credits Available: " + user.userProfile.credits
+    }
+    
     override func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
         return 1
+    }
+    
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 60
     }
     
     // MARK: - Segue (start call)
@@ -156,6 +188,28 @@ class ChatTableViewController: UITableViewController {
         }
     }
 
+}
+
+extension ChatTableViewController: UISearchResultsUpdating, UISearchBarDelegate {
+    
+    func updateSearchResults(for searchController: UISearchController) {
+        viewModel.filterSearch(forContacts: true, withText: searchController.searchBar.text!)
+    }
+    
+    fileprivate func isFiltering() -> Bool {
+        return searchController.isActive && !searchBarIsEmpty()
+    }
+    
+    internal func searchBarShouldEndEditing(_ searchBar: UISearchBar) -> Bool {
+        searchController.searchBar.resignFirstResponder()
+        return true
+    }
+    
+    fileprivate func searchBarIsEmpty() -> Bool {
+        // Returns true if the text is empty or nil
+        return searchController.searchBar.text?.isEmpty ?? true
+    }
+    
 }
 
 extension ChatTableViewController: TableViewRefreshDelegate {

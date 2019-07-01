@@ -26,10 +26,6 @@ class VideoCallViewController: UIViewController {
     var friend: Friend! = nil
     var myUser: CharmUser! = nil
     
-    // Used to set screen brightness back to normal level after call ends
-    var brightness: CGFloat = 0
-    let originalBrightness: CGFloat = UIScreen.main.brightness
-    
     // Bool to check if there is a disconnection happening right now
     var disconnecting: Bool = false
     var userInitiatedDisconnect: Bool = false
@@ -118,22 +114,22 @@ class VideoCallViewController: UIViewController {
         tap.numberOfTouchesRequired = 1
         tap.delegate = self
         view.addGestureRecognizer(tap)
-        
-        brightness = UIScreen.main.brightness
-        if brightness != 1.0 { increaseScreenBrightness() }
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.navigationController?.navigationBar.isHidden = true
+        
+        // prevent display from dimming
+        UIApplication.shared.isIdleTimerDisabled = false
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         self.navigationController?.navigationBar.isHidden = false
         
-        // Set Brightness back to the original value
-        UIScreen.main.brightness = originalBrightness
+        // return idle timer to normal
+        UIApplication.shared.isIdleTimerDisabled = false
         
         if useTokenTimer.isValid { useTokenTimer.invalidate() }
         if endArchiveTimer.isValid { endArchiveTimer.invalidate() }
@@ -141,21 +137,6 @@ class VideoCallViewController: UIViewController {
         
         if !disconnecting && (session.sessionConnectionStatus == .connected || session.sessionConnectionStatus == .connecting || session.sessionConnectionStatus == .disconnecting) {
             endCall(self)
-        }
-    }
-    
-    // MARK: - Private Helper Functions
-    
-    private func increaseScreenBrightness() {
-        guard brightness != 1.0 else { return }
-        
-        brightness += 0.1
-        if brightness > 1.0 { brightness = 1.0 }
-        
-        UIScreen.main.brightness = brightness
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            self.increaseScreenBrightness()
         }
     }
     
