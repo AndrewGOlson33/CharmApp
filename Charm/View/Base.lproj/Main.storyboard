@@ -1511,7 +1511,7 @@
                                                             <nil key="textColor"/>
                                                             <nil key="highlightedColor"/>
                                                         </label>
-                                                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="uPq-4d-cLb" customClass="ScaleBar" customModule="Charm" customModuleProvider="target">
+                                                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="uPq-4d-cLb" customClass="SliderView" customModule="Charm" customModuleProvider="target">
                                                             <rect key="frame" x="20" y="45" width="358" height="16"/>
                                                             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                             <constraints>
@@ -1533,7 +1533,7 @@
                                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <connections>
                                                     <outlet property="lblMetric" destination="k6o-5j-4XU" id="U63-Fh-U8n"/>
-                                                    <outlet property="scalebar" destination="uPq-4d-cLb" id="Pol-FP-FMf"/>
+                                                    <outlet property="sliderView" destination="uPq-4d-cLb" id="bmb-lW-s80"/>
                                                 </connections>
                                             </tableViewCell>
                                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="cid_previous" id="tdz-tH-W8u" customClass="SummaryMetricTableViewCell" customModule="Charm" customModuleProvider="target">

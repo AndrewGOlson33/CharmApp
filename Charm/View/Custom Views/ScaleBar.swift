@@ -276,6 +276,9 @@ class SliderView: UIView {
     var redView: UIView? = nil
     var positionView: UIView!
     
+    // gets set to true after setup completes
+    var isSetup: Bool = false
+    
     // constants
     let animationDuration = 0.25
     
@@ -303,6 +306,8 @@ class SliderView: UIView {
         setupBackground()
         setupPositionIndicator()
         setupNavyView()
+        
+        isSetup = true
     }
     
     private func setupBackground() {
@@ -399,6 +404,7 @@ class SliderView: UIView {
                     self.navyView.backgroundColor = #colorLiteral(red: 0.1323429346, green: 0.1735357642, blue: 0.2699699998, alpha: 1)
                     self.navyView.layer.cornerRadius = self.frame.height / 2
                     self.backgroundView.addSubview(self.navyView)
+                    self.backgroundView.bringSubviewToFront(self.navyView)
                     return
                 } else {
                     self.navyView.frame = navyFrame
@@ -410,6 +416,7 @@ class SliderView: UIView {
                 navyView.backgroundColor = #colorLiteral(red: 0.1323429346, green: 0.1735357642, blue: 0.2699699998, alpha: 1)
                 navyView.layer.cornerRadius = frame.height / 2
                 backgroundView.addSubview(navyView)
+                backgroundView.bringSubviewToFront(navyView)
                 return
             } else {
                 navyView.frame = navyFrame
