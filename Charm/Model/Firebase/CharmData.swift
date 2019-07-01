@@ -187,6 +187,10 @@ struct SummaryCellInfo {
     var percent: Double
     var scalebarType: BarType
     
+    var detailedTitle: String {
+        return title + ": \(Int(score))"
+    }
+    
     var scoreString: String {
         return "\(score)"
     }

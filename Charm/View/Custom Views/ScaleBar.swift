@@ -311,6 +311,7 @@ class SliderView: UIView {
     }
     
     private func setupBackground() {
+        guard !isSetup else { return }
         // frame background should be clear
         backgroundColor = .clear
         
@@ -322,6 +323,7 @@ class SliderView: UIView {
     }
     
     private func setupPositionIndicator() {
+        guard !isSetup else { return }
         let size = frame.height * 1.2
         let startingPosition = (position * frame.width) - (size / 2)
         
@@ -342,6 +344,7 @@ class SliderView: UIView {
     }
     
     private func setupNavyView() {
+        guard !isSetup else { return }
         switch type {
         case .fillFromLeft:
             drawFillFromLeft(animated: false)
@@ -353,6 +356,7 @@ class SliderView: UIView {
     }
     
     private func setupRedView() {
+        guard !isSetup else { return }
         guard let minRed = minRedPosition, let maxRed = maxRedPosition else { return }
         print("~>Min red: \(minRed) max red: \(maxRed)")
     }

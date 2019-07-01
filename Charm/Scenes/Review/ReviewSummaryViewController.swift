@@ -252,46 +252,10 @@ extension ReviewSummaryViewController: UITableViewDelegate, UITableViewDataSourc
         
         let cell = tableView.dequeueReusableCell(withIdentifier: CellID.SummaryMetric, for: indexPath) as! SummaryMetricTableViewCell
         let info = cellInfo[indexPath.row]
-        cell.lblMetric.text = info.title
-//        cell.scalebar.labelType = .Percent
-//        cell.scalebar.setupBar(ofType: info.scalebarType, withValue: info.percent, andLabelPosition: info.percent)
+        cell.lblMetric.text = info.detailedTitle
         if !cell.sliderView.isSetup {
             cell.sliderView.setup(for: .fillFromLeft, at: CGFloat(info.percent))
         }
-        
-        
-//        if chartDidLoad {
-//            setupPopover(for: cell)
-//        }
-        
-//        var header = ""
-//
-//        switch info.title {
-//        case "Idea Engagement":
-//            header = "Estimated Engagement:"
-//            cell.lblScoreDetail.isHidden = true
-//        case "Conversation Engagement":
-//            cell.lblScoreDetail.text = "Talking Time"
-//            cell.lblScoreDetail.isHidden = false
-//            header = "Estimated Engagement:"
-//        case "Personal Connection":
-//            cell.lblScoreDetail.text = "First Person"
-//            cell.lblScoreDetail.isHidden = false
-//            header = "Estimated Connection:"
-//        case "Emotional Connection":
-//            cell.lblScoreDetail.isHidden = true
-//            header = "Estimated Connection:"
-//        case "Smiling":
-//            cell.lblScoreDetail.isHidden = true
-//            header = "Last Snapshot:"
-//        default:
-//            cell.lblScoreDetail.isHidden = true
-//        }
-//
-//        cell.lblMetricDetail.text = "\(header) \(info.scoreString)"
-//        cell.lblScore.text = info.percentString
-        
-        
         return cell
     }
     
@@ -301,32 +265,6 @@ extension ReviewSummaryViewController: UITableViewDelegate, UITableViewDataSourc
         let value = CGFloat(bar.calculatedValue)
         return bar.bounds.width * value
     }
-    
-//    private func setupPopover(for cell: SummaryMetricTableViewCell) {
-//        let text = cell.scalebar.labelText
-//        let frame = CGRect(x: getX(for: cell.scalebar), y: cell.scalebar.frame.origin.y - ((20 - cell.scalebar.frame.height) / 2), width: 56, height: 20)
-//
-//        if cell.popoverView == nil {
-//            cell.popoverView = LabelBubbleView(frame: frame, withText: text)
-//            cell.popoverView.alpha = 0.0
-//            cell.addSubview(cell.popoverView)
-//            cell.bringSubviewToFront(cell.popoverView)
-//            UIView.animate(withDuration: 0.25) {
-//                cell.popoverView.alpha = 1.0
-//            }
-//        } else {
-//            cell.popoverView.updateLabel(withText: text, frame: frame)
-//        }
-//
-//        // adjust frame if needed
-//        if cell.popoverView.frame.maxX >= cell.scalebar.frame.maxX {
-//            cell.popoverView.frame.origin.x -= cell.popoverView.frame.maxX - cell.scalebar.frame.maxX
-//        }
-//
-//        if cell.popoverView.frame.minX <= cell.scalebar.frame.minX {
-//            cell.popoverView.frame.origin.x += cell.scalebar.frame.minX - cell.popoverView.frame.minX
-//        }
-//    }
     
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
         let view = UIView(frame: CGRect(origin: .zero, size: CGSize(width: tableView.frame.width, height: 1)))
