@@ -205,13 +205,13 @@ class DetailChartViewController: UIViewController {
             }
             
             // setup slider bar data
-            if let position = snapshot.getTopLevelRawValue(forSummaryItem: .PersonalConnection) {
-                let cellInfo = SliderCellInfo(details: SliderDetails(type: .fillFromLeft), title: "Estimated Personal Engagement", score: position, position: CGFloat(position))
+            if let position = snapshot.getTopLevelRawValue(forSummaryItem: .PersonalConnection), let score = snapshot.getTopLevelScoreValue(forSummaryItem: .PersonalConnection) {
+                let cellInfo = SliderCellInfo(details: SliderDetails(type: .fillFromLeft), title: "Estimated Personal Engagement", score: score, position: CGFloat(position))
                 sliderData.append(cellInfo)
             }
             
             if let position = snapshot.getTopLevelRawValue(forSummaryItem: .FirstPerson) {
-                let cellInfo = SliderCellInfo(details: SliderDetails(type: .fillFromLeft), title: "First Person(%)", score: position, position: CGFloat(position))
+                let cellInfo = SliderCellInfo(details: SliderDetails(type: .fixed, valueType: .percent, minBlue: 0.33, maxBlue: 0.67), title: "First Person(%)", score: position, position: CGFloat(position))
                 sliderData.append(cellInfo)
             }
         
@@ -241,21 +241,18 @@ class DetailChartViewController: UIViewController {
             }
             
             // setup scale bar data
-            if let position = snapshot.getTopLevelRawValue(forSummaryItem: .EmotionalConnection) {
-//                , let connectionLevel = snapshot.getTopLevelRankValue(forSummaryItem: .EmotionalConnection)
-                let cellInfo = SliderCellInfo(details: SliderDetails(type: .fillFromLeft), title: "Estimated Emotional Connection", score: position, position: CGFloat(position))
+            if let position = snapshot.getTopLevelRawValue(forSummaryItem: .EmotionalConnection), let score = snapshot.getTopLevelScoreValue(forSummaryItem: .EmotionalConnection) {
+                let cellInfo = SliderCellInfo(details: SliderDetails(type: .fillFromLeft), title: "Estimated Emotional Connection", score: score, position: CGFloat(position))
                 sliderData.append(cellInfo)
             }
             
             if let position = snapshot.getTopLevelRawValue(forSummaryItem: .PositiveWords) {
-//                , let positiveLevel = snapshot.getTopLevelRankValue(forSummaryItem: .PositiveWords)
-                let cellInfo = SliderCellInfo(details: SliderDetails(type: .fillFromLeft), title: "Positive Word(%)", score: position, position: CGFloat(position))
+                let cellInfo = SliderCellInfo(details: SliderDetails(type: .fillFromRight, valueType: .percent, minBlue: 0.67, maxBlue: 1.0), title: "Positive Word(%)", score: position, position: CGFloat(position))
                 sliderData.append(cellInfo)
             }
             
             if let position = snapshot.getTopLevelRawValue(forSummaryItem: .NegativeWords) {
-//                , let negativeLevel = snapshot.getTopLevelRankValue(forSummaryItem: .NegativeWords)
-                let cellInfo = SliderCellInfo(details: SliderDetails(type: .fillFromLeft), title: "Negative Word(%)", score: position, position: CGFloat(position))
+                let cellInfo = SliderCellInfo(details: SliderDetails(type: .fillFromRight, valueType: .percent, minBlue: 0.67, maxBlue: 0.9, minRed: 0.9, maxRed: 1.0), title: "Negative Word(%)", score: position, position: CGFloat(position))
                 sliderData.append(cellInfo)
             }
             
@@ -300,9 +297,9 @@ class DetailChartViewController: UIViewController {
             ]
         default:
             colorArray = [
-                [NSNumber(value: 0), "rgb(0, 128 ,0)"],
-                [NSNumber(value: 0.5), "rgba(216,216,216, 0)"],
-                [NSNumber(value: 0.7), "rgba(47,216,216,0)"],
+                [NSNumber(value: 0), "rgb(86, 0 ,0)"],
+//                [NSNumber(value: 0.5), "rgba(216,216,216, 0)"],
+//                [NSNumber(value: 0.7), "rgba(47,216,216,0)"],
                 [NSNumber(value: 1), "rgb(255, 0 ,0)"]
             ]
         }
@@ -331,9 +328,9 @@ class DetailChartViewController: UIViewController {
             yaxis.max = 1.05
             yaxis.tickInterval = 0.21
         case .Emotions:
-            yaxis.min = -0.5
-            yaxis.max = 0.5
-            yaxis.tickInterval = 0.1
+            yaxis.min = -0.4
+            yaxis.max = 0.4
+            yaxis.tickInterval = 0.08
         }
         
         let legend = HILegend()
