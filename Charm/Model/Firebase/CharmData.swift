@@ -111,7 +111,7 @@ struct IdeaEngagement: Codable {
     
     // coding keys to how data is stored on firebase
     enum CodingKeys: String, CodingKey {
-        case score = "score"  // used to be ema3
+        case score = "ema3"  // used to be score
         case word = "token"
     }
 }
@@ -208,17 +208,55 @@ struct SummaryCellInfo {
     
 }
 
-struct ScalebarCellInfo {
-    var type: BarType
+struct SliderCellInfo {
+    var details: SliderDetails
     var title: String
     var score: Double
-    var position: Double
+    var position: CGFloat
     
-    init(type: BarType, title: String, score: Double, position: Double) {
-        self.type = type
+    init(details: SliderDetails, title: String, score: Double, position: CGFloat) {
+        self.details = details
         self.title = title
         self.score = score
         self.position = position
+    }
+}
+
+enum ValueType {
+    case int, double, percent
+}
+
+struct SliderDetails {
+    var type: SliderType
+    var valueType: ValueType
+    var minBlue: CGFloat
+    var maxBlue: CGFloat
+    var minRed: CGFloat?
+    var maxRed: CGFloat?
+    
+    var hasRed: Bool {
+        return minRed != nil && maxRed != nil
+    }
+    
+    var minRedValue: CGFloat {
+        if let value = minRed { return value }
+        
+        return -1
+    }
+    
+    var maxRedValue: CGFloat {
+        if let value = maxRed { return value }
+        
+        return -1
+    }
+    
+    init(type: SliderType, valueType: ValueType = .int, minBlue: CGFloat = 0, maxBlue: CGFloat = 1, minRed: CGFloat? = nil, maxRed: CGFloat? = nil) {
+        self.type = type
+        self.valueType = valueType
+        self.minBlue = minBlue
+        self.maxBlue = maxBlue
+        self.minRed = minRed
+        self.maxRed = maxRed
     }
 }
 

@@ -2591,7 +2591,6 @@ Subscriptions are required to pay for the backend server costs, and also help to
                                                 <constraint firstAttribute="trailing" secondItem="o9N-dK-AN1" secondAttribute="trailing" constant="16" id="hDy-26-i0b"/>
                                                 <constraint firstAttribute="bottom" secondItem="o9N-dK-AN1" secondAttribute="bottom" constant="8" id="neJ-zr-EXm"/>
                                                 <constraint firstItem="cWh-7y-Cqq" firstAttribute="top" secondItem="5Gi-IT-mGg" secondAttribute="top" constant="0.5" id="ns2-Vm-7TV"/>
-                                                <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="cWh-7y-Cqq" secondAttribute="trailing" constant="20" symbolic="YES" id="vT9-8C-wEC"/>
                                                 <constraint firstItem="TYW-4W-KJW" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="cWh-7y-Cqq" secondAttribute="trailing" constant="8" symbolic="YES" id="vzc-Xc-SFQ"/>
                                                 <constraint firstItem="TYW-4W-KJW" firstAttribute="top" secondItem="5Gi-IT-mGg" secondAttribute="top" constant="0.5" id="wWt-6O-obU"/>
                                             </constraints>
@@ -2695,7 +2694,6 @@ Subscriptions are required to pay for the backend server costs, and also help to
                                             <constraints>
                                                 <constraint firstAttribute="trailing" secondItem="odf-M4-ZWQ" secondAttribute="trailing" constant="8" id="8zS-Wh-Uex"/>
                                                 <constraint firstItem="HhQ-Q0-akE" firstAttribute="leading" secondItem="4dV-G7-yKE" secondAttribute="leading" constant="8" id="CHL-jp-dUh"/>
-                                                <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="HhQ-Q0-akE" secondAttribute="trailing" constant="20" symbolic="YES" id="HHw-8z-lbm"/>
                                                 <constraint firstItem="yQP-Tp-EQN" firstAttribute="top" secondItem="HhQ-Q0-akE" secondAttribute="bottom" constant="4" id="VcX-5d-LXH"/>
                                                 <constraint firstItem="odf-M4-ZWQ" firstAttribute="top" secondItem="4dV-G7-yKE" secondAttribute="top" constant="0.5" id="e4q-Px-ghb"/>
                                                 <constraint firstItem="odf-M4-ZWQ" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="HhQ-Q0-akE" secondAttribute="trailing" constant="8" symbolic="YES" id="ebn-7p-th6"/>
@@ -2800,7 +2798,7 @@ Subscriptions are required to pay for the backend server costs, and also help to
                                                     <rect key="frame" x="0.0" y="0.0" width="398" height="43.5"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <subviews>
-                                                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="jF2-OY-usc" customClass="ScaleBar" customModule="Charm" customModuleProvider="target">
+                                                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="jF2-OY-usc" customClass="SliderView" customModule="Charm" customModuleProvider="target">
                                                             <rect key="frame" x="8" y="19.5" width="382" height="16"/>
                                                             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                             <constraints>
@@ -2813,21 +2811,32 @@ Subscriptions are required to pay for the backend server costs, and also help to
                                                             <nil key="textColor"/>
                                                             <nil key="highlightedColor"/>
                                                         </label>
+                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="uAk-Sk-BZF">
+                                                            <rect key="frame" x="382" y="0.5" width="8" height="15"/>
+                                                            <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                                            <nil key="textColor"/>
+                                                            <nil key="highlightedColor"/>
+                                                        </label>
                                                     </subviews>
                                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                     <constraints>
                                                         <constraint firstItem="zsI-4K-JpR" firstAttribute="leading" secondItem="WzX-DV-WcL" secondAttribute="leading" constant="8" id="0Ch-dX-bD7"/>
+                                                        <constraint firstItem="jF2-OY-usc" firstAttribute="top" secondItem="uAk-Sk-BZF" secondAttribute="bottom" constant="4" id="1uh-OY-Rn4"/>
                                                         <constraint firstAttribute="bottom" secondItem="jF2-OY-usc" secondAttribute="bottom" constant="8" id="89v-yh-sa0"/>
-                                                        <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="zsI-4K-JpR" secondAttribute="trailing" constant="20" symbolic="YES" id="MQg-V7-S2d"/>
+                                                        <constraint firstItem="uAk-Sk-BZF" firstAttribute="top" secondItem="WzX-DV-WcL" secondAttribute="top" constant="0.5" id="Tyc-sD-1B1"/>
                                                         <constraint firstItem="jF2-OY-usc" firstAttribute="top" secondItem="zsI-4K-JpR" secondAttribute="bottom" constant="4" id="VTn-dv-RgI"/>
                                                         <constraint firstItem="zsI-4K-JpR" firstAttribute="top" secondItem="WzX-DV-WcL" secondAttribute="top" constant="0.5" id="ZIj-0c-7mb"/>
+                                                        <constraint firstItem="uAk-Sk-BZF" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="zsI-4K-JpR" secondAttribute="trailing" constant="8" symbolic="YES" id="eK6-mc-E29"/>
                                                         <constraint firstAttribute="trailing" secondItem="jF2-OY-usc" secondAttribute="trailing" constant="8" id="k05-X9-cGM"/>
                                                         <constraint firstItem="jF2-OY-usc" firstAttribute="leading" secondItem="WzX-DV-WcL" secondAttribute="leading" constant="8" id="w8m-kq-NXe"/>
+                                                        <constraint firstAttribute="trailing" secondItem="uAk-Sk-BZF" secondAttribute="trailing" constant="8" id="xMk-ka-8Ee"/>
                                                     </constraints>
                                                 </tableViewCellContentView>
                                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <connections>
                                                     <outlet property="lblDescription" destination="zsI-4K-JpR" id="WBq-Ay-X1Q"/>
+                                                    <outlet property="lblScore" destination="uAk-Sk-BZF" id="39R-tE-Opp"/>
+                                                    <outlet property="sliderView" destination="jF2-OY-usc" id="kzb-s8-tVY"/>
                                                 </connections>
                                             </tableViewCell>
                                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="cid_transcript" id="yGS-Cg-Lnh" customClass="TranscriptTableViewCell" customModule="Charm" customModuleProvider="target">
@@ -3005,7 +3014,6 @@ Subscriptions are required to pay for the backend server costs, and also help to
                                                 <constraint firstAttribute="bottom" secondItem="zqx-Lg-OOH" secondAttribute="bottom" constant="8" id="hTJ-fs-hp0"/>
                                                 <constraint firstItem="zqx-Lg-OOH" firstAttribute="top" secondItem="Pkf-7j-jHa" secondAttribute="bottom" constant="4" id="kfn-DO-4oa"/>
                                                 <constraint firstAttribute="trailing" secondItem="aUB-Ma-V3y" secondAttribute="trailing" constant="8" id="pMQ-Z3-daU"/>
-                                                <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="Pkf-7j-jHa" secondAttribute="trailing" constant="20" symbolic="YES" id="yz4-Fn-zkS"/>
                                             </constraints>
                                         </tableViewCellContentView>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>

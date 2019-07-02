@@ -27,8 +27,8 @@ class SandboxViewController: UIViewController {
     var speechModel: SpeechRecognitionModel = SpeechRecognitionModel()
     
     // arrays for drawing table view
-    var averageScalebarInfo: [ScalebarCellInfo] = []
-    var lastScalebarInfo: [ScalebarCellInfo] = []
+    var averageSliderInfo: [SliderCellInfo] = []
+    var lastSliderInfo: [SliderCellInfo] = []
     
     // Helps deal with layout glitches caused by highcharts
     var chartDidLoad: Bool = false
@@ -182,47 +182,47 @@ class SandboxViewController: UIViewController {
     
     private func updateLastScores(withData data: SandboxScore) {
         // clear out old data and enter new data
-        lastScalebarInfo = []
-        lastScalebarInfo.append(ScalebarCellInfo(type: .Green, title: "Length", score: Double(data.length), position: getScorePercent(score: Double(data.length), category: .Length)))
-        lastScalebarInfo.append(ScalebarCellInfo(type: .BlueRight, title: "Concrete", score: Double(data.concrete), position: getScorePercent(score: Double(data.concrete), category: .Concrete)))
-        lastScalebarInfo.append(ScalebarCellInfo(type: .BlueRight, title: "Abstract", score: Double(data.abstract), position: getScorePercent(score: Double(data.abstract), category: .Abstract)))
-        lastScalebarInfo.append(ScalebarCellInfo(type: .Green, title: "Unclassified", score: Double(data.unclassified), position: getScorePercent(score: Double(data.unclassified), category: .Length)))
-        lastScalebarInfo.append(ScalebarCellInfo(type: .BlueRight, title: "I/Me", score: Double(data.first), position: getScorePercent(score: Double(data.first), category: .First)))
-        lastScalebarInfo.append(ScalebarCellInfo(type: .BlueRight, title: "You", score: Double(data.second), position: getScorePercent(score: Double(data.second), category: .Second)))
-        lastScalebarInfo.append(ScalebarCellInfo(type: .BlueRight, title: "Positive", score: Double(data.length), position: getScorePercent(score: Double(data.positive), category: .Positive)))
-        lastScalebarInfo.append(ScalebarCellInfo(type: .RedRightQuarter, title: "Negative", score: Double(data.negative), position: getScorePercent(score: Double(data.negative), category: .Negative)))
-        lastScalebarInfo.append(ScalebarCellInfo(type: .RedRightQuarter, title: "Repeat", score: Double(data.repeated), position: getScorePercent(score: Double(data.repeated), category: .Negative)))
+        lastSliderInfo = []
+        lastSliderInfo.append(SliderCellInfo(details: SliderDetails(type: .fillFromLeft), title: "Length", score: Double(data.length), position: getScorePercent(score: Double(data.length), category: .Length)))
+        lastSliderInfo.append(SliderCellInfo(details: SliderDetails(type: .fillFromLeft), title: "Concrete", score: Double(data.concrete), position: getScorePercent(score: Double(data.concrete), category: .Concrete)))
+        lastSliderInfo.append(SliderCellInfo(details: SliderDetails(type: .fillFromLeft), title: "Abstract", score: Double(data.abstract), position: getScorePercent(score: Double(data.abstract), category: .Abstract)))
+        lastSliderInfo.append(SliderCellInfo(details: SliderDetails(type: .fillFromLeft), title: "Unclassified", score: Double(data.unclassified), position: getScorePercent(score: Double(data.unclassified), category: .Length)))
+        lastSliderInfo.append(SliderCellInfo(details: SliderDetails(type: .fillFromLeft), title: "I/Me", score: Double(data.first), position: getScorePercent(score: Double(data.first), category: .First)))
+        lastSliderInfo.append(SliderCellInfo(details: SliderDetails(type: .fillFromLeft), title: "You", score: Double(data.second), position: getScorePercent(score: Double(data.second), category: .Second)))
+        lastSliderInfo.append(SliderCellInfo(details: SliderDetails(type: .fillFromLeft), title: "Positive", score: Double(data.length), position: getScorePercent(score: Double(data.positive), category: .Positive)))
+        lastSliderInfo.append(SliderCellInfo(details: SliderDetails(type: .fillFromLeft), title: "Negative", score: Double(data.negative), position: getScorePercent(score: Double(data.negative), category: .Negative)))
+        lastSliderInfo.append(SliderCellInfo(details: SliderDetails(type: .fillFromLeft), title: "Repeat", score: Double(data.repeated), position: getScorePercent(score: Double(data.repeated), category: .Negative)))
     }
     
     private func updateAverageScores() {
         // clear out the old data and enter new data
-        averageScalebarInfo = []
+        averageSliderInfo = []
         let average = viewModel.getSandboxAverage()
-        averageScalebarInfo.append(ScalebarCellInfo(type: .Green, title: "Length", score: average.length, position: getScorePercent(score: average.length, category: .Length)))
-        averageScalebarInfo.append(ScalebarCellInfo(type: .BlueRight, title: "Concrete", score: average.concrete, position: getScorePercent(score: average.concrete, category: .Concrete)))
-        averageScalebarInfo.append(ScalebarCellInfo(type: .BlueRight, title: "Abstract", score: average.abstract, position: getScorePercent(score: average.abstract, category: .Abstract)))
-        averageScalebarInfo.append(ScalebarCellInfo(type: .Green, title: "Unclassified", score: average.unclassified, position: getScorePercent(score: average.unclassified, category: .Length)))
-        averageScalebarInfo.append(ScalebarCellInfo(type: .BlueRight, title: "I/Me", score: average.first, position: getScorePercent(score: average.first, category: .First)))
-        averageScalebarInfo.append(ScalebarCellInfo(type: .BlueRight, title: "You", score: average.second, position: getScorePercent(score: average.second, category: .Second)))
-        averageScalebarInfo.append(ScalebarCellInfo(type: .BlueRight, title: "Positive", score: average.length, position: getScorePercent(score: average.positive, category: .Positive)))
-        averageScalebarInfo.append(ScalebarCellInfo(type: .RedRightQuarter, title: "Negative", score: average.negative, position: getScorePercent(score: average.negative, category: .Negative)))
-        averageScalebarInfo.append(ScalebarCellInfo(type: .RedRightQuarter, title: "Repeat", score: average.repeated, position: getScorePercent(score: average.repeated, category: .Negative)))
+        averageSliderInfo.append(SliderCellInfo(details: SliderDetails(type: .fillFromLeft), title: "Length", score: average.length, position: getScorePercent(score: average.length, category: .Length)))
+        averageSliderInfo.append(SliderCellInfo(details: SliderDetails(type: .fillFromLeft), title: "Concrete", score: average.concrete, position: getScorePercent(score: average.concrete, category: .Concrete)))
+        averageSliderInfo.append(SliderCellInfo(details: SliderDetails(type: .fillFromLeft), title: "Abstract", score: average.abstract, position: getScorePercent(score: average.abstract, category: .Abstract)))
+        averageSliderInfo.append(SliderCellInfo(details: SliderDetails(type: .fillFromLeft), title: "Unclassified", score: average.unclassified, position: getScorePercent(score: average.unclassified, category: .Length)))
+        averageSliderInfo.append(SliderCellInfo(details: SliderDetails(type: .fillFromLeft), title: "I/Me", score: average.first, position: getScorePercent(score: average.first, category: .First)))
+        averageSliderInfo.append(SliderCellInfo(details: SliderDetails(type: .fillFromLeft), title: "You", score: average.second, position: getScorePercent(score: average.second, category: .Second)))
+        averageSliderInfo.append(SliderCellInfo(details: SliderDetails(type: .fillFromLeft), title: "Positive", score: average.length, position: getScorePercent(score: average.positive, category: .Positive)))
+        averageSliderInfo.append(SliderCellInfo(details: SliderDetails(type: .fillFromLeft), title: "Negative", score: average.negative, position: getScorePercent(score: average.negative, category: .Negative)))
+        averageSliderInfo.append(SliderCellInfo(details: SliderDetails(type: .fillFromLeft), title: "Repeat", score: average.repeated, position: getScorePercent(score: average.repeated, category: .Negative)))
     }
     
     // helper function to calculate position percent
-    private func getScorePercent(score: Double, category: ScorePhraseModel.ChatScoreCategory) -> Double {
+    private func getScorePercent(score: Double, category: ScorePhraseModel.ChatScoreCategory) -> CGFloat {
         
         switch category {
         case .Strength:
-            return Double(score) / 10.0
+            return CGFloat(score) / 10.0
         case .Length:
-            let percent = Double(score) / 15.0
+            let percent = CGFloat(score) / 15.0
             return percent > 1 ? 1 : percent
         case .Positive, .Negative:
-            let percent = Double(abs(score)) / 4.0
+            let percent = CGFloat(abs(score)) / 4.0
             return percent > 1 ? 1 : percent
         default:
-            let percent = Double(score) / 2.0
+            let percent = CGFloat(score) / 2.0
             return percent > 1 ? 1 : percent
         }
         
@@ -323,8 +323,8 @@ extension SandboxViewController: UITableViewDelegate, UITableViewDataSource {
         
         switch indexPath.row {
         case 0:
-            guard averageScalebarInfo.count > indexPath.section else { return cell }
-            let info = averageScalebarInfo[indexPath.section]
+            guard averageSliderInfo.count > indexPath.section else { return cell }
+            let info = averageSliderInfo[indexPath.section]
             cell.lblScore.text = "\(info.score)"
 //            cell.scaleBar.setupBar(ofType: info.type, withValue: info.score, andLabelPosition: info.position)
 //            cell.scaleBar.labelType = .RawValue
@@ -334,8 +334,8 @@ extension SandboxViewController: UITableViewDelegate, UITableViewDataSource {
                 cell.sliderView.updatePosition(to: CGFloat(info.position))
             }
         default:
-            guard lastScalebarInfo.count > indexPath.section else { return cell }
-            let info = lastScalebarInfo[indexPath.section]
+            guard lastSliderInfo.count > indexPath.section else { return cell }
+            let info = lastSliderInfo[indexPath.section]
             cell.lblScore.text = "\(Int(info.score))"
             
             if !cell.sliderView.isSetup {

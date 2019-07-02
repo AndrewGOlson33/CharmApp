@@ -121,7 +121,8 @@ class ReviewSummaryViewController: UIViewController {
         let options = HIOptions()
         let chart = HIChart()
         chart.polar = true
-        chart.type = "line"
+        chartView.plugins = ["variable-pie"]
+        chart.type = "variable-pie"
         let title = HITitle()
         
         // Create a legend so we can hide it
@@ -129,9 +130,9 @@ class ReviewSummaryViewController: UIViewController {
         legend.enabled = false
         
         // setup pane so polygon is facing up
-        let pane = HIPane()
-        pane.startAngle = 180
-        pane.size = view.frame.width * 0.5
+//        let pane = HIPane()
+//        pane.startAngle = 180
+//        pane.size = view.frame.width * 0.5
         
         // get date to use for title
         if let date = snapshot.date {
@@ -150,16 +151,16 @@ class ReviewSummaryViewController: UIViewController {
         yAxis.lineWidth = 0
         yAxis.gridLineInterpolation = "polygon"
         
-        let xAxis = HIXAxis()
-        xAxis.categories = [
-            "Idea Engagement",
-            "Conversation Engagement",
-            "Personal Connection",
-            "Emotional Connection",
-            "Smiling"
-        ]
-        xAxis.tickmarkPlacement = "on"
-        xAxis.lineWidth = 0
+//        let xAxis = HIXAxis()
+//        xAxis.categories = [
+//            "Idea Engagement",
+//            "Conversation Engagement",
+//            "Personal Connection",
+//            "Emotional Connection",
+//            "Smiling"
+//        ]
+//        xAxis.tickmarkPlacement = "on"
+//        xAxis.lineWidth = 0
         
         // get and set data
         
@@ -191,24 +192,64 @@ class ReviewSummaryViewController: UIViewController {
         cellInfo.append(SummaryCellInfo(title: "Smiling", score: smiling, percent: smilingPercent))
 
         // setup charts
-        let area = HIArea()
-        area.data = [
+//        let area = HIArea()
+//        area.data = [
+//            ["name": "Concrete", "y": concrete],
+//            ["name": "Talking %", "y": talking],
+//            ["name": "First Person", "y": firstPerson],
+//            ["name": "Positive Words", "y": positiveWords],
+//            ["name": "Smiling %", "y": smiling]
+//        ]
+//        area.pointPlacement = "on"
+//
+//        let line = HILine()
+//        line.data = [
+//            ["name": "Idea Engagement", "y": ideaEngagement],
+//            ["name": "Conversation Engagement", "y": conversationEngagement],
+//            ["name": "Personal Connection", "y": personalConnection],
+//            ["name": "Emotional Connection", "y": emotionalConnection],
+//            ["name": "Smiling %", "y": smiling]
+//        ]
+        
+        let plotoptions = HIPlotOptions()
+        
+        
+        let pie = HIPie()
+        pie.name = "Snapshot Summary"
+        pie.data = [
             ["name": "Concrete", "y": concrete],
             ["name": "Talking %", "y": talking],
             ["name": "First Person", "y": firstPerson],
             ["name": "Positive Words", "y": positiveWords],
-            ["name": "Smiling %", "y": smiling]
-        ]
-        area.pointPlacement = "on"
-
-        let line = HILine()
-        line.data = [
             ["name": "Idea Engagement", "y": ideaEngagement],
             ["name": "Conversation Engagement", "y": conversationEngagement],
             ["name": "Personal Connection", "y": personalConnection],
             ["name": "Emotional Connection", "y": emotionalConnection],
-            ["name": "Smiling %", "y": smiling]
+            ["name": "Smiling %", "y": smiling],
         ]
+        
+        plotoptions.pie = HIPie()
+        let dataLabel = HIDataLabelsOptionsObject()
+        dataLabel.enabled = false
+        plotoptions.pie.dataLabels = [dataLabel]
+        
+//        let variablePie = HIVariablepie()
+//        variablePie.minPointSize = 10
+//        variablePie.innerSize = "20%"
+//        variablePie.zMin = 0
+//        variablePie.name = "Snapshot Summary"
+//        variablePie.dataLabels = []
+//        variablePie.data = [
+//            ["name": "Concrete", "y": concrete],
+//            ["name": "Talking %", "y": talking],
+//            ["name": "First Person", "y": firstPerson],
+//            ["name": "Positive Words", "y": positiveWords],
+//            ["name": "Idea Engagement", "y": ideaEngagement],
+//            ["name": "Conversation Engagement", "y": conversationEngagement],
+//            ["name": "Personal Connection", "y": personalConnection],
+//            ["name": "Emotional Connection", "y": emotionalConnection],
+//            ["name": "Smiling %", "y": smiling],
+//        ]
         
         // hide hamburger button
         let navigation = HINavigation()
@@ -222,12 +263,13 @@ class ReviewSummaryViewController: UIViewController {
         options.title = title
         options.tooltip = tooltip
         options.legend = legend
-        options.pane = pane
+//        options.pane = pane
         options.yAxis = [yAxis]
-        options.xAxis = [xAxis]
-        options.series = [area, line]
+//        options.xAxis = [xAxis]
+        options.plotOptions = plotoptions
+        options.series = NSMutableArray(objects: pie) as? [HISeries]
         chartView.options = options
-        
+    
         // load data into tableview
         tableView.reloadData()
     }
