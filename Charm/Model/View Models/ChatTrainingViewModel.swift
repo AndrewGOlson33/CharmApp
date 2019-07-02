@@ -53,8 +53,8 @@ class ChatTrainingViewModel: NSObject {
         return model.model.converstaionPrompt
     }
     
-    var wordPrompts: [ConcreteNoun] {
-        return model.model.concreteNouns
+    var wordPrompts: [ConcreteNounFlashcard] {
+        return model.model.concreteNounFlashcards
     }
     
     // MARK: - Functions
@@ -64,7 +64,7 @@ class ChatTrainingViewModel: NSObject {
         return prompts[Int(arc4random_uniform(UInt32(prompts.count)))]
     }
     
-    func getRandomWordPrompt() -> ConcreteNoun? {
+    func getRandomWordPrompt() -> ConcreteNounFlashcard? {
         guard wordPrompts.count > 0 else { return nil }
         return wordPrompts[Int(arc4random_uniform(UInt32(wordPrompts.count)))]
     }

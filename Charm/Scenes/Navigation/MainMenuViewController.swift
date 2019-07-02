@@ -106,7 +106,6 @@ class MainMenuViewController: UIViewController {
     // Status Update
     
     fileprivate func checkStatus() {
-        print("~>Entered Checking status.")
         guard CharmUser.shared != nil && SubscriptionService.shared.receiptsCurrent else {
             SubscriptionService.shared.uploadReceipt()
             DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
@@ -210,7 +209,6 @@ class MainMenuViewController: UIViewController {
                     self.showConnectionAlert()
                 }
             } else {
-                print("~>Not connected")
                 if self.firstSetup { return }
                 self.showConnectionAlert()
             }
@@ -243,7 +241,6 @@ class MainMenuViewController: UIViewController {
                     CharmUser.shared = user
                     // Post a notification that the user changed, along with the user obejct
                     NotificationCenter.default.post(name: FirebaseNotification.CharmUserDidUpdate, object: user)
-                    print("~>Posting user did update.")
                     // post training history notification if needed
                     if self.shouldPostTrainingHistoryNotification {
                         NotificationCenter.default.post(name: FirebaseNotification.TrainingHistoryUpdated, object: nil)
@@ -312,7 +309,6 @@ class MainMenuViewController: UIViewController {
                         snapshot.date == snapshotData.date
                     }) else { continue }
                     UserSnapshotData.shared.snapshots.append(snapshotData)
-                    print("~>Added a user snapshot.")
                 } catch let error {
                     print("~>Error getting snapshot data: \(error)")
                 }
@@ -509,7 +505,6 @@ class MainMenuViewController: UIViewController {
 extension MainMenuViewController: SKProductsRequestDelegate {
     
     func validateProductIdentifiers() {
-        print("~>Validating product ID's.")
         let productsRequest = SKProductsRequest(productIdentifiers: Set(["com.charismaanalytics.Charm.sub.fiveTokens.monthly", "com.charismaanalytics.Charm.sub.threetokens.monthly"]))
         
         // Keep a strong reference to the request.

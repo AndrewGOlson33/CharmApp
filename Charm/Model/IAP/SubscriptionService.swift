@@ -114,7 +114,6 @@ class SubscriptionService: NSObject {
     }
     
     func loadSubscriptionOptions() {
-        print("~>Loading subscription options.")
         let threeMonthly = SubscriptionService.CharmThreeCreditsMonthlySubscription
         let fiveMonthly = SubscriptionService.CharmFiveCreditsMonthlySubscription
         
@@ -153,7 +152,6 @@ class SubscriptionService: NSObject {
             }
         } else {
             receiptsCurrent = true
-            print("~>There are no receipts.")
             completion?(false)
         }
     }

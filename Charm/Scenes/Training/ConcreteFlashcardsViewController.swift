@@ -14,8 +14,10 @@ import AVKit
 class ConcreteFlashcardsViewController: UIViewController {
     
     // MARK: - IBOutlets
-    
-    @IBOutlet weak var scaleBar: ScaleBar!
+
+    @IBOutlet weak var lblCurrentStreak: UILabel!
+    @IBOutlet weak var lblHighScore: UILabel!
+    @IBOutlet weak var streakView: SliderView!
     @IBOutlet weak var resetButton: UIButton!
     @IBOutlet weak var viewFlashcards: UIView!
     @IBOutlet weak var lblWord: UILabel!
@@ -45,9 +47,6 @@ class ConcreteFlashcardsViewController: UIViewController {
     
     var lastTouchedButton: UIView? = nil
     
-    // Popover view
-    var popoverView: LabelBubbleView!
-    
     // MARK: - View Lifecycle
     
     override func viewDidLoad() {
@@ -71,17 +70,17 @@ class ConcreteFlashcardsViewController: UIViewController {
             button.layer.shadowOpacity = 0.5
         }
         
-        // setup scale bar
-        scaleBar.labelType = self.viewModel.shouldShowNA ? .NA : .IntValue
-        scaleBar.setupBar(ofType: .Green, withValue: 0, andLabelPosition: 0)
+        streakView.setup(for: .fillFromLeft)
+        
         viewModel.getAverageConcreteScore { (concreteScores) in
-            self.scaleBar.update(withValue: Double(concreteScores.numCorrect), andCalculatedValue: concreteScores.percentOfRecord)
-            self.setupPopover()
+            self.lblCurrentStreak.text = concreteScores.currentStreakDetail
+            self.lblHighScore.text = concreteScores.highScoreDetail
+            self.streakView.updatePosition(to: CGFloat(concreteScores.percentOfRecord))
         }
         
         
         // Start animating activity view and turn on firebase listener
-        if viewModel.trainingModel.model.concreteNouns.count == 0 || viewModel.trainingModel.model.abstractNouns.count == 0 {
+        if viewModel.trainingModel.model.concreteNounFlashcards.count == 0 || viewModel.trainingModel.model.abstractNounConcreteFlashcards.count == 0 {
             viewLoading.layer.cornerRadius = 20
             viewLoading.isHidden = false
             activityIndicator.startAnimating()
@@ -145,32 +144,6 @@ class ConcreteFlashcardsViewController: UIViewController {
         }
     }
     
-    // Setup Popover View
-    private func setupPopover() {
-        let text = viewModel.shouldShowNA ? "N/A" : scaleBar.labelText
-        let frame = CGRect(x: getX(for: scaleBar) + scaleBar.frame.origin.x, y: scaleBar.frame.origin.y - ((20 - scaleBar.frame.height) / 2), width: 56, height: 20)
-        
-        if popoverView == nil {
-            popoverView = LabelBubbleView(frame: frame, withText: text)
-  
-            view.addSubview(popoverView)
-            view.bringSubviewToFront(popoverView)
-        } else {
-            popoverView.updateLabel(withText: text, frame: frame)
-        }
-        
-        // adjust frame if needed
-        if popoverView.frame.maxX >= scaleBar.frame.maxX {
-            popoverView.frame.origin.x -= popoverView.frame.maxX - scaleBar.frame.maxX
-        }
-        
-        if popoverView.frame.minX <= scaleBar.frame.minX {
-            popoverView.frame.origin.x += scaleBar.frame.minX - popoverView.frame.minX
-        }
-        
-        print("~>Added popover at: \(popoverView.frame.origin.x)")
-    }
-    
     // Get calculated x coord for scalebar
     private func getX(for bar: ScaleBar) -> CGFloat {
         let value = CGFloat(bar.calculatedValue)
@@ -203,9 +176,9 @@ class ConcreteFlashcardsViewController: UIViewController {
     @objc private func trainingHistoryUpdated() {
         viewModel.getAverageConcreteScore { (newHistory) in
             DispatchQueue.main.async {
-                self.scaleBar.labelType = self.viewModel.shouldShowNA ? .NA : .IntValue
-                self.scaleBar.update(withValue: Double(newHistory.numCorrect), andCalculatedValue: newHistory.percentOfRecord)
-                self.setupPopover()
+                self.lblCurrentStreak.text = newHistory.currentStreakDetail
+                self.lblHighScore.text = newHistory.highScoreDetail
+                self.streakView.updatePosition(to: CGFloat(newHistory.percentOfRecord))
             }
         }
     }
@@ -266,17 +239,6 @@ class ConcreteFlashcardsViewController: UIViewController {
     
     @IBAction func resetButtonTapped(_ sender: Any) {
         viewModel.resetRecord(forType: .Concrete)
-//        // overwrite old data with new data
-//        let blankHistory = ConcreteTrainingHistory()
-//        do {
-//            let data = try FirebaseEncoder().encode(blankHistory)
-//            Database.database().reference().child(FirebaseStructure.Users).child(Auth.auth().currentUser!.uid).child(FirebaseStructure.Training.TrainingDatabase).child(FirebaseStructure.Training.ConcreteHistory).setValue(data)
-//        } catch let error {
-//            print("~>Got an error trying to encode a blank history: \(error)")
-//            let alert = UIAlertController(title: "Unable to Reset", message: "Unable to reset scores at this time.  Please try again later.", preferredStyle: .alert)
-//            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-//            present(alert, animated: true, completion: nil)
-//        }
     }
     
 }

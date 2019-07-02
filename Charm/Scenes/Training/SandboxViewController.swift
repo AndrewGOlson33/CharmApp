@@ -325,54 +325,31 @@ extension SandboxViewController: UITableViewDelegate, UITableViewDataSource {
         case 0:
             guard averageScalebarInfo.count > indexPath.section else { return cell }
             let info = averageScalebarInfo[indexPath.section]
-            cell.scaleBar.setupBar(ofType: info.type, withValue: info.score, andLabelPosition: info.position)
-            cell.scaleBar.labelType = .RawValue
+            cell.lblScore.text = "\(info.score)"
+//            cell.scaleBar.setupBar(ofType: info.type, withValue: info.score, andLabelPosition: info.position)
+//            cell.scaleBar.labelType = .RawValue
+            if !cell.sliderView.isSetup {
+                cell.sliderView.setup(for: .fillFromLeft, at: CGFloat(info.position))
+            } else {
+                cell.sliderView.updatePosition(to: CGFloat(info.position))
+            }
         default:
             guard lastScalebarInfo.count > indexPath.section else { return cell }
             let info = lastScalebarInfo[indexPath.section]
-            cell.scaleBar.setupBar(ofType: info.type, withValue: info.score, andLabelPosition: info.position)
-            cell.scaleBar.labelType = .IntValue
-        }
-        
-        if chartDidLoad {
-            setupPopover(for: cell)
+            cell.lblScore.text = "\(Int(info.score))"
+            
+            if !cell.sliderView.isSetup {
+                cell.sliderView.setup(for: .fillFromLeft, at: CGFloat(info.position))
+            } else {
+                cell.sliderView.updatePosition(to: CGFloat(info.position))
+            }
+//            cell.scaleBar.setupBar(ofType: info.type, withValue: info.score, andLabelPosition: info.position)
+//            cell.scaleBar.labelType = .IntValue
         }
         
         return cell
     }
-    
-    // MARK: - Popover Setup functions
-    
-    private func setupPopover(for cell: ScaleBarTableViewCell) {
-        let text = cell.scaleBar.labelText
-        let frame = CGRect(x: getX(for: cell.scaleBar), y: cell.scaleBar.frame.origin.y - ((20 - cell.scaleBar.frame.height) / 2), width: 56, height: 20)
-        
-        if cell.popoverView == nil {
-            cell.popoverView = LabelBubbleView(frame: frame, withText: text)
-            cell.popoverView.alpha = 0.0
-            cell.addSubview(cell.popoverView)
-            cell.bringSubviewToFront(cell.popoverView)
-            UIView.animate(withDuration: 0.25) {
-                cell.popoverView.alpha = 1.0
-            }
-        } else {
-            cell.popoverView.updateLabel(withText: text, frame: frame)
-        }
-        
-        // adjust frame if needed
-        if cell.popoverView.frame.maxX >= cell.scaleBar.frame.maxX {
-            cell.popoverView.frame.origin.x -= cell.popoverView.frame.maxX - cell.scaleBar.frame.maxX
-        }
-        
-        if cell.popoverView.frame.minX <= cell.scaleBar.frame.minX {
-            cell.popoverView.frame.origin.x += cell.scaleBar.frame.minX - cell.popoverView.frame.minX
-        }
-    }
-    
-    private func getX(for bar: ScaleBar) -> CGFloat {
-        let value = CGFloat(bar.calculatedValue)
-        return bar.bounds.width * value
-    }
+
 }
 
 // MARK: - Speech Delegate

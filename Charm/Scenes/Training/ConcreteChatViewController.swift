@@ -234,10 +234,8 @@ class ConcreteChatViewController: UIViewController {
     
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
         if keyPath == "outputVolume"{
-            print("~>Got volume change")
             let volume = (change?[NSKeyValueChangeKey.newKey] as!
                 NSNumber).floatValue
-            print("~>volume " + volume.description)
             if volume == 0.0 && !volumeWasZero {
                 animate(button: btnReplay, toImage: mute)
                 volumeWasZero = true
@@ -275,81 +273,93 @@ extension ConcreteChatViewController: UITableViewDelegate, UITableViewDataSource
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: CellID.ScaleBar, for: indexPath) as! ScaleBarTableViewCell
-        cell.scaleBar.labelType = .IntValue
         
         switch indexPath.row {
         case 0:
             let strength = trainingViewModel.strength
             cell.lblDescription.text = "Estimated Phrase Strength"
-            cell.scaleBar.setupBar(ofType: .Green, withValue: Double(strength.score), andLabelPosition: strength.position)
+            cell.lblScore.text = "\(strength.score)"
+            
+            if !cell.sliderView.isSetup {
+                cell.sliderView.setup(for: .fillFromLeft, at: CGFloat(strength.position))
+            } else if cell.sliderView.position != CGFloat(strength.position) {
+                cell.sliderView.updatePosition(to: CGFloat(strength.position))
+            }
         case 1:
             let length = trainingViewModel.length
             cell.lblDescription.text = "Phrase Length"
-            cell.scaleBar.setupBar(ofType: .BlueRight, withValue: Double(length.score), andLabelPosition: length.position)
+            cell.lblScore.text = "\(length.score)"
+            
+            if !cell.sliderView.isSetup {
+                cell.sliderView.setup(for: .fillFromLeft, at: CGFloat(length.position))
+            } else if cell.sliderView.position != CGFloat(length.position) {
+                cell.sliderView.updatePosition(to: CGFloat(length.position))
+            }
         case 2:
             let concrete = trainingViewModel.concrete
             cell.lblDescription.text = "Concrete Details"
-            cell.scaleBar.setupBar(ofType: .BlueRight, withValue: Double(concrete.score), andLabelPosition: concrete.position)
+            cell.lblScore.text = "\(concrete.score)"
+            
+            if !cell.sliderView.isSetup {
+                cell.sliderView.setup(for: .fillFromLeft, at: CGFloat(concrete.position))
+            } else if cell.sliderView.position != CGFloat(concrete.position) {
+                cell.sliderView.updatePosition(to: CGFloat(concrete.position))
+            }
         case 3:
             let abstract = trainingViewModel.abstract
             cell.lblDescription.text = "Abstract Ideas"
-            cell.scaleBar.setupBar(ofType: .BlueRight, withValue: Double(abstract.score), andLabelPosition: abstract.position)
+            cell.lblScore.text = "\(abstract.score)"
+            
+            if !cell.sliderView.isSetup {
+                cell.sliderView.setup(for: .fillFromLeft, at: CGFloat(abstract.position))
+            } else if cell.sliderView.position != CGFloat(abstract.position) {
+                cell.sliderView.updatePosition(to: CGFloat(abstract.position))
+            }
         case 4:
             let first = trainingViewModel.first
             cell.lblDescription.text = "First Person (\"I/\"Me\")"
-            cell.scaleBar.setupBar(ofType: .BlueRight, withValue: Double(first.score), andLabelPosition: first.position)
+            cell.lblScore.text = "\(first.score)"
+            
+            if !cell.sliderView.isSetup {
+                cell.sliderView.setup(for: .fillFromLeft, at: CGFloat(first.position))
+            } else if cell.sliderView.position != CGFloat(first.position) {
+                cell.sliderView.updatePosition(to: CGFloat(first.position))
+            }
         case 5:
             let second = trainingViewModel.second
             cell.lblDescription.text = "Second Person (\"You\")"
-            cell.scaleBar.setupBar(ofType: .BlueRight, withValue: Double(second.score), andLabelPosition: second.position)
+            cell.lblScore.text = "\(second.score)"
+            
+            if !cell.sliderView.isSetup {
+                cell.sliderView.setup(for: .fillFromLeft, at: CGFloat(second.position))
+            } else if cell.sliderView.position != CGFloat(second.position) {
+                cell.sliderView.updatePosition(to: CGFloat(second.position))
+            }
         case 6:
             let positive = trainingViewModel.positive
             cell.lblDescription.text = "Positive Word Score"
-            cell.scaleBar.setupBar(ofType: .BlueRight, withValue: Double(positive.score), andLabelPosition: positive.position)
+            cell.lblScore.text = "\(positive.score)"
+            
+            if !cell.sliderView.isSetup {
+                cell.sliderView.setup(for: .fillFromLeft, at: CGFloat(positive.position))
+            } else if cell.sliderView.position != CGFloat(positive.position) {
+                cell.sliderView.updatePosition(to: CGFloat(positive.position))
+            }
         case 7:
             let negative = trainingViewModel.negative
             cell.lblDescription.text = "Negative Word Score"
-            cell.scaleBar.setupBar(ofType: .RedRightQuarter, withValue: Double(negative.score), andLabelPosition: negative.position)
+            cell.lblScore.text = "\(negative.score)"
+            
+            if !cell.sliderView.isSetup {
+                cell.sliderView.setup(for: .fillFromLeft, at: CGFloat(negative.position))
+            } else if cell.sliderView.position != CGFloat(negative.position) {
+                cell.sliderView.updatePosition(to: CGFloat(negative.position))
+            }
         default:
             print("~>Should not be possible to get here.")
         }
-        
-        setupPopover(for: cell)
+
         return cell
-    }
-    
-//    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-//        tableView.deselectRow(at: indexPath, animated: false)
-//        if let cell = tableView.cellForRow(at: indexPath) as? ScaleBarTableViewCell {
-//            setupPopover(for: cell)
-//        }
-//    }
-    
-    private func getX(for bar: ScaleBar) -> CGFloat {
-        let value = CGFloat(bar.calculatedValue)
-        return bar.bounds.width * value
-    }
-    
-    private func setupPopover(for cell: ScaleBarTableViewCell) {
-        let text = cell.scaleBar.labelText
-        let frame = CGRect(x: getX(for: cell.scaleBar), y: cell.scaleBar.frame.origin.y - ((20 - cell.scaleBar.frame.height) / 2), width: 56, height: 20)
-        
-        if cell.popoverView == nil {
-            cell.popoverView = LabelBubbleView(frame: frame, withText: text)
-            cell.addSubview(cell.popoverView)
-            cell.bringSubviewToFront(cell.popoverView)
-        } else {
-            cell.popoverView.updateLabel(withText: text, frame: frame)
-        }
-        
-        // adjust frame if needed
-        if cell.popoverView.frame.maxX >= cell.scaleBar.frame.maxX {
-            cell.popoverView.frame.origin.x -= cell.popoverView.frame.maxX - cell.scaleBar.frame.maxX
-        }
-        
-        if cell.popoverView.frame.minX <= cell.scaleBar.frame.minX {
-            cell.popoverView.frame.origin.x += cell.scaleBar.frame.minX - cell.popoverView.frame.minX
-        }
     }
 }
 

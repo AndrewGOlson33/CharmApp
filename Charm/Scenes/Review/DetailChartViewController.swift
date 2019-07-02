@@ -538,10 +538,6 @@ extension DetailChartViewController: UITableViewDelegate, UITableViewDataSource 
             cell.scaleBar.setupBar(ofType: info.type, withValue: info.score, andLabelPosition: info.position)
             cell.lblDescription.text = info.title
             
-            if chartDidLoad {
-                setupPopover(for: cell)
-            }
-            
             return cell
         default:
             // setup transcript
@@ -675,36 +671,5 @@ extension DetailChartViewController: UITableViewDelegate, UITableViewDataSource 
         }
         
         scrollCounter = 0
-    }
-    
-    private func getX(for bar: ScaleBar) -> CGFloat {
-        let value = CGFloat(bar.calculatedValue)
-        return bar.bounds.width * value
-    }
-    
-    private func setupPopover(for cell: ScaleBarTableViewCell) {
-        let text = cell.scaleBar.labelText
-        let frame = CGRect(x: getX(for: cell.scaleBar), y: cell.scaleBar.frame.origin.y - ((20 - cell.scaleBar.frame.height) / 2), width: 56, height: 20)
-        
-        if cell.popoverView == nil {
-            cell.popoverView = LabelBubbleView(frame: frame, withText: text)
-            cell.popoverView.alpha = 0.0
-            cell.addSubview(cell.popoverView)
-            cell.bringSubviewToFront(cell.popoverView)
-            UIView.animate(withDuration: 0.25) {
-                cell.popoverView.alpha = 1.0
-            }
-        } else {
-            cell.popoverView.updateLabel(withText: text, frame: frame)
-        }
-        
-        // adjust frame if needed
-        if cell.popoverView.frame.maxX >= cell.scaleBar.frame.maxX {
-            cell.popoverView.frame.origin.x -= cell.popoverView.frame.maxX - cell.scaleBar.frame.maxX
-        }
-        
-        if cell.popoverView.frame.minX <= cell.scaleBar.frame.minX {
-            cell.popoverView.frame.origin.x += cell.scaleBar.frame.minX - cell.popoverView.frame.minX
-        }
     }
 }

@@ -478,10 +478,8 @@ class ContactsViewModel: NSObject {
         }
         
         contactsGroup.notify(queue: .main) {
-            print("~>Contacts group finished.")
             self.delegate?.updateTableView()
             self.performFriendListMaintenence()
-            print("~>Pending: \(self.pendingReceived)")
         }
     }
     
@@ -489,7 +487,6 @@ class ContactsViewModel: NSObject {
     
     // updates should be live
     @objc private func updatedUser(_ sender: Notification) {
-        print("~>Updated user in contacts model.")
         guard let updatedUser = sender.object as? CharmUser else { return }
         user = updatedUser
         

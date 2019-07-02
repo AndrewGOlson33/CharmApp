@@ -12,11 +12,10 @@ class ScaleBarTableViewCell: UITableViewCell {
     
     // MARK: - IBOutlets
     
+    @IBOutlet weak var sliderView: SliderView!
     @IBOutlet weak var scaleBar: ScaleBar!
     @IBOutlet weak var lblDescription: UILabel!
-    
-    // Popover view
-    var popoverView: LabelBubbleView!
+    @IBOutlet weak var lblScore: UILabel!
     
     override func awakeFromNib() {
         super.awakeFromNib()

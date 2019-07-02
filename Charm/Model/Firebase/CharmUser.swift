@@ -200,6 +200,22 @@ struct ConcreteTrainingHistory: Codable {
     var scoreValue: Double {
         return ceil(averageScore*100)/100
     }
+    
+    var currentStreakDetail: String {
+        return "Current Streak: \(numCorrect)"
+    }
+    
+    var highScoreDetail: String {
+        return "High Score: \(highScore)"
+    }
+    
+    var highScore: Int {
+        if let score = correctRecord {
+            return score
+        } else {
+            return 0
+        }
+    }
 }
 
 struct EmotionsTrainingHistory: Codable {
@@ -230,6 +246,22 @@ struct EmotionsTrainingHistory: Codable {
     
     var scoreValue: Double {
         return ceil(averageScore*100)/100
+    }
+    
+    var currentStreakDetail: String {
+        return "Current Streak: \(numCorrect)"
+    }
+    
+    var highScoreDetail: String {
+        return "High Score: \(highScore)"
+    }
+    
+    var highScore: Int {
+        if let score = correctRecord {
+            return score
+        } else {
+            return 0
+        }
     }
 }
 

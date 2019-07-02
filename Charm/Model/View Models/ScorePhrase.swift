@@ -61,8 +61,6 @@ class ScorePhraseModel: NSObject {
         var positiveScore: Int = 0
         var negativeScore: Int = 0
         
-        print("~>Model has unclassified words: \(String(describing: model.model.unclassifiedNouns))")
-        
         tagger.enumerateTags(in: range, unit: .word, scheme: .lexicalClass, options: optionsTagger) { tag, tokenRange, _ in
 
             let word = (text as NSString).substring(with: tokenRange)

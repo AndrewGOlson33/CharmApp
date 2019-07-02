@@ -40,14 +40,14 @@ class FlashcardsViewModel: NSObject {
         case .Concrete:
             let random = Int(arc4random_uniform(2))
             if random == 0 {
-                let randomIndex = Int(arc4random_uniform(UInt32(trainingModel.model.abstractNouns.count)))
+                let randomIndex = Int(arc4random_uniform(UInt32(trainingModel.model.abstractNounConcreteFlashcards.count)))
                 answer = .Abstract
-                answerString = trainingModel.model.abstractNouns[randomIndex].word
+                answerString = trainingModel.model.abstractNounConcreteFlashcards[randomIndex].word
                 return answerString
             } else {
-                let randomIndex = Int(arc4random_uniform(UInt32(trainingModel.model.concreteNouns.count)))
+                let randomIndex = Int(arc4random_uniform(UInt32(trainingModel.model.concreteNounFlashcards.count)))
                 answer = .Concrete
-                answerString = trainingModel.model.concreteNouns[randomIndex].word
+                answerString = trainingModel.model.concreteNounFlashcards[randomIndex].word
                 return answerString
             }
         case .Emotions:

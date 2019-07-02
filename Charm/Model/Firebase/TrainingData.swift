@@ -19,7 +19,7 @@ class TrainingModelCapsule {
     
     var model: TrainingData = TrainingData()
     var isModelLoaded: Bool {
-        return model.abstractNouns.count > 0 && model.concreteNouns.count > 0 && model.converstaionPrompt.count > 0 && model.negativeWords.count > 0 && model.positiveWords.count > 0
+        return model.abstractNounConcreteFlashcards.count > 0 && model.concreteNounFlashcards.count > 0 && model.converstaionPrompt.count > 0 && model.negativeWords.count > 0 && model.positiveWords.count > 0
     }
     
     init() {
@@ -112,6 +112,8 @@ class TrainingModelCapsule {
 struct TrainingData: Codable {
     var concreteNouns: [ConcreteNoun] = []
     var abstractNouns: [AbstractNoun] = []
+    var concreteNounFlashcards: [ConcreteNounFlashcard] = []
+    var abstractNounConcreteFlashcards: [AbstractNounFlashcard] = []
     var firstPerson: [String] = []
     var firstPersonLowercased: [String] {
         return firstPerson.map {$0.lowercased()}
@@ -124,6 +126,22 @@ struct TrainingData: Codable {
     var negativeWords: [ScoredWord] = []
     var converstaionPrompt: [ConversationPrompts] = []
     var unclassifiedNouns: [String]? = []
+}
+
+struct ConcreteNounFlashcard: Codable {
+    var word: String
+    
+    enum CodingKeys: String, CodingKey {
+        case word = "X1"
+    }
+}
+
+struct AbstractNounFlashcard: Codable {
+    var word: String
+    
+    enum CodingKeys: String, CodingKey {
+        case word = "X1"
+    }
 }
 
 struct ConcreteNoun: Codable {

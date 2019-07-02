@@ -17,6 +17,7 @@ class EmotionFlashcardsViewController: UIViewController {
     
     @IBOutlet weak var lblStreak: UILabel!
     @IBOutlet weak var streakBar: SliderView!
+    @IBOutlet weak var lblHighScore: UILabel!
     @IBOutlet weak var resetButton: UIButton!
     @IBOutlet weak var viewFlashcards: UIView!
     @IBOutlet weak var lblWord: UILabel!
@@ -48,9 +49,6 @@ class EmotionFlashcardsViewController: UIViewController {
     var negativeFrame: CGRect = CGRect.zero
     
     var lastTouchedButton: UIView? = nil
-    
-    // Popover view
-    var popoverView: LabelBubbleView!
     
     // MARK: - View Lifecycle
     
@@ -85,14 +83,15 @@ class EmotionFlashcardsViewController: UIViewController {
         viewModel.getAverageEmotionsScore { (emotionsScores) in
             // make sure this is done on main thread
             DispatchQueue.main.async {
-                self.lblStreak.text = "Current Streak: \(emotionsScores.numCorrect)"
+                self.lblStreak.text = emotionsScores.currentStreakDetail
+                self.lblHighScore.text = emotionsScores.highScoreDetail
                 self.streakBar.updatePosition(to: CGFloat(emotionsScores.percentOfRecord))
             }
             
         }
         
         // Start animating activity view and turn on firebase listener
-        if viewModel.trainingModel.model.positiveWords.count == 0 || viewModel.trainingModel.model.negativeWords.count == 0 || viewModel.trainingModel.model.abstractNouns.count == 0 {
+        if viewModel.trainingModel.model.positiveWords.count == 0 || viewModel.trainingModel.model.negativeWords.count == 0 || viewModel.trainingModel.model.abstractNounConcreteFlashcards.count == 0 {
             viewLoading.layer.cornerRadius = 20
             viewLoading.isHidden = false
             activityIndicator.startAnimating()
@@ -189,7 +188,8 @@ class EmotionFlashcardsViewController: UIViewController {
         
         viewModel.getAverageEmotionsScore { (newHistory) in
             DispatchQueue.main.async {
-                self.lblStreak.text = "Current Streak: \(newHistory.numCorrect)"
+                self.lblStreak.text = newHistory.currentStreakDetail
+                self.lblHighScore.text = newHistory.highScoreDetail
                 self.streakBar.updatePosition(to: CGFloat(newHistory.percentOfRecord))
             }
         }
