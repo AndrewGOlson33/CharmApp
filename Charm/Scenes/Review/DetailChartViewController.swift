@@ -283,17 +283,24 @@ class DetailChartViewController: UIViewController {
         switch chartType! {
         case .IdeaEngagement:
             colorArray = [
-                [NSNumber(value: 0), "rgb(242, 0, 0)"],
+                [NSNumber(value: 0), "rgb(242, 0, 0, 1)"],
                 [NSNumber(value: 0.2), "rgba(242, 0, 0, 0)"],
                 [NSNumber(value: 0.85), "rgba(128, 0, 0, 0)"],
-                [NSNumber(value: 1), "rgb(86, 0 , 0)"]
+                [NSNumber(value: 1), "rgb(86, 0 , 0, 1)"]
             ]
         case .Conversation:
             colorArray = [
-                [NSNumber(value: 0), "rgb(242, 0, 0)"],
+                [NSNumber(value: 0), "rgb(242, 0, 0, 1)"],
                 [NSNumber(value: 0.15), "rgba(242, 0, 0, 0)"],
                 [NSNumber(value: 0.85), "rgba(128, 0, 0, 0)"],
-                [NSNumber(value: 1), "rgb(86, 0 , 0)"]
+                [NSNumber(value: 1), "rgb(86, 0 , 0, 1)"]
+            ]
+        case .Emotions:
+            colorArray = [
+                [NSNumber(value: 0), "rgb(242, 0, 0)"],
+                [NSNumber(value: 0.15), "rgba(242, 0, 0, 0)"],
+                [NSNumber(value: 0.7), "rgba(80,216,0,0)"],
+                [NSNumber(value: 1), "rgba(80,216,0,1)"]
             ]
         default:
             colorArray = [

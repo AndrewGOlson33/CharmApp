@@ -21,6 +21,10 @@ struct Subscription {
     let product: SKProduct
     let formattedPrice: String
     
+    var priceDetail: String {
+        return formattedPrice + "/Month"
+    }
+    
     init(product: SKProduct) {
         self.product = product
         

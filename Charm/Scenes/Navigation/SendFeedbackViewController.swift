@@ -33,7 +33,7 @@ class SendFeedbackViewController: UIViewController {
         outsideView.layer.shadowOpacity = 0.6
         outsideView.layer.shadowRadius = 8
         outsideView.layer.shadowOffset = CGSize(width: 2.0, height: 2.0)
-        outsideView.clipsToBounds = true
+        outsideView.clipsToBounds = false
         
         // Add Dismiss Keyboard Gesture
         let tapOutside = UITapGestureRecognizer(target: self, action: #selector(hideKeyboard))

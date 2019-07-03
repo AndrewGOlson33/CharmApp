@@ -13,8 +13,8 @@ class InfoModuleViewController: UIViewController {
     // MARK: - IBOutlets
     
     @IBOutlet weak var outsideView: UIView!
-    @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var txtPolicy: UITextView!
+    @IBOutlet weak var txtTermsofUse: UITextView!
     
     // MARK: - Properties
     
@@ -32,9 +32,11 @@ class InfoModuleViewController: UIViewController {
         
         switch documentType! {
         case .PrivacyPolicy:
-            lblTitle.text = "Privacy Policy"
+            txtPolicy.isHidden = false
+            txtTermsofUse.isHidden = true
         case .TermsOfUse:
-            lblTitle.text = "Terms of Use"
+            txtTermsofUse.isHidden = false
+            txtPolicy.isHidden = true
         }
         
         // Configure View

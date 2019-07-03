@@ -20,8 +20,8 @@ enum CreditUpdateStatus {
 }
 
 class SubscriptionService: NSObject {
-    static let CharmThreeCreditsMonthlySubscription = "com.charismaanalytics.Charm.sub.threetokens.monthly"
-    static let CharmFiveCreditsMonthlySubscription = "com.charismaanalytics.Charm.sub.fiveTokens.monthly"
+    static let CharmThreeCreditsMonthlySubscription = SubscriptionID.Standard
+    static let CharmFiveCreditsMonthlySubscription = SubscriptionID.Premium
     static let sessionIdSetNotification = Notification.Name("SubscriptionServiceSessionIdSetNotification")
     static let optionsLoadedNotification = Notification.Name("SubscriptionServiceOptionsLoadedNotification")
     static let restoreSuccessfulNotification = Notification.Name("SubscriptionServiceRestoreSuccessfulNotification")
@@ -104,9 +104,9 @@ class SubscriptionService: NSObject {
     private func numberOfCredits() -> Int {
         guard let current = currentSubscription else { return 0 }
         switch current.level {
-        case .threeMonthly:
+        case .Standard:
             return 3
-        case .fiveMonthly:
+        case .Premium:
             return 5
         case .none:
             return 0
@@ -114,10 +114,10 @@ class SubscriptionService: NSObject {
     }
     
     func loadSubscriptionOptions() {
-        let threeMonthly = SubscriptionService.CharmThreeCreditsMonthlySubscription
-        let fiveMonthly = SubscriptionService.CharmFiveCreditsMonthlySubscription
+        let standard = SubscriptionService.CharmThreeCreditsMonthlySubscription
+        let premium = SubscriptionService.CharmFiveCreditsMonthlySubscription
         
-        let productIDs = Set([threeMonthly, fiveMonthly])
+        let productIDs = Set([standard, premium])
         
         let request = SKProductsRequest(productIdentifiers: productIDs)
         request.delegate = self
@@ -185,7 +185,7 @@ extension SubscriptionService: SKProductsRequestDelegate {
     func request(_ request: SKRequest, didFailWithError error: Error) {
         if request is SKProductsRequest {
             print("~>Product request failed.")
-            print("Subscription Options Failed Loading: \(error.localizedDescription)")
+            print("~>Subscription Options Failed Loading: \(error.localizedDescription)")
         }
     }
     

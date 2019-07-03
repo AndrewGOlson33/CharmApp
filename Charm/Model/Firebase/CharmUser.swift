@@ -29,6 +29,7 @@ struct CharmUser: Codable, Identifiable {
     
 }
 
+
 // User Profile
 
 struct UserProfile: Codable {
@@ -66,6 +67,38 @@ struct UserProfile: Codable {
         numCredits = 1
         renewDate = Date()
         membershipStatus = .unknown
+    }
+    
+    mutating func updateUser(name: String) {
+        let current = firstName + " " + lastName
+        print("~>Current: \(current) new: \(name)")
+        if name == current { return }
+        
+        let names = getFirstLast(from: name)
+        if names.first != "" {
+            firstName = names.first
+            lastName = names.last
+            
+            do {
+                let data = try FirebaseEncoder().encode(self)
+                Database.database().reference().child(FirebaseStructure.Users).child(Auth.auth().currentUser!.uid).child(FirebaseStructure.CharmUser.Profile).setValue(data)
+            } catch let error {
+                print("~>There was an error updating the name: \(error)")
+            }
+        }
+        
+        
+    }
+    
+    private func getFirstLast(from name: String) -> (first: String, last: String) {
+        let names = name.components(separatedBy: " ")
+        guard names.count > 0 else { return (first: "", last: "") }
+        var first = ""
+        var last = ""
+        if let firstName = names.first { first = firstName }
+        if names.count > 1, let lastName = names.last { last = lastName }
+        
+        return (first: first, last: last)
     }
 }
 

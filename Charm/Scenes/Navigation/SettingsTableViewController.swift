@@ -19,6 +19,7 @@ class SettingsTableViewController: UITableViewController {
     
     // IBOutlets
     
+    @IBOutlet weak var txtName: UITextField!
     @IBOutlet weak var lblEmail: UILabel!
     @IBOutlet weak var lblCredits: UILabel!
     @IBOutlet weak var lblRenewDate: UILabel!
@@ -36,7 +37,9 @@ class SettingsTableViewController: UITableViewController {
         lblCredits.text = ""
         lblRenewDate.text = ""
         txtPhone.text = ""
+        txtName.text = ""
         txtPhone.delegate = self
+        txtName.delegate = self
         txtPhone.isEnabled = false
         
         // setup done button
@@ -78,6 +81,7 @@ class SettingsTableViewController: UITableViewController {
         // setup labels
         lblEmail.text = user.userProfile.email
         lblCredits.text = user.userProfile.credits
+        txtName.text = user.userProfile.firstName + " " + user.userProfile.lastName
         
         // setup subscription labels and add credits if needed
         if let current = SubscriptionService.shared.currentSubscription, current.isActive {
@@ -99,12 +103,50 @@ class SettingsTableViewController: UITableViewController {
     
     // MARK: - Button Handling
     
-    @IBAction func contactsButtonTapped(_ sender: Any) {
-        print("~>Contacts")
-        performSegue(withIdentifier: SegueID.FriendList, sender: self)
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        guard let cid = tableView.cellForRow(at: indexPath)?.reuseIdentifier else {
+            tableView.deselectRow(at: indexPath, animated: false)
+            return
+        }
+        
+        tableView.deselectRow(at: indexPath, animated: true)
+        
+        switch cid {
+        case CellID.FriendList:
+            performSegue(withIdentifier: SegueID.FriendList, sender: self)
+        case CellID.SubscriptionsList:
+            performSegue(withIdentifier: SegueID.Subscriptions, sender: self)
+        case CellID.Feedback:
+            performSegue(withIdentifier: SegueID.SubmitFeedback, sender: self)
+        case CellID.LogOut:
+            logoutButtonTapped()
+        case CellID.TermsOfUse:
+            performSegue(withIdentifier: SegueID.ShowInfo, sender: DocumentType.TermsOfUse)
+        case CellID.PrivacyPolicy:
+            performSegue(withIdentifier: SegueID.ShowInfo, sender: DocumentType.PrivacyPolicy)
+        default:
+            print("~>Not handled")
+        }
     }
     
-    @IBAction func logoutButtonTapped(_ sender: Any) {
+    @IBAction func phoneNumberToggled(_ sender: Any) {
+        guard let sender = sender as? UISwitch else { return }
+        txtPhone.isEnabled = sender.isOn
+    }
+    
+    // MARK: - Private Helper Functions
+    
+    private func showLoginScreen() {
+        DispatchQueue.main.async {
+            let login = self.storyboard?.instantiateViewController(withIdentifier: StoryboardID.Login)
+            let appDelegate = (UIApplication.shared.delegate as! AppDelegate)
+            // clear out any calls as needed
+            appDelegate.window?.rootViewController = login
+            appDelegate.window?.makeKeyAndVisible()
+        }
+    }
+    
+    private func logoutButtonTapped() {
         print("~>Logout")
         let logoutAlert = UIAlertController(title: "Confirm Logout", message: "Are you sure you want to log out?", preferredStyle: .alert)
         logoutAlert.addAction(UIAlertAction(title: "No", style: .cancel, handler: nil))
@@ -121,35 +163,6 @@ class SettingsTableViewController: UITableViewController {
         }))
         
         present(logoutAlert, animated: true, completion: nil)
-    }
-    
-    @IBAction func phoneNumberToggled(_ sender: Any) {
-        guard let sender = sender as? UISwitch else { return }
-        txtPhone.isEnabled = sender.isOn
-    }
-    
-    @IBAction func submitBugReportTapped(_ sender: Any) {
-        performSegue(withIdentifier: SegueID.BugReport, sender: self)
-    }
-    
-    @IBAction func termsOfUseTapped(_ sender: Any) {
-        performSegue(withIdentifier: SegueID.ShowInfo, sender: DocumentType.TermsOfUse)
-    }
-    
-    @IBAction func privacyPolicyTapped(_ sender: Any) {
-        performSegue(withIdentifier: SegueID.ShowInfo, sender: DocumentType.PrivacyPolicy)
-    }
-    
-    // MARK: - Private Helper Functions
-    
-    private func showLoginScreen() {
-        DispatchQueue.main.async {
-            let login = self.storyboard?.instantiateViewController(withIdentifier: StoryboardID.Login)
-            let appDelegate = (UIApplication.shared.delegate as! AppDelegate)
-            // clear out any calls as needed
-            appDelegate.window?.rootViewController = login
-            appDelegate.window?.makeKeyAndVisible()
-        }
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -193,12 +206,22 @@ extension SettingsTableViewController: UITextFieldDelegate {
                 
             }
         }
+    }
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        guard textField == txtName, let text = txtName.text else {
+            textField.resignFirstResponder()
+            return false
+        }
         
+        textField.resignFirstResponder()
+        
+        user.userProfile.updateUser(name: text)
+        
+        return false
     }
     
     fileprivate func handleFound(_ user: CharmUser) {
-//        print("~>Found: \(user)")
-        // nothing changed, so just return
         if user.id == self.user.id { return }
         
         // let the user know that someone is already using this number
@@ -221,7 +244,6 @@ extension SettingsTableViewController: UITextFieldDelegate {
         
         do {
             let profile = try FirebaseEncoder().encode(user.userProfile)
-//            print("~>Got the profile: \(profile)")
             Database.database().reference().child(FirebaseStructure.Users).child(uid).child(FirebaseStructure.CharmUser.Profile).setValue(profile)
         } catch let error {
             print("~>There was an error trying to encode the phone user profile: \(error)")

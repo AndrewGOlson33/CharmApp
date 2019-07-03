@@ -18,15 +18,15 @@ private let dateFormatter: DateFormatter = {
 public struct PaidSubscription {
     
     public enum Level: String {
-        case threeMonthly = "Three Credits Per Month"
-        case fiveMonthly = "Five Credits Per Month"
+        case Standard = "Three Credits Per Month"
+        case Premium = "Five Credits Per Month"
         case none = "Not Subscribed"
         
         init(productId: String) {
-            if productId.contains("threetokens.monthly") {
-                self = .threeMonthly
-            } else if productId.contains("fiveTokens.monthly") {
-                self = .fiveMonthly
+            if productId.contains(SubscriptionID.Standard) {
+                self = .Standard
+            } else if productId.contains(SubscriptionID.Premium) {
+                self = .Premium
             } else {
                 self = .none
             }

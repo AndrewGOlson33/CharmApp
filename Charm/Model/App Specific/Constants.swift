@@ -8,6 +8,13 @@
 
 import Foundation
 
+// MARK: - Subscription Product ID's
+
+enum SubscriptionID {
+    static let Standard = "com.charismaanalytics.Charm.sub.threetokens.monthly"
+    static let Premium = "com.charismaanalytics.Charm.sub.fiveTokens.monthly"
+}
+
 // MARK: - Server location constants
 
 enum Server {
@@ -30,9 +37,10 @@ enum SegueID {
     static let VideoTraining = "sid_videotraining"
     static let TrainingTab = "sid_training"
     static let ShowInfo = "sid_infopopup"
-    static let BugReport = "sid_bugreport"
+    static let SubmitFeedback = "sid_feedback"
     static let Subscriptions = "sid_showsubscriptions"
     static let NewUser = "sid_newaccount"
+    static let SubscriptionTable = "sid_subscriptiontable"
 }
 
 enum StoryboardID {
@@ -53,6 +61,13 @@ enum CellID {
     static let Transcript = "cid_transcript"
     static let SnapshotList = "cid_allsnapshots"
     static let SubscriptionsList = "cid_subscription"
+    static let LogOut = "cid_logout"
+    static let Feedback = "cid_feedback"
+    static let TermsOfUse = "cid_tou"
+    static let PrivacyPolicy = "cid_privacy"
+    static let Free = "cid_free"
+    static let Standard = "cid_standard"
+    static let Premium = "cid_premium"
 }
 
 enum Image {
