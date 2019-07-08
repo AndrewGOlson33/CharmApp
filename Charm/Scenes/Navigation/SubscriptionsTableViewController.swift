@@ -28,6 +28,7 @@ class SubscriptionsTableViewController: UITableViewController {
     var restoreFromButton: Bool = false
     var viewActivity: UIActivityIndicatorView? = nil
     var fromSettings: Bool = false
+    var parentView: StartupSubscriptionsViewController? = nil
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -71,7 +72,7 @@ class SubscriptionsTableViewController: UITableViewController {
             default:
                 break
             }
-        } else {
+        } else if fromSettings {
             cellFree.accessoryType = .checkmark
         }
     }
@@ -107,6 +108,7 @@ class SubscriptionsTableViewController: UITableViewController {
     // MARK: - Enable Restore
     
     func restorePurchasesTapped(_ sender: Any) {
+        print("~>Restore purchases")
         restoreFromButton = true
         
         viewActivity?.startAnimating()
@@ -190,7 +192,12 @@ class SubscriptionsTableViewController: UITableViewController {
                     }
                     
                     NotificationCenter.default.post(name: FirebaseNotification.CharmUserDidUpdate, object: nil)
-                    self.dismiss(animated: true, completion: nil)
+                    
+                    self.dismiss(animated: true) {
+                        if !self.fromSettings, let vc = self.parentView {
+                            vc.showNavigation()
+                        }
+                    }
                 }
             }))
             self.present(successAlert, animated: true, completion: nil)
@@ -244,7 +251,19 @@ class SubscriptionsTableViewController: UITableViewController {
         
         switch cid {
         case CellID.Free:
-            print("~>Tapped free")
+            if !fromSettings {
+                parentView?.showNavigation()
+                return
+            } else if let cell = tableView.cellForRow(at: indexPath), cell.accessoryType == .none {
+                let cancelAlert = UIAlertController(title: "Cancel Subscription", message: "You currently have a subscription. You will need to cancel your subscription first. Once your subscription expires, you will automatically be put back on the free plan.", preferredStyle: .alert)
+                cancelAlert.addAction(UIAlertAction(title: "Ok", style: .cancel, handler: nil))
+                cancelAlert.addAction(UIAlertAction(title: "Show Me How", style: .default, handler: { (_) in
+                    guard let link = URL(string: "https://support.apple.com/en-us/HT202039") else { return }
+                    UIApplication.shared.open(link, options: [:], completionHandler: nil)
+                }))
+                
+                present(cancelAlert, animated: true, completion: nil)
+            }
         case CellID.Standard:
             subscribe(to: SubscriptionID.Standard)
         case CellID.Premium:
@@ -256,6 +275,10 @@ class SubscriptionsTableViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         return fromSettings ? "Update Your Membership" : ""
+    }
+    
+    override func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        return 1
     }
 
 }

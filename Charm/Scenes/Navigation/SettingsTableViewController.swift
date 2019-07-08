@@ -75,7 +75,6 @@ class SettingsTableViewController: UITableViewController {
     }
     
     @objc private func updateLabels() {
-        print("~>Update labels called.")
         user = CharmUser.shared
         
         // setup labels

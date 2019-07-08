@@ -18,12 +18,11 @@ struct CharmUser: Codable, Identifiable {
     var currentCall: Call?
     var trainingData: TrainingHistory?
     var tokenID: [String : Bool]? = nil
-//    var snapshotData: [String:Snapshot]? = nil
     
     static var shared: CharmUser!
     
-    init(first: String, last: String, email: String) {
-        userProfile = UserProfile(first: first, last: last, email: email)
+    init(name: String, email: String) {
+        userProfile = UserProfile(name: name, email: email)
         friendList = FriendList()
     }
     
@@ -60,9 +59,11 @@ struct UserProfile: Codable {
         return dFormatter.string(from: renewDate)
     }
     
-    init(first: String, last: String, email: String) {
-        firstName = first
-        lastName = last
+    init(name: String, email: String) {
+        
+        let userName = UserProfile.getFirstLast(from: name)
+        firstName = userName.first
+        lastName = userName.last
         self.email = email
         numCredits = 1
         renewDate = Date()
@@ -74,7 +75,7 @@ struct UserProfile: Codable {
         print("~>Current: \(current) new: \(name)")
         if name == current { return }
         
-        let names = getFirstLast(from: name)
+        let names = UserProfile.getFirstLast(from: name)
         if names.first != "" {
             firstName = names.first
             lastName = names.last
@@ -90,7 +91,7 @@ struct UserProfile: Codable {
         
     }
     
-    private func getFirstLast(from name: String) -> (first: String, last: String) {
+    private static func getFirstLast(from name: String) -> (first: String, last: String) {
         let names = name.components(separatedBy: " ")
         guard names.count > 0 else { return (first: "", last: "") }
         var first = ""
@@ -100,6 +101,7 @@ struct UserProfile: Codable {
         
         return (first: first, last: last)
     }
+
 }
 
 // Call

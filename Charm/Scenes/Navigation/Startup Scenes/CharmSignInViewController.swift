@@ -19,27 +19,15 @@ class CharmSignInViewController: UIViewController {
     
     @IBOutlet weak var txtEmail: UITextField!
     @IBOutlet weak var txtPassword: UITextField!
-    @IBOutlet var btnGroup: [UIButton]!
     @IBOutlet weak var viewActivity: UIActivityIndicatorView!
     @IBOutlet weak var viewActivityContainer: UIView!
     
     // MARK: - Properties
     
-    var originY: CGFloat = -1.0
-    
     // MARK: - Lifecyle Functions
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        // round corners of buttons
-        for button in btnGroup {
-            button.layer.cornerRadius = 8
-            button.layer.shadowColor = UIColor.black.cgColor
-            button.layer.shadowOpacity = 0.16
-            button.layer.shadowRadius = 8.0
-            button.layer.shadowOffset = CGSize(width: 2.0, height: 2.0)
-        }
         
         viewActivityContainer.layer.cornerRadius = 16
         
@@ -50,16 +38,61 @@ class CharmSignInViewController: UIViewController {
         // setup tap outside gesture
         let tapOut = UITapGestureRecognizer(target: self, action: #selector(tapOutside))
         view.addGestureRecognizer(tapOut)
+        
+        setupToolbars()
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        if originY == -1.0 { originY = view.frame.origin.y }
+        txtEmail.becomeFirstResponder()
+    }
+    
+    private func setupToolbars() {
+        let btnForgotPassword = UIBarButtonItem(title: "Forgot password?", style: .plain, target: self, action: #selector(forgotPasswordButtonTapped(_:)))
+        let btnNext = UIButton(type: .custom)
+        btnNext.setTitle("   Next   ", for: .normal)
+        btnNext.layer.backgroundColor = #colorLiteral(red: 0.1140055135, green: 0.630348742, blue: 0.9489882588, alpha: 1)
+        btnNext.addTarget(self, action: #selector(highlightPassword), for: .touchUpInside)
+        let nextButton = UIBarButtonItem(customView: btnNext)
+        let btnLogin = UIButton(type: .custom)
+        btnLogin.setTitle("   Login   ", for: .normal)
+        btnLogin.layer.backgroundColor = #colorLiteral(red: 0.1140055135, green: 0.630348742, blue: 0.9489882588, alpha: 1)
+        btnLogin.addTarget(self, action: #selector(loginButtonTapped(_:)), for: .touchUpInside)
+        let loginButton = UIBarButtonItem(customView: btnLogin)
+        
+        let emailToolbar = UIToolbar(frame:CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 50))
+        emailToolbar.barStyle = .default
+        emailToolbar.items = [
+            UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil),
+            nextButton
+        ]
+        
+        let passwordToolbar = UIToolbar(frame:CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 50))
+        passwordToolbar.barStyle = .default
+        passwordToolbar.items = [
+            btnForgotPassword,
+            UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil),
+            loginButton
+        ]
+        
+        emailToolbar.sizeToFit()
+        passwordToolbar.sizeToFit()
+        
+        btnNext.layer.cornerRadius = emailToolbar.frame.height * 0.4
+        btnLogin.layer.cornerRadius = passwordToolbar.frame.height * 0.4
+        
+        txtEmail.inputAccessoryView = emailToolbar
+        txtPassword.inputAccessoryView = passwordToolbar
+        
     }
     
     
     @objc private func tapOutside() {
         view.endEditing(true)
+    }
+    
+    @objc private func highlightPassword() {
+        txtPassword.becomeFirstResponder()
     }
     
     private func showNavigation() {
@@ -263,7 +296,7 @@ class CharmSignInViewController: UIViewController {
                 DispatchQueue.main.async {
                     let info = self.getUserInfo()
                     print("~>User info: \(info)")
-                    var user = CharmUser(first: info.first, last: info.last, email: info.email)
+                    var user = CharmUser(name: info.name, email: info.email)
                     user.id = uid
                     
                     do {
@@ -283,100 +316,15 @@ class CharmSignInViewController: UIViewController {
     }
     
     // MARK: - Parse User's Name
-    private func getUserInfo() -> (first: String, last: String, email: String) {
+    private func getUserInfo() -> (name: String, email: String) {
         guard let fullName = Auth.auth().currentUser?.displayName, let email = Auth.auth().currentUser?.email else {
             print("~>Unable to get name")
-            return ("", "", "")
+            return ("", "")
         }
         
-        var firstName: String = ""
-        var lastName: String = ""
-        
-        let nameArray = fullName.components(separatedBy: " ")
-        
-        
-        if nameArray.count > 1 {
-            firstName = nameArray.first!
-            lastName = nameArray.last!
-        } else if nameArray.count == 1 {
-            firstName = nameArray.first!
-            lastName = nameArray.last!
-        }
-        
-        return (firstName, lastName, email)
+        return (fullName, email)
     }
 
-    
-    // MARK: - Navigation
-    
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == SegueID.NewUser, let newVC = segue.destination as? CharmNewUserViewController {
-            if let email = txtEmail.text, !email.isEmpty { newVC.existingEmail = email }
-            if let password = txtPassword.text, !password.isEmpty { newVC.existingPassword = password }
-            newVC.delegate = self
-        }
-    }
-}
-
-// MARK: - New User Delegate
-
-extension CharmSignInViewController: NewUserDelegate {
-    func createUser(withEmail email: String, password: String, firstName: String, lastName: String) {
-        startActivity()
-
-        Auth.auth().createUser(withEmail: email, password: password) { (result, error) in
-
-            if let error = error, let errorCode = AuthErrorCode(rawValue: error._code) {
-                self.stopActivity()
-                switch errorCode {
-                case .invalidEmail:
-                    self.showAlert(withTitle: "Invalid Email", andMessage: "Please check the email address you entered and try again.")
-                    return
-                case .wrongPassword:
-                    self.showAlert(withTitle: "Incorrect Password", andMessage: "Please check the password you entered and try again.")
-                    return
-                case .emailAlreadyInUse:
-                    self.showAlert(withTitle: "Email in Use", andMessage: "The e-mail address you are trying to create an account with is already in use.")
-                    return
-                case .userNotFound:
-                    self.showAlert(withTitle: "Not Found", andMessage: "An account was not found with the e-mail address provided.  Please check the e-mail address you entered and try again, or click on the create account button to create a new account using this e-mail address.")
-                    return
-                case .weakPassword:
-                    self.showAlert(withTitle: "Weak Password", andMessage: "Your password must be at least 6 characters long.")
-                    return
-                default:
-                    print("~>Unhandled error: \(error) with code: \(errorCode.rawValue)")
-                    self.showAlert(withTitle: "Unknown Error", andMessage: "Unable to create an account at this time, please try again.")
-                }
-            }
-
-            // no error so log the user in
-
-            guard let user = Auth.auth().currentUser else {
-                self.showAlert(withTitle: "Unknown Error", andMessage: "An unknown error occurred while logging in.  Please try again.")
-                do {
-                    try Auth.auth().signOut()
-                } catch let error {
-                    print("~>Got an error trying to sign out: \(error)")
-                }
-                self.stopActivity()
-                return
-            }
-
-            let uid = user.uid
-            let change = user.createProfileChangeRequest()
-            change.displayName = "\(firstName) \(lastName)"
-            change.commitChanges(completion: { (error) in
-                self.stopActivity()
-                if let error = error {
-                    print("~>There was an error creating the account: \(error)")
-                } else {
-                    self.loadUser(withUID: uid)
-                }
-            })
-            
-        }
-    }
 }
 
 // MARK: - TextField Delegate
@@ -386,6 +334,9 @@ extension CharmSignInViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         if textField == txtEmail {
             txtPassword.becomeFirstResponder()
+        } else if textField == txtPassword {
+            textField.resignFirstResponder()
+            loginButtonTapped(self)
         } else {
             textField.resignFirstResponder()
         }
