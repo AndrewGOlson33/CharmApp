@@ -48,6 +48,7 @@ enum StoryboardID {
     static let VideoCall = "vc_videocall"
     static let LabelPopover = "vc_labelpopover"
     static let Login = "vc_signon"
+    static let Info = "vc_infodetail"
 }
 
 enum CellID {
@@ -230,9 +231,9 @@ enum SummaryItem: String {
 
 enum Pronoun: Int {
     case FirstPerson = 1
-    case SecondPerson = 2
-    case ThirdPerson = 3
-    case Plural = 4
+    case Plural = 2
+    case SecondPerson = 3
+    case ThirdPerson = 4
     
     var description: String {
         switch self {

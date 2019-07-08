@@ -87,11 +87,15 @@ class DetailChartViewController: UIViewController {
             self.chartDidLoad = true
             self.tableView.reloadData()
         }
+
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         tabBarController?.navigationItem.title = navTitle
+        
+        let info = UIBarButtonItem(image: UIImage(named: Image.Info), style: .plain, target: self, action: #selector(infoButtonTapped))
+        tabBarController?.navigationItem.rightBarButtonItem = info
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -105,6 +109,25 @@ class DetailChartViewController: UIViewController {
         guard snapshot != nil else { return }
         loadData()
         setupChart()
+    }
+    
+    @objc private func infoButtonTapped() {
+        guard let info = storyboard?.instantiateViewController(withIdentifier: StoryboardID.Info) as? InfoDetailViewController else { return }
+        var type: InfoDetail = .Connection
+        
+        switch chartType! {
+        case .Connection:
+            type = .Connection
+        case .Conversation:
+            type = .Conversation
+        case .Emotions:
+            type = .Emotions
+        case .IdeaEngagement:
+            type = .Ideas
+        }
+        
+        info.type = type
+        tabBarController?.navigationController?.pushViewController(info, animated: true)
     }
     
     private func loadData() {
@@ -189,7 +212,7 @@ class DetailChartViewController: UIViewController {
             // setup chart data
             for (index, item) in connection.enumerated() {
                 // add transcript data
-                let pronoun = Pronoun.init(rawValue: item.pronoun) ?? .FirstPerson
+                let pronoun = Pronoun.init(rawValue: item.classification) ?? .FirstPerson
                 let text = "[\(index)]: \(item.word) (\(pronoun.description))"
                 transcript.append(TranscriptCellInfo(withText: text))
                 

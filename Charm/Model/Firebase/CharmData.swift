@@ -135,16 +135,14 @@ struct Conversation: Codable {
 
 struct PersonalPronouns: Codable {
     var adjustedAverage: Double?
-    var pronoun: Int
+    var classification: Int
     var shift: Int?
-//    var startTime: Double
     var word: String
     
     enum CodingKeys: String, CodingKey {
         case adjustedAverage = "AdjustAvg1"
-        case pronoun = "Pronoun"
+        case classification = "Classification"
         case shift = "higlight"
-//        case startTime = "startTime"
         case word = "word"
     }
 }

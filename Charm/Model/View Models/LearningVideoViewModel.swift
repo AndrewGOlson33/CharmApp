@@ -54,7 +54,6 @@ class LearningVideoViewModel: NSObject {
             }
         }
         
-        
         return cell
     }
     
@@ -65,13 +64,14 @@ class LearningVideoViewModel: NSObject {
         // get database references
         let learningRef = Database.database().reference().child(FirebaseStructure.Videos.Learning)
         
-        learningRef.observeSingleEvent(of: .value) { (snapshot) in
-            
+        learningRef.observe(.value) { (snapshot) in
+            print("~>Got learning: \(String(describing: snapshot.value))")
             guard let value = snapshot.value else { return }
             
             do {
                 self.sections = try FirebaseDecoder().decode(VideoSections.self, from: value)
                 self.delegate?.updateTableView()
+                print("~>sections: \(self.sections.sections.count)")
                 if self.sections.sections.count == 0 {
                     self.showInternetConnectionAlert()
                 }

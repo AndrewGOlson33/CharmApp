@@ -202,28 +202,9 @@ class ConcreteChatViewController: UIViewController {
     // MARK: - Private Helper Functions
     
     @objc private func infoButtonTapped() {
-        let avPlayerVC = AVPlayerViewController()
-        avPlayerVC.entersFullScreenWhenPlaybackBegins = true
-        let videoStorage = Storage.storage()
-        
-        // TODO: - update with correct link
-        let urlString = "gs://charismaanalytics-57703.appspot.com/learning/fundamentals/SampleVideo_1280x720_2mb.mp4"
-        
-        videoStorage.reference(forURL: urlString).downloadURL { (url, error) in
-            if let url = url {
-                let player = AVPlayer(url: url)
-                avPlayerVC.player = player
-                self.present(avPlayerVC, animated: true, completion: nil)
-                // start playing the video as soon as it loads
-                avPlayerVC.player?.play()
-            } else if let error = error {
-                print("~>Unable to get storage url: \(error)")
-                return
-            } else {
-                // this should never happen
-                print("~>An unknown error has occured.")
-            }
-        }
+        guard let info = storyboard?.instantiateViewController(withIdentifier: StoryboardID.Info) as? InfoDetailViewController else { return }
+        info.type = .Conversation
+        tabBarController?.navigationController?.pushViewController(info, animated: true)
     }
     
     // Volume change helpers

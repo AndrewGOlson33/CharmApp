@@ -78,8 +78,7 @@ class SandboxViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         tabBarController?.navigationItem.title = "Training Sandbox"
-        let info = UIBarButtonItem(image: UIImage(named: Image.Info), style: .plain, target: self, action: #selector(infoButtonTapped))
-        tabBarController?.navigationItem.rightBarButtonItem = info
+        tabBarController?.navigationItem.rightBarButtonItem = nil
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -229,31 +228,6 @@ class SandboxViewController: UIViewController {
     }
     
     // MARK: - Private Helper Functions
-    
-    @objc private func infoButtonTapped() {
-        let avPlayerVC = AVPlayerViewController()
-        avPlayerVC.entersFullScreenWhenPlaybackBegins = true
-        let videoStorage = Storage.storage()
-        
-        // TODO: - update with correct link
-        let urlString = "gs://charismaanalytics-57703.appspot.com/learning/fundamentals/SampleVideo_1280x720_2mb.mp4"
-        
-        videoStorage.reference(forURL: urlString).downloadURL { (url, error) in
-            if let url = url {
-                let player = AVPlayer(url: url)
-                avPlayerVC.player = player
-                self.present(avPlayerVC, animated: true, completion: nil)
-                // start playing the video as soon as it loads
-                avPlayerVC.player?.play()
-            } else if let error = error {
-                print("~>Unable to get storage url: \(error)")
-                return
-            } else {
-                // this should never happen
-                print("~>An unknown error has occured.")
-            }
-        }
-    }
     
     // Animation Helpers
     
