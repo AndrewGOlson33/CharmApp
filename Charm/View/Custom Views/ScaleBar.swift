@@ -468,7 +468,6 @@ class SliderView: UIView {
             let endingBlueX = frame.width * maxBluePosition
             let blueWidth = endingBlueX - startingBlueX
             
-            print("~>Blue width: \(blueWidth) startingX: \(startingBlueX) endingX: \(endingBlueX)")
             if blueWidth > 0 {
                 navyFrame = CGRect(x: startingBlueX, y: 0, width: blueWidth, height: frame.height)
             }
@@ -481,6 +480,8 @@ class SliderView: UIView {
             if startingRedX < 0 { startingRedX = 0 }
             let endingRedX = maxRed * frame.width
             let redWidth = endingRedX - startingRedX
+            
+            print("~>Starting Red: \(startingRedX) ending: \(endingRedX) width: \(redWidth)")
             
             if redWidth > 0 {
                 redFrame = CGRect(x: startingRedX, y: 0, width: redWidth, height: frame.height)
@@ -495,7 +496,7 @@ class SliderView: UIView {
                     self.navyView.layer.cornerRadius = self.frame.height / 2
                     self.navyView.layer.maskedCorners = redFrame == .zero ? [.layerMaxXMaxYCorner, .layerMaxXMinYCorner, .layerMinXMaxYCorner, .layerMinXMinYCorner] : [.layerMinXMaxYCorner, .layerMinXMinYCorner]
                     self.backgroundView.addSubview(self.navyView)
-                } else if navyFrame != .zero && self.navyView != nil {
+                } else if self.navyView != nil {
                     self.navyView.frame = navyFrame
                 }
                 
@@ -505,8 +506,7 @@ class SliderView: UIView {
                     self.redView?.layer.cornerRadius = self.frame.height / 2
                     self.backgroundView.addSubview(self.redView!)
                     self.backgroundView.bringSubviewToFront(self.redView!)
-                    
-                } else if redFrame != .zero && self.redView != nil {
+                } else if self.redView != nil {
                     self.redView!.frame = redFrame
                 }
             }, completion: nil)
@@ -517,7 +517,7 @@ class SliderView: UIView {
                 navyView.layer.cornerRadius = frame.height / 2
                 navyView.layer.maskedCorners = redFrame == .zero ? [.layerMaxXMaxYCorner, .layerMaxXMinYCorner, .layerMinXMaxYCorner, .layerMinXMinYCorner] : [.layerMinXMaxYCorner, .layerMinXMinYCorner]
                 backgroundView.addSubview(navyView)
-            } else if navyFrame != .zero && navyView != nil {
+            } else if navyView != nil {
                 navyView.frame = navyFrame
             }
             
@@ -527,7 +527,7 @@ class SliderView: UIView {
                 redView?.layer.cornerRadius = frame.height / 2
                 backgroundView.addSubview(redView!)
                 backgroundView.bringSubviewToFront(redView!)
-            } else if redFrame != .zero && redView != nil {
+            } else if redView != nil {
                 self.redView!.frame = redFrame
             }
         }
