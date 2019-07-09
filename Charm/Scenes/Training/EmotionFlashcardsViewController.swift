@@ -137,11 +137,11 @@ class EmotionFlashcardsViewController: UIViewController {
         tabBarController?.navigationController?.pushViewController(info, animated: true)
     }
     
-    // Get calculated x coord for scalebar
-    private func getX(for bar: ScaleBar) -> CGFloat {
-        let value = CGFloat(bar.calculatedValue)
-        return bar.bounds.width * value
-    }
+//    // Get calculated x coord for scalebar
+//    private func getX(for bar: ScaleBar) -> CGFloat {
+//        let value = CGFloat(bar.calculatedValue)
+//        return bar.bounds.width * value
+//    }
     
     // Setup UI once the firebase model is loaded
     @objc private func firebaseModelLoaded() {

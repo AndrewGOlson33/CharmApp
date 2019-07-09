@@ -34,6 +34,7 @@ class TrainingModelCapsule {
             do {
                 self.model = try FirebaseDecoder().decode(TrainingData.self, from: value)
                 NotificationCenter.default.post(Notification(name: FirebaseNotification.TrainingModelLoaded))
+                print("~>There are \(self.model.neutralWords.count) neutral words.")
             } catch let error {
                 print("~>There was an error converting data: \(error)")
             }
@@ -112,6 +113,7 @@ class TrainingModelCapsule {
 struct TrainingData: Codable {
     var concreteNouns: [ConcreteNoun] = []
     var abstractNouns: [AbstractNoun] = []
+    var neutralWords: [NeutralWord] = []
     var concreteNounFlashcards: [ConcreteNounFlashcard] = []
     var abstractNounConcreteFlashcards: [AbstractNounFlashcard] = []
     var firstPerson: [String] = []
@@ -160,6 +162,14 @@ struct AbstractNoun: Codable {
     
     enum CodingKeys: String, CodingKey {
         case word = "X3"
+    }
+}
+
+struct NeutralWord: Codable {
+    var word: String
+    
+    enum CodingKeys: String, CodingKey {
+        case word = "X1"
     }
 }
 

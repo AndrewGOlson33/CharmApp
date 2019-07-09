@@ -54,9 +54,9 @@ class FlashcardsViewModel: NSObject {
             let random = Int(arc4random_uniform(3))
             switch random {
             case 0:
-                let randomIndex = Int(arc4random_uniform(UInt32(trainingModel.model.abstractNouns.count)))
+                let randomIndex = Int(arc4random_uniform(UInt32(trainingModel.model.neutralWords.count)))
                 answer = .Neutral
-                answerString = trainingModel.model.abstractNouns[randomIndex].word
+                answerString = trainingModel.model.neutralWords[randomIndex].word
                 return answerString
             case 1:
                 let randomIndex = Int(arc4random_uniform(UInt32(trainingModel.model.positiveWords.count)))
