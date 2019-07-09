@@ -810,11 +810,401 @@ Cg
                                         </attributedString>
                                         <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                                     </textView>
-                                    <textView hidden="YES" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" textAlignment="center" selectable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YKK-yY-87X">
+                                    <textView hidden="YES" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" usesAttributedText="YES" selectable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YKK-yY-87X">
                                         <rect key="frame" x="20" y="58" width="291" height="639"/>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        <string key="text">Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda.</string>
-                                        <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
+                                        <attributedString key="attributedText">
+                                            <fragment>
+                                                <string key="content">Last updated: July 9, 2019.
+</string>
+                                                <attributes>
+                                                    <color key="NSBackgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <color key="NSColor" red="0.34510000000000002" green="0.34510000000000002" blue="0.34510000000000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <font key="NSFont" size="17" name="Times-Roman"/>
+                                                    <real key="NSKern" value="0.0"/>
+                                                    <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="leftToRight" paragraphSpacing="17" minimumLineHeight="20" defaultTabInterval="36" tighteningFactorForTruncation="0.0" allowsDefaultTighteningForTruncation="NO">
+                                                        <tabStops/>
+                                                    </paragraphStyle>
+                                                </attributes>
+                                            </fragment>
+                                            <fragment>
+                                                <string key="content">1. Background
+</string>
+                                                <attributes>
+                                                    <color key="NSBackgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <color key="NSColor" red="0.44313999999999998" green="0.81569000000000003" blue="0.74117999999999995" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <font key="NSFont" size="16" name="Times-Bold"/>
+                                                    <real key="NSKern" value="0.0"/>
+                                                    <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="leftToRight" paragraphSpacing="16" minimumLineHeight="19.199999999999999" defaultTabInterval="36" tighteningFactorForTruncation="0.0" allowsDefaultTighteningForTruncation="NO">
+                                                        <tabStops/>
+                                                    </paragraphStyle>
+                                                </attributes>
+                                            </fragment>
+                                            <fragment>
+                                                <string key="content">Charm has developed a proprietary platform (the “Platform”), which includes services for automated voice analysis (“Communications”) and digital coaching (“Coaching” together the “Services”) .
+</string>
+                                                <attributes>
+                                                    <color key="NSBackgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <color key="NSColor" red="0.34510000000000002" green="0.34510000000000002" blue="0.34510000000000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <font key="NSFont" size="17" name="Times-Roman"/>
+                                                    <real key="NSKern" value="0.0"/>
+                                                    <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="leftToRight" paragraphSpacing="17" minimumLineHeight="20" defaultTabInterval="36" tighteningFactorForTruncation="0.0" allowsDefaultTighteningForTruncation="NO">
+                                                        <tabStops/>
+                                                    </paragraphStyle>
+                                                </attributes>
+                                            </fragment>
+                                            <fragment>
+                                                <string key="content">2. Access to Platform
+</string>
+                                                <attributes>
+                                                    <color key="NSBackgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <color key="NSColor" red="0.44313999999999998" green="0.81569000000000003" blue="0.74117999999999995" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <font key="NSFont" size="16" name="Times-Bold"/>
+                                                    <real key="NSKern" value="0.0"/>
+                                                    <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="leftToRight" paragraphSpacing="16" minimumLineHeight="19.199999999999999" defaultTabInterval="36" tighteningFactorForTruncation="0.0" allowsDefaultTighteningForTruncation="NO">
+                                                        <tabStops/>
+                                                    </paragraphStyle>
+                                                </attributes>
+                                            </fragment>
+                                            <fragment>
+                                                <mutableString key="content">(a) Rights to Use the Platform.  Subject to the terms and conditions of this Agreement (including payment of all amounts due hereunder), Charm hereby grants Customer and its End Users (defined below) a limited, non-exclusive, non-transferable, non-sublicenseable, right and license during the Term to: (i) access and internally use the Platform, solely for its intended purpose, to upload, record and submit Communications for analysis, (ii) use the reports, analytics and other data generated by the Platform in connection with evaluating and analyzing the Communications (the “Charm Snapshot”) for internal educational purposes, and (iii) use the Coaching.
+(b) End Users.  Customer may permit Customer-affiliated personnel who create and submit Communications (“End Users”) who have agreed to Charm’s standard user terms and conditions and privacy policy (collectively, the “User Agreement”) to use the Platform to upload and submit Communications to the Platform for the purpose of obtaining Charm Results. Through the Platform, End Users will be able to review Charm Results and share certain information regarding the Charm Results and the Communications with Customer and other End Users.  Pursuant to the User Agreement, Charm will provide End Users will various features and services in the Platform, including the ability to improve the quality of the Communications using the Charm Results and Coaching.
+(c) Restrictions.  Customer and its End Users may not rent, lease, lend, sell, redistribute, reproduce or sublicense the Platform, or use the Platform as a service bureau.  Customer and its End Users may not copy, decompile, reverse-engineer, disassemble, attempt to derive the source code of, modify, create derivative works of the Platform, or any part thereof, or use the Platform to violate any law or regulation.  To the extent the foregoing restrictions are prohibited by applicable law or by an agreement between Charm and one of its licensors, the foregoing activities are permitted only to the extent necessary to comply with such law or license(s). Customer shall not exploit the Platform in any unauthorized way whatsoever, including but not limited to, by trespass or burdening network capacity.
+</mutableString>
+                                                <attributes>
+                                                    <color key="NSBackgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <color key="NSColor" red="0.34510000000000002" green="0.34510000000000002" blue="0.34510000000000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <font key="NSFont" size="17" name="Times-Roman"/>
+                                                    <real key="NSKern" value="0.0"/>
+                                                    <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="leftToRight" paragraphSpacing="17" minimumLineHeight="20" defaultTabInterval="36" tighteningFactorForTruncation="0.0" allowsDefaultTighteningForTruncation="NO">
+                                                        <tabStops/>
+                                                    </paragraphStyle>
+                                                </attributes>
+                                            </fragment>
+                                            <fragment>
+                                                <string key="content">3. Fees and Taxes
+</string>
+                                                <attributes>
+                                                    <color key="NSBackgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <color key="NSColor" red="0.44313999999999998" green="0.81569000000000003" blue="0.74117999999999995" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <font key="NSFont" size="16" name="Times-Bold"/>
+                                                    <real key="NSKern" value="0.0"/>
+                                                    <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="leftToRight" paragraphSpacing="16" minimumLineHeight="19.199999999999999" defaultTabInterval="36" tighteningFactorForTruncation="0.0" allowsDefaultTighteningForTruncation="NO">
+                                                        <tabStops/>
+                                                    </paragraphStyle>
+                                                </attributes>
+                                            </fragment>
+                                            <fragment>
+                                                <mutableString key="content">(a) Fees. Customer shall pay Charm the applicable fees set forth in the Order Form pursuant to the payment terms therein. Charm may also (at its discretion and in addition to other remedies it may have) temporarily suspend Customer’s and its End Users’ access to the Platform  for any invoice that remains unpaid for more than thirty (30) days from receipt. All fees due hereunder shall be paid in U.S. dollars.
+(b) Taxes. All amounts payable hereunder by Customer are exclusive of any value added, sales, use, excise or other similar taxes (collectively, “Taxes”). Customer shall be solely responsible for paying all applicable Taxes. If Charm has the legal obligation to collect any Taxes, Customer shall reimburse Charm upon invoice by Charm. If Customer is required by law to withhold any taxes from its payments to Charm, Customer shall provide Charm with an official tax receipt or other appropriate documentation to support such payments and take reasonable steps to minimize such payments.
+</mutableString>
+                                                <attributes>
+                                                    <color key="NSBackgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <color key="NSColor" red="0.34510000000000002" green="0.34510000000000002" blue="0.34510000000000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <font key="NSFont" size="17" name="Times-Roman"/>
+                                                    <real key="NSKern" value="0.0"/>
+                                                    <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="leftToRight" paragraphSpacing="17" minimumLineHeight="20" defaultTabInterval="36" tighteningFactorForTruncation="0.0" allowsDefaultTighteningForTruncation="NO">
+                                                        <tabStops/>
+                                                    </paragraphStyle>
+                                                </attributes>
+                                            </fragment>
+                                            <fragment>
+                                                <string key="content">4. Intellectual Property
+</string>
+                                                <attributes>
+                                                    <color key="NSBackgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <color key="NSColor" red="0.44313999999999998" green="0.81569000000000003" blue="0.74117999999999995" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <font key="NSFont" size="16" name="Times-Bold"/>
+                                                    <real key="NSKern" value="0.0"/>
+                                                    <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="leftToRight" paragraphSpacing="16" minimumLineHeight="19.199999999999999" defaultTabInterval="36" tighteningFactorForTruncation="0.0" allowsDefaultTighteningForTruncation="NO">
+                                                        <tabStops/>
+                                                    </paragraphStyle>
+                                                </attributes>
+                                            </fragment>
+                                            <fragment>
+                                                <mutableString key="content">(a) Charm Intellectual Property.  Charm retains exclusive ownership of all right, title and interest in and to the Platform, and all intellectual property rights therein.  Without limiting the foregoing, Charm will retain exclusive ownership of (i) all of Charm’s know-how, concepts, techniques, methodologies, ideas, templates, software, interfaces, utilities and tools, (ii) all updates, modifications, improvements, enhancements and derivative works of the Platform conceived, discovered, developed or reduced to practice, solely or in collaboration with others, and (iii) in each case, all related intellectual property rights.  To the extent any Charm intellectual property result from access to or the use of Customer Confidential Information, it will constitute Charm’s intellectual property only if Customer is not identified or reasonably identifiable therein. 
+(b) Feedback.  If Customer or any of its End Users submit comments, suggestions, or other feedback regarding the Platform or the Platform to Charm (“Feedback”), Customer agrees that Charm will own all intellectual property rights to such Feedback without accounting or obligation to Customer.
+(c) Customer Intellectual Property. Except as specifically set forth in this Agreement, Customer retains ownership of all right, title and interest in and to the Communications, the Charm Results, and the Marks (defined below), and all intellectual property rights therein.
+(d) License to Communications and Charm Results.  Customer hereby grants to Charm a perpetual, non-exclusive, transferable, sublicensable, royalty free license to use the Communications and Charm Results to provide the Platform to Customer and its End Users, and to publish such Communications, Charm Results and related information to the Platform for End Users to view and interact with the Communications and Charm Results. Additionally, Customer hereby grants to Charm a perpetual, non-exclusive, transferable, sublicensable, royalty free license to use such Communications and Charm Results to create, extract or otherwise generate, compile, synthesize and analyze such Communications and Charm Results in order to monitor and improve the Platform, including without limitation to improve the Platform’s capabilities, (“Blind Data”); provided that such Blind Data will not contain personally identifiable information or identify Customer or its End Users as the source of such data. Notwithstanding anything in this Agreement to the contrary, to the extent that Charm collects or generates Blind Data, Customer hereby grants Customer a perpetual, non-exclusive, transferable, sub-licensable, royalty free, fully paid up license to use such Blind Data for any lawful business purpose.
+(e) Trademark License.  Customer hereby grants to Charm a non-exclusive, non-transferable (except in connection with a permitted assignment of this agreement) license during the Term to use the trademarks, logos and associated branding provided by Customer to Charm in connection with this Agreement (the “Marks”) in order to provide the Platform to Customer.  Charm’s use and display of the Marks will comply with the branding guidelines provided by Customer from time to time. Customer acknowledges that Charm may refer to Customer as a customer of Charm and include the Marks and information regarding Customer’s use of the Platform in Charm’s marketing materials, list of customers and on Charm’s website.
+(f) Reservation of Rights.  Each party reserves all intellectual property rights not expressly granted to the other party in this Agreement.  Except as expressly stated, nothing herein shall be construed to directly or indirectly grant to a receiving party any right, title or interest in a providing party’s intellectual property rights in services or materials furnished by such providing party hereunder.
+</mutableString>
+                                                <attributes>
+                                                    <color key="NSBackgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <color key="NSColor" red="0.34510000000000002" green="0.34510000000000002" blue="0.34510000000000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <font key="NSFont" size="17" name="Times-Roman"/>
+                                                    <real key="NSKern" value="0.0"/>
+                                                    <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="leftToRight" paragraphSpacing="17" minimumLineHeight="20" defaultTabInterval="36" tighteningFactorForTruncation="0.0" allowsDefaultTighteningForTruncation="NO">
+                                                        <tabStops/>
+                                                    </paragraphStyle>
+                                                </attributes>
+                                            </fragment>
+                                            <fragment>
+                                                <string key="content">5. Term, Suspension and Termination
+</string>
+                                                <attributes>
+                                                    <color key="NSBackgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <color key="NSColor" red="0.44313999999999998" green="0.81569000000000003" blue="0.74117999999999995" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <font key="NSFont" size="16" name="Times-Bold"/>
+                                                    <real key="NSKern" value="0.0"/>
+                                                    <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="leftToRight" paragraphSpacing="16" minimumLineHeight="19.199999999999999" defaultTabInterval="36" tighteningFactorForTruncation="0.0" allowsDefaultTighteningForTruncation="NO">
+                                                        <tabStops/>
+                                                    </paragraphStyle>
+                                                </attributes>
+                                            </fragment>
+                                            <fragment>
+                                                <mutableString key="content">(a) Term. The term for this Agreement shall commence on the Effective Date and continue in effect for the initial term set forth in the Order Form (“Term”), unless earlier terminated as set forth herein. 
+(b) Termination. Notwithstanding anything to the contrary, this Agreement may be terminated as follows by either party: (i) upon written notice to the other party of a material breach of this Agreement by the other party, which breach the other party does not cure within thirty (30) days after receipt of written notice of the material breach; or (ii) in the event the other party becomes insolvent or bankrupt; becomes the subject of any proceedings under bankruptcy, insolvency or debtor’s relief law; has a receiver or manager appointed; makes an assignment for the benefit of creditors; or takes the benefit of any applicable law or statute in force for the winding up or liquidation of such party’s business. Notwithstanding the termination of this Agreement for any reason, neither party will be relieved of any duty, obligation, debt or liability that arose or accrued prior to the effective date of termination.
+(c) Suspension. In the event that Customer does not pay any fees when due under this Agreement, Charm may suspend all Services without any liability to Customer until Customer has paid all such fees.
+(d) Survival. Any provision that, by its terms, is intended to survive the expiration or termination of this Agreement shall survive such expiration or termination, including Sections: 3 (Fees and Taxes) (as to amounts owed as of termination); 4 (Intellectual Property); 5(d) (Survival); 7 (Representations and Warranties); 8 (Indemnification); 9 (Confidential Information); 10 (Acknowledgment; Disclaimer of Warranties); 11 (Limitation of Liability); and 12 (Miscellaneous).
+</mutableString>
+                                                <attributes>
+                                                    <color key="NSBackgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <color key="NSColor" red="0.34510000000000002" green="0.34510000000000002" blue="0.34510000000000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <font key="NSFont" size="17" name="Times-Roman"/>
+                                                    <real key="NSKern" value="0.0"/>
+                                                    <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="leftToRight" paragraphSpacing="17" minimumLineHeight="20" defaultTabInterval="36" tighteningFactorForTruncation="0.0" allowsDefaultTighteningForTruncation="NO">
+                                                        <tabStops/>
+                                                    </paragraphStyle>
+                                                </attributes>
+                                            </fragment>
+                                            <fragment>
+                                                <string key="content">6. Support
+</string>
+                                                <attributes>
+                                                    <color key="NSBackgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <color key="NSColor" red="0.44313999999999998" green="0.81569000000000003" blue="0.74117999999999995" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <font key="NSFont" size="16" name="Times-Bold"/>
+                                                    <real key="NSKern" value="0.0"/>
+                                                    <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="leftToRight" paragraphSpacing="16" minimumLineHeight="19.199999999999999" defaultTabInterval="36" tighteningFactorForTruncation="0.0" allowsDefaultTighteningForTruncation="NO">
+                                                        <tabStops/>
+                                                    </paragraphStyle>
+                                                </attributes>
+                                            </fragment>
+                                            <fragment>
+                                                <string key="content">(a) Support Services.  During the Term, Charm will provide Customer and End Users with email support regarding use of the Platform.  Support inquiries made via email to </string>
+                                                <attributes>
+                                                    <color key="NSBackgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <color key="NSColor" red="0.34510000000000002" green="0.34510000000000002" blue="0.34510000000000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <font key="NSFont" size="17" name="Times-Roman"/>
+                                                    <real key="NSKern" value="0.0"/>
+                                                    <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="leftToRight" paragraphSpacing="17" minimumLineHeight="20" defaultTabInterval="36" tighteningFactorForTruncation="0.0" allowsDefaultTighteningForTruncation="NO">
+                                                        <tabStops/>
+                                                    </paragraphStyle>
+                                                </attributes>
+                                            </fragment>
+                                            <fragment content="andrew_olson@charismaanalytics.com">
+                                                <attributes>
+                                                    <color key="NSBackgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <color key="NSColor" red="0.34510000000000002" green="0.34510000000000002" blue="0.34510000000000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <font key="NSFont" size="17" name="Times-Roman"/>
+                                                    <real key="NSKern" value="0.0"/>
+                                                    <url key="NSLink" string="mailto:andrew_olson@charismaanalytics.com"/>
+                                                    <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="leftToRight" paragraphSpacing="17" minimumLineHeight="20" defaultTabInterval="36" tighteningFactorForTruncation="0.0" allowsDefaultTighteningForTruncation="NO">
+                                                        <tabStops/>
+                                                    </paragraphStyle>
+                                                    <integer key="NSUnderline" value="1"/>
+                                                    <color key="NSUnderlineColor" red="0.34510000000000002" green="0.34510000000000002" blue="0.34510000000000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                </attributes>
+                                            </fragment>
+                                            <fragment>
+                                                <mutableString key="content"> will be serviced and responded to by Charm customer service personnel. 
+(b) Maintenance; Availability. Scheduled system maintenance shall take place from time to time, and during such time, the Platform may be unavailable.  Emergency maintenance may be required at other times in the event of system failure. Charm makes no representation that the Platform is available or permitted in any particular location. Use of the Platform is void where prohibited. Customer and End Users use(s) the Platform at its own initiative and is responsible for compliance with any applicable laws in connection with Customer’s and End Users’ use thereof.  Charm may also impose limits on the use or access to the Platform.
+</mutableString>
+                                                <attributes>
+                                                    <color key="NSBackgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <color key="NSColor" red="0.34510000000000002" green="0.34510000000000002" blue="0.34510000000000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <font key="NSFont" size="17" name="Times-Roman"/>
+                                                    <real key="NSKern" value="0.0"/>
+                                                    <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="leftToRight" paragraphSpacing="17" minimumLineHeight="20" defaultTabInterval="36" tighteningFactorForTruncation="0.0" allowsDefaultTighteningForTruncation="NO">
+                                                        <tabStops/>
+                                                    </paragraphStyle>
+                                                </attributes>
+                                            </fragment>
+                                            <fragment>
+                                                <string key="content">7. Representations and Warranties
+</string>
+                                                <attributes>
+                                                    <color key="NSBackgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <color key="NSColor" red="0.44313999999999998" green="0.81569000000000003" blue="0.74117999999999995" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <font key="NSFont" size="16" name="Times-Bold"/>
+                                                    <real key="NSKern" value="0.0"/>
+                                                    <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="leftToRight" paragraphSpacing="16" minimumLineHeight="19.199999999999999" defaultTabInterval="36" tighteningFactorForTruncation="0.0" allowsDefaultTighteningForTruncation="NO">
+                                                        <tabStops/>
+                                                    </paragraphStyle>
+                                                </attributes>
+                                            </fragment>
+                                            <fragment>
+                                                <mutableString key="content">(a) General. Charm and Customer each represents and warrants to the other that: (i) it has the necessary power and authority to enter into this Agreement; (ii) the execution and performance of this Agreement have been authorized by all necessary corporate or institutional action; (iii) entry into and performance of this Agreement will not conflict with any provision of law or the certificate of incorporation, bylaws or comparable organizational documents of such party; (iv) no action by any governmental organization is necessary to make this Agreement valid and binding upon such party; and (v) it possesses all governmental licenses and approvals necessary to perform its obligations under this Agreement.
+(b) FERPA. If Customer is an educational institution, Customer represents and warrants that it will at all times during the Term comply with the Family Educational Rights and Privacy Act, 20 U.S.C. § 1232g, and its implementing regulations, 34 C.F.R. pt 99, (“FERPA”) and other laws with respect to the Communications and its use of the Platform under this Agreement.
+(c) Consents and Approvals.  Customer hereby represents and warrants that it has obtained, and covenants to obtain, all required consents or approvals that are necessary to allow Charm to collect, process, and use Communications.  Charm’s performance hereunder is specifically conditioned on Customer’s receipt of such consents and approvals.
+</mutableString>
+                                                <attributes>
+                                                    <color key="NSBackgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <color key="NSColor" red="0.34510000000000002" green="0.34510000000000002" blue="0.34510000000000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <font key="NSFont" size="17" name="Times-Roman"/>
+                                                    <real key="NSKern" value="0.0"/>
+                                                    <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="leftToRight" paragraphSpacing="17" minimumLineHeight="20" defaultTabInterval="36" tighteningFactorForTruncation="0.0" allowsDefaultTighteningForTruncation="NO">
+                                                        <tabStops/>
+                                                    </paragraphStyle>
+                                                </attributes>
+                                            </fragment>
+                                            <fragment>
+                                                <string key="content">8. Indemnification
+</string>
+                                                <attributes>
+                                                    <color key="NSBackgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <color key="NSColor" red="0.44313999999999998" green="0.81569000000000003" blue="0.74117999999999995" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <font key="NSFont" size="16" name="Times-Bold"/>
+                                                    <real key="NSKern" value="0.0"/>
+                                                    <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="leftToRight" paragraphSpacing="16" minimumLineHeight="19.199999999999999" defaultTabInterval="36" tighteningFactorForTruncation="0.0" allowsDefaultTighteningForTruncation="NO">
+                                                        <tabStops/>
+                                                    </paragraphStyle>
+                                                </attributes>
+                                            </fragment>
+                                            <fragment>
+                                                <mutableString key="content">(a) Charm Indemnification. Charm agrees that Customer shall have no liability and Charm shall indemnify, defend and hold Customer harmless against any loss, damage, cost, liability and expense (including reasonable attorneys’ fees) finally awarded by a court of competent jurisdiction or paid in settlement to the extent arising from any action or claim of a third party (collectively, “Losses”) asserting that the Platform infringes the intellectual property or other proprietary rights of such third party.  Charm’s obligations under this Section 8(a) shall not apply if: (i) Customer or its End Users use the Platform in violation of applicable law or this Agreement, (ii) the Platform is modified by any person other than Charm or its agents; (iii) the infringement claim arises out of or pertains to Charm’s compliance with Customer’s instructions or specifications; or (iv) the infringement claim arises out of the combination of the Platform with any software, hardware or materials of any third party.
+(b) Customer Indemnification. Customer agrees that Charm shall have no liability and Customer shall indemnify, defend and hold Charm harmless against any Loss to the extent arising from infringement of the intellectual property or other proprietary rights of a third party attributable to Charm’s use of the Communications, the Charm Results, or the Marks in accordance with this Agreement.
+(c) Procedure. The indemnified party shall: (i) give the indemnifying party prompt written notice of any indemnified claim; (ii) cooperate fully with the indemnifying party, at the indemnifying party’s expense, in the defense or settlement of any indemnified claim; and (iii) give the indemnifying party sole and complete control over the defense or settlement of any indemnified claim; provided, however, that any settlement must include a complete release of the indemnified party without requiring the indemnified party to make any payment or bear any obligation.
+</mutableString>
+                                                <attributes>
+                                                    <color key="NSBackgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <color key="NSColor" red="0.34510000000000002" green="0.34510000000000002" blue="0.34510000000000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <font key="NSFont" size="17" name="Times-Roman"/>
+                                                    <real key="NSKern" value="0.0"/>
+                                                    <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="leftToRight" paragraphSpacing="17" minimumLineHeight="20" defaultTabInterval="36" tighteningFactorForTruncation="0.0" allowsDefaultTighteningForTruncation="NO">
+                                                        <tabStops/>
+                                                    </paragraphStyle>
+                                                </attributes>
+                                            </fragment>
+                                            <fragment>
+                                                <string key="content">9. Confidential Information
+</string>
+                                                <attributes>
+                                                    <color key="NSBackgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <color key="NSColor" red="0.44313999999999998" green="0.81569000000000003" blue="0.74117999999999995" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <font key="NSFont" size="16" name="Times-Bold"/>
+                                                    <real key="NSKern" value="0.0"/>
+                                                    <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="leftToRight" paragraphSpacing="16" minimumLineHeight="19.199999999999999" defaultTabInterval="36" tighteningFactorForTruncation="0.0" allowsDefaultTighteningForTruncation="NO">
+                                                        <tabStops/>
+                                                    </paragraphStyle>
+                                                </attributes>
+                                            </fragment>
+                                            <fragment>
+                                                <mutableString key="content">(a) Definition. “Confidential Information” means information that the disclosing party identifies in good faith as confidential or proprietary or, given the nature of the information or the circumstances surrounding its disclosure, the receiving party should reasonably understand to be confidential or proprietary.  All Confidential Information relating to the Platform shall be deemed to be the Confidential Information of Charm.
+(b) Non-Disclosure. Each party may use Confidential Information only as necessary to exercise its rights and discharge its obligations under this Agreement. Neither party shall disclose Confidential Information to a third party. The receiving party shall protect Confidential Information using the same degree of care it uses to protect the confidentiality of its own confidential information of like nature, but no less than a reasonable degree of care. The foregoing obligations shall not apply to any Confidential Information that: (i) was publicly known at the time the disclosing party disclosed such Confidential Information to the receiving party; (ii) becomes part of the public domain or publicly known not due to any unauthorized act or omission by the receiving party; (iii) is independently developed by the receiving party without reference to or reliance upon such Confidential Information; (iv) is provided to the receiving party by a third party who is under no obligation to the disclosing party to keep the information confidential; or (v) is required to be disclosed by law, in which case the receiving party shall take reasonable actions to minimize such disclosure and promptly notify the disclosing party of the request for disclosure, to the extent permitted by law, so that the disclosing party may take lawful actions to avoid or minimize such disclosure. Notwithstanding anything to the contrary, Charm may identify Customer as a customer of Charm without disclosing the nature of the services provided by Charm to Customer.
+</mutableString>
+                                                <attributes>
+                                                    <color key="NSBackgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <color key="NSColor" red="0.34510000000000002" green="0.34510000000000002" blue="0.34510000000000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <font key="NSFont" size="17" name="Times-Roman"/>
+                                                    <real key="NSKern" value="0.0"/>
+                                                    <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="leftToRight" paragraphSpacing="17" minimumLineHeight="20" defaultTabInterval="36" tighteningFactorForTruncation="0.0" allowsDefaultTighteningForTruncation="NO">
+                                                        <tabStops/>
+                                                    </paragraphStyle>
+                                                </attributes>
+                                            </fragment>
+                                            <fragment>
+                                                <string key="content">10. Acknowledgement; Disclaimer of Warranties
+</string>
+                                                <attributes>
+                                                    <color key="NSBackgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <color key="NSColor" red="0.44313999999999998" green="0.81569000000000003" blue="0.74117999999999995" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <font key="NSFont" size="16" name="Times-Bold"/>
+                                                    <real key="NSKern" value="0.0"/>
+                                                    <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="leftToRight" paragraphSpacing="16" minimumLineHeight="19.199999999999999" defaultTabInterval="36" tighteningFactorForTruncation="0.0" allowsDefaultTighteningForTruncation="NO">
+                                                        <tabStops/>
+                                                    </paragraphStyle>
+                                                </attributes>
+                                            </fragment>
+                                            <fragment>
+                                                <mutableString key="content">(a) Customer Acknowledgment. Customer acknowledges that the Platform is an automated voice  analysis system designed to identify and report on patterns and/or trends discovered in the source material, based on the recordings provided by Customer and its End Users and that the Communications and Charm Results generally will not be manually reviewed or validated by individuals.  For greater certainty, the Platform will not necessarily identify all trends or errors and: (a) the Charm Results delivered hereunder do not constitute recommendations by Charm; and (b) Charm does not provide any warranties regarding the results or analysis contained in the Charm Results or that all trends or errors will be identified. The Charm Results should be considered as one piece of evidence about the quality of any Communications. Customer and its End Users should review and evaluate the Charm Results and the feedback contained therein carefully to ensure that appropriate decisions are being made with respect thereto.
+(b) DISCLAIMER. THE PLATFORM AND CHARM RESULTS ARE PROVIDED "AS IS AND "AS AVAILABLE" WITH ALL FAULTS. EACH PARTY, TO THE MAXIMUM EXTENT PERMITTED BY LAW, EXPRESSLY DISCLAIMS ALL WARRANTIES AND REPRESENTATIONS (EXCEPT AS SET FORTH IN SECTION 7), EXPRESS OR IMPLIED, INCLUDING: (A) THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE; AND (B) ANY WARRANTY WITH RESPECT TO THE QUALITY, ACCURACY, CURRENCY OR COMPLETENESS OF ANY MATERIALS OR SERVICES PROVIDED UNDER THIS AGREEMENT.  CHARM DOES NOT WARRANT THAT THE USE OF THE PLATFORM OR Charm RESULTS WILL BE ERROR-FREE, UNINTERRUPTED, FREE FROM OTHER FAILURES, WILL MEET CUSTOMER’S REQUIREMENTS OR THAT OR THAT DEFECTS IN THE PLATFORM OR CHARM RESULTS WILL BE CORRECTED.
+</mutableString>
+                                                <attributes>
+                                                    <color key="NSBackgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <color key="NSColor" red="0.34510000000000002" green="0.34510000000000002" blue="0.34510000000000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <font key="NSFont" size="17" name="Times-Roman"/>
+                                                    <real key="NSKern" value="0.0"/>
+                                                    <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="leftToRight" paragraphSpacing="17" minimumLineHeight="20" defaultTabInterval="36" tighteningFactorForTruncation="0.0" allowsDefaultTighteningForTruncation="NO">
+                                                        <tabStops/>
+                                                    </paragraphStyle>
+                                                </attributes>
+                                            </fragment>
+                                            <fragment>
+                                                <string key="content">11. LIMITATION OF LIABILITY
+</string>
+                                                <attributes>
+                                                    <color key="NSBackgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <color key="NSColor" red="0.44313999999999998" green="0.81569000000000003" blue="0.74117999999999995" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <font key="NSFont" size="16" name="Times-Bold"/>
+                                                    <real key="NSKern" value="0.0"/>
+                                                    <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="leftToRight" paragraphSpacing="16" minimumLineHeight="19.199999999999999" defaultTabInterval="36" tighteningFactorForTruncation="0.0" allowsDefaultTighteningForTruncation="NO">
+                                                        <tabStops/>
+                                                    </paragraphStyle>
+                                                </attributes>
+                                            </fragment>
+                                            <fragment>
+                                                <mutableString key="content">OTHER THAN WITH RESPECT TO A PARTY’S INDEMNIFICATION OBLIGATIONS UNDER SECTION 8 OR BREACH OF SECTION 9 (CONFIDENTIAL INFORMATION): (A) IN NO EVENT SHALL EITHER PARTY BE LIABLE TO THE OTHER PARTY FOR ANY INCIDENTAL, INDIRECT, SPECIAL, EXEMPLARY, PUNITIVE OR CONSEQUENTIAL DAMAGES, OR LOST PROFITS OR COST OF COVER, INCLUDING DAMAGES ARISING FROM ANY TYPE OR MANNER OF COMMERCIAL, BUSINESS OR FINANCIAL LOSS OCCASIONED BY OR RESULTING FROM ANY USE OF OR INABILITY TO USE THE PLATFORM, Charm RESULTS  OR OTHER MATERIALS OR SERVICES PROVIDED UNDER THIS AGREEMENT, EVEN IF SUCH PARTY HAD ACTUAL OR CONSTRUCTIVE KNOWLEDGE OF THE POSSIBILITY OF SUCH DAMAGES AND REGARDLESS OF WHETHER SUCH DAMAGES WERE FORESEEABLE; AND (B) IN NO EVENT SHALL EITHER PARTY’S AGGREGATE LIABILITY UNDER THIS AGREEMENT EXCEED THE AMOUNT OF FEES RECEIVED BY CHARM FROM CUSTOMER DURING THE 12 MONTHS PRECEDING THE APPLICABLE CLAIM UNDER THIS AGREEMENT. CUSTOMER AND ITS END USERS ASSUME ALL LIABILITY AND RESPONSIBILITY FOR INTERPRETING THE CHARM RESULTS OR SHARING THE Charm RESULTS WITH ANY THIRD PARTY. SOME JURISDICTIONS DO NOT ALLOW THE LIMITATION OR EXCLUSION OF LIABILITY FOR INCIDENTAL OR CONSEQUENTIAL DAMAGES; IN THOSE JURISDICTIONS CHARM’S LIABILITY UNDER THIS AGREEMENT SHALL BE LIMITED TO THE GREATEST EXTENT PERMITTED BY LAW.
+</mutableString>
+                                                <attributes>
+                                                    <color key="NSBackgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <color key="NSColor" red="0.34510000000000002" green="0.34510000000000002" blue="0.34510000000000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <font key="NSFont" size="17" name="Times-Roman"/>
+                                                    <real key="NSKern" value="0.0"/>
+                                                    <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="leftToRight" paragraphSpacing="17" minimumLineHeight="20" defaultTabInterval="36" tighteningFactorForTruncation="0.0" allowsDefaultTighteningForTruncation="NO">
+                                                        <tabStops/>
+                                                    </paragraphStyle>
+                                                </attributes>
+                                            </fragment>
+                                            <fragment>
+                                                <string key="content">12. Miscellaneous
+</string>
+                                                <attributes>
+                                                    <color key="NSBackgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <color key="NSColor" red="0.44313999999999998" green="0.81569000000000003" blue="0.74117999999999995" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <font key="NSFont" size="16" name="Times-Bold"/>
+                                                    <real key="NSKern" value="0.0"/>
+                                                    <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="leftToRight" paragraphSpacing="16" minimumLineHeight="19.199999999999999" defaultTabInterval="36" tighteningFactorForTruncation="0.0" allowsDefaultTighteningForTruncation="NO">
+                                                        <tabStops/>
+                                                    </paragraphStyle>
+                                                </attributes>
+                                            </fragment>
+                                            <fragment>
+                                                <mutableString key="content">(a) Independent Contractors. The relationship between Charm and Customer established by this Agreement is solely that of independent contractors. Neither party is in any way the partner or agent of the other, nor is either party authorized or empowered to create or assume any obligation of any kind, implied or expressed, on behalf of the other party, without the express prior written consent of such other party.
+(b) Notice. All notices, demands and other communications to be given or delivered under or by reason of the provisions of this Agreement shall be in writing and sent to the parties according to the contact information provided in the Order Form.
+(c) Assignment.  Neither party may assign this Agreement, or assign or delegate any right or obligation hereunder, by operation of law or otherwise, without the prior written consent of the other party; provided, however, that no consent shall be required with respect to an assignment by either party to an affiliate or as part of any transfer by merger, acquisition, stock transfer or other consolidation of with another entity, or sale of all or substantially all of such party’s assets. This Agreement shall be binding upon and inure to the benefit of the parties hereto and their respective successors and permitted assigns.
+(d) Entire Agreement. This Agreement contains the entire agreement of the parties with respect to the subject matter hereof and supersedes all previous or contemporaneous oral or written negotiations or agreements with respect to such subject matter. In the event of any conflict between this Agreement and any Policy, the terms and conditions of this Agreement shall take precedence.
+(e) Amendment. This Agreement may not be amended except in a writing executed by an authorized representative of each party.
+(f) Severability. If any provision of this Agreement shall be held to be invalid or unenforceable under applicable law, then such provision shall be construed, limited, modified or, if necessary, severed to the extent necessary to eliminate its invalidity or unenforceability, without in any way affecting the remaining parts of this Agreement.
+(g) Governing Law. This Agreement shall be governed by and construed and enforced in accordance with the laws of the United States of America and the State of Illinois, without regard to conflict of laws principles. The United Nations Convention on Contracts for the International Sale of Goods is specifically excluded from application to this Agreement.
+(h) Jurisdiction. The parties agree that any action, proceeding, controversy or claim between them arising out of or relating to this Agreement (collectively, an “Action”) shall be brought only in a court of competent jurisdiction in Illinois. Each party hereby submits to the personal jurisdiction and venue of such courts and waives any objection on the grounds of venue, forum non-conveniens or any similar grounds with respect to any Action.
+(i) No Waiver. The failure of either party to require strict performance by the other party of any provision hereof shall not affect the full right to require such performance at any time thereafter, nor shall the waiver by either party of a breach of any provision hereof be taken or held to be a waiver of the provision itself. Any waiver of the provisions of this Agreement, or of any breach or default hereunder, must be set forth in a written instrument signed by the party against which such waiver is to be enforced.
+</mutableString>
+                                                <attributes>
+                                                    <color key="NSBackgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <color key="NSColor" red="0.34510000000000002" green="0.34510000000000002" blue="0.34510000000000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <font key="NSFont" size="17" name="Times-Roman"/>
+                                                    <real key="NSKern" value="0.0"/>
+                                                    <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="leftToRight" paragraphSpacing="17" minimumLineHeight="20" defaultTabInterval="36" tighteningFactorForTruncation="0.0" allowsDefaultTighteningForTruncation="NO">
+                                                        <tabStops/>
+                                                    </paragraphStyle>
+                                                </attributes>
+                                            </fragment>
+                                            <fragment>
+                                                <string key="content">(j) Force Majeure. Neither party shall be liable for any failure to perform under this Agreement to the extent due to any act of God, fire, casualty, flood, war, strike, lock out, failure of public utilities, injunction or any act, exercise, assertion or requirement of any governmental authority, epidemic, destruction of production facilities, insurrection or any other cause beyond the reasonable control of the party invoking this provision.
+</string>
+                                                <attributes>
+                                                    <color key="NSBackgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <color key="NSColor" red="0.34510000000000002" green="0.34510000000000002" blue="0.34510000000000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <font key="NSFont" size="17" name="Times-Roman"/>
+                                                    <real key="NSKern" value="0.0"/>
+                                                    <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="leftToRight" minimumLineHeight="20" defaultTabInterval="36" tighteningFactorForTruncation="0.0" allowsDefaultTighteningForTruncation="NO">
+                                                        <tabStops/>
+                                                    </paragraphStyle>
+                                                </attributes>
+                                            </fragment>
+                                        </attributedString>
                                         <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                                     </textView>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cQC-jW-oyF">
@@ -1629,7 +2019,7 @@ Cg
         <scene sceneID="L7u-rM-GCP">
             <objects>
                 <tableViewController title="Video Training" id="nvJ-Sr-Ieo" customClass="LearningTableViewController" customModule="Charm" customModuleProvider="target" sceneMemberID="viewController">
-                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="29" sectionFooterHeight="28" id="5VA-O9-ZfH">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="29" sectionFooterHeight="28" id="5VA-O9-ZfH">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="756"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -1638,20 +2028,20 @@ Cg
                                 <rect key="frame" x="0.0" y="29" width="414" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="iQj-Zu-2UB" id="Yac-Kv-zmx">
-                                    <rect key="frame" x="0.0" y="0.0" width="414" height="43.5"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="414" height="44"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="img_placeholder" translatesAutoresizingMaskIntoConstraints="NO" id="944-fH-cfE">
-                                            <rect key="frame" x="0.0" y="0.0" width="414" height="233"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="414" height="232.5"/>
                                             <color key="backgroundColor" cocoaTouchSystemColor="lightTextColor"/>
                                             <constraints>
                                                 <constraint firstAttribute="width" secondItem="944-fH-cfE" secondAttribute="height" multiplier="16:9" id="zoJ-zv-S9d"/>
                                             </constraints>
                                         </imageView>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fOT-UO-0Hd">
-                                            <rect key="frame" x="20" y="241" width="374" height="22"/>
+                                            <rect key="frame" x="20" y="240.5" width="374" height="20.5"/>
                                             <constraints>
-                                                <constraint firstAttribute="height" constant="22" id="aY2-Qf-oOB"/>
+                                                <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="18" id="aY2-Qf-oOB"/>
                                             </constraints>
                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                             <nil key="textColor"/>
@@ -1665,7 +2055,7 @@ Cg
                                         <constraint firstItem="944-fH-cfE" firstAttribute="top" secondItem="Yac-Kv-zmx" secondAttribute="top" id="NTF-Xp-VnN"/>
                                         <constraint firstItem="944-fH-cfE" firstAttribute="leading" secondItem="Yac-Kv-zmx" secondAttribute="leading" id="hhi-XD-sua"/>
                                         <constraint firstAttribute="trailing" secondItem="944-fH-cfE" secondAttribute="trailing" id="oIQ-5l-Med"/>
-                                        <constraint firstAttribute="bottomMargin" secondItem="fOT-UO-0Hd" secondAttribute="bottom" constant="8" id="oQT-01-7aA"/>
+                                        <constraint firstAttribute="bottomMargin" secondItem="fOT-UO-0Hd" secondAttribute="bottom" id="oQT-01-7aA"/>
                                         <constraint firstItem="944-fH-cfE" firstAttribute="centerX" secondItem="Yac-Kv-zmx" secondAttribute="centerX" id="w3l-lG-6Hv"/>
                                     </constraints>
                                 </tableViewCellContentView>
@@ -3821,7 +4211,7 @@ This section helps you create emotional connections with anyone.
                                         </attributes>
                                     </fragment>
                                     <fragment>
-                                        <mutableString key="content">
+                                        <string key="content">
 Emotional connections happen when people share their emotions. When a person shares their emotions, it releases chemicals in other peoples bodies.
 
 Positive words, such as awesome, release dopamine, the pleasure molecule.
@@ -3836,7 +4226,7 @@ in sickness [negative] and in health [positive],
 to love [positive] and to cherish, 
 till death [negative] us do part,
 
-</mutableString>
+</string>
                                         <attributes>
                                             <color key="NSColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             <font key="NSFont" size="11" name="HelveticaNeue"/>
@@ -4016,7 +4406,7 @@ We commonly see four trends in emotions
                                         </attributes>
                                     </fragment>
                                     <fragment>
-                                        <mutableString key="content">
+                                        <string key="content">
 To become balanced, talk about the good things and talk about the bad things. Never directly criticize others.
 
 [Charts]
@@ -4029,7 +4419,7 @@ If you are in a high stress environment, such as work, we suggest you be more po
 
 The only exception to the rule is if a guy is talking to a girl at a bar. We suggest a little negativity at the start of conversation to draw their attention, then go into balanced conversation.
 
-</mutableString>
+</string>
                                         <attributes>
                                             <color key="NSColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             <font key="NSFont" size="11" name="HelveticaNeue"/>
@@ -4052,9 +4442,9 @@ The only exception to the rule is if a guy is talking to a girl at a bar. We sug
                                         </attributes>
                                     </fragment>
                                     <fragment>
-                                        <mutableString key="content">
+                                        <string key="content">
 Each persons heart beat produces a magnetic field. For example, someone thats charismatic might be called having a magnetic personality or someone thats cruel might have a cold heart. Our magnetic fields interact with other people’s magnetic fields, allowing our hearts send information to other peoples hearts. It’s very similar to how a cell phone sends and receives a text message. The more you are in a state of love, joy and inspiration, the stronger your magnetic field is. The best way to do this is with the golden rule. Treat others how you want to be treated. We can best measure this through how much you smile.
-</mutableString>
+</string>
                                         <attributes>
                                             <color key="NSColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             <font key="NSFont" size="11" name="HelveticaNeue"/>
@@ -4545,7 +4935,7 @@ Emotional Word 	[ Cried ]
                                         </attributes>
                                     </fragment>
                                     <fragment>
-                                        <mutableString key="content">
+                                        <string key="content">
 We create balance in a conversation by matching their phrase length. If they use long phrases, reply with long phrases. If they use short phrases, reply with short phrases.
 
 For Example:
@@ -4573,7 +4963,7 @@ You: What?
 
 We found that what is said really doesn’t matter. What matters is if the conversation stays balanced, keeps going and both people are having fun and enjoying themselves.
 
-</mutableString>
+</string>
                                         <attributes>
                                             <color key="NSColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             <font key="NSFont" size="11" name="HelveticaNeue"/>
@@ -4596,14 +4986,14 @@ We found that what is said really doesn’t matter. What matters is if the conve
                                         </attributes>
                                     </fragment>
                                     <fragment>
-                                        <mutableString key="content">
+                                        <string key="content">
 Conversation effects two regions of the brain. The linguistic region of the brain and the short term memory.
 
 The linguistic region of the brain is what process information (Broca’s Area) and turns those thoughts into words (Wernicke's area). These regions are linked up by a bundle of neurons called the Arcuate Fasciculus. A person’s communication skills are linked to the amount of neurons in the Arcuate Fasciculus.
 
 When the short term memory of the brain is fully activated, the brain is in a state of flow. This happens when the working memory of the brain is not overloaded (25 words of less).
 
-</mutableString>
+</string>
                                         <attributes>
                                             <color key="NSColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             <font key="NSFont" size="11" name="HelveticaNeue"/>
@@ -4745,7 +5135,7 @@ Stress = Abstract
                                         </attributes>
                                     </fragment>
                                     <fragment>
-                                        <mutableString key="content">
+                                        <string key="content">
 Concrete Nouns help deliver the content of your message
 Abstract Nouns help deliver the context of your message
 
@@ -4762,7 +5152,7 @@ If a person uses too many concrete nouns, it may feel like they are listing even
 
 If the person uses too many abstract nouns, it may be difficult to fully understand. Similar to a listing to a math teacher.
 
-</mutableString>
+</string>
                                         <attributes>
                                             <color key="NSColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             <font key="NSFont" size="11" name="HelveticaNeue"/>
@@ -4895,7 +5285,7 @@ This section helps you create personal connections with anyone. A personal conne
                                         </attributes>
                                     </fragment>
                                     <fragment>
-                                        <mutableString key="content">
+                                        <string key="content">
 A persons social status can be determined by the pronouns they use.
 	- A high status person will use second person “You” pronouns more.
 	- A low status person will use first person “I” pronouns more.
@@ -4920,7 +5310,7 @@ If you are using too many second person “you” pronouns, we suggest you talk 
 
 Note: Bullies generally use a lot of second person “you” pronouns as they are trying to take a high status. Make sure you respond with “you” pronouns back to them.
 
-</mutableString>
+</string>
                                         <attributes>
                                             <color key="NSColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             <font key="NSFont" size="11" name="HelveticaNeue"/>
@@ -5065,7 +5455,7 @@ Cg
                                         </attributes>
                                     </fragment>
                                     <fragment>
-                                        <mutableString key="content">
+                                        <string key="content">
 All human beings are motivated by our five genetic needs. 
 They are
 	1. Survival
@@ -5086,7 +5476,7 @@ Talking about how someone spends their free time is most likely about fun.
 
 By properly identifying the genetic need, you can create a deep conversation.
 
-</mutableString>
+</string>
                                         <attributes>
                                             <color key="NSColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             <font key="NSFont" size="11" name="HelveticaNeue"/>
