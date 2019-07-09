@@ -166,8 +166,8 @@ class DetailChartViewController: UIViewController {
                     self.sliderData.append(cellInfo)
                 }
                 
-                if let position = self.snapshot.getTopLevelRawValue(forSummaryItem: .Concrete) {
-                    let cellInfo = SliderCellInfo(details: SliderDetails(type: .fixed, valueType: .percent, minBlue: 0.33, maxBlue: 0.67), title: "Concrete Details(%)", score: position, position: CGFloat(position))
+                if let position = self.snapshot.getTopLevelRawValue(forSummaryItem: .Concrete), let score = self.snapshot.getTopLevelRankValue(forSummaryItem: .Concrete) {
+                    let cellInfo = SliderCellInfo(details: SliderDetails(type: .fixed, valueType: .percent, minBlue: 0.33, maxBlue: 0.67), title: "Concrete Details(%)", score: score, position: CGFloat(position))
                     self.sliderData.append(cellInfo)
                 }
             }
@@ -191,13 +191,13 @@ class DetailChartViewController: UIViewController {
             
             print("~>Chart data count: \(chartData.count)")
             // setup slider bar data
-            if let position = snapshot.getTopLevelRawValue(forSummaryItem: .ConversationEngagement), let score = self.snapshot.getTopLevelScoreValue(forSummaryItem: .ConversationEngagement) {
+            if let position = snapshot.getTopLevelRawValue(forSummaryItem: .ConversationEngagement), let score = snapshot.getTopLevelScoreValue(forSummaryItem: .ConversationEngagement) {
                 let cellInfo = SliderCellInfo(details: SliderDetails(type: .fillFromLeft), title: "Estimated Conversation Engagement", score: score, position: CGFloat(position))
                 sliderData.append(cellInfo)
             }
             
-            if let position = snapshot.getTopLevelRawValue(forSummaryItem: .TalkingPercentage) {
-                let cellInfo = SliderCellInfo(details: SliderDetails(type: .fixed, valueType: .percent, minBlue: 0.33, maxBlue: 0.67), title: "Talking(%)", score: position, position: CGFloat(position))
+            if let position = snapshot.getTopLevelRawValue(forSummaryItem: .TalkingPercentage), let score = snapshot.getTopLevelRankValue(forSummaryItem: .TalkingPercentage) {
+                let cellInfo = SliderCellInfo(details: SliderDetails(type: .fixed, valueType: .percent, minBlue: 0.33, maxBlue: 0.67), title: "Talking(%)", score: score, position: CGFloat(position))
                 sliderData.append(cellInfo)
             }
             
@@ -233,8 +233,8 @@ class DetailChartViewController: UIViewController {
                 sliderData.append(cellInfo)
             }
             
-            if let position = snapshot.getTopLevelRawValue(forSummaryItem: .FirstPerson) {
-                let cellInfo = SliderCellInfo(details: SliderDetails(type: .fixed, valueType: .percent, minBlue: 0.33, maxBlue: 0.67), title: "First Person(%)", score: position, position: CGFloat(position))
+            if let position = snapshot.getTopLevelRawValue(forSummaryItem: .FirstPerson), let score = snapshot.getTopLevelRankValue(forSummaryItem: .FirstPerson) {
+                let cellInfo = SliderCellInfo(details: SliderDetails(type: .fixed, valueType: .percent, minBlue: 0.375, maxBlue: 0.625), title: "First Person(%)", score: score, position: CGFloat(position))
                 sliderData.append(cellInfo)
             }
         
@@ -269,13 +269,13 @@ class DetailChartViewController: UIViewController {
                 sliderData.append(cellInfo)
             }
             
-            if let position = snapshot.getTopLevelRawValue(forSummaryItem: .PositiveWords) {
-                let cellInfo = SliderCellInfo(details: SliderDetails(type: .fillFromRight, valueType: .percent, minBlue: 0.67, maxBlue: 1.0), title: "Positive Word(%)", score: position, position: CGFloat(position))
+            if let position = snapshot.getTopLevelRawValue(forSummaryItem: .PositiveWords), let score = snapshot.getTopLevelRankValue(forSummaryItem: .PositiveWords) {
+                let cellInfo = SliderCellInfo(details: SliderDetails(type: .fixed, valueType: .percent, minBlue: 0.67, maxBlue: 1.0), title: "Positive Word(%)", score: score, position: CGFloat(position))
                 sliderData.append(cellInfo)
             }
             
-            if let position = snapshot.getTopLevelRawValue(forSummaryItem: .NegativeWords) {
-                let cellInfo = SliderCellInfo(details: SliderDetails(type: .fillFromRight, valueType: .percent, minBlue: 0.67, maxBlue: 0.9, minRed: 0.9, maxRed: 1.0), title: "Negative Word(%)", score: position, position: CGFloat(position))
+            if let position = snapshot.getTopLevelRawValue(forSummaryItem: .NegativeWords), let score = snapshot.getTopLevelRankValue(forSummaryItem: .NegativeWords) {
+                let cellInfo = SliderCellInfo(details: SliderDetails(type: .fixed, valueType: .percent, minBlue: 0.0, maxBlue: 0.0, minRed: 0.9, maxRed: 1.0), title: "Negative Word(%)", score: score, position: CGFloat(position))
                 sliderData.append(cellInfo)
             }
             
@@ -320,10 +320,12 @@ class DetailChartViewController: UIViewController {
             ]
         case .Emotions:
             colorArray = [
-                [NSNumber(value: 0), "rgb(242, 0, 0)"],
-                [NSNumber(value: 0.15), "rgba(242, 0, 0, 0)"],
-                [NSNumber(value: 0.7), "rgba(80,216,0,0)"],
-                [NSNumber(value: 1), "rgba(80,216,0,1)"]
+                [NSNumber(value: 0), "rgb(0, 242, 0, 1)"],
+                [NSNumber(value: 0.2), "rgba(0, 242, 0, 0)"],
+//                [NSNumber(value: 0), "rgb(242, 0, 0)"],
+//                [NSNumber(value: 0.15), "rgba(242, 0, 0, 0)"],
+//                [NSNumber(value: 0.7), "rgba(80,216,0,0)"],
+//                [NSNumber(value: 1), "rgba(80,216,0,1)"]
             ]
         default:
             colorArray = [
@@ -579,8 +581,8 @@ extension DetailChartViewController: UITableViewDelegate, UITableViewDataSource 
             case .int:
                 cell.lblScore.text = "\(Int(info.score))"
             case .percent:
-                let percentValue = Int(info.score * 100)
-                cell.lblScore.text = "\(percentValue)%"
+//                let percentValue = Int(info.score * 100)
+                cell.lblScore.text = info.percentString
             }
             
             return cell

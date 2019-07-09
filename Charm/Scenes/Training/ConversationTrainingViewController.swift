@@ -290,7 +290,7 @@ extension ConversationTrainingViewController: UITableViewDelegate, UITableViewDa
             cell.lblScore.text = "\(strength.score)"
             
             if !cell.sliderView.isSetup {
-                cell.sliderView.setup(for: .fillFromLeft, at: CGFloat(strength.position))
+                cell.sliderView.setup(for: .fixed, at: CGFloat(strength.position), minBlue: 0.4, maxBlue: 1.0)
             } else if cell.sliderView.position != CGFloat(strength.position) {
                 cell.sliderView.updatePosition(to: CGFloat(strength.position))
             }
@@ -300,7 +300,7 @@ extension ConversationTrainingViewController: UITableViewDelegate, UITableViewDa
             cell.lblScore.text = "\(length.score)"
             
             if !cell.sliderView.isSetup {
-                cell.sliderView.setup(for: .fillFromLeft, at: CGFloat(length.position))
+                cell.sliderView.setup(for: .fixed, at: CGFloat(length.position), minBlue: 0.4, maxBlue: 1.0)
             } else if cell.sliderView.position != CGFloat(length.position) {
                 cell.sliderView.updatePosition(to: CGFloat(length.position))
             }
@@ -310,7 +310,7 @@ extension ConversationTrainingViewController: UITableViewDelegate, UITableViewDa
             cell.lblScore.text = "\(concrete.score)"
             
             if !cell.sliderView.isSetup {
-                cell.sliderView.setup(for: .fillFromLeft, at: CGFloat(concrete.position))
+                cell.sliderView.setup(for: .fixed, at: CGFloat(concrete.position), minBlue: 0.4, maxBlue: 1.0)
             } else if cell.sliderView.position != CGFloat(concrete.position) {
                 cell.sliderView.updatePosition(to: CGFloat(concrete.position))
             }
@@ -320,7 +320,7 @@ extension ConversationTrainingViewController: UITableViewDelegate, UITableViewDa
             cell.lblScore.text = "\(abstract.score)"
             
             if !cell.sliderView.isSetup {
-                cell.sliderView.setup(for: .fillFromLeft, at: CGFloat(abstract.position))
+                cell.sliderView.setup(for: .fixed, at: CGFloat(abstract.position), minBlue: 0.4, maxBlue: 1.0)
             } else if cell.sliderView.position != CGFloat(abstract.position) {
                 cell.sliderView.updatePosition(to: CGFloat(abstract.position))
             }
@@ -330,7 +330,7 @@ extension ConversationTrainingViewController: UITableViewDelegate, UITableViewDa
             cell.lblScore.text = "\(first.score)"
             
             if !cell.sliderView.isSetup {
-                cell.sliderView.setup(for: .fillFromLeft, at: CGFloat(first.position))
+                cell.sliderView.setup(for: .fixed, at: CGFloat(first.position), minBlue: 0.4, maxBlue: 1.0)
             } else if cell.sliderView.position != CGFloat(first.position) {
                 cell.sliderView.updatePosition(to: CGFloat(first.position))
             }
@@ -340,7 +340,7 @@ extension ConversationTrainingViewController: UITableViewDelegate, UITableViewDa
             cell.lblScore.text = "\(second.score)"
             
             if !cell.sliderView.isSetup {
-                cell.sliderView.setup(for: .fillFromLeft, at: CGFloat(second.position))
+                cell.sliderView.setup(for: .fixed, at: CGFloat(second.position), minBlue: 0.4, maxBlue: 1.0)
             } else if cell.sliderView.position != CGFloat(second.position) {
                 cell.sliderView.updatePosition(to: CGFloat(second.position))
             }
@@ -350,7 +350,7 @@ extension ConversationTrainingViewController: UITableViewDelegate, UITableViewDa
             cell.lblScore.text = "\(positive.score)"
             
             if !cell.sliderView.isSetup {
-                cell.sliderView.setup(for: .fixed, at: CGFloat(positive.position), minBlue: 0.66, maxBlue: 1.0)
+                cell.sliderView.setup(for: .fixed, at: CGFloat(positive.position), minBlue: 0.667, maxBlue: 1.0)
             } else if cell.sliderView.position != CGFloat(positive.position) {
                 cell.sliderView.updatePosition(to: CGFloat(positive.position))
             }
@@ -360,7 +360,7 @@ extension ConversationTrainingViewController: UITableViewDelegate, UITableViewDa
             cell.lblScore.text = "\(negative.score)"
             
             if !cell.sliderView.isSetup {
-                cell.sliderView.setup(for: .fillFromRight, at: CGFloat(negative.position), minBlue: 0.66, maxBlue: 0.85, minRed: 0.85, maxRed: 1.0)
+                cell.sliderView.setup(for: .fixed, at: CGFloat(negative.position), minBlue: 0.0, maxBlue: 0.0, minRed: 0.667, maxRed: 1.0)
             } else if cell.sliderView.position != CGFloat(negative.position) {
                 cell.sliderView.updatePosition(to: CGFloat(negative.position))
             }

@@ -358,17 +358,36 @@ class SliderView: UIView {
     private func setupFixed() {
         guard !isSetup else { return }
         
-        let startingX = minBluePosition * frame.width
-        let endingX = maxBluePosition * frame.width
-        let width = endingX - startingX
+        let float0 = CGFloat(0)
         
-        let fixedFrame = CGRect(x: startingX, y: 0, width: width, height: frame.height)
+        if minBluePosition >= float0 && maxBluePosition > float0 {
+            let startingX = minBluePosition * frame.width
+            let endingX = maxBluePosition * frame.width
+            let width = endingX - startingX
+            
+            let fixedFrame = CGRect(x: startingX, y: 0, width: width, height: frame.height)
+            
+            navyView = UIView(frame: fixedFrame)
+            navyView.backgroundColor = #colorLiteral(red: 0.1323429346, green: 0.1735357642, blue: 0.2699699998, alpha: 1)
+            navyView.layer.cornerRadius = frame.height / 2
+            backgroundView.addSubview(navyView)
+            backgroundView.bringSubviewToFront(navyView)
+        }
         
-        navyView = UIView(frame: fixedFrame)
-        navyView.backgroundColor = #colorLiteral(red: 0.1323429346, green: 0.1735357642, blue: 0.2699699998, alpha: 1)
-        navyView.layer.cornerRadius = frame.height / 2
-        backgroundView.addSubview(navyView)
-        backgroundView.bringSubviewToFront(navyView)
+        if let minRed = minRedPosition, let maxRed = maxRedPosition, minRed >= float0 && maxRed > float0 {
+            let startingX = minRed * frame.width
+            let endingX = maxRed * frame.width
+            let width = endingX - startingX
+            
+            let fixedFrame = CGRect(x: startingX, y: 0, width: width, height: frame.height)
+            
+            navyView = UIView(frame: fixedFrame)
+            navyView.backgroundColor = #colorLiteral(red: 1, green: 0, blue: 0.2761124074, alpha: 1)
+            navyView.layer.cornerRadius = frame.height / 2
+            backgroundView.addSubview(navyView)
+            backgroundView.bringSubviewToFront(navyView)
+        }
+        
     }
     
     // MARK: - Functions to update and animate view

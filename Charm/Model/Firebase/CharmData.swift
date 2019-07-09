@@ -185,6 +185,8 @@ struct SummaryCellInfo {
     var percent: Double
     var scalebarType: BarType
     
+    private var formatter = NumberFormatter()
+    
     var detailedTitle: String {
         return title + ": \(Int(score))"
     }
@@ -194,7 +196,10 @@ struct SummaryCellInfo {
     }
     
     var percentString: String {
-        return "\((percent * 100).rounded())%"
+        let percentScore = score * 100
+        let percentValue = Double(round(percentScore * 100) / 100)
+        guard let value = formatter.string(from: NSNumber(value: percentValue)) else { return "0%" }
+        return "\(value)%"
     }
     
     init(title: String, score: Double, percent: Double, barType: BarType = .Green) {
@@ -202,6 +207,8 @@ struct SummaryCellInfo {
         self.score = score
         self.percent = percent
         self.scalebarType = barType
+        
+        formatter.maximumSignificantDigits = 3
     }
     
 }
@@ -212,11 +219,22 @@ struct SliderCellInfo {
     var score: Double
     var position: CGFloat
     
+    private var formatter = NumberFormatter()
+    
+    var percentString: String {
+        let percentScore = score * 100
+        let percentValue = Double(round(percentScore * 100) / 100)
+        guard let value = formatter.string(from: NSNumber(value: percentValue)) else { return "0%" }
+        return "\(value)%"
+    }
+    
     init(details: SliderDetails, title: String, score: Double, position: CGFloat) {
         self.details = details
         self.title = title
         self.score = score
         self.position = position
+        
+        formatter.maximumSignificantDigits = 3
     }
 }
 

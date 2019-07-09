@@ -144,7 +144,7 @@ class ReviewSummaryViewController: UIViewController {
         
         let tooltip = HITooltip()
         tooltip.headerFormat = ""
-        tooltip.pointFormat = "<span style=\"color:{point.color}\">\u{25CF}</span> <b> {point.name}</b><br/>Score: <b>{point.y}</b>"
+        tooltip.pointFormat = "<span style=\"color:{point.color}\">\u{25CF}</span> <b> {point.name}</b><br/>Score: <b>{point.value}</b>"
         
         let yAxis = HIYAxis()
         yAxis.min = 0
@@ -165,10 +165,10 @@ class ReviewSummaryViewController: UIViewController {
         // get and set data
         
         // get values for area chart
-        let concrete = snapshot.getTopLevelScoreValue(forSummaryItem: .Concrete) ?? 0
-        let talking = snapshot.getTopLevelScoreValue(forSummaryItem: .TalkingPercentage) ?? 0
-        let firstPerson = snapshot.getTopLevelScoreValue(forSummaryItem: .FirstPerson) ?? 0
-        let positiveWords = snapshot.getTopLevelScoreValue(forSummaryItem: .PositiveWords) ?? 0
+//        let concrete = snapshot.getTopLevelScoreValue(forSummaryItem: .Concrete) ?? 0
+//        let talking = snapshot.getTopLevelScoreValue(forSummaryItem: .TalkingPercentage) ?? 0
+//        let firstPerson = snapshot.getTopLevelScoreValue(forSummaryItem: .FirstPerson) ?? 0
+//        let positiveWords = snapshot.getTopLevelScoreValue(forSummaryItem: .PositiveWords) ?? 0
         let smiling = snapshot.getTopLevelScoreValue(forSummaryItem: .SmilingPercentage) ?? 0
         
         // get values for line chart
@@ -214,25 +214,33 @@ class ReviewSummaryViewController: UIViewController {
         let plotoptions = HIPlotOptions()
         
         
-        let pie = HIPie()
+        let pie = HIVariablepie()
+        pie.dataLabels = []
+        let width: Double = 7
+        
+        pie.minPointSize = 10
+        pie.innerSize = "20%"
+        pie.zMin = 0
+//        pie.zMax = 9
         pie.name = "Snapshot Summary"
+
         pie.data = [
-            ["name": "Concrete", "y": concrete],
-            ["name": "Talking %", "y": talking],
-            ["name": "First Person", "y": firstPerson],
-            ["name": "Positive Words", "y": positiveWords],
-            ["name": "Idea Engagement", "y": ideaEngagement],
-            ["name": "Conversation Engagement", "y": conversationEngagement],
-            ["name": "Personal Connection", "y": personalConnection],
-            ["name": "Emotional Connection", "y": emotionalConnection],
-            ["name": "Smiling %", "y": smiling],
+//            ["name": "Concrete", "y": width, "z": concrete.value(), "value": concrete],
+//            ["name": "Talking %", "y": width, "z": talking.value(), "value": talking],
+//            ["name": "First Person", "y": width, "z": firstPerson.value(), "value": firstPerson],
+//            ["name": "Positive Words", "y": width, "z": positiveWords.value(), "value": positiveWords],
+            ["name": "Idea Engagement", "y": width, "z": ideaEngagement.value(), "value": ideaEngagement],
+            ["name": "Conversation Engagement", "y": width, "z": conversationEngagement.value(), "value": conversationEngagement],
+            ["name": "Personal Connection", "y": width, "z": personalConnection.value(), "value": personalConnection],
+            ["name": "Emotional Connection", "y": width, "z": emotionalConnection.value(), "value": emotionalConnection],
+            ["name": "Smiling %", "y": width, "z": smiling.value(), "value": smiling],
         ]
         
-        plotoptions.pie = HIPie()
-        let dataLabel = HIDataLabelsOptionsObject()
-        dataLabel.enabled = false
-        plotoptions.pie.dataLabels = [dataLabel]
-        
+//        plotoptions.pie = HIPie()
+//        let dataLabel = HIDataLabelsOptionsObject()
+//        dataLabel.enabled = false
+//        plotoptions.pie.dataLabels = [dataLabel]
+//
 //        let variablePie = HIVariablepie()
 //        variablePie.minPointSize = 10
 //        variablePie.innerSize = "20%"
@@ -328,6 +336,16 @@ extension ReviewSummaryViewController: UITableViewDelegate, UITableViewDataSourc
         } else if indexPath.row == 5 {
             performSegue(withIdentifier: SegueID.SnapshotsList, sender: self)
         }
+    }
+    
+}
+
+// MARK: - Extension to double to enable squaring
+
+extension Double {
+    
+    func value() -> Double {
+        return pow(2.71828, self)
     }
     
 }
