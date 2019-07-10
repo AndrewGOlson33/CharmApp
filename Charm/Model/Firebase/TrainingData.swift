@@ -34,7 +34,6 @@ class TrainingModelCapsule {
             do {
                 self.model = try FirebaseDecoder().decode(TrainingData.self, from: value)
                 NotificationCenter.default.post(Notification(name: FirebaseNotification.TrainingModelLoaded))
-                print("~>There are \(self.model.neutralWords.count) neutral words.")
             } catch let error {
                 print("~>There was an error converting data: \(error)")
             }

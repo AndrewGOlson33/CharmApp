@@ -65,7 +65,7 @@ struct UserProfile: Codable {
         firstName = userName.first
         lastName = userName.last
         self.email = email
-        numCredits = 1
+        numCredits = 3
         renewDate = Date()
         membershipStatus = .unknown
     }

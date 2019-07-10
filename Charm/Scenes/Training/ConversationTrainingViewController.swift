@@ -370,11 +370,6 @@ extension ConversationTrainingViewController: UITableViewDelegate, UITableViewDa
         
         return cell
     }
-    
-    private func getX(for bar: ScaleBar) -> CGFloat {
-        let value = CGFloat(bar.calculatedValue)
-        return bar.bounds.width * value
-    }
 
 }
 

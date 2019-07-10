@@ -108,12 +108,24 @@ struct TopLevelMetric: Codable {
 struct IdeaEngagement: Codable {
     var score: Double
     var word: String
+    private var concrete: Int
+    
+    var isConcrete: Bool {
+        return concrete.boolValue
+    }
     
     // coding keys to how data is stored on firebase
     enum CodingKeys: String, CodingKey {
         case score = "ema3"  // used to be score
         case word = "token"
+        case concrete = "concrete"
     }
+}
+
+// MARK: - Extension to get bool value from int
+
+extension Int {
+    var boolValue: Bool { return self != 0 }
 }
 
 // MARK: - Back and Forth

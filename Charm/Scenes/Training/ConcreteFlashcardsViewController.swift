@@ -143,7 +143,7 @@ class ConcreteFlashcardsViewController: UIViewController {
         lblWord.alpha = 0.0
         lblWord.isHidden = false
         
-        UIView.animate(withDuration: 0.4, animations: {
+        UIView.animate(withDuration: 0.25, animations: {
             self.lblWord.alpha = 1.0
             self.viewLoading.alpha = 0.0
         }) { (_) in
@@ -184,10 +184,13 @@ class ConcreteFlashcardsViewController: UIViewController {
         lblResponsePhrase.alpha = 0.0
         lblResponsePhrase.isHidden = false
         
+        // prevent taps while animation is going on
+        view.isUserInteractionEnabled = false
+        
         UIView.animate(withDuration: 0.2, animations: {
             self.lblResponsePhrase.alpha = 1.0
         }) { (_) in
-            UIView.animate(withDuration: 0.25, delay: 1.5, animations: {
+            UIView.animate(withDuration: 0.25, delay: 0.05, animations: {
                 self.lblResponsePhrase.alpha = 0.0
             }, completion: { (_) in
                 self.lblResponsePhrase.isHidden = true
@@ -199,12 +202,15 @@ class ConcreteFlashcardsViewController: UIViewController {
     // Animation helper to setup new word
     private func updateFlashcard() {
         let newWord = viewModel.getFlashCard().capitalizedFirst
-        UIView.animate(withDuration: 0.25, delay: 0.25, animations: {
+        UIView.animate(withDuration: 0.25, delay: 0.05, animations: {
             self.lblWord.alpha = 0.0
         }) { (_) in
             self.lblWord.text = newWord
-            UIView.animate(withDuration: 0.4, animations: {
+            UIView.animate(withDuration: 0.25, animations: {
                 self.lblWord.alpha = 1.0
+            }, completion: { (_) in
+                self.lblResponsePhrase.isHidden = true
+                self.updateFlashcard()
             })
         }
     }
