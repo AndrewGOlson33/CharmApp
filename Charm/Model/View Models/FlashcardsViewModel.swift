@@ -32,6 +32,8 @@ class FlashcardsViewModel: NSObject {
     var answerString: String = ""
     var shouldShowNA: Bool = false
     
+    var delegate: FlashcardsHistoryDelegate? = nil
+    
     // MARK: Class Functions
     
     func getFlashCard(ofType type: FlashCardType = .Concrete) -> String {
@@ -94,7 +96,7 @@ class FlashcardsViewModel: NSObject {
                 self.shouldShowNA = false
             }
             completion(trainingHistory.concreteAverage)
-            
+            print("~>Sent: \(trainingHistory.concreteAverage)")
         } else {
             self.shouldShowNA = true
             completion(ConcreteTrainingHistory())
@@ -110,23 +112,21 @@ class FlashcardsViewModel: NSObject {
             } else {
                 self.shouldShowNA = false
             }
-            
             completion(trainingHistory.emotionsAverage)
         } else {
             self.shouldShowNA = true
             completion(EmotionsTrainingHistory())
         }
+        
+        
     }
     
     func calculateAverageScore(addingCorrect correct: Bool, toType type: FlashCardType = .Concrete) {
         guard let user = CharmUser.shared, let uid = user.id else { return }
         
         var trainingHistory = user.trainingData != nil ? user.trainingData! : TrainingHistory()
-        
         switch type {
         case .Concrete:
-//            trainingHistory.concreteAverage.numQuestions += 1
-//            if correct { trainingHistory.concreteAverage.numCorrect += 1 }
             if correct {
                 trainingHistory.concreteAverage.numCorrect += 1
                 if var record = trainingHistory.concreteAverage.correctRecord, record <= trainingHistory.concreteAverage.numCorrect {
@@ -138,9 +138,9 @@ class FlashcardsViewModel: NSObject {
             } else {
                 trainingHistory.concreteAverage.numCorrect = 0
             }
+            
+            
         case .Emotions:
-//            trainingHistory.emotionsAverage.numQuestions += 1
-//            if correct { trainingHistory.emotionsAverage.numCorrect += 1 }
             if correct {
                 trainingHistory.emotionsAverage.numCorrect += 1
                 if var record = trainingHistory.emotionsAverage.correctRecord, record <= trainingHistory.emotionsAverage.numCorrect {
@@ -154,6 +154,7 @@ class FlashcardsViewModel: NSObject {
             }
         }
         
+        CharmUser.shared.trainingData = trainingHistory
         self.upload(trainingHistory: trainingHistory, forUid: uid)
     }
     
@@ -170,11 +171,14 @@ class FlashcardsViewModel: NSObject {
             trainingHistory.emotionsAverage.correctRecord = 1
         }
         
+        CharmUser.shared.trainingData = trainingHistory
         self.upload(trainingHistory: trainingHistory, forUid: uid)
     }
 
     
     fileprivate func upload(trainingHistory history: TrainingHistory, forUid uid: String) {
+        print("~>Call training history delegate.")
+        delegate?.trainingHistoryUpdated()
         do {
             let data = try FirebaseEncoder().encode(history)
             Database.database().reference().child(FirebaseStructure.Users).child(uid).child(FirebaseStructure.Training.TrainingDatabase).setValue(data)

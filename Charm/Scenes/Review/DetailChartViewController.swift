@@ -343,8 +343,13 @@ class DetailChartViewController: UIViewController {
             upperBoundValue = 0.5
         case .Emotions:
             colorArray = [
-                [NSNumber(value: 0), "rgb(0, 242, 0, 1)"],
-                [NSNumber(value: 0.2), "rgba(0, 242, 0, 0)"],
+                [NSNumber(value: 0.0), "rgb(0, 242, 0, 1)"],
+                [NSNumber(value: 0.2), "rgb(0, 242, 0, 0)"],
+                [NSNumber(value: 0.8), "rgb(242, 0, 0, 0)"],
+                [NSNumber(value: 1.0), "rgb(242, 0, 0, 1)"]
+                
+//                [NSNumber(value: 0), "rgb(0, 242, 0, 1)"],
+//                [NSNumber(value: 0.2), "rgba(0, 242, 0, 0)"],
 //                [NSNumber(value: 0), "rgb(242, 0, 0)"],
 //                [NSNumber(value: 0.15), "rgba(242, 0, 0, 0)"],
 //                [NSNumber(value: 0.7), "rgba(80,216,0,0)"],
@@ -402,19 +407,19 @@ class DetailChartViewController: UIViewController {
             yaxis.plotLines = [upperBounds, lowerBounds]
         }
         
-        
-        
         let legend = HILegend()
         legend.enabled = false
         
         let plotoptions = HIPlotOptions()
         plotoptions.area = HIArea()
-        plotoptions.area.fillColor = HIColor(linearGradient: [
-            "x1": NSNumber(value: 0),
-            "x2": NSNumber(value: 0),
-            "y1": NSNumber(value: 0),
-            "y2": NSNumber(value: 1)
-            ], stops: colorArray)
+        if chartType != .Emotions {
+            plotoptions.area.fillColor = HIColor(linearGradient: [
+                "x1": NSNumber(value: 0),
+                "x2": NSNumber(value: 0),
+                "y1": NSNumber(value: 0),
+                "y2": NSNumber(value: 1)
+                ], stops: colorArray)
+        }
         plotoptions.area.marker = HIMarker()
         plotoptions.area.marker.radius = NSNumber(value: 2)
         plotoptions.area.lineWidth = 1
@@ -530,6 +535,17 @@ class DetailChartViewController: UIViewController {
                 }
                 point.events = events
             }
+            
+            area.fillColor = HIColor(linearGradient: [
+                "x1": NSNumber(value: 0),
+                "x2": NSNumber(value: 0),
+                "y1": NSNumber(value: 0),
+                "y2": NSNumber(value: 1)
+                ], stops: colorArray)
+            
+            posArea.fillColor = HIColor(uiColor: .clear)
+            
+            negArea.fillColor = HIColor(uiColor: .clear)
             
             options.series = [area, posArea, negArea]
             legend.enabled = false

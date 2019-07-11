@@ -11,7 +11,11 @@ import Firebase
 import CodableFirebase
 import AVKit
 
-class ConcreteFlashcardsViewController: UIViewController {
+protocol FlashcardsHistoryDelegate {
+    func trainingHistoryUpdated()
+}
+
+class ConcreteFlashcardsViewController: UIViewController, FlashcardsHistoryDelegate {
     
     // MARK: - IBOutlets
 
@@ -71,6 +75,7 @@ class ConcreteFlashcardsViewController: UIViewController {
         }
         
         streakView.setup(for: .fillFromLeft)
+        viewModel.delegate = self
         
         viewModel.getAverageConcreteScore { (concreteScores) in
             self.lblCurrentStreak.text = concreteScores.currentStreakDetail
@@ -108,7 +113,7 @@ class ConcreteFlashcardsViewController: UIViewController {
         abstractFrame = btnAbstract.frame
         
         // setup listener for when score updates
-        NotificationCenter.default.addObserver(self, selector: #selector(trainingHistoryUpdated), name: FirebaseNotification.TrainingHistoryUpdated, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(historyUpdatedFromServer), name: FirebaseNotification.TrainingHistoryUpdated, object: nil)
     }
     
     // Remove observer when view is not visible
@@ -155,7 +160,12 @@ class ConcreteFlashcardsViewController: UIViewController {
     
     // Updates UI When Training Data Updates
     
-    @objc private func trainingHistoryUpdated() {
+    @objc private func historyUpdatedFromServer() {
+        NotificationCenter.default.removeObserver(self, name: FirebaseNotification.TrainingHistoryUpdated, object: nil)
+        trainingHistoryUpdated()
+    }
+    
+    func trainingHistoryUpdated() {
         viewModel.getAverageConcreteScore { (newHistory) in
             DispatchQueue.main.async {
                 self.lblCurrentStreak.text = newHistory.currentStreakDetail
@@ -168,8 +178,8 @@ class ConcreteFlashcardsViewController: UIViewController {
     // Handle Updates After Answer is Submitted
     
     private func handle(response: (response: String, correct: Bool)) {
-        animate(responseText: response.response)
         updateScore(withCorrectAnswer: response.correct)
+        animate(responseText: response.response)
     }
     
     // Updates Score
@@ -209,8 +219,8 @@ class ConcreteFlashcardsViewController: UIViewController {
             UIView.animate(withDuration: 0.25, animations: {
                 self.lblWord.alpha = 1.0
             }, completion: { (_) in
-                self.lblResponsePhrase.isHidden = true
-                self.updateFlashcard()
+                // resume taps since animation is done
+                self.view.isUserInteractionEnabled = true
             })
         }
     }

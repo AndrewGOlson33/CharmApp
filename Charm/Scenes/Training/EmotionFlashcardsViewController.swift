@@ -11,7 +11,7 @@ import Firebase
 import CodableFirebase
 import AVKit
 
-class EmotionFlashcardsViewController: UIViewController {
+class EmotionFlashcardsViewController: UIViewController, FlashcardsHistoryDelegate {
 
     // MARK: - IBOutlets
     
@@ -79,6 +79,7 @@ class EmotionFlashcardsViewController: UIViewController {
         btnNegative.setGradientBackground(colorTop: #colorLiteral(red: 0.7257528305, green: 0.3471282721, blue: 0.3915748596, alpha: 1), colorBottom: #colorLiteral(red: 0.7257528305, green: 0.3471282721, blue: 0.3915748596, alpha: 0.794921875))
         
         streakBar.setup(for: .fillFromLeft)
+        viewModel.delegate = self
 
         viewModel.getAverageEmotionsScore { (emotionsScores) in
             // make sure this is done on main thread
@@ -120,7 +121,7 @@ class EmotionFlashcardsViewController: UIViewController {
         negativeFrame = btnNegative.frame
         
         // setup listener for when score updates
-        NotificationCenter.default.addObserver(self, selector: #selector(trainingHistoryUpdated), name: FirebaseNotification.TrainingHistoryUpdated, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(historyUpdatedFromServer), name: FirebaseNotification.TrainingHistoryUpdated, object: nil)
     }
     
     // Remove observer when view is not visible
@@ -136,12 +137,6 @@ class EmotionFlashcardsViewController: UIViewController {
         info.type = .Emotions
         tabBarController?.navigationController?.pushViewController(info, animated: true)
     }
-    
-//    // Get calculated x coord for scalebar
-//    private func getX(for bar: ScaleBar) -> CGFloat {
-//        let value = CGFloat(bar.calculatedValue)
-//        return bar.bounds.width * value
-//    }
     
     // Setup UI once the firebase model is loaded
     @objc private func firebaseModelLoaded() {
@@ -165,7 +160,12 @@ class EmotionFlashcardsViewController: UIViewController {
     
     // Updates UI When Training Data Updates
     
-    @objc private func trainingHistoryUpdated() {
+    @objc private func historyUpdatedFromServer() {
+        NotificationCenter.default.removeObserver(self, name: FirebaseNotification.TrainingHistoryUpdated, object: nil)
+        trainingHistoryUpdated()
+    }
+    
+    func trainingHistoryUpdated() {
         
         viewModel.getAverageEmotionsScore { (newHistory) in
             DispatchQueue.main.async {
