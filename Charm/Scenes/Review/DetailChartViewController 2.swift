@@ -30,7 +30,6 @@ class DetailChartViewController: UIViewController {
     // Data for filling tableview cells
     var transcript: [TranscriptCellInfo] = []
     var sliderData: [SliderCellInfo] = []
-    var calloutData: [String] = []
     
     // date formatter for setting chart title
     let dFormatter = DateFormatter()
@@ -132,7 +131,6 @@ class DetailChartViewController: UIViewController {
     }
     
     private func loadData() {
-                
         // clear any old values
         chartData = []
         sliderData = []
@@ -141,30 +139,39 @@ class DetailChartViewController: UIViewController {
         // setup data based on type
         switch chartType! {
         case .IdeaEngagement:
-            
+            if !TrainingModelCapsule.shared.isModelLoaded {
+                print("~>Not yet loaded...")
+                chartView.showLoading("Loading")
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    self.loadData()
+                }
+            } else {
+                print("~>Loaded")
+                chartView.hideLoading()
+            }
             let ideaEngagement = snapshot.ideaEngagement
-            
-            // setup chart data
-            for (index, item) in ideaEngagement.enumerated() {
-                let point = HIPoint()
-                point.x = index as NSNumber
-                point.y = item.score as NSNumber
-                calloutData.append(item.word)
-                chartData.append(point)
-                let tag = item.isConcrete ? "Concrete" : "Abstract"
-                transcript.append(TranscriptCellInfo(withText: "[\(index)]: \(item.word) (\(tag))"))
+            TrainingModelCapsule.shared.checkTypes(from: ideaEngagement) { (types) in
+                // setup chart data
+                for (index, item) in ideaEngagement.enumerated() {
+                    let point = HIPoint()
+                    point.x = index as NSNumber
+                    point.y = item.score as NSNumber
+                    self.chartData.append(point)
+                    self.transcript.append(TranscriptCellInfo(withText: "[\(index)]: \(item.word) (\(types[index]))"))
+                }
+                
+                // setup slider bar data
+                if let position = self.snapshot.getTopLevelRawValue(forSummaryItem: .IdeaEngagement), let score = self.snapshot.getTopLevelScoreValue(forSummaryItem: .IdeaEngagement) {
+                    let cellInfo = SliderCellInfo(details: SliderDetails(type: .fillFromLeft), title: "Estimated Idea Engagement", score: score, position: CGFloat(position))
+                    self.sliderData.append(cellInfo)
+                }
+                
+                if let position = self.snapshot.getTopLevelRawValue(forSummaryItem: .Concrete) {
+                    let cellInfo = SliderCellInfo(details: SliderDetails(type: .fixed, valueType: .percent, minBlue: 0.33, maxBlue: 0.67), title: "Concrete Details(%)", score: position, position: CGFloat(position))
+                    self.sliderData.append(cellInfo)
+                }
             }
             
-            // setup slider bar data
-            if let position = snapshot.getTopLevelRawValue(forSummaryItem: .IdeaEngagement), let score = snapshot.getTopLevelScoreValue(forSummaryItem: .IdeaEngagement) {
-                let cellInfo = SliderCellInfo(details: SliderDetails(type: .fillFromLeft), title: "Estimated Idea Engagement", score: score, position: CGFloat(position))
-                sliderData.append(cellInfo)
-            }
-            
-            if let position = snapshot.getTopLevelRawValue(forSummaryItem: .Concrete), let score = snapshot.getTopLevelRankValue(forSummaryItem: .Concrete) {
-                let cellInfo = SliderCellInfo(details: SliderDetails(type: .fixed, valueType: .percent, minBlue: 0.33, maxBlue: 0.67), title: "Concrete Details(%)", score: score, position: CGFloat(position))
-                sliderData.append(cellInfo)
-            }
             
         case .Conversation:
             let conversation = snapshot.conversation
@@ -179,21 +186,25 @@ class DetailChartViewController: UIViewController {
                     point.y = 0
                 }
                 
-                let text = "[\(String(describing: item.person))]: \(item.word)"
-                transcript.append(TranscriptCellInfo(withText: text))
-                calloutData.append(item.word)
                 chartData.append(point)
             }
             
+            print("~>Chart data count: \(chartData.count)")
             // setup slider bar data
-            if let position = snapshot.getTopLevelRawValue(forSummaryItem: .ConversationEngagement), let score = snapshot.getTopLevelScoreValue(forSummaryItem: .ConversationEngagement) {
+            if let position = snapshot.getTopLevelRawValue(forSummaryItem: .ConversationEngagement), let score = self.snapshot.getTopLevelScoreValue(forSummaryItem: .ConversationEngagement) {
                 let cellInfo = SliderCellInfo(details: SliderDetails(type: .fillFromLeft), title: "Estimated Conversation Engagement", score: score, position: CGFloat(position))
                 sliderData.append(cellInfo)
             }
             
-            if let position = snapshot.getTopLevelRawValue(forSummaryItem: .TalkingPercentage), let score = snapshot.getTopLevelRankValue(forSummaryItem: .TalkingPercentage) {
-                let cellInfo = SliderCellInfo(details: SliderDetails(type: .fixed, valueType: .percent, minBlue: 0.33, maxBlue: 0.67), title: "Talking(%)", score: score, position: CGFloat(position))
+            if let position = snapshot.getTopLevelRawValue(forSummaryItem: .TalkingPercentage) {
+                let cellInfo = SliderCellInfo(details: SliderDetails(type: .fixed, valueType: .percent, minBlue: 0.33, maxBlue: 0.67), title: "Talking(%)", score: position, position: CGFloat(position))
                 sliderData.append(cellInfo)
+            }
+            
+            // setup transcript
+            for item in conversation {
+                let text = "[\(String(describing: item.person))]: \(item.word)"
+                transcript.append(TranscriptCellInfo(withText: text))
             }
             
         case .Connection:
@@ -213,7 +224,6 @@ class DetailChartViewController: UIViewController {
                     point.y = 0
                 }
                 
-                calloutData.append(item.word)
                 chartData.append(point)
             }
             
@@ -223,8 +233,8 @@ class DetailChartViewController: UIViewController {
                 sliderData.append(cellInfo)
             }
             
-            if let position = snapshot.getTopLevelRawValue(forSummaryItem: .FirstPerson), let score = snapshot.getTopLevelRankValue(forSummaryItem: .FirstPerson) {
-                let cellInfo = SliderCellInfo(details: SliderDetails(type: .fixed, valueType: .percent, minBlue: 0.375, maxBlue: 0.625), title: "First Person(%)", score: score, position: CGFloat(position))
+            if let position = snapshot.getTopLevelRawValue(forSummaryItem: .FirstPerson) {
+                let cellInfo = SliderCellInfo(details: SliderDetails(type: .fixed, valueType: .percent, minBlue: 0.33, maxBlue: 0.67), title: "First Person(%)", score: position, position: CGFloat(position))
                 sliderData.append(cellInfo)
             }
         
@@ -259,13 +269,13 @@ class DetailChartViewController: UIViewController {
                 sliderData.append(cellInfo)
             }
             
-            if let position = snapshot.getTopLevelRawValue(forSummaryItem: .PositiveWords), let score = snapshot.getTopLevelRankValue(forSummaryItem: .PositiveWords) {
-                let cellInfo = SliderCellInfo(details: SliderDetails(type: .fixed, valueType: .percent, minBlue: 0.67, maxBlue: 1.0), title: "Positive Word(%)", score: score, position: CGFloat(position))
+            if let position = snapshot.getTopLevelRawValue(forSummaryItem: .PositiveWords) {
+                let cellInfo = SliderCellInfo(details: SliderDetails(type: .fillFromRight, valueType: .percent, minBlue: 0.67, maxBlue: 1.0), title: "Positive Word(%)", score: position, position: CGFloat(position))
                 sliderData.append(cellInfo)
             }
             
-            if let position = snapshot.getTopLevelRawValue(forSummaryItem: .NegativeWords), let score = snapshot.getTopLevelRankValue(forSummaryItem: .NegativeWords) {
-                let cellInfo = SliderCellInfo(details: SliderDetails(type: .fixed, valueType: .percent, minBlue: 0.0, maxBlue: 0.0, minRed: 0.9, maxRed: 1.0), title: "Negative Word(%)", score: score, position: CGFloat(position))
+            if let position = snapshot.getTopLevelRawValue(forSummaryItem: .NegativeWords) {
+                let cellInfo = SliderCellInfo(details: SliderDetails(type: .fillFromRight, valueType: .percent, minBlue: 0.67, maxBlue: 0.9, minRed: 0.9, maxRed: 1.0), title: "Negative Word(%)", score: position, position: CGFloat(position))
                 sliderData.append(cellInfo)
             }
             
@@ -292,10 +302,6 @@ class DetailChartViewController: UIViewController {
         
         // chart colors
         var colorArray: [[Any]] = []
-        let yaxis = HIYAxis()
-        
-        var lowerBoundValue: Double = 0.0
-        var upperBoundValue: Double = 0.0
         
         switch chartType! {
         case .IdeaEngagement:
@@ -305,13 +311,6 @@ class DetailChartViewController: UIViewController {
                 [NSNumber(value: 0.85), "rgba(128, 0, 0, 0)"],
                 [NSNumber(value: 1), "rgb(86, 0 , 0, 1)"]
             ]
-            
-            yaxis.min = 0
-            yaxis.max = 1
-            yaxis.tickInterval = 0.1
-            
-            lowerBoundValue = 0.45
-            upperBoundValue = 0.8
         case .Conversation:
             colorArray = [
                 [NSNumber(value: 0), "rgb(242, 0, 0, 1)"],
@@ -319,48 +318,20 @@ class DetailChartViewController: UIViewController {
                 [NSNumber(value: 0.85), "rgba(128, 0, 0, 0)"],
                 [NSNumber(value: 1), "rgb(86, 0 , 0, 1)"]
             ]
-            yaxis.min = -1.05
-            yaxis.max = 1.05
-            yaxis.tickInterval = 0.21
-            
-            lowerBoundValue = -0.7
-            upperBoundValue = 0.7
-        case .Connection:
-            colorArray = [
-                [NSNumber(value: 0), "rgb(86, 0 ,0)"],
-                [NSNumber(value: 0.5), "rgba(216,0,0, 0)"],
-                [NSNumber(value: 0.7), "rgba(47,0,0,0)"],
-                //                [NSNumber(value: 0.5), "rgba(216,216,216, 0)"],
-                //                [NSNumber(value: 0.7), "rgba(47,216,216,0)"],
-                [NSNumber(value: 1), "rgb(255, 0 ,0)"]
-            ]
-            
-            yaxis.min = -1.05
-            yaxis.max = 1.05
-            yaxis.tickInterval = 0.21
-            
-            lowerBoundValue = -0.5
-            upperBoundValue = 0.5
         case .Emotions:
             colorArray = [
-                [NSNumber(value: 0.0), "rgb(0, 242, 0, 1)"],
-                [NSNumber(value: 0.2), "rgb(0, 242, 0, 0)"],
-                [NSNumber(value: 0.8), "rgb(242, 0, 0, 0)"],
-                [NSNumber(value: 1.0), "rgb(242, 0, 0, 1)"]
-                
-//                [NSNumber(value: 0), "rgb(0, 242, 0, 1)"],
-//                [NSNumber(value: 0.2), "rgba(0, 242, 0, 0)"],
-//                [NSNumber(value: 0), "rgb(242, 0, 0)"],
-//                [NSNumber(value: 0.15), "rgba(242, 0, 0, 0)"],
-//                [NSNumber(value: 0.7), "rgba(80,216,0,0)"],
-//                [NSNumber(value: 1), "rgba(80,216,0,1)"]
+                [NSNumber(value: 0), "rgb(242, 0, 0)"],
+                [NSNumber(value: 0.15), "rgba(242, 0, 0, 0)"],
+                [NSNumber(value: 0.7), "rgba(80,216,0,0)"],
+                [NSNumber(value: 1), "rgba(80,216,0,1)"]
             ]
-            yaxis.min = -0.4
-            yaxis.max = 0.4
-            yaxis.tickInterval = 0.08
-            
-            lowerBoundValue = 0.45
-            upperBoundValue = 0.8
+        default:
+            colorArray = [
+                [NSNumber(value: 0), "rgb(86, 0 ,0)"],
+//                [NSNumber(value: 0.5), "rgba(216,216,216, 0)"],
+//                [NSNumber(value: 0.7), "rgba(47,216,216,0)"],
+                [NSNumber(value: 1), "rgb(255, 0 ,0)"]
+            ]
         }
         
         let options = HIOptions()
@@ -371,39 +342,25 @@ class DetailChartViewController: UIViewController {
         let chart = HIChart()
         chart.zoomType = "x"
         
+        let yaxis = HIYAxis()
         yaxis.title = HITitle()
         yaxis.title.text = ""
         yaxis.title.reserveSpace = false
-        yaxis.gridLineWidth = 0
-        yaxis.labels = HILabels()
-        yaxis.labels.enabled = false
-        yaxis.visible = true
+        yaxis.visible = false
         
-        if chartType != .Emotions {
-            let upperBounds = HIPlotLines()
-            upperBounds.color = HIColor(hexValue: "e4e4e4")
-            upperBounds.width = 2
-            upperBounds.value = upperBoundValue as NSNumber
-//            upperBounds.zIndex = 5
-            let upperlLabel = HILabel()
-            upperlLabel.text = "Upper Boundary"
-            upperlLabel.style = HICSSObject()
-            upperlLabel.style.color = "#e4e4e4"
-            upperBounds.label = upperlLabel
-            
-            let lowerBounds = HIPlotLines()
-            lowerBounds.color = HIColor(hexValue: "e4e4e4")
-            lowerBounds.width = 2
-            lowerBounds.value = lowerBoundValue as NSNumber
-//            lowerBounds.zIndex = 5
-            let lowerLabel = HILabel()
-            lowerLabel.text = "Lower Bondary"
-            lowerLabel.style = HICSSObject()
-            lowerLabel.style.color = "#e4e4e4"
-            lowerLabel.y = 12
-            lowerBounds.label = lowerLabel
-            
-            yaxis.plotLines = [upperBounds, lowerBounds]
+        switch chartType! {
+        case .IdeaEngagement:
+            yaxis.min = 0
+            yaxis.max = 1
+            yaxis.tickInterval = 0.1
+        case .Conversation, .Connection:
+            yaxis.min = -1.05
+            yaxis.max = 1.05
+            yaxis.tickInterval = 0.21
+        case .Emotions:
+            yaxis.min = -0.4
+            yaxis.max = 0.4
+            yaxis.tickInterval = 0.08
         }
         
         let legend = HILegend()
@@ -411,14 +368,12 @@ class DetailChartViewController: UIViewController {
         
         let plotoptions = HIPlotOptions()
         plotoptions.area = HIArea()
-        if chartType != .Emotions {
-            plotoptions.area.fillColor = HIColor(linearGradient: [
-                "x1": NSNumber(value: 0),
-                "x2": NSNumber(value: 0),
-                "y1": NSNumber(value: 0),
-                "y2": NSNumber(value: 1)
-                ], stops: colorArray)
-        }
+        plotoptions.area.fillColor = HIColor(linearGradient: [
+            "x1": NSNumber(value: 0),
+            "x2": NSNumber(value: 0),
+            "y1": NSNumber(value: 0),
+            "y2": NSNumber(value: 1)
+            ], stops: colorArray)
         plotoptions.area.marker = HIMarker()
         plotoptions.area.marker.radius = NSNumber(value: 2)
         plotoptions.area.lineWidth = 1
@@ -433,11 +388,21 @@ class DetailChartViewController: UIViewController {
         
         let events = HIEvents()
         let clickClosure: HIClosure =  { (context: HIChartContext?) in
+            print("~>Got click event.")
             if let row = context?.getProperty("this.x") as? Int {
                 var shouldScroll = false
+                print("~>This location: \(row)")
                 var indexPath: IndexPath = IndexPath(row: 0, section: 0)
                 switch self.chartType! {
+//                case .Conversation:
+//                    print("~>Back and forth")
+//                    // back and forth is the word number
+//                    if row == 0 {
+//                        indexPath = IndexPath(row: 0, section: 1)
+//                        break
+//                    }
                 case .Emotions:
+                    print("~>Emotions.")
                     let tone = self.snapshot.graphTone[row]
                     print("~>Word is: \(tone.word)")
                     var didFind = false
@@ -485,6 +450,7 @@ class DetailChartViewController: UIViewController {
                         })
                     }
                 default:
+                    print("~>Default")
                     indexPath = IndexPath(row: row, section: 1)
                     shouldScroll = true
                 }
@@ -522,6 +488,7 @@ class DetailChartViewController: UIViewController {
             // setup interaction for pos and neg graphs
             for point in posArea.data {
                 guard let point = point as? HIPoint else {
+                    print("~>Not a point")
                     continue
                 }
                 point.events = events
@@ -534,17 +501,6 @@ class DetailChartViewController: UIViewController {
                 }
                 point.events = events
             }
-            
-            area.fillColor = HIColor(linearGradient: [
-                "x1": NSNumber(value: 0),
-                "x2": NSNumber(value: 0),
-                "y1": NSNumber(value: 0),
-                "y2": NSNumber(value: 1)
-                ], stops: colorArray)
-            
-            posArea.fillColor = HIColor(uiColor: .clear)
-            
-            negArea.fillColor = HIColor(uiColor: .clear)
             
             options.series = [area, posArea, negArea]
             legend.enabled = false
@@ -623,8 +579,8 @@ extension DetailChartViewController: UITableViewDelegate, UITableViewDataSource 
             case .int:
                 cell.lblScore.text = "\(Int(info.score))"
             case .percent:
-//                let percentValue = Int(info.score * 100)
-                cell.lblScore.text = info.percentString
+                let percentValue = Int(info.score * 100)
+                cell.lblScore.text = "\(percentValue)%"
             }
             
             return cell
@@ -660,7 +616,6 @@ extension DetailChartViewController: UITableViewDelegate, UITableViewDataSource 
             guard chartView.options.series[0].data.count > indexPath.row else { return }
             
             var item: HIPoint = HIPoint()
-            var word: String = ""
             
             if chartType! == .Emotions {
                 // find the correct data point
@@ -671,36 +626,57 @@ extension DetailChartViewController: UITableViewDelegate, UITableViewDataSource 
                         && toneItem.rollNeg3 == rawItem.rollNeg3 && toneItem.rollPos3 == rawItem.rollPos3 {
                         // item was found, link them and be done
                         item = chartView.options.series[0].data[index] as! HIPoint
-                        word = toneItem.word
                     }
                 }
+                
+                
             } else {
                 item = chartView.options.series[0].data[indexPath.row] as! HIPoint
             }
-
+            
+//            else if chartType! == .Conversation {
+//                var wordCount: Int = 0
+//                //                for (index, transcript) in snapshot.transcript.enumerated() {
+//                //                    let wordsToCount = transcript.words.components(separatedBy: .whitespacesAndNewlines).filter { !$0.isEmpty }
+//                //                    if indexPath.row == index {
+//                //                        if wordsToCount.count == 1 {
+//                //                            words = wordsToCount.first!
+//                //                        } else {
+//                //                            words = ""
+//                //                            for (index, word) in wordsToCount.enumerated() {
+//                //                                words = "\(words!)\(word)"
+//                //                                if index == 2 {
+//                //                                    words = "\(words!)..."
+//                //                                    break
+//                //                                } else {
+//                //                                    words = "\(words!) "
+//                //                                }
+//                //                            }
+//                //                        }
+//                //
+//                //                        break
+//                //                    } else {
+//                //                        wordCount += wordsToCount.count
+//                //                    }
+//                //
+//                //                }
+//
+//                // prevent crashing in case the index is out of range
+//                if wordCount >= chartView.options.series[0].data.count { wordCount = chartView.options.series[0].data.count - 1 }
+//
+//                item = chartView.options.series[0].data[wordCount] as! HIPoint
+//            }
+            
             let annotations = HIAnnotations()
             annotations.labels = [HILabels]()
             let label = HILabels()
-            label.align = "auto"
+            label.align = "top"
             label.point = HIPoint()
             label.point.xAxis = 0
             label.point.yAxis = 0
             label.point.x = item.x
-            
-            
-            let offset = 0.075
-            if let yaxisarray = chartView.options.yAxis, let yaxis = yaxisarray.first, let max = yaxis.max, Double(truncating: item.y) > Double(truncating: max) - offset {
-                print("~>Making it smaller.")
-                label.point.y = NSNumber(value: Double(truncating: item.y) - offset)
-            } else {
-                label.point.y = item.y
-            }
-            
-            if word.isEmpty && indexPath.row < calloutData.count {
-                word = calloutData[indexPath.row]
-            }
-            
-            label.text = word
+            label.point.y = item.y
+//            label.text = words
             annotations.labels.append(label)
             annotations.id = "annotation"
             

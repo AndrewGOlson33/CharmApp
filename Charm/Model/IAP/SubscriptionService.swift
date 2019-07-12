@@ -92,13 +92,17 @@ class SubscriptionService: NSObject {
         
         let profile = CharmUser.shared.userProfile
         
-        do {
-            let data = try FirebaseEncoder().encode(profile)
-            Database.database().reference().child(FirebaseStructure.Users).child(CharmUser.shared.id!).child(FirebaseStructure.CharmUser.Profile).setValue(data)
-            print("~>Set user profile with new date")
-        } catch let error {
-            print("~>There was an error: \(error)")
+        DispatchQueue.global(qos: .utility).async {
+            do {
+                let data = try FirebaseEncoder().encode(profile)
+                Database.database().reference().child(FirebaseStructure.Users).child(CharmUser.shared.id!).child(FirebaseStructure.CharmUser.Profile).setValue(data)
+                print("~>Set user profile with new date")
+            } catch let error {
+                print("~>There was an error: \(error)")
+            }
         }
+        
+        
     }
     
     private func numberOfCredits() -> Int {

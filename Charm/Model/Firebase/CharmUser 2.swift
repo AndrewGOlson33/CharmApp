@@ -65,7 +65,7 @@ struct UserProfile: Codable {
         firstName = userName.first
         lastName = userName.last
         self.email = email
-        numCredits = 3
+        numCredits = 1
         renewDate = Date()
         membershipStatus = .unknown
     }
@@ -82,11 +82,7 @@ struct UserProfile: Codable {
             
             do {
                 let data = try FirebaseEncoder().encode(self)
-                
-                DispatchQueue.global(qos: .utility).async {
-                    Database.database().reference().child(FirebaseStructure.Users).child(Auth.auth().currentUser!.uid).child(FirebaseStructure.CharmUser.Profile).setValue(data)
-                }
-                
+                Database.database().reference().child(FirebaseStructure.Users).child(Auth.auth().currentUser!.uid).child(FirebaseStructure.CharmUser.Profile).setValue(data)
             } catch let error {
                 print("~>There was an error updating the name: \(error)")
             }

@@ -120,6 +120,20 @@ class ConcreteFlashcardsViewController: UIViewController, FlashcardsHistoryDeleg
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         NotificationCenter.default.removeObserver(self, name: FirebaseNotification.TrainingHistoryUpdated, object: nil)
+        
+        
+        // Save history when leaving screen
+        
+        guard let history = CharmUser.shared.trainingData, let uid = CharmUser.shared.id else { return }
+        
+        DispatchQueue.global(qos: .utility).async {
+            do {
+                let data = try FirebaseEncoder().encode(history)
+                Database.database().reference().child(FirebaseStructure.Users).child(uid).child(FirebaseStructure.Training.TrainingDatabase).setValue(data)
+            } catch let error {
+                print("~>There was an error converting the data: \(error)")
+            }
+        }
     }
     
     // MARK: - Private Helper Functions

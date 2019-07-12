@@ -9,6 +9,7 @@
 import UIKit
 import Firebase
 import FirebaseUI
+import CodableFirebase
 import UserNotificationsUI
 import UserNotifications
 import StoreKit
@@ -33,7 +34,6 @@ class AppStatus {
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
-//    var user: CharmUser! = nil
     var friendID: String = ""
     let gcmMessageIDKey = "gcm.message_id"
     var restoreFromBackground = false
@@ -81,6 +81,29 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationWillResignActive(_ application: UIApplication) {
         print("~>Will resign active")
         restoreFromBackground = true
+        
+        if let tabBar = (window?.rootViewController as? UINavigationController)?.topViewController as? UITabBarController {
+            if let _ = tabBar.selectedViewController as? ConcreteFlashcardsViewController {
+                saveTraining()
+            } else if let _ = tabBar.selectedViewController as? EmotionFlashcardsViewController {
+                saveTraining()
+            }
+        }
+    }
+    
+    private func saveTraining() {
+        // Save history when leaving screen
+        guard let history = CharmUser.shared.trainingData, let uid = CharmUser.shared.id else { return }
+        
+        DispatchQueue.global(qos: .utility).async {
+            do {
+                let data = try FirebaseEncoder().encode(history)
+                Database.database().reference().child(FirebaseStructure.Users).child(uid).child(FirebaseStructure.Training.TrainingDatabase).setValue(data)
+                print("~>Saved training.")
+            } catch let error {
+                print("~>There was an error converting the data: \(error)")
+            }
+        }
     }
     
     func applicationDidEnterBackground(_ application: UIApplication) {
@@ -159,6 +182,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             print("~>Calling Remove active calls.")
             removeActiveCalls()
         }
+    
     }
     
     // MARK: - Helper Functions

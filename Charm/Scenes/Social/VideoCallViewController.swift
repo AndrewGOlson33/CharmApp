@@ -281,17 +281,22 @@ class VideoCallViewController: UIViewController {
         }
         
         // Write call objects to Firebase
-        do {
-            // encode data
-            let myCallData = try FirebaseEncoder().encode(myCall)
-            let friendCallData = try FirebaseEncoder().encode(friendCall)
-           // upload to firebase
-            usersRef.child(friend.id!).child(FirebaseStructure.CharmUser.Call).setValue(friendCallData)
-            usersRef.child(myUser.id!).child(FirebaseStructure.CharmUser.Call).setValue(myCallData)
-        } catch let error {
-            print("~>Got an error converting objects for firebase: \(error)")
-            showCallErrorAlert()
+        DispatchQueue.global(qos: .utility).async {
+            do {
+                // encode data
+                let myCallData = try FirebaseEncoder().encode(myCall)
+                let friendCallData = try FirebaseEncoder().encode(friendCall)
+                // upload to firebase
+                usersRef.child(self.friend.id!).child(FirebaseStructure.CharmUser.Call).setValue(friendCallData)
+                usersRef.child(self.myUser.id!).child(FirebaseStructure.CharmUser.Call).setValue(myCallData)
+            } catch let error {
+                print("~>Got an error converting objects for firebase: \(error)")
+                DispatchQueue.main.async {
+                    self.showCallErrorAlert()
+                }
+            }
         }
+        
     }
     
     /**
@@ -366,49 +371,49 @@ class VideoCallViewController: UIViewController {
     }
     
     func startArchive() {
-        let fullURL = "\(Server.BaseURL)\(Server.Archive)\(Server.StartArchive)"
-        let url = URL(string: fullURL)
-        var urlRequest: URLRequest? = nil
-        if let url = url {
-            urlRequest = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalAndRemoteCacheData, timeoutInterval: 10)
-        }
-        
-        guard var request = urlRequest else { return }
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.httpMethod = "POST"
-        let dict = [
-            "sessionId": kSessionId,
-            "userId" : myUser.id!
-        ]
-        request.httpBody = try? JSONSerialization.data(withJSONObject: dict, options: .prettyPrinted)
-        
-        let configuration = URLSessionConfiguration.default
-        let session = URLSession(configuration: configuration)
-        
-        let dataTask = session.dataTask(with: request) { (data, response, error) in
-        
-            print("~>Got response: \(String(describing: response))")
-            if let error = error {
-                print("~>Got an error trying to start an archive: \(error)")
-            } else {
-                print("~>Archive started.")
-                if self.isInitiatingUser {
-                    self.pendingArchive = SessionArchive(id: self.kSessionId, callerId: self.myUser.id!, calledId: self.friend.id!, callerName: self.myUser.userProfile.firstName, calledName: self.friend.firstName)
-                    print("~>My name: \(self.myUser.userProfile.firstName) friend name: \(self.friend.firstName)")
-                    print("~>Session id: \(self.kSessionId)")
-                    guard let pending = self.pendingArchive else { return }
-                    print("~>Added pending to firebase: \(pending.addPending())")
-                } else {
-                    print("~>No need to upload to pending twice.")
-                }
-                
+        DispatchQueue.global(qos: .utility).async {
+            let fullURL = "\(Server.BaseURL)\(Server.Archive)\(Server.StartArchive)"
+            let url = URL(string: fullURL)
+            var urlRequest: URLRequest? = nil
+            if let url = url {
+                urlRequest = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalAndRemoteCacheData, timeoutInterval: 10)
             }
+            
+            guard var request = urlRequest else { return }
+            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            request.httpMethod = "POST"
+            let dict = [
+                "sessionId": self.kSessionId,
+                "userId" : self.myUser.id!
+            ]
+            request.httpBody = try? JSONSerialization.data(withJSONObject: dict, options: .prettyPrinted)
+            
+            let configuration = URLSessionConfiguration.default
+            let session = URLSession(configuration: configuration)
+            
+            let dataTask = session.dataTask(with: request) { (data, response, error) in
+                
+                print("~>Got response: \(String(describing: response))")
+                if let error = error {
+                    print("~>Got an error trying to start an archive: \(error)")
+                } else {
+                    print("~>Archive started.")
+                    if self.isInitiatingUser {
+                        self.pendingArchive = SessionArchive(id: self.kSessionId, callerId: self.myUser.id!, calledId: self.friend.id!, callerName: self.myUser.userProfile.firstName, calledName: self.friend.firstName)
+                        print("~>My name: \(self.myUser.userProfile.firstName) friend name: \(self.friend.firstName)")
+                        print("~>Session id: \(self.kSessionId)")
+                        guard let pending = self.pendingArchive else { return }
+                        print("~>Added pending to firebase: \(pending.addPending())")
+                    } else {
+                        print("~>No need to upload to pending twice.")
+                    }
+                    
+                }
+            }
+            
+            dataTask.resume()
+            session.finishTasksAndInvalidate()
         }
-        
-        dataTask.resume()
-        session.finishTasksAndInvalidate()
-        
-        
     }
 
     
@@ -498,7 +503,7 @@ extension VideoCallViewController: OTSessionDelegate {
     func sessionDidDisconnect(_ session: OTSession) {
         print("~>Session disconnected")
         disconnecting = false
-        DispatchQueue.main.async {
+        DispatchQueue.global(qos: .utility).async {
             // remove call
             let call: Call? = nil
             do {
@@ -597,7 +602,9 @@ extension VideoCallViewController: OTSubscriberDelegate {
                 print("~>Should be taking away a token.")
                 self.myUser.userProfile.numCredits -= 1
                 let tokens = self.myUser.userProfile.numCredits < 0 ? 0 : self.myUser.userProfile.numCredits
-                Database.database().reference().child(FirebaseStructure.Users).child(self.myUser.id!).child(FirebaseStructure.CharmUser.Profile).child(FirebaseStructure.CharmUser.UserProfile.NumCredits).setValue(tokens)
+                DispatchQueue.global(qos: .utility).async {
+                    Database.database().reference().child(FirebaseStructure.Users).child(self.myUser.id!).child(FirebaseStructure.CharmUser.Profile).child(FirebaseStructure.CharmUser.UserProfile.NumCredits).setValue(tokens)
+                }
                 
                 if self.pendingArchive != nil {
                     print("~>Setting archive to complete")

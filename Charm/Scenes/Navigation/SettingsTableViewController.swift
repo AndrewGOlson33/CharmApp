@@ -243,7 +243,10 @@ extension SettingsTableViewController: UITextFieldDelegate {
         
         do {
             let profile = try FirebaseEncoder().encode(user.userProfile)
-            Database.database().reference().child(FirebaseStructure.Users).child(uid).child(FirebaseStructure.CharmUser.Profile).setValue(profile)
+            DispatchQueue.global(qos: .utility).async {
+                Database.database().reference().child(FirebaseStructure.Users).child(uid).child(FirebaseStructure.CharmUser.Profile).setValue(profile)
+            }
+            
         } catch let error {
             print("~>There was an error trying to encode the phone user profile: \(error)")
             let alert = UIAlertController(title: "Error", message: "An unknown error occurred, please try again later.", preferredStyle: .alert)

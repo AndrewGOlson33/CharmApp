@@ -301,7 +301,10 @@ class CharmSignInViewController: UIViewController {
                     
                     do {
                         let data = try FirebaseEncoder().encode(user)
-                        Database.database().reference().child(FirebaseStructure.Users).child(uid).setValue(data)
+                        DispatchQueue.global(qos: .utility).async {
+                            Database.database().reference().child(FirebaseStructure.Users).child(uid).setValue(data)
+                        }
+                        
                         CharmUser.shared = user
                         self.showNavigation()
                     } catch let error {

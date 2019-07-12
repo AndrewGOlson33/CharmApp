@@ -289,7 +289,7 @@ extension CharmNewUserViewController {
             } else {
                 // create a new user
                 print("~>Creating a new user")
-                DispatchQueue.main.async {
+                DispatchQueue.global(qos: .utility).async {
                     let info = self.getUserInfo()
                     print("~>User info: \(info)")
                     var user = CharmUser(name: info.name, email: info.email)
@@ -299,10 +299,16 @@ extension CharmNewUserViewController {
                         let data = try FirebaseEncoder().encode(user)
                         Database.database().reference().child(FirebaseStructure.Users).child(uid).setValue(data)
                         CharmUser.shared = user
-                        self.showSubscriptionSelection()
+                        DispatchQueue.main.async {
+                            self.showSubscriptionSelection()
+                        }
+                        
                     } catch let error {
                         print("~>There was an error encoding user: \(error)")
-                        self.showLoginError()
+                        DispatchQueue.main.async {
+                            self.showLoginError()
+                        }
+                        
                         return
                     }
                     

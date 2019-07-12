@@ -31,7 +31,10 @@ struct SessionArchive: Codable, Identifiable {
         guard let id = self.id else { return false }
         do {
             let data = try FirebaseEncoder().encode(self)
-            Database.database().reference().child(FirebaseStructure.Archive.Pending).child(id).setValue(data)
+            DispatchQueue.global(qos: .utility).async {
+                Database.database().reference().child(FirebaseStructure.Archive.Pending).child(id).setValue(data)
+            }
+            
             return true
         } catch let error {
             print("~>Got an error trying to add pending: \(error)")
@@ -45,7 +48,9 @@ struct SessionArchive: Codable, Identifiable {
         
         do {
             let data = try FirebaseEncoder().encode(self)
-            Database.database().reference().child(FirebaseStructure.Archive.Pending).child(id).setValue(data)
+            DispatchQueue.global(qos: .utility).async {
+                Database.database().reference().child(FirebaseStructure.Archive.Pending).child(id).setValue(data)
+            }
             return
         } catch let error {
             print("~>Got an error trying to save pending with archive complete: \(error)")
@@ -55,7 +60,10 @@ struct SessionArchive: Codable, Identifiable {
     
     func removePending() -> Bool {
         guard let id = self.id else { return false }
-        Database.database().reference().child(FirebaseStructure.Archive.Pending).child(id).removeValue()
+        DispatchQueue.global(qos: .utility).async {
+            Database.database().reference().child(FirebaseStructure.Archive.Pending).child(id).removeValue()
+        }
+        
         return true
     }
     

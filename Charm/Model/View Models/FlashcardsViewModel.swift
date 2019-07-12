@@ -34,6 +34,8 @@ class FlashcardsViewModel: NSObject {
     
     var delegate: FlashcardsHistoryDelegate? = nil
     
+    var delayUploadCount: Int = 0
+    
     // MARK: Class Functions
     
     func getFlashCard(ofType type: FlashCardType = .Concrete) -> String {
@@ -175,15 +177,25 @@ class FlashcardsViewModel: NSObject {
         self.upload(trainingHistory: trainingHistory, forUid: uid)
     }
 
-    
+    // TODO: - Update this so it only calls once in a while
     fileprivate func upload(trainingHistory history: TrainingHistory, forUid uid: String) {
         print("~>Call training history delegate.")
         delegate?.trainingHistoryUpdated()
-        do {
-            let data = try FirebaseEncoder().encode(history)
-            Database.database().reference().child(FirebaseStructure.Users).child(uid).child(FirebaseStructure.Training.TrainingDatabase).setValue(data)
-        } catch let error {
-            print("~>There was an error converting the data: \(error)")
+        
+        guard delayUploadCount == 3 else {
+            delayUploadCount += 1
+            return
+        }
+        
+        delayUploadCount = 0
+        
+        DispatchQueue.global(qos: .utility).async {
+            do {
+                let data = try FirebaseEncoder().encode(history)
+                Database.database().reference().child(FirebaseStructure.Users).child(uid).child(FirebaseStructure.Training.TrainingDatabase).setValue(data)
+            } catch let error {
+                print("~>There was an error converting the data: \(error)")
+            }
         }
     }
     

@@ -147,21 +147,23 @@ class MainMenuViewController: UIViewController {
     private func saveUserProfileToFirebase() {
         
         guard CharmUser.shared != nil, let id = CharmUser.shared.id else {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 5.0) {
+            DispatchQueue.global(qos: .utility).asyncAfter(deadline: .now() + 5.0) {
                 self.saveUserProfileToFirebase()
                 return
             }
             return
         }
         
-        let profile = CharmUser.shared.userProfile
-        
-        do {
-            let data = try FirebaseEncoder().encode(profile)
-            Database.database().reference().child(FirebaseStructure.Users).child(id).child(FirebaseStructure.CharmUser.Profile).setValue(data)
-            print("~>Set user profile with new date")
-        } catch let error {
-            print("~>There was an error: \(error)")
+        DispatchQueue.global(qos: .utility).async {
+            let profile = CharmUser.shared.userProfile
+            
+            do {
+                let data = try FirebaseEncoder().encode(profile)
+                Database.database().reference().child(FirebaseStructure.Users).child(id).child(FirebaseStructure.CharmUser.Profile).setValue(data)
+                print("~>Set user profile with new date")
+            } catch let error {
+                print("~>There was an error: \(error)")
+            }
         }
     }
     
@@ -222,6 +224,7 @@ class MainMenuViewController: UIViewController {
                 appDelegate.restoreFromBackground = false
                 return
             }
+            
             self.isFirebaseConnected = !self.isFirebaseConnected
             let title = self.isFirebaseConnected ? "Connection Restored" : "Connection Lost"
             let message = self.isFirebaseConnected ? "Connection to the database server has been restored." : "Lost connection to databse server.  Please check your internet connection."
@@ -260,7 +263,7 @@ class MainMenuViewController: UIViewController {
                             }))
                             self.navigationController?.present(alert, animated: true, completion: nil)
                         } else if self.firstSetup && call.status == .connected {
-                            DispatchQueue.main.async {
+                            DispatchQueue.global(qos: .utility).async {
                                 (UIApplication.shared.delegate as! AppDelegate).removeActiveCalls()
                             }
                         } else if call.status == .rejected {
@@ -292,37 +295,41 @@ class MainMenuViewController: UIViewController {
     // Observes snapshot data
     fileprivate func setupDataObserver() {
         let snapShotRef = Database.database().reference().child(FirebaseStructure.Users).child(Auth.auth().currentUser!.uid).child(FirebaseStructure.CharmUser.Snapshot)
-        
-        snapShotRef.observe(.value) { (snapshot) in
-            guard let values = snapshot.value as? [String:Any] else {
-                print("~>Couldn't convert values to [String:Any], possibly no data exists.")
-                return
-            }
-            
-            for value in values {
-                do {
-                    let key = value.key
-                    var snapshotData = try FirebaseDecoder().decode(Snapshot.self, from: value.value)
-                    snapshotData.dateString = key
-                    guard snapshotData.date != nil else { continue }
-                    guard !UserSnapshotData.shared.snapshots.contains(where: { (snapshot) -> Bool in
-                        snapshot.date == snapshotData.date
-                    }) else { continue }
-                    UserSnapshotData.shared.snapshots.append(snapshotData)
-                } catch let error {
-                    print("~>Error getting snapshot data: \(error)")
+        DispatchQueue.global(qos: .utility).async {
+            snapShotRef.observe(.value) { (snapshot) in
+                guard let values = snapshot.value as? [String:Any] else {
+                    print("~>Couldn't convert values to [String:Any], possibly no data exists.")
+                    return
+                }
+                
+                for value in values {
+                    do {
+                        let key = value.key
+                        var snapshotData = try FirebaseDecoder().decode(Snapshot.self, from: value.value)
+                        snapshotData.dateString = key
+                        guard snapshotData.date != nil else { continue }
+                        guard !UserSnapshotData.shared.snapshots.contains(where: { (snapshot) -> Bool in
+                            snapshot.date == snapshotData.date
+                        }) else { continue }
+                        UserSnapshotData.shared.snapshots.append(snapshotData)
+                    } catch let error {
+                        print("~>Error getting snapshot data: \(error)")
+                    }
                 }
             }
         }
+        
     }
     
     // Observes Training History
     fileprivate func setupTrainingHistoryObserver() {
         let historyRef = Database.database().reference().child(FirebaseStructure.Users).child(Auth.auth().currentUser!.uid).child(FirebaseStructure.Training.TrainingDatabase)
-        
-        historyRef.observe(.value) { (snapshot) in
-            self.shouldPostTrainingHistoryNotification = true
+        DispatchQueue.global(qos: .utility).async {
+            historyRef.observe(.value) { (snapshot) in
+                self.shouldPostTrainingHistoryNotification = true
+            }
         }
+        
     }
     
     fileprivate func reject(call: Call) {
@@ -330,12 +337,16 @@ class MainMenuViewController: UIViewController {
         
         let friendCall = Call(sessionID: call.sessionID, status: .rejected, from: Auth.auth().currentUser!.uid)
         
-        do {
-            let data = try FirebaseEncoder().encode(friendCall)
-            call.friendCallRef.setValue(data)
-        } catch let error {
-            print("~>There was an error converting call data: \(error)")
+        DispatchQueue.global(qos: .utility).async {
+            do {
+                let data = try FirebaseEncoder().encode(friendCall)
+                call.friendCallRef.setValue(data)
+            } catch let error {
+                print("~>There was an error converting call data: \(error)")
+            }
         }
+        
+        
     }
     
     fileprivate func setupIncoming(call: Call) {
@@ -370,7 +381,7 @@ class MainMenuViewController: UIViewController {
     // MARK: - Upload User's Token For APNS Notifications
     
     fileprivate func uploadDeviceToken() {
-        DispatchQueue.main.async {
+        DispatchQueue.global(qos: .utility).async {
             InstanceID.instanceID().instanceID { (result, error) in
                 if let error = error {
                     print("~>Error fetching remote instance ID: \(error)")
@@ -434,7 +445,7 @@ class MainMenuViewController: UIViewController {
     }
     
     fileprivate func addFriend(withID id: String) {
-        DispatchQueue.main.async {
+        DispatchQueue.global(qos: .utility).async {
             // first move friend from received to current friends
             guard var user = CharmUser.shared else { return }
             
@@ -462,7 +473,11 @@ class MainMenuViewController: UIViewController {
                 // friend already exists in list
                 let alert = UIAlertController(title: "Already Have Pending Request", message: "You already have a pending friend request from this user.  Please approve the request on your contacts list.", preferredStyle: .alert)
                 alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-                self.navigationController?.present(alert, animated: true, completion: nil)
+                
+                DispatchQueue.main.async {
+                    self.navigationController?.present(alert, animated: true, completion: nil)
+                }
+                
                 return
             }
             

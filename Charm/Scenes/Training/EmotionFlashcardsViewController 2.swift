@@ -11,7 +11,7 @@ import Firebase
 import CodableFirebase
 import AVKit
 
-class EmotionFlashcardsViewController: UIViewController, FlashcardsHistoryDelegate {
+class EmotionFlashcardsViewController: UIViewController {
 
     // MARK: - IBOutlets
     
@@ -79,7 +79,6 @@ class EmotionFlashcardsViewController: UIViewController, FlashcardsHistoryDelega
         btnNegative.setGradientBackground(colorTop: #colorLiteral(red: 0.7257528305, green: 0.3471282721, blue: 0.3915748596, alpha: 1), colorBottom: #colorLiteral(red: 0.7257528305, green: 0.3471282721, blue: 0.3915748596, alpha: 0.794921875))
         
         streakBar.setup(for: .fillFromLeft)
-        viewModel.delegate = self
 
         viewModel.getAverageEmotionsScore { (emotionsScores) in
             // make sure this is done on main thread
@@ -121,25 +120,13 @@ class EmotionFlashcardsViewController: UIViewController, FlashcardsHistoryDelega
         negativeFrame = btnNegative.frame
         
         // setup listener for when score updates
-        NotificationCenter.default.addObserver(self, selector: #selector(historyUpdatedFromServer), name: FirebaseNotification.TrainingHistoryUpdated, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(trainingHistoryUpdated), name: FirebaseNotification.TrainingHistoryUpdated, object: nil)
     }
     
     // Remove observer when view is not visible
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         NotificationCenter.default.removeObserver(self, name: FirebaseNotification.TrainingHistoryUpdated, object: nil)
-        
-        // Save history when leaving screen
-        guard let history = CharmUser.shared.trainingData, let uid = CharmUser.shared.id else { return }
-        
-        DispatchQueue.global(qos: .utility).async {
-            do {
-                let data = try FirebaseEncoder().encode(history)
-                Database.database().reference().child(FirebaseStructure.Users).child(uid).child(FirebaseStructure.Training.TrainingDatabase).setValue(data)
-            } catch let error {
-                print("~>There was an error converting the data: \(error)")
-            }
-        }
     }
     
     // MARK: - Private Helper Functions
@@ -148,6 +135,12 @@ class EmotionFlashcardsViewController: UIViewController, FlashcardsHistoryDelega
         guard let info = storyboard?.instantiateViewController(withIdentifier: StoryboardID.Info) as? InfoDetailViewController else { return }
         info.type = .Emotions
         tabBarController?.navigationController?.pushViewController(info, animated: true)
+    }
+    
+    // Get calculated x coord for scalebar
+    private func getX(for bar: ScaleBar) -> CGFloat {
+        let value = CGFloat(bar.calculatedValue)
+        return bar.bounds.width * value
     }
     
     // Setup UI once the firebase model is loaded
@@ -160,7 +153,7 @@ class EmotionFlashcardsViewController: UIViewController, FlashcardsHistoryDelega
         lblWord.alpha = 0.0
         lblWord.isHidden = false
         
-        UIView.animate(withDuration: 0.25, animations: {
+        UIView.animate(withDuration: 0.4, animations: {
             self.lblWord.alpha = 1.0
             self.viewLoading.alpha = 0.0
         }) { (_) in
@@ -172,12 +165,7 @@ class EmotionFlashcardsViewController: UIViewController, FlashcardsHistoryDelega
     
     // Updates UI When Training Data Updates
     
-    @objc private func historyUpdatedFromServer() {
-        NotificationCenter.default.removeObserver(self, name: FirebaseNotification.TrainingHistoryUpdated, object: nil)
-        trainingHistoryUpdated()
-    }
-    
-    func trainingHistoryUpdated() {
+    @objc private func trainingHistoryUpdated() {
         
         viewModel.getAverageEmotionsScore { (newHistory) in
             DispatchQueue.main.async {
@@ -209,13 +197,10 @@ class EmotionFlashcardsViewController: UIViewController, FlashcardsHistoryDelega
         lblResponsePhrase.alpha = 0.0
         lblResponsePhrase.isHidden = false
         
-        // prevent taps while animation is going on
-        view.isUserInteractionEnabled = false
-        
         UIView.animate(withDuration: 0.2, animations: {
             self.lblResponsePhrase.alpha = 1.0
         }) { (_) in
-            UIView.animate(withDuration: 0.25, delay: 0.05, animations: {
+            UIView.animate(withDuration: 0.25, delay: 1.5, animations: {
                 self.lblResponsePhrase.alpha = 0.0
             }, completion: { (_) in
                 self.lblResponsePhrase.isHidden = true
@@ -227,15 +212,12 @@ class EmotionFlashcardsViewController: UIViewController, FlashcardsHistoryDelega
     // Animation helper to setup new word
     private func updateFlashcard() {
         let newWord = viewModel.getFlashCard(ofType: .Emotions).capitalizedFirst
-        UIView.animate(withDuration: 0.25, delay: 0.05, animations: {
+        UIView.animate(withDuration: 0.25, delay: 0.25, animations: {
             self.lblWord.alpha = 0.0
         }) { (_) in
             self.lblWord.text = newWord
-            UIView.animate(withDuration: 0.25, animations: {
+            UIView.animate(withDuration: 0.4, animations: {
                 self.lblWord.alpha = 1.0
-            }, completion: { (_) in
-                // resume taps since animation is done
-                self.view.isUserInteractionEnabled = true
             })
         }
     }
