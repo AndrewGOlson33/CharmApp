@@ -62,6 +62,8 @@ class VideoCallViewController: UIViewController {
     var kSessionId = ""
     // Generated token will be loaded here
     var kToken = ""
+    // Room connected to
+    var room = ""
     
     var archiveId: String = ""
     var pendingArchive: SessionArchive? = nil
@@ -114,6 +116,11 @@ class VideoCallViewController: UIViewController {
         tap.numberOfTouchesRequired = 1
         tap.delegate = self
         view.addGestureRecognizer(tap)
+        
+        DispatchQueue.main.async {
+            let delegate = UIApplication.shared.delegate as! AppDelegate
+            delegate.incomingCall = false
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -180,6 +187,7 @@ class VideoCallViewController: UIViewController {
      */
     fileprivate func doTokenSetup() {
         viewConnecting.isHidden = false
+        print("~>session id: \(kSessionId)")
         activityIndicator.startAnimating()
         if !kSessionId.isEmpty {
             getTokensForExistingSession()
@@ -199,7 +207,12 @@ class VideoCallViewController: UIViewController {
             return
         }
         
-        let room = "\(myID)+\(friendID)"
+        let random = arc4random() % 5000
+        room = "\(myID)+\(friendID)+\(random)"
+        
+        print("~>Random: \(random)")
+        
+//        let room = "\(myID)+\(friendID)"
         guard let url = URL(string: "\(Server.BaseURL)\(Server.Room)/\(room)") else {
             self.showCallErrorAlert()
             return
@@ -213,11 +226,13 @@ class VideoCallViewController: UIViewController {
      * If a session ID is present, use that to start the call with
      */
     fileprivate func getTokensForExistingSession() {
-        guard let myID = myUser.id, let friendID = friend.id else {
+//        let myID = myUser.id, let friendID = friend.id
+        guard !room.isEmpty else {
             self.showCallErrorAlert()
             return
         }
-        let room = "\(friendID)+\(myID)"
+        print("~>Setting up for room: \(room)")
+//        room = "\(friendID)+\(myID)"
         guard let url = URL(string: "\(Server.BaseURL)\(Server.Room)/\(room)") else {
             self.showCallErrorAlert()
             return
@@ -248,6 +263,7 @@ class VideoCallViewController: UIViewController {
                 self.kToken = dict?["token"] as? String ?? ""
                 print("~>Got a sessionID: \(self.kSessionId)")
                 print("~>Got a token: \(self.kToken)")
+                print("~>Got an api key: \(self.kApiKey)")
                 
                 let status = inviteFriend ? Call.CallStatus.outgoing : Call.CallStatus.connected
                 self.updateCallStatus(withSessionID: self.kSessionId, status: status)
@@ -273,11 +289,11 @@ class VideoCallViewController: UIViewController {
         let usersRef = Database.database().reference().child(FirebaseStructure.Users)
         
         if status == .outgoing {
-            myCall = Call(sessionID: id, status: .outgoing, from: friend.id!)
-            friendCall = Call(sessionID: id, status: .incoming, from: myUser.id!)
+            myCall = Call(sessionID: id, status: .outgoing, from: friend.id!, in: room)
+            friendCall = Call(sessionID: id, status: .incoming, from: myUser.id!, in: room)
         } else {
-            myCall = Call(sessionID: id, status: .connected, from: friend.id!)
-            friendCall = Call(sessionID: id, status: .connected, from: myUser.id!)
+            myCall = Call(sessionID: id, status: .connected, from: friend.id!, in: room)
+            friendCall = Call(sessionID: id, status: .connected, from: myUser.id!, in: room)
         }
         
         // Write call objects to Firebase
@@ -323,10 +339,18 @@ class VideoCallViewController: UIViewController {
             processError(error)
         }
         
+        publisher.publishAudio = true
+        publisher.publishVideo = true
+        
+        if let sub = subscriber {
+            sub.subscribeToAudio = true
+            sub.subscribeToVideo = true
+        }
+        
         session.publish(publisher, error: &error)
         
         if let pubView = publisher.view {
-            pubView.frame = CGRect(x: 20, y: 20, width: kMyScreenWidth, height: kMyScreenHeight)
+            pubView.frame = CGRect(x: 20, y: 60, width: kMyScreenWidth, height: kMyScreenHeight)
             pubView.contentMode = .scaleToFill
             view.addSubview(pubView)
         }
@@ -347,6 +371,13 @@ class VideoCallViewController: UIViewController {
             processError(error)
         }
         subscriber = OTSubscriber(stream: stream, delegate: self)
+        publisher.publishAudio = true
+        publisher.publishVideo = true
+        
+        if let sub = subscriber {
+            sub.subscribeToAudio = true
+            sub.subscribeToVideo = true
+        }
         
         session.subscribe(subscriber!, error: &error)
     }
@@ -371,7 +402,7 @@ class VideoCallViewController: UIViewController {
     }
     
     func startArchive() {
-        DispatchQueue.global(qos: .utility).async {
+        DispatchQueue.main.async {
             let fullURL = "\(Server.BaseURL)\(Server.Archive)\(Server.StartArchive)"
             let url = URL(string: fullURL)
             var urlRequest: URLRequest? = nil
@@ -402,6 +433,7 @@ class VideoCallViewController: UIViewController {
                         self.pendingArchive = SessionArchive(id: self.kSessionId, callerId: self.myUser.id!, calledId: self.friend.id!, callerName: self.myUser.userProfile.firstName, calledName: self.friend.firstName)
                         print("~>My name: \(self.myUser.userProfile.firstName) friend name: \(self.friend.firstName)")
                         print("~>Session id: \(self.kSessionId)")
+
                         guard let pending = self.pendingArchive else { return }
                         print("~>Added pending to firebase: \(pending.addPending())")
                     } else {
@@ -475,6 +507,7 @@ class VideoCallViewController: UIViewController {
         }
         
         session.disconnect(&error)
+        
         stopArchive()
         if !callWasConnected {
             print("~>Call was not connected.")
@@ -503,6 +536,15 @@ extension VideoCallViewController: OTSessionDelegate {
     func sessionDidDisconnect(_ session: OTSession) {
         print("~>Session disconnected")
         disconnecting = false
+        var error: OTError?
+        session.unpublish(publisher, error: &error)
+        if let sub = subscriber {
+            session.unsubscribe(sub, error: &error)
+        }
+        
+        if let error = error {
+            print("~>Unpublish error: \(error)")
+        }
         DispatchQueue.global(qos: .utility).async {
             // remove call
             let call: Call? = nil
@@ -517,6 +559,7 @@ extension VideoCallViewController: OTSessionDelegate {
     
     func session(_ session: OTSession, streamCreated stream: OTStream) {
         print("~>Session streamCreated: \(stream.streamId)")
+        print("~>Stream has audio: \(stream.hasAudio)")
         if subscriber == nil {
             doSubscribe(stream)
         }

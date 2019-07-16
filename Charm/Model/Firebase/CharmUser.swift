@@ -122,6 +122,7 @@ struct Call: Codable {
     var sessionID: String
     var status: CallStatus
     var fromUserID: String
+    var room: String
     
     var myCallRef: DatabaseReference {
         return Database.database().reference().child(FirebaseStructure.Users).child(Auth.auth().currentUser!.uid).child(FirebaseStructure.CharmUser.Call)
@@ -131,10 +132,11 @@ struct Call: Codable {
         return Database.database().reference().child(FirebaseStructure.Users).child(fromUserID).child(FirebaseStructure.CharmUser.Call)
     }
     
-    init(sessionID: String, status: CallStatus, from: String) {
+    init(sessionID: String, status: CallStatus, from: String, in room: String) {
         self.sessionID = sessionID
         self.status = status
         self.fromUserID = from
+        self.room = room
     }
 }
 

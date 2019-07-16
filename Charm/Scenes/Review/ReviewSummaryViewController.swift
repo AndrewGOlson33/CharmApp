@@ -37,9 +37,6 @@ class ReviewSummaryViewController: UIViewController {
         // setup date formatter
         dFormatter.dateStyle = .medium
         
-        // Start pulling training data
-        let _ = TrainingModelCapsule.shared.model.abstractNouns
-        
         // Resolve layout issues caused by highcharts
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
             self.chartDidLoad = true

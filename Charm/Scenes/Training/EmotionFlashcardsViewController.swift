@@ -108,7 +108,7 @@ class EmotionFlashcardsViewController: UIViewController, FlashcardsHistoryDelega
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         tabBarController?.navigationItem.title = "Emotions"
-        let info = UIBarButtonItem(image: UIImage(named: Image.Info), style: .plain, target: self, action: #selector(infoButtonTapped))
+        let info = UIBarButtonItem(title: "Learn More", style: .plain, target: self, action: #selector(infoButtonTapped))
         tabBarController?.navigationItem.rightBarButtonItem = info
     }
     
@@ -130,7 +130,14 @@ class EmotionFlashcardsViewController: UIViewController, FlashcardsHistoryDelega
         NotificationCenter.default.removeObserver(self, name: FirebaseNotification.TrainingHistoryUpdated, object: nil)
         
         // Save history when leaving screen
-        guard let history = CharmUser.shared.trainingData, let uid = CharmUser.shared.id else { return }
+        guard let uid = CharmUser.shared.id else { return }
+        var history: TrainingHistory!
+        
+        if let existing = CharmUser.shared.trainingData {
+            history = existing
+        } else {
+            history = TrainingHistory()
+        }
         
         DispatchQueue.global(qos: .utility).async {
             do {

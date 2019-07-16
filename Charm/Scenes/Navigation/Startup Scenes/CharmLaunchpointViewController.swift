@@ -24,6 +24,9 @@ class CharmLaunchpointViewController: UIViewController {
         super.viewDidLoad()
         
         viewActivityContainer.layer.cornerRadius = 16
+        
+        // Start pulling training data
+        let _ = TrainingModelCapsule.shared.model.abstractNouns
 
         startActivity()
         
@@ -43,22 +46,40 @@ class CharmLaunchpointViewController: UIViewController {
             return
         }
         
-        user.getIDTokenResult(forcingRefresh: true) { (result, error) in
-            self.stopActivity()
-            if let _ = error {
-                print("~>Need to stay here.")
-                self.showAlert(withTitle: "Expired", andMessage: "Your login has expired.  Please login again.")
-                return
-            } else {
-                guard let uid = Auth.auth().currentUser?.uid else {
-                    print("~>There was an error getting the user's UID.")
-                    self.showAlert(withTitle: "Expired", andMessage: "Your login has expired.  Please login again.")
+        user.reload { (error) in
+            if let error = error {
+                print("~>Error reloading user: \(error)")
+            }
+            
+            user.getIDTokenForcingRefresh(true, completion: { (result, error) in
+                guard error == nil else {
+                    self.stopActivity()
+                    self.showLogin()
                     return
                 }
                 
-                self.loadUser(withUID: uid)
-            }
+                user.getIDTokenResult(forcingRefresh: true) { (result, error) in
+                    self.stopActivity()
+                    if let _ = error {
+                        print("~>Need to stay here.")
+                        self.showAlert(withTitle: "Expired", andMessage: "Your login has expired.  Please login again.")
+                        return
+                    } else {
+                        guard let uid = Auth.auth().currentUser?.uid else {
+                            print("~>There was an error getting the user's UID.")
+                            self.showAlert(withTitle: "Expired", andMessage: "Your login has expired.  Please login again.")
+                            return
+                        }
+                        
+                        self.loadUser(withUID: uid)
+                    }
+                }
+            })
+
         }
+        
+        
+        
     }
     
     // MARK: - Activity Helper Functions

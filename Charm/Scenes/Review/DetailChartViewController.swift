@@ -95,7 +95,7 @@ class DetailChartViewController: UIViewController {
         super.viewWillAppear(animated)
         tabBarController?.navigationItem.title = navTitle
         
-        let info = UIBarButtonItem(image: UIImage(named: Image.Info), style: .plain, target: self, action: #selector(infoButtonTapped))
+        let info = UIBarButtonItem(title: "Learn More", style: .plain, target: self, action: #selector(infoButtonTapped))
         tabBarController?.navigationItem.rightBarButtonItem = info
     }
     

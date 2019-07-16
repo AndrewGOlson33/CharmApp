@@ -38,12 +38,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     let gcmMessageIDKey = "gcm.message_id"
     var restoreFromBackground = false
     var showContactListFromNotification: Bool = false
-    var incomingCall: Bool = false
     
     // MARK: - App Delegate Functions
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        // Configure Firebase 
+        // Configure Firebase
         FirebaseApp.configure()
         Database.database().isPersistenceEnabled = true
         DynamicLinks.performDiagnostics(completion: nil)
@@ -82,7 +81,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationWillResignActive(_ application: UIApplication) {
         print("~>Will resign active")
         restoreFromBackground = true
-        removeActiveCalls()
         
         if let tabBar = (window?.rootViewController as? UINavigationController)?.topViewController as? UITabBarController {
             if let _ = tabBar.selectedViewController as? ConcreteFlashcardsViewController {
@@ -131,7 +129,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             print("~>Got a title: \(title)")
             if title.contains("friend request") { showContactListFromNotification = true }
             if title.contains("Snapshot") { NotificationCenter.default.post(name: FirebaseNotification.NewSnapshot, object: nil) }
-            if title.contains("Incoming Call") { incomingCall = true }
         } else {
             print("~>Something is invalid.")
         } 
@@ -155,8 +152,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             print("~>Got a title: \(title)")
             if title.contains("friend request") { showContactListFromNotification = true }
             if title.contains("Snapshot") { NotificationCenter.default.post(name: FirebaseNotification.NewSnapshot, object: nil) }
-            if title.contains("Incoming Call") { incomingCall = true }
-            
         } else {
             print("~>Something is invalid.")
         }
@@ -251,7 +246,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             let components = URLComponents(url: link, resolvingAgainstBaseURL: false)
             
             guard let friendID = components?.queryItems?.first(where: { $0.name == "id" })?.value else {
-                print("unable to get user id from url")
+                print("unable to get team id from url")
                 return false
             }
             
@@ -287,9 +282,7 @@ extension AppDelegate : UNUserNotificationCenterDelegate {
         print(userInfo)
         if let aps = userInfo["aps"] as? [AnyHashable:Any], let alert = aps["alert"] as? [AnyHashable:Any], let title = alert["title"] as? String {
             print("~>Got a title: \(title)")
-            if title.contains("friend request") { showContactListFromNotification = true }
-            if title.contains("Snapshot") { NotificationCenter.default.post(name: FirebaseNotification.NewSnapshot, object: nil) }
-            if title.contains("Incoming Call") { incomingCall = true }
+//            if title.contains("friend request") { showContactListFromNotification = true }
         } else {
             print("~>Something is invalid.")
         }
@@ -313,7 +306,6 @@ extension AppDelegate : UNUserNotificationCenterDelegate {
             print("~>Got a title: \(title)")
             if title.contains("friend request") { showContactListFromNotification = true }
             if title.contains("Snapshot") { NotificationCenter.default.post(name: FirebaseNotification.NewSnapshot, object: nil) }
-            if title.contains("Incoming Call") { incomingCall = true }
         } else {
             print("~>Something is invalid.")
         }

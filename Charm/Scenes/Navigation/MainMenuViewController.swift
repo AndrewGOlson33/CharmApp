@@ -253,18 +253,33 @@ class MainMenuViewController: UIViewController {
                     if let call = user.currentCall {
                         if call.status == .incoming {
                             NotificationCenter.default.post(name: FirebaseNotification.CharmUserIncomingCall, object: call)
-                            let alert = UIAlertController(title: "Incoming Call", message: "You have an incoming call.", preferredStyle: .alert)
-                            alert.addAction(UIAlertAction(title: "Accept", style: .default, handler: { (_) in
-                                self.setupIncoming(call: call)
-                            }))
-                            alert.addAction(UIAlertAction(title: "Ignore", style: .cancel, handler: { _ in
-                                guard let call = CharmUser.shared.currentCall else { return }
-                                self.reject(call: call)
-                            }))
-                            self.navigationController?.present(alert, animated: true, completion: nil)
+                            DispatchQueue.main.async {
+                                let delegate = UIApplication.shared.delegate as! AppDelegate
+                                print("~>Incoming call status: \(delegate.incomingCall)")
+                                if delegate.incomingCall {
+                                    delegate.incomingCall = false
+                                    self.setupIncoming(call: call)
+                                    return
+                                } else {
+                                    let alert = UIAlertController(title: "Incoming Call", message: "You have an incoming call.", preferredStyle: .alert)
+                                    alert.addAction(UIAlertAction(title: "Accept", style: .default, handler: { (_) in
+                                        self.setupIncoming(call: call)
+                                    }))
+                                    alert.addAction(UIAlertAction(title: "Ignore", style: .cancel, handler: { _ in
+                                        guard let call = CharmUser.shared.currentCall else { return }
+                                        self.reject(call: call)
+                                    }))
+                                    self.navigationController?.present(alert, animated: true, completion: nil)
+                                }
+                            }
                         } else if self.firstSetup && call.status == .connected {
-                            DispatchQueue.global(qos: .utility).async {
-                                (UIApplication.shared.delegate as! AppDelegate).removeActiveCalls()
+                            DispatchQueue.main.async {
+                                let delegate = UIApplication.shared.delegate as! AppDelegate
+                                if delegate.incomingCall {
+                                    delegate.incomingCall = false
+                                } else {
+                                    delegate.removeActiveCalls()
+                                }
                             }
                         } else if call.status == .rejected {
                             // remove the value first
@@ -335,7 +350,7 @@ class MainMenuViewController: UIViewController {
     fileprivate func reject(call: Call) {
         call.myCallRef.removeValue()
         
-        let friendCall = Call(sessionID: call.sessionID, status: .rejected, from: Auth.auth().currentUser!.uid)
+        let friendCall = Call(sessionID: call.sessionID, status: .rejected, from: Auth.auth().currentUser!.uid, in: call.room)
         
         DispatchQueue.global(qos: .utility).async {
             do {
@@ -369,6 +384,7 @@ class MainMenuViewController: UIViewController {
             callVC.myUser = myUser
             callVC.friend = friend
             callVC.kSessionId = call.sessionID
+            callVC.room = call.room
             
             self.navigationController?.pushViewController(callVC, animated: true)
         }

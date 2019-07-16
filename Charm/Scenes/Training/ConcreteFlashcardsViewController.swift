@@ -101,7 +101,8 @@ class ConcreteFlashcardsViewController: UIViewController, FlashcardsHistoryDeleg
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         tabBarController?.navigationItem.title = "Concrete"
-        let info = UIBarButtonItem(image: UIImage(named: Image.Info), style: .plain, target: self, action: #selector(infoButtonTapped))
+//        let info = UIBarButtonItem(image: UIImage(named: Image.Info), style: .plain, target: self, action: #selector(infoButtonTapped))
+        let info = UIBarButtonItem(title: "Learn More", style: .plain, target: self, action: #selector(infoButtonTapped))
         tabBarController?.navigationItem.rightBarButtonItem = info
     }
     
@@ -123,8 +124,14 @@ class ConcreteFlashcardsViewController: UIViewController, FlashcardsHistoryDeleg
         
         
         // Save history when leaving screen
+        guard let uid = CharmUser.shared.id else { return }
+        var history: TrainingHistory!
         
-        guard let history = CharmUser.shared.trainingData, let uid = CharmUser.shared.id else { return }
+        if let existing = CharmUser.shared.trainingData {
+            history = existing
+        } else {
+            history = TrainingHistory()
+        }
         
         DispatchQueue.global(qos: .utility).async {
             do {
