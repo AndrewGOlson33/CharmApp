@@ -12,6 +12,18 @@ import Firebase
 import CodableFirebase
 import AVKit
 
+class Publisher {
+    var publisher: OTPublisher
+    
+    static var shared: Publisher = Publisher()
+    
+    init() {
+        let settings = OTPublisherSettings()
+        settings.name = UIDevice.current.name
+        publisher = OTPublisher(delegate: nil, settings: settings)!
+    }
+}
+
 class VideoCallViewController: UIViewController {
     
     // MARK: - IBOutlets
@@ -36,11 +48,7 @@ class VideoCallViewController: UIViewController {
         return OTSession(apiKey: kApiKey, sessionId: kSessionId, delegate: self)!
     }()
     
-    lazy var publisher: OTPublisher = {
-        let settings = OTPublisherSettings()
-        settings.name = UIDevice.current.name
-        return OTPublisher(delegate: self, settings: settings)!
-    }()
+    lazy var publisher = Publisher.shared.publisher
     
     var subscriber: OTSubscriber?
     var callWasConnected: Bool = false
@@ -95,6 +103,14 @@ class VideoCallViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        // set publisher delegate
+        publisher.delegate = self
+        
+        // make sure app delegate incoming call is set to false
+        DispatchQueue.main.async {
+            (UIApplication.shared.delegate as! AppDelegate).incomingCall = false
+        }
       
         doTokenSetup()
         
