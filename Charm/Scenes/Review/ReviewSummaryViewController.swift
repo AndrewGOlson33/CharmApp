@@ -13,6 +13,11 @@ class ReviewSummaryViewController: UIViewController {
     
     // MARK: - IBOutlets
     
+    // for loading
+    @IBOutlet weak var viewLoading: UIView!
+    @IBOutlet weak var activityView: UIActivityIndicatorView!
+    
+    // for chart and table data
     @IBOutlet weak var chartView: HIChartView!
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var viewNoSnapshots: UIView!
@@ -34,6 +39,13 @@ class ReviewSummaryViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        // round corners of connecting view
+        viewLoading.layer.cornerRadius = 20
+        viewLoading.layer.shadowColor = UIColor.black.cgColor
+        viewLoading.layer.shadowRadius = 8
+        viewLoading.layer.shadowOpacity = 0.6
+        viewLoading.layer.shadowOffset = CGSize(width: 2, height: 2)
+        
         // setup date formatter
         dFormatter.dateStyle = .medium
         
@@ -47,6 +59,55 @@ class ReviewSummaryViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         tabBarController?.navigationItem.title = "Summary"
+        
+        setupSnapshotData()
+    }
+    
+    private func setupSnapshotData() {
+        guard !SnapshotsLoading.shared.isLoading else {
+            if viewLoading.isHidden {
+                DispatchQueue.main.async {
+                    self.viewLoading.alpha = 0.0
+                    self.viewLoading.isHidden = false
+                    self.activityView.startAnimating()
+                    
+                    // disable tab bar buttons
+                    if let items = self.tabBarController?.tabBar.items {
+                        for item in items {
+                            item.isEnabled = false
+                        }
+                    }
+                    
+                    UIView.animate(withDuration: 0.25, animations: {
+                        self.viewLoading.alpha = 1.0
+                    })
+                }
+            }
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                self.setupSnapshotData()
+                return
+            }
+            return
+        }
+        
+        if !viewLoading.isHidden {
+            DispatchQueue.main.async {
+                UIView.animate(withDuration: 0.25, animations: {
+                    self.viewLoading.alpha = 0.0
+                }, completion: { (_) in
+                    self.activityView.stopAnimating()
+                    self.viewLoading.isHidden = true
+                    
+                    // enable tab bar buttons
+                    if let items = self.tabBarController?.tabBar.items {
+                        for item in items {
+                            item.isEnabled = true
+                        }
+                    }
+                })
+            }
+        }
         
         // load summary data
         if snapshot == nil {
@@ -283,7 +344,7 @@ class ReviewSummaryViewController: UIViewController {
 extension ReviewSummaryViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return cellInfo.count + 1
+        return SnapshotsLoading.shared.isLoading ? 0 : cellInfo.count + 1
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {

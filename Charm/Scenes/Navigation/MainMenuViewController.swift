@@ -310,12 +310,15 @@ class MainMenuViewController: UIViewController {
     // Observes snapshot data
     fileprivate func setupDataObserver() {
         let snapShotRef = Database.database().reference().child(FirebaseStructure.Users).child(Auth.auth().currentUser!.uid).child(FirebaseStructure.CharmUser.Snapshot)
+        SnapshotsLoading.shared.isLoading = true
         DispatchQueue.global(qos: .utility).async {
             snapShotRef.observe(.value) { (snapshot) in
                 guard let values = snapshot.value as? [String:Any] else {
                     print("~>Couldn't convert values to [String:Any], possibly no data exists.")
+                    SnapshotsLoading.shared.isLoading = false
                     return
                 }
+                SnapshotsLoading.shared.isLoading = true
                 
                 for value in values {
                     do {
@@ -331,6 +334,8 @@ class MainMenuViewController: UIViewController {
                         print("~>Error getting snapshot data: \(error)")
                     }
                 }
+                
+                SnapshotsLoading.shared.isLoading = false
             }
         }
         

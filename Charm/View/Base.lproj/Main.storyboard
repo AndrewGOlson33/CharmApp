@@ -2192,6 +2192,30 @@ Cg
                                     <constraint firstItem="yOp-1i-aKb" firstAttribute="centerX" secondItem="vQL-gj-fzv" secondAttribute="centerX" id="gJI-9U-Oka"/>
                                 </constraints>
                             </view>
+                            <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ZEw-J5-KdL">
+                                <rect key="frame" x="120" y="272.5" width="174.5" height="128"/>
+                                <subviews>
+                                    <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="whiteLarge" translatesAutoresizingMaskIntoConstraints="NO" id="M1n-wT-rel">
+                                        <rect key="frame" x="68.5" y="45.5" width="37" height="37"/>
+                                        <color key="color" red="0.2784313725" green="0.2784313725" blue="0.36078431370000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    </activityIndicatorView>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Loading snapshots..." textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dk4-jd-rmH">
+                                        <rect key="frame" x="8" y="90.5" width="158.5" height="21"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstItem="M1n-wT-rel" firstAttribute="centerX" secondItem="ZEw-J5-KdL" secondAttribute="centerX" id="BEW-ti-7Yb"/>
+                                    <constraint firstAttribute="trailing" secondItem="dk4-jd-rmH" secondAttribute="trailing" constant="8" id="DGr-YX-4lY"/>
+                                    <constraint firstAttribute="height" constant="128" id="OKD-st-746"/>
+                                    <constraint firstItem="M1n-wT-rel" firstAttribute="centerY" secondItem="ZEw-J5-KdL" secondAttribute="centerY" id="Pkq-Hb-dsu"/>
+                                    <constraint firstItem="dk4-jd-rmH" firstAttribute="leading" secondItem="ZEw-J5-KdL" secondAttribute="leading" constant="8" id="hxg-3E-7po"/>
+                                    <constraint firstItem="dk4-jd-rmH" firstAttribute="top" secondItem="M1n-wT-rel" secondAttribute="bottom" constant="8" id="md0-PW-0hX"/>
+                                </constraints>
+                            </view>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
@@ -2200,6 +2224,7 @@ Cg
                             <constraint firstAttribute="trailing" secondItem="Ws7-k3-FGa" secondAttribute="trailing" id="5r9-nz-CRq"/>
                             <constraint firstItem="54M-uO-rkZ" firstAttribute="trailing" secondItem="vQL-gj-fzv" secondAttribute="trailing" id="Ea4-x6-Tz7"/>
                             <constraint firstItem="vQL-gj-fzv" firstAttribute="bottom" secondItem="54M-uO-rkZ" secondAttribute="bottom" id="EdF-Oa-EMK"/>
+                            <constraint firstItem="ZEw-J5-KdL" firstAttribute="centerY" secondItem="54M-uO-rkZ" secondAttribute="centerY" id="FQe-Wp-Ltz"/>
                             <constraint firstItem="Ws7-k3-FGa" firstAttribute="bottom" secondItem="54M-uO-rkZ" secondAttribute="bottom" id="GrM-9Q-lPY"/>
                             <constraint firstItem="zTE-fX-c9d" firstAttribute="trailing" secondItem="54M-uO-rkZ" secondAttribute="trailing" id="QIF-pF-qv1"/>
                             <constraint firstItem="vQL-gj-fzv" firstAttribute="leading" secondItem="54M-uO-rkZ" secondAttribute="leading" id="Vc6-6j-o9I"/>
@@ -2207,13 +2232,16 @@ Cg
                             <constraint firstItem="Ws7-k3-FGa" firstAttribute="top" secondItem="zTE-fX-c9d" secondAttribute="bottom" constant="8" id="gna-yb-WES"/>
                             <constraint firstItem="Ws7-k3-FGa" firstAttribute="leading" secondItem="8aM-v0-NAB" secondAttribute="leading" id="qW8-mK-RAT"/>
                             <constraint firstItem="vQL-gj-fzv" firstAttribute="top" secondItem="54M-uO-rkZ" secondAttribute="top" id="tlg-v6-BVz"/>
+                            <constraint firstItem="ZEw-J5-KdL" firstAttribute="centerX" secondItem="54M-uO-rkZ" secondAttribute="centerX" id="w3D-55-bVR"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="54M-uO-rkZ"/>
                     </view>
                     <tabBarItem key="tabBarItem" title="Summary" image="icn_barchart" id="YWt-en-LpN"/>
                     <connections>
+                        <outlet property="activityView" destination="M1n-wT-rel" id="IfE-Id-Ier"/>
                         <outlet property="chartView" destination="zTE-fX-c9d" id="DDx-ga-fLP"/>
                         <outlet property="tableView" destination="wNT-rO-jIv" id="Us5-p2-ZkF"/>
+                        <outlet property="viewLoading" destination="ZEw-J5-KdL" id="rmF-Le-vtR"/>
                         <outlet property="viewNoSnapshots" destination="vQL-gj-fzv" id="OK9-lc-Ods"/>
                         <segue destination="mPY-a8-G4a" kind="show" identifier="sid_allsnapshots" id="7pa-Jk-g83"/>
                     </connections>

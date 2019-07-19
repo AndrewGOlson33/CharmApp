@@ -10,6 +10,12 @@ import Foundation
 import Firebase
 import CodableFirebase
 
+struct SnapshotsLoading {
+    var isLoading: Bool = false
+    
+    static var shared = SnapshotsLoading()
+}
+
 struct UserSnapshotData {
     var snapshots: [Snapshot] = [] {
         didSet {
