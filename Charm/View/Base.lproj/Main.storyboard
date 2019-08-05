@@ -1728,7 +1728,7 @@ Cg
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Le1-TC-EFQ" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="119" y="-583"/>
+            <point key="canvasLocation" x="119" y="-575"/>
         </scene>
         <!--Contacts-->
         <scene sceneID="SYg-d1-gd7">
@@ -1799,6 +1799,23 @@ Cg
                                     <outlet property="lblDetail" destination="f2V-Rt-LNW" id="ElW-8j-Zon"/>
                                     <outlet property="lblName" destination="rMA-PL-deH" id="4Af-qs-emB"/>
                                 </connections>
+                            </tableViewCell>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="cid_emptychatlist" textLabel="pVH-Jx-53q" rowHeight="60" style="IBUITableViewCellStyleDefault" id="cuE-1Q-oLN">
+                                <rect key="frame" x="0.0" y="109" width="414" height="60"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="cuE-1Q-oLN" id="MF4-e4-7jb">
+                                    <rect key="frame" x="0.0" y="0.0" width="414" height="59.5"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Tap the add friend button to get started" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="pVH-Jx-53q">
+                                            <rect key="frame" x="20" y="0.0" width="374" height="59.5"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                            <nil key="textColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                </tableViewCellContentView>
                             </tableViewCell>
                         </prototypes>
                         <connections>
@@ -1909,7 +1926,7 @@ Cg
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="kn2-KE-XVX" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1756" y="-574"/>
+            <point key="canvasLocation" x="1858" y="-575"/>
         </scene>
         <!--Video Call View Controller-->
         <scene sceneID="h5E-yx-pu8">
@@ -5711,6 +5728,6 @@ The best way we found is to develop this skill is by talking. The app is the bes
         <segue reference="RVB-Hc-N14"/>
         <segue reference="W1U-5S-oVD"/>
         <segue reference="tbo-GU-nKp"/>
-        <segue reference="Fsr-2b-Qq6"/>
+        <segue reference="aJp-uv-bfx"/>
     </inferredMetricsTieBreakers>
 </document>

@@ -115,9 +115,13 @@ class FriendListTableViewController: UITableViewController {
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
+        if isContactsViewShowing {
+            searchController.searchBar.isHidden = viewModel.currentFriends.count == 0
+        }
+        
         switch section {
         case 0:
-            return isContactsViewShowing ? isFiltering() ? viewModel.filteredFriends.count : viewModel.currentFriends.count : isFiltering() ? viewModel.filteredPendingReceived.count :  viewModel.pendingReceived.count
+            return isContactsViewShowing ? isFiltering() ? viewModel.filteredFriends.count : viewModel.currentFriends.count > 0 ? viewModel.currentFriends.count : 1 : isFiltering() ? viewModel.filteredPendingReceived.count :  viewModel.pendingReceived.count
         case 1:
             return isContactsViewShowing ? isFiltering() ? viewModel.filteredPendingSent.count : viewModel.pendingSent.count : isFiltering() ? viewModel.filteredExistingUsers.count :  viewModel.existingUsers.count
         default:
@@ -127,6 +131,10 @@ class FriendListTableViewController: UITableViewController {
 
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        if isContactsViewShowing && viewModel.currentFriends.count == 0 {
+            return tableView.dequeueReusableCell(withIdentifier: CellID.EmptyChatList)!
+        }
+        
         var cell = tableView.dequeueReusableCell(withIdentifier: CellID.FriendList, for: indexPath) as! FriendListTableViewCell
         
         let filtered = isFiltering()
