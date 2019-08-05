@@ -16,11 +16,11 @@ class ReviewSummaryViewController: UIViewController {
     // for loading
     @IBOutlet weak var viewLoading: UIView!
     @IBOutlet weak var activityView: UIActivityIndicatorView!
+    @IBOutlet weak var viewEffect: UIVisualEffectView!
     
     // for chart and table data
     @IBOutlet weak var chartView: HIChartView!
     @IBOutlet weak var tableView: UITableView!
-    @IBOutlet weak var viewNoSnapshots: UIView!
     
     // MARK: - Properties
     
@@ -112,20 +112,12 @@ class ReviewSummaryViewController: UIViewController {
         // load summary data
         if snapshot == nil {
             guard let data = UserSnapshotData.shared.snapshots.first else {
-                viewNoSnapshots.alpha = 0.0
-                viewNoSnapshots.isHidden = false
-                UIView.animate(withDuration: 0.25) {
-                    self.viewNoSnapshots.alpha = 1.0
-                }
                 
                 NotificationCenter.default.addObserver(self, selector: #selector(gotNotification(_:)), name: FirebaseNotification.SnapshotLoaded, object: nil)
                 
-                // disable tab bar buttons
-                if let items = tabBarController?.tabBar.items {
-                    for item in items {
-                        item.isEnabled = false
-                    }
-                }
+                // setup example
+                loadJSONSnapshotData()
+                setupSnapshotData()
                 
                 return
             }
@@ -148,6 +140,27 @@ class ReviewSummaryViewController: UIViewController {
     }
     
     // MARK: - Private Helper Functions
+    
+    private func loadJSONSnapshotData() {
+        viewEffect.isHidden = false
+        let noSnapshotsAlert = UIAlertController(title: "No Snapshots Available", message: "Here you can view your converstation metrics.\n\nYour metrics are scored by our servers, and are based on the speaking styles of the world's most charming people.\n\nYou can generate metrics by calling a friend.  It takes our servers about 15 minutes to process your metrics after your call has completed.", preferredStyle: .alert)
+        noSnapshotsAlert.addAction(UIAlertAction(title: "View Sample Snapshot", style: .default, handler:{ (_) in
+            self.viewEffect.isHidden = true
+        }))
+        
+        present(noSnapshotsAlert, animated: true, completion: nil)
+        
+        guard let path = Bundle.main.path(forResource: "snapshotData", ofType: "json") else { fatalError("~>Unable to find default JSON file.") }
+        
+        do {
+            let data = try Data(contentsOf: URL(fileURLWithPath: path), options: .mappedIfSafe)
+            let snapshotData = try JSONDecoder().decode(Snapshot.self, from: data)
+            self.snapshot = snapshotData
+            UserSnapshotData.shared.selectedSnapshot = snapshot
+        } catch let error {
+            fatalError("~>Got an error decoding JSON: \(error)")
+        }
+    }
     
     @objc private func gotNotification(_ sender: Notification) {
         if let items = tabBarController?.tabBar.items {
@@ -349,11 +362,6 @@ extension ReviewSummaryViewController: UITableViewDelegate, UITableViewDataSourc
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        guard viewNoSnapshots.isHidden else {
-            // just return an empty cell
-            return UITableViewCell()
-        }
-        
         guard indexPath.row != cellInfo.count else {
             return tableView.dequeueReusableCell(withIdentifier: CellID.ViewPrevious, for: indexPath)
         }
@@ -368,12 +376,7 @@ extension ReviewSummaryViewController: UITableViewDelegate, UITableViewDataSourc
     }
     
     // MARK: - Popover Setup Helper Functions
-    
-    private func getX(for bar: ScaleBar) -> CGFloat {
-        let value = CGFloat(bar.calculatedValue)
-        return bar.bounds.width * value
-    }
-    
+
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
         let view = UIView(frame: CGRect(origin: .zero, size: CGSize(width: tableView.frame.width, height: 1)))
         view.backgroundColor = .clear

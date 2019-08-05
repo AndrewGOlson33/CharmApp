@@ -19,12 +19,15 @@ class ChatFriendListTableViewCell: UITableViewCell {
         super.awakeFromNib()
         
         // Setup profile picture to look circular
-        imgProfile.layer.cornerRadius = imgProfile.frame.height / 2
-        imgProfile.clipsToBounds = true
+        if imgProfile != nil {
+            imgProfile.layer.cornerRadius = imgProfile.frame.height / 2
+            imgProfile.clipsToBounds = true
+        }
+        
     }
 
     override func prepareForReuse() {
-        imgProfile.image = nil
+        if imgProfile != nil { imgProfile.image = nil }
     }
 
 }

@@ -44,8 +44,8 @@ class VideoCallViewController: UIViewController {
     var userInitiatedDisconnect: Bool = false
     
     // Session Variables
-    lazy var session: OTSession = {
-        return OTSession(apiKey: kApiKey, sessionId: kSessionId, delegate: self)!
+    lazy var session: OTSession! = {
+        return OTSession(apiKey: kApiKey, sessionId: kSessionId, delegate: self)
     }()
     
     lazy var publisher = Publisher.shared.publisher

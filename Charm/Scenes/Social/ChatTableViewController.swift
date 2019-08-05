@@ -91,10 +91,17 @@ class ChatTableViewController: UITableViewController {
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return isFiltering() ? viewModel.filteredFriends.count : viewModel.currentFriends.count
+        searchController.searchBar.isHidden = viewModel.currentFriends.count == 0
+        return isFiltering() ? viewModel.filteredFriends.count : viewModel.currentFriends.count > 0 ? viewModel.currentFriends.count : 1
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
+        // if a user has no friends, return the empty chat list cell
+        if viewModel.currentFriends.count == 0 {
+            return tableView.dequeueReusableCell(withIdentifier: CellID.EmptyChatList)!
+        }
+        
         var cell = tableView.dequeueReusableCell(withIdentifier: CellID.ChatList, for: indexPath) as! ChatFriendListTableViewCell
 
         cell = viewModel.configureCell(atIndex: indexPath.row, withCell: cell, filtered: isFiltering())
@@ -146,9 +153,11 @@ class ChatTableViewController: UITableViewController {
     }
     
     private func call(_ friend: Friend) {
-        let callAlert = UIAlertController(title: nil, message: "Please confirm talking with \(friend.firstName)\n(Cost = 1 Credit)", preferredStyle: .alert)
-        callAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
-        callAlert.addAction(UIAlertAction(title: "Connect", style: .default, handler: { (_) in
+        let title = "Confirm Call with \(friend.firstName)"
+        let message = "One Credit will be deducted from your account.\n\nZero Credits will be deducted from \(friend.firstName)'s account.\n\nThe call will be recorded.\nAbout 15 minutes after the call has ended your data will be loaded into \"My Metrics.\"\n\nIf the call duration is less than 7 minutes, your metrics will not be calculated and credits will not be deducted from your account.  If you experience any difficulties or have any questions, please contact Charm Support by submitting feedback from the \"Settings\" screen."
+        let callAlert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        callAlert.addAction(UIAlertAction(title: "Cancel", style: .default, handler: nil))
+        callAlert.addAction(UIAlertAction(title: "Call", style: .cancel, handler: { (_) in
             self.performSegue(withIdentifier: SegueID.VideoCall, sender: friend)
         }))
         present(callAlert, animated: true, completion: nil)

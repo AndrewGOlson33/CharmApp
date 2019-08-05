@@ -15,7 +15,6 @@ class DetailChartViewController: UIViewController {
     
     @IBOutlet weak var chartView: HIChartView!
     @IBOutlet weak var tableView: UITableView!
-    @IBOutlet weak var viewNoSnapshots: UIView!
     
     // Layout Constraint for Chart View
     @IBOutlet weak var chartViewHeight: NSLayoutConstraint!
@@ -74,13 +73,6 @@ class DetailChartViewController: UIViewController {
             snapshot = data
         } else if let data = UserSnapshotData.shared.snapshots.first {
             snapshot = data
-        } else {
-            viewNoSnapshots.alpha = 0.0
-            viewNoSnapshots.isHidden = false
-            UIView.animate(withDuration: 0.25) {
-                self.viewNoSnapshots.alpha = 1.0
-            }
-            return
         }
         
         // Resolve layout issues caused by highcharts
@@ -598,11 +590,6 @@ extension DetailChartViewController: UITableViewDelegate, UITableViewDataSource 
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
-        guard viewNoSnapshots.isHidden else {
-            // just return an empty cell
-            return UITableViewCell()
-        }
         
         switch indexPath.section {
         case 0:
