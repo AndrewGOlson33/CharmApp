@@ -1032,7 +1032,7 @@ extension ContactsViewModel: FriendManagementDelegate {
         let metaTags = DynamicLinkSocialMetaTagParameters()
         metaTags.title = "Become Friends With: \(me.firstName) on Charm"
         metaTags.descriptionText = "Just launch the app after it has downloaded and \(me.firstName) will be added automatically."
-        metaTags.imageURL = URL(string: "https://vignette.wikia.nocookie.net/megaman/images/3/30/MM11-MegaMan.png/revision/latest?cb=20180910220201")
+        metaTags.imageURL = URL(string: "https://firebasestorage.googleapis.com/v0/b/charismaanalytics-57703.appspot.com/o/share%2Fimg_share.png?alt=media&token=49b75795-27b5-4638-88fd-02ea36ab9689")
         deepComponents.socialMetaTagParameters = metaTags
         
         // build a short dynamic link

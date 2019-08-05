@@ -9,6 +9,7 @@
 import UIKit
 import Firebase
 import FirebaseUI
+import FirebaseMessaging
 import CodableFirebase
 import UserNotificationsUI
 import UserNotifications
