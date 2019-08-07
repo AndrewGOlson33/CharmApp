@@ -283,7 +283,7 @@
                         <rect key="frame" x="0.0" y="44" width="414" height="96"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        <color key="barTintColor" red="0.13234293459999999" green="0.1735357642" blue="0.26996999980000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="barTintColor" red="0.13333333333333333" green="0.17254901960784313" blue="0.27058823529411763" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <textAttributes key="titleTextAttributes">
                             <color key="textColor" red="0.93725490199999995" green="0.93725490199999995" blue="0.95686274510000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         </textAttributes>
@@ -2388,7 +2388,7 @@ Cg
             <objects>
                 <tableViewController id="Iay-77-Ulc" customClass="SubscriptionsTableViewController" customModule="Charm" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="static" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="WB2-0m-l31">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="506"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="672"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <sections>
@@ -5525,23 +5525,41 @@ The best way we found is to develop this skill is by talking. The app is the bes
                                 </attributedString>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                             </textView>
+                            <wkWebView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="qbD-RQ-irD">
+                                <rect key="frame" x="20" y="64" width="374" height="778"/>
+                                <color key="backgroundColor" red="0.36078431370000003" green="0.38823529410000002" blue="0.4039215686" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <wkWebViewConfiguration key="configuration">
+                                    <audiovisualMediaTypes key="mediaTypesRequiringUserActionForPlayback" none="YES"/>
+                                    <wkPreferences key="preferences"/>
+                                </wkWebViewConfiguration>
+                            </wkWebView>
+                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" animating="YES" style="whiteLarge" translatesAutoresizingMaskIntoConstraints="NO" id="0PM-pr-pbe">
+                                <rect key="frame" x="188.5" y="434.5" width="37" height="37"/>
+                                <color key="color" red="0.13234293459999999" green="0.1735357642" blue="0.26996999980000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            </activityIndicatorView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="pHJ-7K-PVv" firstAttribute="bottom" secondItem="WmB-f5-Rpe" secondAttribute="bottom" constant="20" id="23y-Qw-qYQ"/>
                             <constraint firstItem="pHJ-7K-PVv" firstAttribute="trailing" secondItem="Kdi-bI-zY2" secondAttribute="trailing" constant="20" id="2EP-39-aq8"/>
+                            <constraint firstItem="0PM-pr-pbe" firstAttribute="centerY" secondItem="pHJ-7K-PVv" secondAttribute="centerY" id="Bhq-El-ZO5"/>
                             <constraint firstItem="pHJ-7K-PVv" firstAttribute="bottom" secondItem="3ma-W8-XJQ" secondAttribute="bottom" constant="20" id="GBG-Zl-hzj"/>
+                            <constraint firstItem="qbD-RQ-irD" firstAttribute="leading" secondItem="pHJ-7K-PVv" secondAttribute="leading" constant="20" id="GX6-Q2-R9O"/>
                             <constraint firstItem="3ma-W8-XJQ" firstAttribute="leading" secondItem="pHJ-7K-PVv" secondAttribute="leading" constant="20" id="Hb4-RH-RdG"/>
                             <constraint firstItem="Kdi-bI-zY2" firstAttribute="top" secondItem="pHJ-7K-PVv" secondAttribute="top" constant="20" id="KCq-0u-GBM"/>
                             <constraint firstItem="yem-Uc-eFV" firstAttribute="top" secondItem="pHJ-7K-PVv" secondAttribute="top" constant="20" id="P58-9h-suy"/>
                             <constraint firstItem="yem-Uc-eFV" firstAttribute="leading" secondItem="pHJ-7K-PVv" secondAttribute="leading" constant="20" id="SL4-qa-fOn"/>
+                            <constraint firstItem="pHJ-7K-PVv" firstAttribute="bottom" secondItem="qbD-RQ-irD" secondAttribute="bottom" constant="20" id="SgW-1b-KEW"/>
                             <constraint firstItem="WmB-f5-Rpe" firstAttribute="leading" secondItem="pHJ-7K-PVv" secondAttribute="leading" constant="20" id="Sq7-f0-EZV"/>
+                            <constraint firstItem="0PM-pr-pbe" firstAttribute="centerX" secondItem="pHJ-7K-PVv" secondAttribute="centerX" id="VuB-NS-48J"/>
                             <constraint firstItem="3ma-W8-XJQ" firstAttribute="top" secondItem="pHJ-7K-PVv" secondAttribute="top" constant="20" id="Y7l-Na-ADx"/>
                             <constraint firstItem="pHJ-7K-PVv" firstAttribute="trailing" secondItem="WmB-f5-Rpe" secondAttribute="trailing" constant="20" id="fU8-BW-wKA"/>
                             <constraint firstItem="pHJ-7K-PVv" firstAttribute="bottom" secondItem="yem-Uc-eFV" secondAttribute="bottom" constant="20" id="i9F-ge-pN0"/>
+                            <constraint firstItem="qbD-RQ-irD" firstAttribute="top" secondItem="pHJ-7K-PVv" secondAttribute="top" constant="20" id="iTv-fx-r3l"/>
                             <constraint firstItem="pHJ-7K-PVv" firstAttribute="trailing" secondItem="3ma-W8-XJQ" secondAttribute="trailing" constant="20" id="mwM-pC-NvB"/>
                             <constraint firstItem="pHJ-7K-PVv" firstAttribute="trailing" secondItem="yem-Uc-eFV" secondAttribute="trailing" constant="20" id="nyb-UT-mgx"/>
                             <constraint firstItem="pHJ-7K-PVv" firstAttribute="bottom" secondItem="Kdi-bI-zY2" secondAttribute="bottom" constant="20" id="qB8-zr-V8p"/>
+                            <constraint firstItem="pHJ-7K-PVv" firstAttribute="trailing" secondItem="qbD-RQ-irD" secondAttribute="trailing" constant="20" id="tNJ-dI-JHQ"/>
                             <constraint firstItem="WmB-f5-Rpe" firstAttribute="top" secondItem="pHJ-7K-PVv" secondAttribute="top" constant="20" id="wLQ-T0-1zf"/>
                             <constraint firstItem="Kdi-bI-zY2" firstAttribute="leading" secondItem="pHJ-7K-PVv" secondAttribute="leading" constant="20" id="wQs-5Q-hJ2"/>
                         </constraints>
@@ -5552,11 +5570,13 @@ The best way we found is to develop this skill is by talking. The app is the bes
                         <outlet property="txtConversation" destination="Kdi-bI-zY2" id="fLG-0V-1q5"/>
                         <outlet property="txtEmotions" destination="3ma-W8-XJQ" id="cGA-eg-YAd"/>
                         <outlet property="txtIdeas" destination="yem-Uc-eFV" id="KqI-3b-BSp"/>
+                        <outlet property="viewActivity" destination="0PM-pr-pbe" id="Pi9-Wt-dQk"/>
+                        <outlet property="viewWeb" destination="qbD-RQ-irD" id="Dwv-cN-leX"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="OMq-FN-yOK" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1866.6666666666667" y="1577.6785714285713"/>
+            <point key="canvasLocation" x="1940.5797101449277" y="1577.6785714285713"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="tjF-PG-GcH">
@@ -5726,8 +5746,8 @@ The best way we found is to develop this skill is by talking. The app is the bes
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="RVB-Hc-N14"/>
-        <segue reference="W1U-5S-oVD"/>
-        <segue reference="tbo-GU-nKp"/>
+        <segue reference="DIu-Cp-Epu"/>
+        <segue reference="Tm4-2t-woS"/>
         <segue reference="aJp-uv-bfx"/>
     </inferredMetricsTieBreakers>
 </document>

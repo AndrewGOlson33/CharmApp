@@ -206,7 +206,7 @@ struct SummaryCellInfo {
     private var formatter = NumberFormatter()
     
     var detailedTitle: String {
-        return title + ": \(Int(score))"
+        return title + ": \(Int(score))/10"
     }
     
     var scoreString: String {

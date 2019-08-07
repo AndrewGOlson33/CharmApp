@@ -1015,7 +1015,7 @@ extension ContactsViewModel: FriendManagementDelegate {
         let window = UIApplication.shared.keyWindow!
         let viewActivity = UIActivityIndicatorView(style: .whiteLarge)
         viewActivity.center = window.center
-        viewActivity.color = #colorLiteral(red: 0.2799556553, green: 0.2767689228, blue: 0.3593277335, alpha: 1)
+        viewActivity.color = #colorLiteral(red: 0.1323429346, green: 0.1735357642, blue: 0.2699699998, alpha: 1)
         viewActivity.hidesWhenStopped = true
         
         window.addSubview(viewActivity)
