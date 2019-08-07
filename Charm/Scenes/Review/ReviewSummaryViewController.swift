@@ -368,7 +368,8 @@ extension ReviewSummaryViewController: UITableViewDelegate, UITableViewDataSourc
         
         let cell = tableView.dequeueReusableCell(withIdentifier: CellID.SummaryMetric, for: indexPath) as! SummaryMetricTableViewCell
         let info = cellInfo[indexPath.row]
-        cell.lblMetric.text = info.detailedTitle
+        cell.lblMetricTitle.text = info.summaryTitle
+        cell.lblMetricScore.text = info.detailedScore
         if !cell.sliderView.isSetup {
             cell.sliderView.setup(for: .fillFromLeft, at: CGFloat(info.percent))
         }

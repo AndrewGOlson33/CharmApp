@@ -2120,15 +2120,29 @@ Cg
                                                     <rect key="frame" x="0.0" y="0.0" width="398" height="72"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <subviews>
-                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Metric" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="k6o-5j-4XU">
+                                                        <stackView opaque="NO" contentMode="scaleToFill" distribution="fillProportionally" translatesAutoresizingMaskIntoConstraints="NO" id="5su-YB-K26">
                                                             <rect key="frame" x="20" y="11" width="358" height="26"/>
-                                                            <constraints>
-                                                                <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="24" id="KLh-mE-cQl"/>
-                                                            </constraints>
-                                                            <fontDescription key="fontDescription" type="system" pointSize="20"/>
-                                                            <nil key="textColor"/>
-                                                            <nil key="highlightedColor"/>
-                                                        </label>
+                                                            <subviews>
+                                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Metric" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="k6o-5j-4XU" userLabel="Title">
+                                                                    <rect key="frame" x="0.0" y="0.0" width="179" height="26"/>
+                                                                    <constraints>
+                                                                        <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="24" id="KLh-mE-cQl"/>
+                                                                    </constraints>
+                                                                    <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                                                    <nil key="textColor"/>
+                                                                    <nil key="highlightedColor"/>
+                                                                </label>
+                                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Metric" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="Cc2-Yf-lZn" userLabel="Score">
+                                                                    <rect key="frame" x="179" y="0.0" width="179" height="26"/>
+                                                                    <constraints>
+                                                                        <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="24" id="AU1-5t-IWM"/>
+                                                                    </constraints>
+                                                                    <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                                                    <nil key="textColor"/>
+                                                                    <nil key="highlightedColor"/>
+                                                                </label>
+                                                            </subviews>
+                                                        </stackView>
                                                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="uPq-4d-cLb" customClass="SliderView" customModule="Charm" customModuleProvider="target">
                                                             <rect key="frame" x="20" y="45" width="358" height="16"/>
                                                             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -2139,18 +2153,19 @@ Cg
                                                     </subviews>
                                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                     <constraints>
-                                                        <constraint firstItem="k6o-5j-4XU" firstAttribute="trailing" secondItem="bdv-UG-TJr" secondAttribute="trailingMargin" id="ALM-VL-avm"/>
+                                                        <constraint firstAttribute="trailingMargin" secondItem="5su-YB-K26" secondAttribute="trailing" id="CA8-8k-6o2"/>
                                                         <constraint firstAttribute="bottomMargin" secondItem="uPq-4d-cLb" secondAttribute="bottom" id="CDb-0j-Q4I"/>
-                                                        <constraint firstItem="k6o-5j-4XU" firstAttribute="leading" secondItem="bdv-UG-TJr" secondAttribute="leadingMargin" id="HFY-AS-dmu"/>
-                                                        <constraint firstItem="k6o-5j-4XU" firstAttribute="top" secondItem="bdv-UG-TJr" secondAttribute="topMargin" id="InD-8r-jJl"/>
                                                         <constraint firstItem="uPq-4d-cLb" firstAttribute="trailing" secondItem="bdv-UG-TJr" secondAttribute="trailingMargin" id="bEy-lA-zvD"/>
-                                                        <constraint firstItem="uPq-4d-cLb" firstAttribute="top" secondItem="k6o-5j-4XU" secondAttribute="bottom" constant="8" id="sxq-Hr-OoF"/>
+                                                        <constraint firstItem="uPq-4d-cLb" firstAttribute="top" secondItem="5su-YB-K26" secondAttribute="bottom" constant="8" id="fcq-c0-H5c"/>
+                                                        <constraint firstItem="5su-YB-K26" firstAttribute="leading" secondItem="bdv-UG-TJr" secondAttribute="leadingMargin" id="fyo-Qc-vQm"/>
+                                                        <constraint firstItem="5su-YB-K26" firstAttribute="top" secondItem="bdv-UG-TJr" secondAttribute="topMargin" id="omL-Hl-YbE"/>
                                                         <constraint firstItem="uPq-4d-cLb" firstAttribute="leading" secondItem="bdv-UG-TJr" secondAttribute="leadingMargin" id="zFA-Y1-N2E"/>
                                                     </constraints>
                                                 </tableViewCellContentView>
                                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <connections>
-                                                    <outlet property="lblMetric" destination="k6o-5j-4XU" id="U63-Fh-U8n"/>
+                                                    <outlet property="lblMetricScore" destination="Cc2-Yf-lZn" id="pGI-ve-QB1"/>
+                                                    <outlet property="lblMetricTitle" destination="k6o-5j-4XU" id="HTl-9E-w26"/>
                                                     <outlet property="sliderView" destination="uPq-4d-cLb" id="bmb-lW-s80"/>
                                                 </connections>
                                             </tableViewCell>

@@ -10,9 +10,9 @@ import UIKit
 
 class SummaryMetricTableViewCell: UITableViewCell {
     
-    @IBOutlet weak var lblMetric: UILabel!
+    @IBOutlet weak var lblMetricTitle: UILabel!
+    @IBOutlet weak var lblMetricScore: UILabel!
     @IBOutlet weak var sliderView: SliderView!
-    @IBOutlet weak var scalebar: ScaleBar!
     
     // Popover view
 //    var popoverView: LabelBubbleView!
