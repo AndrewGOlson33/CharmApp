@@ -66,6 +66,10 @@ class ReviewSummaryViewController: UIViewController {
         setupSnapshotData()
     }
     
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+    
     private func setupSnapshotData() {
         guard !SnapshotsLoading.shared.isLoading else {
             if viewLoading.isHidden {
