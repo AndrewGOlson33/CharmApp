@@ -39,6 +39,9 @@ class ReviewSummaryViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        // setup notification for new snapshots
+        NotificationCenter.default.addObserver(self, selector: #selector(gotNotification(_:)), name: FirebaseNotification.SnapshotLoaded, object: nil)
+        
         // round corners of connecting view
         viewLoading.layer.cornerRadius = 20
         viewLoading.layer.shadowColor = UIColor.black.cgColor
@@ -113,8 +116,6 @@ class ReviewSummaryViewController: UIViewController {
         if snapshot == nil {
             guard let data = UserSnapshotData.shared.snapshots.first else {
                 
-                NotificationCenter.default.addObserver(self, selector: #selector(gotNotification(_:)), name: FirebaseNotification.SnapshotLoaded, object: nil)
-                
                 // setup example
                 loadJSONSnapshotData()
                 setupSnapshotData()
@@ -126,6 +127,13 @@ class ReviewSummaryViewController: UIViewController {
             snapshot = data
             UserSnapshotData.shared.selectedSnapshot = snapshot
         } else {
+            
+            if let first = UserSnapshotData.shared.snapshots.first, let shared = UserSnapshotData.shared.selectedSnapshot, first.date != shared.date {
+                UserSnapshotData.shared.selectedSnapshot = first
+            } else if let first = UserSnapshotData.shared.snapshots.first, UserSnapshotData.shared.selectedSnapshot == nil {
+                UserSnapshotData.shared.selectedSnapshot = first
+            }
+            
             snapshot = UserSnapshotData.shared.selectedSnapshot
         }
         
@@ -169,8 +177,9 @@ class ReviewSummaryViewController: UIViewController {
             }
         }
         
-        viewWillAppear(true)
-        removeSnapshotObserver()
+//        viewWillAppear(true)
+//        removeSnapshotObserver()
+        setupSnapshotData()
     }
     
     fileprivate func removeSnapshotObserver() {

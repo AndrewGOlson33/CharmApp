@@ -298,12 +298,12 @@ class DetailChartViewController: UIViewController {
                 [NSNumber(value: 1), "rgb(86, 0 , 0, 1)"]
             ]
             
-            yaxis.min = 0
-            yaxis.max = 1
-            yaxis.tickInterval = 0.1
+            yaxis.min = -1.0
+            yaxis.max = 1.0
+            yaxis.tickInterval = 0.2
             
-            lowerBoundValue = 0.45
-            upperBoundValue = 0.8
+            lowerBoundValue = -0.5
+            upperBoundValue = 0.5
         case .Conversation:
             colorArray = [
                 [NSNumber(value: 0), "rgb(242, 0, 0, 1)"],

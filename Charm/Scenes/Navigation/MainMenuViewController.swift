@@ -336,6 +336,7 @@ class MainMenuViewController: UIViewController {
                 }
                 
                 SnapshotsLoading.shared.isLoading = false
+                UserSnapshotData.shared.selectedSnapshot = UserSnapshotData.shared.snapshots.first
             }
         }
         
