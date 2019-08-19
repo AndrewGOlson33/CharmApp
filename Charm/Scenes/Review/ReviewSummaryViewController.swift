@@ -130,8 +130,9 @@ class ReviewSummaryViewController: UIViewController {
             // Set data
             snapshot = data
             UserSnapshotData.shared.selectedSnapshot = snapshot
+        } else if let selected = UserSnapshotData.shared.selectedSnapshot {
+            snapshot = selected
         } else {
-            
             if let first = UserSnapshotData.shared.snapshots.first, let shared = UserSnapshotData.shared.selectedSnapshot, first.date != shared.date {
                 UserSnapshotData.shared.selectedSnapshot = first
             } else if let first = UserSnapshotData.shared.snapshots.first, UserSnapshotData.shared.selectedSnapshot == nil {
@@ -370,7 +371,7 @@ class ReviewSummaryViewController: UIViewController {
 extension ReviewSummaryViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return SnapshotsLoading.shared.isLoading ? 0 : cellInfo.count + 1
+        return SnapshotsLoading.shared.isLoading ? 0 : UserSnapshotData.shared.snapshots.count > 1 ? cellInfo.count + 1 : cellInfo.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -423,4 +424,11 @@ extension Double {
         return pow(2.71828, self)
     }
     
+}
+
+extension Int {
+    func value() -> Int {
+        let value = pow(2.71828, Double(self))
+        return Int(value.rounded())
+    }
 }

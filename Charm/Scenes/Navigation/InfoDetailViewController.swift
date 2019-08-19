@@ -40,6 +40,11 @@ class InfoDetailViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        // add action to navigation bar
+        
+        let button = UIBarButtonItem(title: "Get Support", style: .plain, target: self, action: #selector(showSupport))
+        self.navigationItem.rightBarButtonItem = button
+        
         // make sure everythign is hidden
         txtEmotions.isHidden = true
         txtConversation.isHidden = true
@@ -85,6 +90,15 @@ class InfoDetailViewController: UIViewController {
         guard let detail = type, let url = URL(string: detail.rawValue) else { fatalError("~>Unable to load type or url.") }
         let request = URLRequest(url: url, cachePolicy: .reloadRevalidatingCacheData, timeoutInterval: 30.0)
         viewWeb.load(request)
+    }
+    
+    @objc private func showSupport() {
+        performSegue(withIdentifier: SegueID.SubmitFeedback, sender: nil)
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        guard segue.identifier == SegueID.SubmitFeedback, let vc = segue.destination as? SendFeedbackViewController else { return }
+        vc.titleString = "Enter Question"
     }
 }
 

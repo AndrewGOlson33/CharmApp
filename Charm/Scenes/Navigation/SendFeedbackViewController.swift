@@ -12,6 +12,7 @@ class SendFeedbackViewController: UIViewController {
     
     // MARK: - IBOutlets
     
+    @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var outsideView: UIView!
     @IBOutlet weak var txtFeedbackEntry: UITextView!
     
@@ -19,11 +20,16 @@ class SendFeedbackViewController: UIViewController {
     
     var appDelegate: AppDelegate!
     var existingReports = BugReports.shared
+    var titleString: String? = nil
 
     // MARK: - View Lifecycle Functions
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        if let text = titleString {
+            lblTitle.text = text
+        }
 
         // setup view
         outsideView.layer.cornerRadius = 20
