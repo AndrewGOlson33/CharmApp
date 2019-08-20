@@ -115,7 +115,6 @@ class ReviewSummaryViewController: UIViewController {
                 })
             }
         }
-        
         // load summary data
         if snapshot == nil {
             guard let data = UserSnapshotData.shared.snapshots.first else {
@@ -371,14 +370,20 @@ class ReviewSummaryViewController: UIViewController {
 extension ReviewSummaryViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return SnapshotsLoading.shared.isLoading ? 0 : UserSnapshotData.shared.snapshots.count > 1 ? cellInfo.count + 1 : cellInfo.count
+//        return SnapshotsLoading.shared.isLoading ? 0 : UserSnapshotData.shared.snapshots.count > 1 ? cellInfo.count + 1 : cellInfo.count
+        if UserSnapshotData.shared.snapshots.count > 1 && tabBarController?.navigationItem.rightBarButtonItem == nil  {
+            let info = UIBarButtonItem(title: "View Progress", style: .plain, target: self, action: #selector(showHistoryProgress))
+            tabBarController?.navigationItem.rightBarButtonItem = info
+        }
+        
+        return SnapshotsLoading.shared.isLoading ? 0 : cellInfo.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        guard indexPath.row != cellInfo.count else {
-            return tableView.dequeueReusableCell(withIdentifier: CellID.ViewPrevious, for: indexPath)
-        }
+//        guard indexPath.row != cellInfo.count else {
+//            return tableView.dequeueReusableCell(withIdentifier: CellID.ViewPrevious, for: indexPath)
+//        }
         
         let cell = tableView.dequeueReusableCell(withIdentifier: CellID.SummaryMetric, for: indexPath) as! SummaryMetricTableViewCell
         let info = cellInfo[indexPath.row]
@@ -409,9 +414,15 @@ extension ReviewSummaryViewController: UITableViewDelegate, UITableViewDataSourc
         
         if indexPath.row < 4 {
             tabBarController?.selectedIndex = indexPath.row + 1
-        } else if indexPath.row == 5 {
-            performSegue(withIdentifier: SegueID.SnapshotsList, sender: self)
         }
+        
+//        else if indexPath.row == 5 {
+//            showHistoryProgress()
+//        }
+    }
+    
+    @objc private func showHistoryProgress() {
+        performSegue(withIdentifier: SegueID.SnapshotsList, sender: self)
     }
     
 }

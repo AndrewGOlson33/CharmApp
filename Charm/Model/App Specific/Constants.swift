@@ -60,6 +60,7 @@ enum CellID {
     static let ViewPrevious = "cid_previous"
     static let ScaleBar = "cid_scalebar"
     static let Transcript = "cid_transcript"
+    static let AIFeedbback = "cid_aifeedback"
     static let SnapshotList = "cid_allsnapshots"
     static let SubscriptionsList = "cid_subscription"
     static let LogOut = "cid_logout"

@@ -11,9 +11,9 @@ import WebKit
 
 enum InfoDetail: String {
     case Emotions = "https://www.charismaanalytics.com/emotional-connection-tutorial"
-    case Conversation = "https://www.charismaanalytics.com/personal-connection-tutorial"
-    case Ideas = "https://www.charismaanalytics.com/conversation-engagement-tutorial"
-    case Connection = "https://www.charismaanalytics.com/idea-engagement-tutorial"
+    case Conversation = "https://www.charismaanalytics.com/conversation-engagement-tutorial"
+    case Ideas = "https://www.charismaanalytics.com/idea-engagement-tutorial"
+    case Connection = "https://www.charismaanalytics.com/personal-connection-tutorial"
 }
 
 class InfoDetailViewController: UIViewController {

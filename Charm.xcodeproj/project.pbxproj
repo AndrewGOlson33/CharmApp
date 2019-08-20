@@ -23,6 +23,7 @@
 		650E9F5722455885000EADEE /* ScorePhrase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 650E9F5622455885000EADEE /* ScorePhrase.swift */; };
 		6514C8F62301D6400038BD61 /* snapshotData.json in Resources */ = {isa = PBXBuildFile; fileRef = 6514C8F52301D6400038BD61 /* snapshotData.json */; };
 		65172714230B006800028E87 /* UIPaddedLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65172713230B006800028E87 /* UIPaddedLabel.swift */; };
+		65172716230B2AA300028E87 /* AIFeedbackTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65172715230B2AA300028E87 /* AIFeedbackTableViewCell.swift */; };
 		6528D85222565F540058D0DC /* EmotionFlashcardsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6528D85122565F540058D0DC /* EmotionFlashcardsViewController.swift */; };
 		6534C2C92269F7520051F6D1 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6534C2C82269F7520051F6D1 /* GoogleService-Info.plist */; };
 		6534C2D0226A15E00051F6D1 /* Session.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6534C2CB226A15E00051F6D1 /* Session.swift */; };
@@ -96,6 +97,7 @@
 		650E9F5622455885000EADEE /* ScorePhrase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScorePhrase.swift; sourceTree = "<group>"; };
 		6514C8F52301D6400038BD61 /* snapshotData.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = snapshotData.json; sourceTree = "<group>"; };
 		65172713230B006800028E87 /* UIPaddedLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIPaddedLabel.swift; sourceTree = "<group>"; };
+		65172715230B2AA300028E87 /* AIFeedbackTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIFeedbackTableViewCell.swift; sourceTree = "<group>"; };
 		6528D85122565F540058D0DC /* EmotionFlashcardsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmotionFlashcardsViewController.swift; sourceTree = "<group>"; };
 		6534C2C82269F7520051F6D1 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		6534C2CB226A15E00051F6D1 /* Session.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Session.swift; sourceTree = "<group>"; };
@@ -233,6 +235,7 @@
 				657330D722414C9C0066624B /* ScaleBarTableViewCell.swift */,
 				657330D922415EDC0066624B /* TranscriptTableViewCell.swift */,
 				65A1968B230AD883006CDC4E /* SnapshotSummaryTableViewCell.swift */,
+				65172715230B2AA300028E87 /* AIFeedbackTableViewCell.swift */,
 			);
 			path = Cells;
 			sourceTree = "<group>";
@@ -568,6 +571,7 @@
 				65F1C1972260BB3B00F0BD69 /* InfoModuleViewController.swift in Sources */,
 				657330CE22411A2D0066624B /* LabelBubbleViewController.swift in Sources */,
 				65172714230B006800028E87 /* UIPaddedLabel.swift in Sources */,
+				65172716230B2AA300028E87 /* AIFeedbackTableViewCell.swift in Sources */,
 				65F1C19B2260C38C00F0BD69 /* CharmBugReports.swift in Sources */,
 				65C7FB1B22383D7500A150BF /* ChatFriendListTableViewCell.swift in Sources */,
 				650D400C223957B30023D983 /* ArchiveSession.swift in Sources */,

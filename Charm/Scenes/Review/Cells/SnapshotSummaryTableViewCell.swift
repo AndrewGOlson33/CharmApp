@@ -29,7 +29,7 @@ class SnapshotSummaryTableViewCell: UITableViewCell {
     
     // Data to display
     private var title: String = ""
-    private var friendName: String = "[Friend]"
+    private var friendName: String = "Unknown User"
     private var date: Date? = nil
     private var scoreIdea: Int = 0
     private var scoreConversation: Int = 0
@@ -59,18 +59,18 @@ class SnapshotSummaryTableViewCell: UITableViewCell {
         
         guard snapshot != nil else { return }
         let date = snapshot.date
-        // TODO: - Add Friend Name
-//        let friend = snapshot.friendName
+
+        let friend = snapshot.friend
         let idea = Int(snapshot.getTopLevelScoreValue(forSummaryItem: .IdeaEngagement) ?? 0)
         let conversation = Int(snapshot.getTopLevelScoreValue(forSummaryItem: .ConversationEngagement) ?? 0)
         let personal = Int(snapshot.getTopLevelScoreValue(forSummaryItem: .PersonalConnection) ?? 0)
         let emotional = Int(snapshot.getTopLevelScoreValue(forSummaryItem: .EmotionalConnection) ?? 0)
         let smiling = Int(snapshot.getTopLevelScoreValue(forSummaryItem: .SmilingPercentage) ?? 0)
         
-//        if friend != friendName {
-//            friendName = friend
-//            cellShouldConfigure = true
-//        }
+        if friend != friendName {
+            friendName = friend
+            cellShouldConfigure = true
+        }
         
         if date != self.date {
             self.date = date

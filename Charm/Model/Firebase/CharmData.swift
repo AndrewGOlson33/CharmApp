@@ -54,6 +54,13 @@ struct Snapshot: Codable {
     var connection: [PersonalPronouns]
     var graphTone: [Sentiment]
     var tableViewTone: [Sentiment]
+    var friends: [[String:String]]?
+    
+    var friend: String {
+        guard let friends = friends, let friend = friends.first, let name = friend.first else { return "Unknown User" }
+        return name.value
+    }
+    
 //    var transcript: [Transcript]
     
     // coding keys
@@ -65,6 +72,7 @@ struct Snapshot: Codable {
         case connection = "Connection"  // used to be PersonalPronouns
         case graphTone = "Sentiment" // used to be sentimentAll
         case tableViewTone = "Sentiment_Raw" // used to be sentimentRaw
+        case friends = "friendsName"
 //        case transcript = "Transcipt" // used to be Transcript
     }
     
@@ -92,6 +100,14 @@ struct Snapshot: Codable {
         return summaryItem.score
     }
     
+    func getTopLevelFeedback(forSummaryItem item: SummaryItem) -> String? {
+        guard let summaryItem = topLevelMetrics.first(where: { (metric) -> Bool in
+            return metric.metric == item.rawValue
+        }) else { return nil }
+        
+        return summaryItem.feedback
+    }
+    
 }
 
 // MARK: - Top Level Data
@@ -101,6 +117,7 @@ struct TopLevelMetric: Codable {
     var metric: String
     var rank: Double
     var raw: Double
+    var feedback: String?
     var score: Double?
     
     // coding keys to how data is stored on firebase
@@ -109,6 +126,7 @@ struct TopLevelMetric: Codable {
         case rank = "Rank"
         case raw = "Raw"
         case score = "Score"
+        case feedback = "Feedback"
     }
 }
 

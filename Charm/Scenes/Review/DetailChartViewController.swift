@@ -25,6 +25,7 @@ class DetailChartViewController: UIViewController {
     
     // data chart will be built with
     var snapshot: Snapshot!
+    var feedback: String? = nil
     
     // Data for filling tableview cells
     var transcript: [TranscriptCellInfo] = []
@@ -50,6 +51,9 @@ class DetailChartViewController: UIViewController {
     
     // Helps deal with layout glitches caused by highcharts
     var chartDidLoad: Bool = false
+    
+    // make sure to not accidentally tap on more info button
+    var isTableViewScrolling: Bool = false
     
     // MARK: - View Lifecycle Functions
 
@@ -87,8 +91,6 @@ class DetailChartViewController: UIViewController {
         super.viewWillAppear(animated)
         tabBarController?.navigationItem.title = navTitle
         
-        let info = UIBarButtonItem(title: "Learn More", style: .plain, target: self, action: #selector(infoButtonTapped))
-        tabBarController?.navigationItem.rightBarButtonItem = info
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -158,6 +160,9 @@ class DetailChartViewController: UIViewController {
                 sliderData.append(cellInfo)
             }
             
+            // get feedback text
+            feedback = snapshot.getTopLevelFeedback(forSummaryItem: .IdeaEngagement)
+            
         case .Conversation:
             let conversation = snapshot.conversation
             // setup chart data
@@ -187,6 +192,9 @@ class DetailChartViewController: UIViewController {
                 let cellInfo = SliderCellInfo(details: SliderDetails(type: .fixed, valueType: .percent, minBlue: 0.33, maxBlue: 0.67), title: "Talking(%)", score: score, position: CGFloat(position))
                 sliderData.append(cellInfo)
             }
+            
+            // get feedback text
+            feedback = snapshot.getTopLevelFeedback(forSummaryItem: .ConversationEngagement)
             
         case .Connection:
             let connection = snapshot.connection
@@ -219,6 +227,9 @@ class DetailChartViewController: UIViewController {
                 let cellInfo = SliderCellInfo(details: SliderDetails(type: .fixed, valueType: .percent, minBlue: 0.375, maxBlue: 0.625), title: "First Person(%)", score: score, position: CGFloat(position))
                 sliderData.append(cellInfo)
             }
+            
+            // get feedback text
+            feedback = snapshot.getTopLevelFeedback(forSummaryItem: .PersonalConnection)
         
         case .Emotions:
             posData = []
@@ -266,6 +277,9 @@ class DetailChartViewController: UIViewController {
                 let text = "[\(index)]: \(item.word) (Score: \(item.score))"
                 transcript.append(TranscriptCellInfo(withText: text))
             }
+            
+            // get feedback text
+            feedback = snapshot.getTopLevelFeedback(forSummaryItem: .EmotionalConnection)
         }
         
         tableView.reloadData()
@@ -583,7 +597,11 @@ extension DetailChartViewController: UITableViewDelegate, UITableViewDataSource 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch section {
         case 0:
-            return sliderData.count
+            if let data = snapshot, let top = data.topLevelMetrics.first, top.feedback != nil {
+                return sliderData.count + 1
+            } else {
+                return sliderData.count
+            }
         default:
             return transcript.count
         }
@@ -593,9 +611,27 @@ extension DetailChartViewController: UITableViewDelegate, UITableViewDataSource 
         
         switch indexPath.section {
         case 0:
+            // see if we are setting up a scalebar or feedback
+            var row = indexPath.row
+            var setupFeedback: Bool = false
+            if sliderData.count > 1 && row > 1 {
+                row -= 1
+            } else if sliderData.count > 1 && row == 1 {
+                setupFeedback = true
+            } else if row == sliderData.count {
+                setupFeedback = true
+            }
+            
+            if setupFeedback {
+                let cell = tableView.dequeueReusableCell(withIdentifier: CellID.AIFeedbback, for: indexPath) as! AIFeedbackTableViewCell
+                guard let feedback = self.feedback else { return cell }
+                cell.feedbackText = feedback
+                return cell
+            }
+            
             // setup scalebar
             let cell = tableView.dequeueReusableCell(withIdentifier: CellID.ScaleBar, for: indexPath) as! ScaleBarTableViewCell
-            let info = sliderData[indexPath.row]
+            let info = sliderData[row]
             cell.lblDescription.text = info.title
             
             if info.details.hasRed {
@@ -640,6 +676,10 @@ extension DetailChartViewController: UITableViewDelegate, UITableViewDataSource 
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: false)
+        
+        if !isTableViewScrolling, let _ = tableView.cellForRow(at: indexPath) as? AIFeedbackTableViewCell {
+            infoButtonTapped()
+        }
         
         if let _ = tableView.cellForRow(at: indexPath) as? TranscriptTableViewCell {
             // remove any old annotations
@@ -702,11 +742,34 @@ extension DetailChartViewController: UITableViewDelegate, UITableViewDataSource 
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 64
+        switch indexPath.section {
+        case 0:
+            if indexPath.row != 1 { fallthrough }
+            guard let font = UIFont(name: "Helvetica", size: 14) else { return 80 }
+            guard let text = feedback else { return 80 }
+            let height = heightForView(text: text, font: font, width: tableView.frame.width - 40)
+            let difference = height - 21.5
+            
+            return 64 + difference
+        default:
+            return 64
+        }
+    }
+    
+    func heightForView(text:String, font:UIFont, width:CGFloat) -> CGFloat{
+        let label:UILabel = UILabel(frame: CGRect(x: 0, y: 0, width: width, height: .greatestFiniteMagnitude))
+        label.numberOfLines = 0
+        label.lineBreakMode = NSLineBreakMode.byWordWrapping
+        label.font = font
+        label.text = text
+        
+        label.sizeToFit()
+        return label.frame.height
     }
     
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         if let cell = tableView.visibleCells.first, let indexPath = tableView.indexPath(for: cell) {
+            isTableViewScrolling = true
             tableView(tableView, didSelectRowAt: indexPath)
         }
     }
@@ -726,6 +789,7 @@ extension DetailChartViewController: UITableViewDelegate, UITableViewDataSource 
             tableView(tableView, didSelectRowAt: indexPath)
         }
         
+        isTableViewScrolling = false
         scrollCounter = 0
     }
 }

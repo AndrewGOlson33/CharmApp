@@ -2372,7 +2372,7 @@ Cg
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <subviews>
                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Snapshot History" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="w4j-vw-TPG" customClass="UIPaddedLabel" customModule="Charm" customModuleProvider="target">
-                                                            <rect key="frame" x="129.5" y="11" width="139.5" height="22"/>
+                                                            <rect key="frame" x="121.5" y="3.5" width="155.5" height="37.5"/>
                                                             <color key="backgroundColor" red="0.1333333333" green="0.17254901959999999" blue="0.27058823529999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                             <fontDescription key="fontDescription" type="system" pointSize="18"/>
                                                             <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -2388,10 +2388,6 @@ Cg
                                                                     <real key="value" value="8"/>
                                                                 </userDefinedRuntimeAttribute>
                                                                 <userDefinedRuntimeAttribute type="number" keyPath="rightInset">
-                                                                    <real key="value" value="8"/>
-                                                                </userDefinedRuntimeAttribute>
-                                                                <userDefinedRuntimeAttribute type="boolean" keyPath="roundCorners" value="YES"/>
-                                                                <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
                                                                     <real key="value" value="8"/>
                                                                 </userDefinedRuntimeAttribute>
                                                             </userDefinedRuntimeAttributes>
@@ -2514,7 +2510,7 @@ Cg
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="U0p-EC-mBW" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="4182.608695652174" y="143.97321428571428"/>
+            <point key="canvasLocation" x="4187" y="134"/>
         </scene>
         <!--Update Subscription View Controller-->
         <scene sceneID="iCU-fg-U7x">
@@ -3348,7 +3344,7 @@ Subscriptions are required to pay for the backend server costs, and also help to
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="5Op-f6-fo4" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="5673.913043478261" y="146.65178571428569"/>
+            <point key="canvasLocation" x="5668" y="147"/>
         </scene>
         <!--Emotions-->
         <scene sceneID="ORl-0H-o9q">
@@ -3378,7 +3374,7 @@ Subscriptions are required to pay for the backend server costs, and also help to
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ruP-tO-Wat" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="6447.826086956522" y="152.67857142857142"/>
+            <point key="canvasLocation" x="6452" y="147"/>
         </scene>
         <!--Training-->
         <scene sceneID="JZh-OS-vgY">
@@ -3882,28 +3878,28 @@ Subscriptions are required to pay for the backend server costs, and also help to
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <color key="sectionIndexBackgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <prototypes>
-                                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="cid_scalebar" id="BqG-3v-0BV" customClass="ScaleBarTableViewCell" customModule="Charm" customModuleProvider="target">
-                                                <rect key="frame" x="0.0" y="28" width="398" height="44"/>
+                                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="cid_scalebar" rowHeight="64" id="BqG-3v-0BV" customClass="ScaleBarTableViewCell" customModule="Charm" customModuleProvider="target">
+                                                <rect key="frame" x="0.0" y="28" width="398" height="64"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="BqG-3v-0BV" id="WzX-DV-WcL">
-                                                    <rect key="frame" x="0.0" y="0.0" width="398" height="43.5"/>
+                                                    <rect key="frame" x="0.0" y="0.0" width="398" height="63.5"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <subviews>
                                                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="jF2-OY-usc" customClass="SliderView" customModule="Charm" customModuleProvider="target">
-                                                            <rect key="frame" x="8" y="19.5" width="382" height="16"/>
+                                                            <rect key="frame" x="8" y="39.5" width="382" height="16"/>
                                                             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                             <constraints>
                                                                 <constraint firstAttribute="height" constant="16" id="MuH-Lp-wos"/>
                                                             </constraints>
                                                         </view>
                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Bar description" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zsI-4K-JpR">
-                                                            <rect key="frame" x="8" y="0.5" width="86" height="15"/>
+                                                            <rect key="frame" x="8" y="0.5" width="86" height="35"/>
                                                             <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                                             <nil key="textColor"/>
                                                             <nil key="highlightedColor"/>
                                                         </label>
                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="uAk-Sk-BZF">
-                                                            <rect key="frame" x="382" y="0.5" width="8" height="15"/>
+                                                            <rect key="frame" x="382" y="0.5" width="8" height="35"/>
                                                             <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                                             <nil key="textColor"/>
                                                             <nil key="highlightedColor"/>
@@ -3930,15 +3926,15 @@ Subscriptions are required to pay for the backend server costs, and also help to
                                                     <outlet property="sliderView" destination="jF2-OY-usc" id="kzb-s8-tVY"/>
                                                 </connections>
                                             </tableViewCell>
-                                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="cid_transcript" id="yGS-Cg-Lnh" customClass="TranscriptTableViewCell" customModule="Charm" customModuleProvider="target">
-                                                <rect key="frame" x="0.0" y="72" width="398" height="44"/>
+                                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="cid_transcript" rowHeight="64" id="yGS-Cg-Lnh" customClass="TranscriptTableViewCell" customModule="Charm" customModuleProvider="target">
+                                                <rect key="frame" x="0.0" y="92" width="398" height="64"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="yGS-Cg-Lnh" id="5Bz-tn-Prz">
-                                                    <rect key="frame" x="0.0" y="0.0" width="398" height="43.5"/>
+                                                    <rect key="frame" x="0.0" y="0.0" width="398" height="63.5"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <subviews>
                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Word" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Fhh-ji-JaI">
-                                                            <rect key="frame" x="8" y="0.0" width="382" height="43.5"/>
+                                                            <rect key="frame" x="8" y="0.0" width="382" height="63.5"/>
                                                             <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                             <nil key="textColor"/>
                                                             <nil key="highlightedColor"/>
@@ -3955,6 +3951,44 @@ Subscriptions are required to pay for the backend server costs, and also help to
                                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <connections>
                                                     <outlet property="lblTranscriptText" destination="Fhh-ji-JaI" id="4vk-hq-Drz"/>
+                                                </connections>
+                                            </tableViewCell>
+                                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" accessoryType="detailButton" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="cid_aifeedback" id="b6T-6U-4Yv" customClass="AIFeedbackTableViewCell" customModule="Charm" customModuleProvider="target">
+                                                <rect key="frame" x="0.0" y="156" width="398" height="44"/>
+                                                <autoresizingMask key="autoresizingMask"/>
+                                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="b6T-6U-4Yv" id="J6A-Ug-EmA">
+                                                    <rect key="frame" x="0.0" y="0.0" width="346" height="43.5"/>
+                                                    <autoresizingMask key="autoresizingMask"/>
+                                                    <subviews>
+                                                        <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillProportionally" translatesAutoresizingMaskIntoConstraints="NO" id="1rx-uM-Jtj">
+                                                            <rect key="frame" x="8" y="0.0" width="330" height="43.5"/>
+                                                            <subviews>
+                                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="AI Feedback:" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="LbI-fO-3Bw">
+                                                                    <rect key="frame" x="0.0" y="0.0" width="330" height="22"/>
+                                                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                                    <nil key="textColor"/>
+                                                                    <nil key="highlightedColor"/>
+                                                                </label>
+                                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="No Feedback Given" textAlignment="justified" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vr3-qW-uRl">
+                                                                    <rect key="frame" x="0.0" y="22" width="330" height="21.5"/>
+                                                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                                    <nil key="textColor"/>
+                                                                    <nil key="highlightedColor"/>
+                                                                </label>
+                                                            </subviews>
+                                                        </stackView>
+                                                    </subviews>
+                                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                    <constraints>
+                                                        <constraint firstItem="1rx-uM-Jtj" firstAttribute="top" secondItem="J6A-Ug-EmA" secondAttribute="top" id="9Fn-MG-L4l"/>
+                                                        <constraint firstItem="1rx-uM-Jtj" firstAttribute="leading" secondItem="J6A-Ug-EmA" secondAttribute="leading" constant="8" id="Pga-ty-K1A"/>
+                                                        <constraint firstAttribute="bottom" secondItem="1rx-uM-Jtj" secondAttribute="bottom" id="WiS-hs-hFU"/>
+                                                        <constraint firstAttribute="trailing" secondItem="1rx-uM-Jtj" secondAttribute="trailing" constant="8" id="wzh-Ca-KyP"/>
+                                                    </constraints>
+                                                </tableViewCellContentView>
+                                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <connections>
+                                                    <outlet property="lblFeedback" destination="vr3-qW-uRl" id="tdX-L7-3aV"/>
                                                 </connections>
                                             </tableViewCell>
                                         </prototypes>
@@ -5931,7 +5965,7 @@ The best way we found is to develop this skill is by talking. The app is the bes
         <image name="img_placeholder" width="1280" height="720"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="RVB-Hc-N14"/>
+        <segue reference="4d7-Qv-FyQ"/>
         <segue reference="DIu-Cp-Epu"/>
         <segue reference="Tm4-2t-woS"/>
         <segue reference="wc0-M7-LDu"/>

@@ -25,4 +25,5 @@ import UIKit
         return CGSize(width: size.width + leftInset + rightInset,
                       height: size.height + topInset + bottomInset)
     }
+    
 }
