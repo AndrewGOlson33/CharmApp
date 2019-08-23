@@ -61,6 +61,11 @@ class DetailChartViewController: UIViewController {
         super.viewDidLoad()
         
         chartView.plugins = ["annotations"]
+//        chartView.layer.masksToBounds = false
+//        chartView.layer.shadowColor = UIColor.black.cgColor
+//        chartView.layer.shadowRadius = 1
+//        chartView.layer.shadowOffset = CGSize(width: 0, height: 1)
+//        chartView.layer.shadowOpacity = 0.5
         
         if let delegate = UIApplication.shared.delegate as? AppDelegate, let window = delegate.window, let nav = window.rootViewController as? UINavigationController {
             let constant = nav.navigationBar.frame.height
@@ -90,7 +95,7 @@ class DetailChartViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         tabBarController?.navigationItem.title = navTitle
-        
+        tabBarController?.navigationItem.rightBarButtonItem = nil
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -166,6 +171,20 @@ class DetailChartViewController: UIViewController {
         case .Conversation:
             let conversation = snapshot.conversation
             // setup chart data
+            
+            var isTranscriptLoaded: Bool = false
+            if let trans = snapshot.transcript {
+                var position = 0
+                for phrase in trans {
+                    let person: String = phrase.person != nil ? phrase.person! : "Unknown"
+                    
+                    transcript.append(TranscriptCellInfo(withText: "[\(person)]: \(phrase.words)", at: position))
+                    position += phrase.words.numberOfWords
+                }
+                isTranscriptLoaded = true
+            }
+            
+            
             for (index, item) in conversation.enumerated() {
                 let point = HIPoint()
                 point.x = index as NSNumber
@@ -175,11 +194,16 @@ class DetailChartViewController: UIViewController {
                 } else {
                     point.y = 0
                 }
-                
+            
                 let text = "[\(String(describing: item.person))]: \(item.word)"
-                transcript.append(TranscriptCellInfo(withText: text))
+                
                 calloutData.append(item.word)
                 chartData.append(point)
+                
+                // no need to do this if the transcript is aleady loaded
+                if isTranscriptLoaded { continue }
+                transcript.append(TranscriptCellInfo(withText: text))
+                
             }
             
             // setup slider bar data
@@ -300,8 +324,8 @@ class DetailChartViewController: UIViewController {
         var colorArray: [[Any]] = []
         let yaxis = HIYAxis()
         
-        var lowerBoundValue: Double = 0.0
-        var upperBoundValue: Double = 0.0
+        var lowerBoundValue: Double
+        var upperBoundValue: Double
         
         switch chartType! {
         case .IdeaEngagement:
@@ -333,12 +357,14 @@ class DetailChartViewController: UIViewController {
             upperBoundValue = 0.7
         case .Connection:
             colorArray = [
-                [NSNumber(value: 0), "rgb(86, 0 ,0)"],
-                [NSNumber(value: 0.5), "rgba(216,0,0, 0)"],
-                [NSNumber(value: 0.7), "rgba(47,0,0,0)"],
-                //                [NSNumber(value: 0.5), "rgba(216,216,216, 0)"],
-                //                [NSNumber(value: 0.7), "rgba(47,216,216,0)"],
-                [NSNumber(value: 1), "rgb(255, 0 ,0)"]
+//                [NSNumber(value: 0), "rgb(86, 0 ,0)"],
+//                [NSNumber(value: 0.5), "rgba(216,0,0, 0)"],
+//                [NSNumber(value: 0.7), "rgba(47,0,0,0)"],
+//                [NSNumber(value: 1), "rgb(255, 0 ,0)"]
+                [NSNumber(value: 0), "rgb(242, 0, 0, 1)"],
+                [NSNumber(value: 0.15), "rgba(242, 0, 0, 0)"],
+                [NSNumber(value: 0.85), "rgba(128, 0, 0, 0)"],
+                [NSNumber(value: 1), "rgb(86, 0 , 0, 1)"]
             ]
             
             yaxis.min = -1.05
@@ -409,8 +435,21 @@ class DetailChartViewController: UIViewController {
             lowerLabel.y = 12
             lowerBounds.label = lowerLabel
             
-            yaxis.plotLines = [upperBounds, lowerBounds]
+            let centerLine = HIPlotLines()
+            centerLine.color = HIColor(hexValue: "e4e4e4")
+            centerLine.width = 2
+            centerLine.value = 0
+            
+            yaxis.plotLines = [upperBounds, centerLine, lowerBounds]
+        } else {
+            let centerLine = HIPlotLines()
+            centerLine.color = HIColor(hexValue: "e4e4e4")
+            centerLine.width = 2
+            centerLine.value = 0
+            yaxis.plotLines = [centerLine]
         }
+        
+        
         
         let legend = HILegend()
         legend.enabled = false
@@ -490,6 +529,26 @@ class DetailChartViewController: UIViewController {
                             self.chartView.removeAnnotation(byId: "annotation")
                         })
                     }
+                case .Conversation:
+                    guard let first = self.transcript.first, first.position != nil else { fallthrough }
+                    var currentPosition: Int = 0
+                    var previousIndex: Int = 0
+                    for (index, trans) in self.transcript.enumerated() {
+                        guard let position = trans.position else { continue }
+                        currentPosition = position
+                        if currentPosition == row {
+                            indexPath = IndexPath(row: index, section: 1)
+                            shouldScroll = true
+                            break
+                        } else if row < currentPosition {
+                            indexPath = IndexPath(row: previousIndex, section: 1)
+                            shouldScroll = true
+                            break
+                        }
+                        
+                        previousIndex = index
+                    }
+                    
                 default:
                     indexPath = IndexPath(row: row, section: 1)
                     shouldScroll = true
@@ -552,12 +611,25 @@ class DetailChartViewController: UIViewController {
             
             negArea.fillColor = HIColor(uiColor: .clear)
             
+//            let shadow = HIShadowOptionsObject()
+//
+//            area.shadow = shadow
+//            posArea.shadow = shadow
+//            negArea.shadow = shadow
+            
             options.series = [area, posArea, negArea]
             legend.enabled = false
         } else {
+//            let shadow = HIShadowOptionsObject()
+//
+//            area.shadow = shadow
+            
             options.series = [area]
         }
         
+//        chart.backgroundColor = HIColor(uiColor: .white)
+//        chart.shadow = HICSSObject()
+    
         let tooltip = HITooltip()
         tooltip.enabled = false
         options.chart = chart
@@ -607,6 +679,11 @@ extension DetailChartViewController: UITableViewDelegate, UITableViewDataSource 
         }
     }
     
+    func tableView(_ tableView: UITableView, accessoryButtonTappedForRowWith indexPath: IndexPath) {
+        guard let _ = tableView.cellForRow(at: indexPath) as? AIFeedbackTableViewCell else { return }
+        infoButtonTapped()
+    }
+    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         switch indexPath.section {
@@ -626,6 +703,7 @@ extension DetailChartViewController: UITableViewDelegate, UITableViewDataSource 
                 let cell = tableView.dequeueReusableCell(withIdentifier: CellID.AIFeedbback, for: indexPath) as! AIFeedbackTableViewCell
                 guard let feedback = self.feedback else { return cell }
                 cell.feedbackText = feedback
+                cell.accessoryType = .detailButton
                 return cell
             }
             
@@ -701,6 +779,19 @@ extension DetailChartViewController: UITableViewDelegate, UITableViewDataSource 
                         word = toneItem.word
                     }
                 }
+            } else if chartType! == .Conversation, let first = transcript.first, first.position != nil {
+                let transcriptItem = transcript[indexPath.row]
+                guard let position = transcriptItem.position else { return }
+                if chartView.options.series[0].data.count < position && calloutData.count < position {
+                    if let itm = chartView.options.series[0].data.last as? HIPoint, let co = calloutData.last {
+                        item = itm
+                        word = co
+                    } else {
+                        return
+                    }
+                }
+                item = chartView.options.series[0].data[position] as! HIPoint
+                word = calloutData[position]
             } else {
                 item = chartView.options.series[0].data[indexPath.row] as! HIPoint
             }
@@ -745,12 +836,19 @@ extension DetailChartViewController: UITableViewDelegate, UITableViewDataSource 
         switch indexPath.section {
         case 0:
             if indexPath.row != 1 { fallthrough }
-            guard let font = UIFont(name: "Helvetica", size: 14) else { return 80 }
-            guard let text = feedback else { return 80 }
+            let font = UIFont.systemFont(ofSize: 14)
+            guard let text = feedback else { return 0 }
             let height = heightForView(text: text, font: font, width: tableView.frame.width - 40)
-            let difference = height - 21.5
+            let difference = height - 20
             
-            return 64 + difference
+            return 54 + difference
+        case 1:
+            let font = UIFont.systemFont(ofSize: 14)
+            guard transcript.count > indexPath.row else { return 64 }
+            let text = transcript[indexPath.row].text
+            let height = heightForView(text: text, font: font, width: tableView.frame.width - 40)
+            let difference = height - 63.5
+            return difference > 0 ? 64 + difference : 64
         default:
             return 64
         }

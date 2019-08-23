@@ -12,7 +12,7 @@ class AIFeedbackTableViewCell: UITableViewCell {
     
     @IBOutlet weak var lblFeedback: UILabel!
     
-    var feedbackText: String = "" {
+    var feedbackText: String = "No feedback available." {
         didSet {
             lblFeedback.text = feedbackText
             updateSize()
@@ -38,6 +38,8 @@ class AIFeedbackTableViewCell: UITableViewCell {
 
         // Configure the view for the selected state
     }
+    
+    
     
     private func updateSize() {
         lblFeedback.sizeToFit()

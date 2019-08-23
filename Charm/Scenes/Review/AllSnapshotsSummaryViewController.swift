@@ -14,7 +14,7 @@ struct CategoryArea {
     var scores: [Int]
     
     mutating func add(score: Int) {
-        scores.append(score)
+        scores.insert(score, at: 0)
     }
     
     mutating func clear() {
@@ -74,7 +74,7 @@ class AllSnapshotsSummaryViewController: UIViewController {
         for snapshot in snapshots {
             // we only should be loading snapshots with valid dates (all should be valid)
             if let date = snapshot.date {
-                xAxisCategories.append(dFormatter.string(from: date))
+                xAxisCategories.insert(dFormatter.string(from: date), at: 0)
                 ideaData.add(score: Int(snapshot.getTopLevelScoreValue(forSummaryItem: .IdeaEngagement) ?? 0))
                 convoData.add(score: Int(snapshot.getTopLevelScoreValue(forSummaryItem: .ConversationEngagement) ?? 0))
                 personalData.add(score: Int(snapshot.getTopLevelScoreValue(forSummaryItem: .PersonalConnection) ?? 0))
@@ -82,6 +82,7 @@ class AllSnapshotsSummaryViewController: UIViewController {
                 smilingData.add(score: Int(snapshot.getTopLevelScoreValue(forSummaryItem: .SmilingPercentage) ?? 0))
             }
         }
+        
     }
     
     private func setupLineChart() {

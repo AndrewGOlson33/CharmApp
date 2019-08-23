@@ -61,7 +61,7 @@ struct Snapshot: Codable {
         return name.value
     }
     
-//    var transcript: [Transcript]
+    var transcript: [Transcript]?
     
     // coding keys
     
@@ -73,7 +73,7 @@ struct Snapshot: Codable {
         case graphTone = "Sentiment" // used to be sentimentAll
         case tableViewTone = "Sentiment_Raw" // used to be sentimentRaw
         case friends = "friendsName"
-//        case transcript = "Transcipt" // used to be Transcript
+        case transcript = "Transcript"
     }
     
     // Snapshot Value Getters
@@ -208,10 +208,12 @@ struct Sentiment: Codable {
 
 struct Transcript: Codable {
     var person: String? = ""
+    var phrase: Int
     var words: String
     
     enum CodingKeys: String, CodingKey {
         case person = "Person"
+        case phrase = "Phrase"
         case words = "Words"
     }
 }
@@ -325,9 +327,24 @@ struct SliderDetails {
 struct TranscriptCellInfo {
     
     var text: String
+    var position: Int?
     
     init(withText text: String) {
         self.text = text
     }
     
+    init(withText text: String, at position: Int) {
+        self.text = text
+        self.position = position
+    }
+    
+}
+
+// MARK: - String Extension to Count Words
+
+// enumerateStrings
+extension String {
+    var numberOfWords: Int {
+        return self.components(separatedBy: " ").count
+    }
 }
