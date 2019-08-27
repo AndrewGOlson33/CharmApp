@@ -805,14 +805,16 @@ extension DetailChartViewController: UITableViewDelegate, UITableViewDataSource 
             label.point.yAxis = 0
             label.point.x = item.x
             
-            
             let offset = 0.075
-            if let yaxisarray = chartView.options.yAxis, let yaxis = yaxisarray.first, let max = yaxis.max, Double(truncating: item.y) > Double(truncating: max) - offset {
+            
+            if let chart = chartView, let options = chart.options, let yaxisarray = options.yAxis, let yaxis = yaxisarray.first, let max = yaxis.max, let itemYValue = item.y, Double(truncating: itemYValue) > Double(truncating: max) - offset {
                 print("~>Making it smaller.")
                 label.point.y = NSNumber(value: Double(truncating: item.y) - offset)
             } else {
                 label.point.y = item.y
             }
+            
+            label.point.y = item.y
             
             if word.isEmpty && indexPath.row < calloutData.count {
                 word = calloutData[indexPath.row]

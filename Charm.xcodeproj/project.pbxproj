@@ -21,7 +21,6 @@
 		650E9F532245443A000EADEE /* ConversationTrainingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 650E9F522245443A000EADEE /* ConversationTrainingViewController.swift */; };
 		650E9F55224550AA000EADEE /* ChatTrainingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 650E9F54224550AA000EADEE /* ChatTrainingViewModel.swift */; };
 		650E9F5722455885000EADEE /* ScorePhrase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 650E9F5622455885000EADEE /* ScorePhrase.swift */; };
-		6514C8F62301D6400038BD61 /* snapshotData.json in Resources */ = {isa = PBXBuildFile; fileRef = 6514C8F52301D6400038BD61 /* snapshotData.json */; };
 		65172714230B006800028E87 /* UIPaddedLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65172713230B006800028E87 /* UIPaddedLabel.swift */; };
 		65172716230B2AA300028E87 /* AIFeedbackTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65172715230B2AA300028E87 /* AIFeedbackTableViewCell.swift */; };
 		6528D85222565F540058D0DC /* EmotionFlashcardsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6528D85122565F540058D0DC /* EmotionFlashcardsViewController.swift */; };
@@ -54,6 +53,7 @@
 		657E72022243DF50001EE828 /* ConcreteFlashcardsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 657E72012243DF50001EE828 /* ConcreteFlashcardsViewController.swift */; };
 		657E72062243F41B001EE828 /* FlashcardsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 657E72052243F41B001EE828 /* FlashcardsViewModel.swift */; };
 		657E72082243F4A7001EE828 /* TrainingData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 657E72072243F4A7001EE828 /* TrainingData.swift */; };
+		6582DACC231417DE001F223E /* snapshotData.json in Resources */ = {isa = PBXBuildFile; fileRef = 6582DACB231417DE001F223E /* snapshotData.json */; };
 		6590F59B225B931F00CF4854 /* LableBubbleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6590F59A225B931F00CF4854 /* LableBubbleView.swift */; };
 		65A1968C230AD883006CDC4E /* SnapshotSummaryTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65A1968B230AD883006CDC4E /* SnapshotSummaryTableViewCell.swift */; };
 		65A1968E230AD8A6006CDC4E /* AllSnapshotsSummaryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65A1968D230AD8A6006CDC4E /* AllSnapshotsSummaryViewController.swift */; };
@@ -95,7 +95,6 @@
 		650E9F522245443A000EADEE /* ConversationTrainingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationTrainingViewController.swift; sourceTree = "<group>"; };
 		650E9F54224550AA000EADEE /* ChatTrainingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatTrainingViewModel.swift; sourceTree = "<group>"; };
 		650E9F5622455885000EADEE /* ScorePhrase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScorePhrase.swift; sourceTree = "<group>"; };
-		6514C8F52301D6400038BD61 /* snapshotData.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = snapshotData.json; sourceTree = "<group>"; };
 		65172713230B006800028E87 /* UIPaddedLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIPaddedLabel.swift; sourceTree = "<group>"; };
 		65172715230B2AA300028E87 /* AIFeedbackTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIFeedbackTableViewCell.swift; sourceTree = "<group>"; };
 		6528D85122565F540058D0DC /* EmotionFlashcardsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmotionFlashcardsViewController.swift; sourceTree = "<group>"; };
@@ -128,6 +127,7 @@
 		657E72012243DF50001EE828 /* ConcreteFlashcardsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConcreteFlashcardsViewController.swift; sourceTree = "<group>"; };
 		657E72052243F41B001EE828 /* FlashcardsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlashcardsViewModel.swift; sourceTree = "<group>"; };
 		657E72072243F4A7001EE828 /* TrainingData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainingData.swift; sourceTree = "<group>"; };
+		6582DACB231417DE001F223E /* snapshotData.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = snapshotData.json; sourceTree = "<group>"; };
 		6590F59A225B931F00CF4854 /* LableBubbleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LableBubbleView.swift; sourceTree = "<group>"; };
 		65A1968B230AD883006CDC4E /* SnapshotSummaryTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnapshotSummaryTableViewCell.swift; sourceTree = "<group>"; };
 		65A1968D230AD8A6006CDC4E /* AllSnapshotsSummaryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AllSnapshotsSummaryViewController.swift; sourceTree = "<group>"; };
@@ -405,7 +405,7 @@
 				65F5A021222FF8A8001262FB /* AppDelegate.swift */,
 				65F5A02D222FF8A9001262FB /* Info.plist */,
 				6534C2C82269F7520051F6D1 /* GoogleService-Info.plist */,
-				6514C8F52301D6400038BD61 /* snapshotData.json */,
+				6582DACB231417DE001F223E /* snapshotData.json */,
 			);
 			path = Charm;
 			sourceTree = "<group>";
@@ -495,8 +495,8 @@
 				65F5A02C222FF8A9001262FB /* LaunchScreen.storyboard in Resources */,
 				6534C2C92269F7520051F6D1 /* GoogleService-Info.plist in Resources */,
 				65F5A029222FF8A9001262FB /* Assets.xcassets in Resources */,
-				6514C8F62301D6400038BD61 /* snapshotData.json in Resources */,
 				65F5A027222FF8A8001262FB /* Main.storyboard in Resources */,
+				6582DACC231417DE001F223E /* snapshotData.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
