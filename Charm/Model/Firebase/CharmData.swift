@@ -30,6 +30,9 @@ struct UserSnapshotData {
     }
     
     var selectedSnapshot: Snapshot? = nil
+    var isSample: Bool {
+        return snapshots.isEmpty
+    }
     
     static var shared = UserSnapshotData()
 }

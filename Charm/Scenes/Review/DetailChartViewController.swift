@@ -131,7 +131,8 @@ class DetailChartViewController: UIViewController {
     }
     
     private func loadData() {
-                
+        let isSample = UserSnapshotData.shared.isSample
+        
         // clear any old values
         chartData = []
         sliderData = []
@@ -148,7 +149,8 @@ class DetailChartViewController: UIViewController {
                 let point = HIPoint()
                 point.x = index as NSNumber
                 point.y = item.score as NSNumber
-                calloutData.append(item.word)
+                let calloutWord = isSample ? "N/A" : item.word
+                calloutData.append(calloutWord)
                 chartData.append(point)
                 let tag = item.isConcrete ? "Concrete" : "Abstract"
                 transcript.append(TranscriptCellInfo(withText: "[\(index)]: \(item.word) (\(tag))"))
@@ -197,7 +199,8 @@ class DetailChartViewController: UIViewController {
             
                 let text = "[\(String(describing: item.person))]: \(item.word)"
                 
-                calloutData.append(item.word)
+                let calloutWord = isSample ? "N/A" : item.word
+                calloutData.append(calloutWord)
                 chartData.append(point)
                 
                 // no need to do this if the transcript is aleady loaded
@@ -237,7 +240,8 @@ class DetailChartViewController: UIViewController {
                     point.y = 0
                 }
                 
-                calloutData.append(item.word)
+                let calloutWord = isSample ? "N/A" : item.word
+                calloutData.append(calloutWord)
                 chartData.append(point)
             }
             
