@@ -640,6 +640,8 @@ class DetailChartViewController: UIViewController {
         options.title = title
         options.legend = legend
         options.yAxis = [yaxis]
+        options.credits = HICredits()
+        options.credits.enabled = false
         
         // make sure it can render more if needed
         if chartData.count > 1000 {

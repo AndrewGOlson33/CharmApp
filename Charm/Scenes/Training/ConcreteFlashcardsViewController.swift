@@ -57,23 +57,23 @@ class ConcreteFlashcardsViewController: UIViewController, FlashcardsHistoryDeleg
         super.viewDidLoad()
 
         // Setup shadows and corners on flashcard view
-        viewFlashcards.layer.cornerRadius = 20
-        viewFlashcards.layer.shadowColor = UIColor.black.cgColor
-        viewFlashcards.layer.shadowRadius = 2.0
-        viewFlashcards.layer.shadowOffset = CGSize(width: 2, height: 2)
-        viewFlashcards.layer.shadowOpacity = 0.5
+//        viewFlashcards.layer.cornerRadius = 20
+//        viewFlashcards.layer.shadowColor = UIColor.black.cgColor
+//        viewFlashcards.layer.shadowRadius = 2.0
+//        viewFlashcards.layer.shadowOffset = CGSize(width: 2, height: 2)
+//        viewFlashcards.layer.shadowOpacity = 0.5
         
         // Setup borders and shadows for buttons
         for button in buttonCollection {
-            button.layer.borderColor = UIColor.black.cgColor
-            button.layer.borderWidth = 1.0
-            button.layer.cornerRadius = button.frame.height / 6
-            button.layer.shadowColor = UIColor.black.cgColor
-            button.layer.shadowRadius = 2.0
-            button.layer.shadowOffset = CGSize(width: 2, height: 2)
-            button.layer.shadowOpacity = 0.5
+//            button.layer.borderColor = UIColor.black.cgColor
+//            button.layer.borderWidth = 1.0
+            button.layer.cornerRadius = 6//button.frame.height / 6
+//            button.layer.shadowColor = UIColor.black.cgColor
+//            button.layer.shadowRadius = 2.0
+//            button.layer.shadowOffset = CGSize(width: 2, height: 2)
+//            button.layer.shadowOpacity = 0.2
         }
-        
+    
         streakView.setup(for: .fillFromLeft)
         viewModel.delegate = self
         
@@ -282,7 +282,7 @@ extension ConcreteFlashcardsViewController: UIGestureRecognizerDelegate {
         guard lastTouchedButton != nil else { return }
         if let touch = touches.first {
             if concreteFrame.contains(touch.location(in: view)) {
-                animate(view: btnConcrete, withLabel: lblConcrete, withColor: .black, toFrame: concreteFrame)
+                animate(view: btnConcrete, withLabel: lblConcrete, withColor: .white, toFrame: concreteFrame)
                 lastTouchedButton = nil
                 
                 // submit answer and get response
@@ -290,7 +290,7 @@ extension ConcreteFlashcardsViewController: UIGestureRecognizerDelegate {
                 handle(response: response)
                 
             } else if abstractFrame.contains(touch.location(in: view)) {
-                animate(view: btnAbstract, withLabel: lblAbstract, withColor: .black, toFrame: abstractFrame)
+                animate(view: btnAbstract, withLabel: lblAbstract, withColor: .white, toFrame: abstractFrame)
                 lastTouchedButton = nil
                 
                 // submit answer and get response
@@ -320,25 +320,25 @@ extension ConcreteFlashcardsViewController: UIGestureRecognizerDelegate {
                     
                     // animate any deslection needed
                     if lastTouchedButton != nil {
-                        animate(view: btnConcrete, withLabel: lblConcrete, withColor: .black, toFrame: concreteFrame)
+                        animate(view: btnConcrete, withLabel: lblConcrete, withColor: .white, toFrame: concreteFrame)
                     }
                     
                     lastTouchedButton = btnAbstract
                 }
             } else if lastTouchedButton != nil {
                 if lastTouchedButton == btnConcrete {
-                    animate(view: btnConcrete, withLabel: lblConcrete, withColor: .black, toFrame: concreteFrame)
+                    animate(view: btnConcrete, withLabel: lblConcrete, withColor: .white, toFrame: concreteFrame)
                 } else {
-                    animate(view: btnAbstract, withLabel: lblAbstract, withColor: .black, toFrame: abstractFrame)
+                    animate(view: btnAbstract, withLabel: lblAbstract, withColor: .white, toFrame: abstractFrame)
                 }
                 
                 lastTouchedButton = nil
             }
         } else if lastTouchedButton != nil {
             if lastTouchedButton == btnConcrete {
-                animate(view: btnConcrete, withLabel: lblConcrete, withColor: .black, toFrame: concreteFrame)
+                animate(view: btnConcrete, withLabel: lblConcrete, withColor: .white, toFrame: concreteFrame)
             } else {
-                animate(view: btnAbstract, withLabel: lblAbstract, withColor: .black, toFrame: abstractFrame)
+                animate(view: btnAbstract, withLabel: lblAbstract, withColor: .white, toFrame: abstractFrame)
             }
             
             lastTouchedButton = nil

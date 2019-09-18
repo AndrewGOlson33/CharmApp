@@ -360,6 +360,10 @@ class ReviewSummaryViewController: UIViewController {
 //        options.xAxis = [xAxis]
         options.plotOptions = plotoptions
         options.series = NSMutableArray(objects: pie) as? [HISeries]
+        
+        // remove credits
+        options.credits = HICredits()
+        options.credits.enabled = false
         chartView.options = options
     
         // load data into tableview

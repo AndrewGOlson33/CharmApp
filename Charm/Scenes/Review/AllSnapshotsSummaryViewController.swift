@@ -151,6 +151,10 @@ class AllSnapshotsSummaryViewController: UIViewController {
         options.plotOptions = plotOptions
         options.series = [ideaArea, convoArea, personalArea, emotionalArea, smilingArea]
         
+        // remove chart credits
+        options.credits = HICredits()
+        options.credits.enabled = false
+        
         chartView.options = options
         
     }
