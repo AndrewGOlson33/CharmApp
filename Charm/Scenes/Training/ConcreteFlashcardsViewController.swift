@@ -23,7 +23,6 @@ class ConcreteFlashcardsViewController: UIViewController, FlashcardsHistoryDeleg
     @IBOutlet weak var lblHighScore: UILabel!
     @IBOutlet weak var streakView: SliderView!
     @IBOutlet weak var resetButton: UIButton!
-    @IBOutlet weak var viewFlashcards: UIView!
     @IBOutlet weak var lblWord: UILabel!
     @IBOutlet weak var viewLoading: UIView!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
@@ -55,34 +54,17 @@ class ConcreteFlashcardsViewController: UIViewController, FlashcardsHistoryDeleg
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        // Setup shadows and corners on flashcard view
-//        viewFlashcards.layer.cornerRadius = 20
-//        viewFlashcards.layer.shadowColor = UIColor.black.cgColor
-//        viewFlashcards.layer.shadowRadius = 2.0
-//        viewFlashcards.layer.shadowOffset = CGSize(width: 2, height: 2)
-//        viewFlashcards.layer.shadowOpacity = 0.5
         
-        // Setup borders and shadows for buttons
-        for button in buttonCollection {
-//            button.layer.borderColor = UIColor.black.cgColor
-//            button.layer.borderWidth = 1.0
-            button.layer.cornerRadius = 6//button.frame.height / 6
-//            button.layer.shadowColor = UIColor.black.cgColor
-//            button.layer.shadowRadius = 2.0
-//            button.layer.shadowOffset = CGSize(width: 2, height: 2)
-//            button.layer.shadowOpacity = 0.2
-        }
-    
-        streakView.setup(for: .fillFromLeft)
+        // enable viewmodel delegate
         viewModel.delegate = self
         
-        viewModel.getAverageConcreteScore { (concreteScores) in
-            self.lblCurrentStreak.text = concreteScores.currentStreakDetail
-            self.lblHighScore.text = concreteScores.highScoreDetail
-            self.streakView.updatePosition(to: CGFloat(concreteScores.percentOfRecord))
+        // make streakview invisible
+        streakView.alpha = 0.0
+
+        // Setup borders and shadows for buttons
+        for button in buttonCollection {
+            button.layer.cornerRadius = 6//button.frame.height / 6
         }
-        
         
         // Start animating activity view and turn on firebase listener
         if viewModel.trainingModel.model.concreteNounFlashcards.count == 0 || viewModel.trainingModel.model.abstractNounConcreteFlashcards.count == 0 {
@@ -108,6 +90,17 @@ class ConcreteFlashcardsViewController: UIViewController, FlashcardsHistoryDeleg
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+    
+        streakView.setup(for: .fillFromLeft)
+        
+        viewModel.getAverageConcreteScore { (concreteScores) in
+            self.lblCurrentStreak.text = concreteScores.currentStreakDetail
+            self.lblHighScore.text = concreteScores.highScoreDetail
+            self.streakView.updatePosition(to: CGFloat(concreteScores.percentOfRecord))
+            UIView.animate(withDuration: 0.5, animations: {
+                self.streakView.alpha = 1.0
+            })
+        }
         
         // set the original frames to use for animations
         concreteFrame = btnConcrete.frame

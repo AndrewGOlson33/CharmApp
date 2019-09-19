@@ -55,19 +55,14 @@ class FlashcardsViewModel: NSObject {
                 return answerString
             }
         case .Emotions:
-            let random = Int(arc4random_uniform(3))
+            let random = Int(arc4random_uniform(2))
             switch random {
             case 0:
-                let randomIndex = Int(arc4random_uniform(UInt32(trainingModel.model.neutralWords.count)))
-                answer = .Neutral
-                answerString = trainingModel.model.neutralWords[randomIndex].word
-                return answerString
-            case 1:
                 let randomIndex = Int(arc4random_uniform(UInt32(trainingModel.model.positiveWords.count)))
                 answer = .Positive
                 answerString = trainingModel.model.positiveWords[randomIndex].word
                 return answerString
-            case 2:
+            case 1:
                 let randomIndex = Int(arc4random_uniform(UInt32(trainingModel.model.negativeWords.count)))
                 answer = .Negative
                 answerString = trainingModel.model.negativeWords[randomIndex].word
@@ -75,6 +70,13 @@ class FlashcardsViewModel: NSObject {
             default:
                 fatalError("~>Reached case in switch that should be impossible.")
             }
+            
+            // Neutral words have been removed
+//        case 0:
+//            let randomIndex = Int(arc4random_uniform(UInt32(trainingModel.model.neutralWords.count)))
+//            answer = .Neutral
+//            answerString = trainingModel.model.neutralWords[randomIndex].word
+//            return answerString
         }
         
         

@@ -19,7 +19,6 @@ class EmotionFlashcardsViewController: UIViewController, FlashcardsHistoryDelega
     @IBOutlet weak var streakBar: SliderView!
     @IBOutlet weak var lblHighScore: UILabel!
     @IBOutlet weak var resetButton: UIButton!
-    @IBOutlet weak var viewFlashcards: UIView!
     @IBOutlet weak var lblWord: UILabel!
     @IBOutlet weak var viewLoading: UIView!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
@@ -28,12 +27,10 @@ class EmotionFlashcardsViewController: UIViewController, FlashcardsHistoryDelega
     // button collection (they need borders and shadows)
     @IBOutlet var buttonCollection: [UIView]!
     @IBOutlet weak var btnPositive: UIView!
-    @IBOutlet weak var btnNeutral: UIView!
     @IBOutlet weak var btnNegative: UIView!
     
     // button contents
     @IBOutlet weak var lblPositive: UILabel!
-    @IBOutlet weak var lblNeutral: UILabel!
     @IBOutlet weak var lblNegative: UILabel!
     
     
@@ -45,7 +42,6 @@ class EmotionFlashcardsViewController: UIViewController, FlashcardsHistoryDelega
     // View Properties
     
     var positiveFrame: CGRect = CGRect.zero
-    var neutralFrame: CGRect = CGRect.zero
     var negativeFrame: CGRect = CGRect.zero
     
     var lastTouchedButton: UIView? = nil
@@ -55,41 +51,13 @@ class EmotionFlashcardsViewController: UIViewController, FlashcardsHistoryDelega
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        // Setup shadows and corners on flashcard view
-        viewFlashcards.layer.cornerRadius = 20
-        viewFlashcards.layer.shadowColor = UIColor.black.cgColor
-        viewFlashcards.layer.shadowRadius = 2.0
-        viewFlashcards.layer.shadowOffset = CGSize(width: 2, height: 2)
-        viewFlashcards.layer.shadowOpacity = 0.5
-        
         // Setup borders and shadows for buttons
         for button in buttonCollection {
-            button.layer.borderColor = UIColor.black.cgColor
-            button.layer.borderWidth = 1.0
-            button.layer.cornerRadius = button.frame.height / 6
-            button.layer.shadowColor = UIColor.black.cgColor
-            button.layer.shadowRadius = 2.0
-            button.layer.shadowOffset = CGSize(width: 2, height: 2)
-            button.layer.shadowOpacity = 0.5
-            button.layer.masksToBounds = false
+            button.layer.cornerRadius = 6
         }
         
-        btnPositive.setGradientBackground(colorTop: #colorLiteral(red: 0.2968337834, green: 0.4757083654, blue: 0.2566408515, alpha: 1), colorBottom: #colorLiteral(red: 0.2968337834, green: 0.4757083654, blue: 0.2566408515, alpha: 0.8019049658))
-        btnNeutral.setGradientBackground(colorTop: #colorLiteral(red: 0.6313157678, green: 0.6314089298, blue: 0.6312955022, alpha: 1), colorBottom: #colorLiteral(red: 0.6313157678, green: 0.6314089298, blue: 0.6312955022, alpha: 0.8009952911))
-        btnNegative.setGradientBackground(colorTop: #colorLiteral(red: 0.7257528305, green: 0.3471282721, blue: 0.3915748596, alpha: 1), colorBottom: #colorLiteral(red: 0.7257528305, green: 0.3471282721, blue: 0.3915748596, alpha: 0.794921875))
-        
-        streakBar.setup(for: .fillFromLeft)
+        streakBar.alpha = 0.0
         viewModel.delegate = self
-
-        viewModel.getAverageEmotionsScore { (emotionsScores) in
-            // make sure this is done on main thread
-            DispatchQueue.main.async {
-                self.lblStreak.text = emotionsScores.currentStreakDetail
-                self.lblHighScore.text = emotionsScores.highScoreDetail
-                self.streakBar.updatePosition(to: CGFloat(emotionsScores.percentOfRecord))
-            }
-            
-        }
         
         // Start animating activity view and turn on firebase listener
         if viewModel.trainingModel.model.positiveWords.count == 0 || viewModel.trainingModel.model.negativeWords.count == 0 || viewModel.trainingModel.model.abstractNounConcreteFlashcards.count == 0 {
@@ -115,9 +83,27 @@ class EmotionFlashcardsViewController: UIViewController, FlashcardsHistoryDelega
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
+        // setup streak bar
+        
+        streakBar.setup(for: .fillFromLeft)
+        
+        viewModel.getAverageEmotionsScore { (emotionsScores) in
+            // make sure this is done on main thread
+            DispatchQueue.main.async {
+                self.lblStreak.text = emotionsScores.currentStreakDetail
+                self.lblHighScore.text = emotionsScores.highScoreDetail
+                self.streakBar.updatePosition(to: CGFloat(emotionsScores.percentOfRecord))
+                
+                UIView.animate(withDuration: 0.5, animations: {
+                    self.streakBar.alpha = 1.0
+                })
+            }
+            
+        }
+        
+        
         // set the original frames to use for animations
         positiveFrame = btnPositive.frame
-        neutralFrame = btnNeutral.frame
         negativeFrame = btnNegative.frame
         
         // setup listener for when score updates
@@ -271,9 +257,6 @@ extension EmotionFlashcardsViewController: UIGestureRecognizerDelegate {
             if positiveFrame.contains(touch.location(in: view)) {
                 animate(view: btnPositive, withLabel: lblPositive, withColor: .gray, toFrame: CGRect(x: positiveFrame.minX + 4, y: positiveFrame.minY + 4, width: positiveFrame.width, height: positiveFrame.height))
                 lastTouchedButton = btnPositive
-            } else if neutralFrame.contains(touch.location(in: view)) {
-                animate(view: btnNeutral, withLabel: lblNeutral, withColor: .gray, toFrame: CGRect(x: neutralFrame.minX + 4, y: neutralFrame.minY + 4, width: neutralFrame.width, height: neutralFrame.height))
-                lastTouchedButton = btnNeutral
             } else if negativeFrame.contains(touch.location(in: view)) {
                 animate(view: btnNegative, withLabel: lblNegative, withColor: .gray, toFrame: CGRect(x: negativeFrame.minX + 4, y: negativeFrame.minY + 4, width: negativeFrame.width, height: negativeFrame.height))
                 lastTouchedButton = btnNegative
@@ -286,22 +269,15 @@ extension EmotionFlashcardsViewController: UIGestureRecognizerDelegate {
         guard lastTouchedButton != nil else { return }
         if let touch = touches.first {
             if positiveFrame.contains(touch.location(in: view)) {
-                animate(view: btnPositive, withLabel: lblPositive, withColor: .black, toFrame: positiveFrame)
+                animate(view: btnPositive, withLabel: lblPositive, withColor: .white, toFrame: positiveFrame)
                 lastTouchedButton = nil
                 
                 // submit answer and get response
                 let response = viewModel.getResponse(answeredWith: .Positive, forFlashcardType: .Emotions)
                 handle(response: response)
                 
-            } else if neutralFrame.contains(touch.location(in: view)) {
-                animate(view: btnNeutral, withLabel: lblNeutral, withColor: .black, toFrame: neutralFrame)
-                lastTouchedButton = nil
-                
-                // submit answer and get response
-                let response = viewModel.getResponse(answeredWith: .Neutral, forFlashcardType: .Emotions)
-                handle(response: response)
             } else if negativeFrame.contains(touch.location(in: view)) {
-                animate(view: btnNegative, withLabel: lblNegative, withColor: .black, toFrame: negativeFrame)
+                animate(view: btnNegative, withLabel: lblNegative, withColor: .white, toFrame: negativeFrame)
                 lastTouchedButton = nil
                 
                 // submit answer and get response
@@ -319,32 +295,11 @@ extension EmotionFlashcardsViewController: UIGestureRecognizerDelegate {
                     
                     // if the last button was not nil, that means the user has slid off of another button
                     if lastTouchedButton != nil {
-                        if lastTouchedButton == btnNeutral {
-                            animate(view: btnNeutral, withLabel: lblNeutral, withColor: .black, toFrame: neutralFrame)
-                        } else {
-                            animate(view: btnNegative, withLabel: lblNegative, withColor: .black, toFrame: negativeFrame)
-                        }
-                        
+                        animate(view: btnNegative, withLabel: lblNegative, withColor: .white, toFrame: negativeFrame)
                     }
                     
                     // no matter what, the last touched button now becomes...
                     lastTouchedButton = btnPositive
-                }
-            } else if neutralFrame.contains(touch.location(in: view)) {
-                if lastTouchedButton != btnNeutral {
-                    animate(view: btnNeutral, withLabel: lblNeutral, withColor: .gray, toFrame: CGRect(x: neutralFrame.minX + 4, y: neutralFrame.minY + 4, width: neutralFrame.width, height: neutralFrame.height))
-                    
-                    // animate any deslection needed
-                    if lastTouchedButton != nil {
-                        if lastTouchedButton == btnPositive {
-                            animate(view: btnPositive, withLabel: lblPositive, withColor: .black, toFrame: positiveFrame)
-                        } else {
-                            animate(view: btnNegative, withLabel: lblNegative, withColor: .black, toFrame: negativeFrame)
-                        }
-                        
-                    }
-                    
-                    lastTouchedButton = btnNeutral
                 }
             } else if negativeFrame.contains(touch.location(in: view)) {
                 if lastTouchedButton != btnNegative {
@@ -353,9 +308,7 @@ extension EmotionFlashcardsViewController: UIGestureRecognizerDelegate {
                     // animate any deslection needed
                     if lastTouchedButton != nil {
                         if lastTouchedButton == btnPositive {
-                            animate(view: btnPositive, withLabel: lblPositive, withColor: .black, toFrame: positiveFrame)
-                        } else {
-                            animate(view: btnNeutral, withLabel: lblNeutral, withColor: .black, toFrame: neutralFrame)
+                            animate(view: btnPositive, withLabel: lblPositive, withColor: .white, toFrame: positiveFrame)
                         }
                     }
                     
@@ -363,22 +316,18 @@ extension EmotionFlashcardsViewController: UIGestureRecognizerDelegate {
                 }
             } else if lastTouchedButton != nil {
                 if lastTouchedButton == btnPositive {
-                    animate(view: btnPositive, withLabel: lblPositive, withColor: .black, toFrame: positiveFrame)
-                } else if lastTouchedButton == btnNeutral {
-                    animate(view: btnNeutral, withLabel: lblNeutral, withColor: .black, toFrame: neutralFrame)
+                    animate(view: btnPositive, withLabel: lblPositive, withColor: .white, toFrame: positiveFrame)
                 } else {
-                    animate(view: btnNegative, withLabel: lblNegative, withColor: .black, toFrame: negativeFrame)
+                    animate(view: btnNegative, withLabel: lblNegative, withColor: .white, toFrame: negativeFrame)
                 }
                 
                 lastTouchedButton = nil
             }
         } else if lastTouchedButton != nil {
             if lastTouchedButton == btnPositive {
-                animate(view: btnPositive, withLabel: lblPositive, withColor: .black, toFrame: positiveFrame)
-            } else if lastTouchedButton == btnNeutral {
-                animate(view: btnNeutral, withLabel: lblNeutral, withColor: .black, toFrame: neutralFrame)
+                animate(view: btnPositive, withLabel: lblPositive, withColor: .white, toFrame: positiveFrame)
             } else {
-                animate(view: btnNegative, withLabel: lblNegative, withColor: .black, toFrame: negativeFrame)
+                animate(view: btnNegative, withLabel: lblNegative, withColor: .white, toFrame: negativeFrame)
             }
             
             lastTouchedButton = nil

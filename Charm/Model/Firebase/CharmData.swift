@@ -23,8 +23,6 @@ struct UserSnapshotData {
                 lhs.date ?? Date.distantPast > rhs.date ?? Date.distantPast
             }
             
-            print("~>Set new data.")
-            
             NotificationCenter.default.post(name: FirebaseNotification.SnapshotLoaded, object: nil)
         }
     }

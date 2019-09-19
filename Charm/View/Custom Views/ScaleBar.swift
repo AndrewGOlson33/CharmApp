@@ -326,7 +326,6 @@ class SliderView: UIView {
         guard !isSetup else { return }
         let size = frame.height * 1.2
         let startingPosition = (position * frame.width) - (size / 2)
-        
         positionView = UIView(frame: CGRect(x: startingPosition, y: 0 - frame.height * 0.1, width: size, height: size))
         positionView.backgroundColor = .clear
         positionView.layer.shadowColor = UIColor.black.cgColor
@@ -393,6 +392,15 @@ class SliderView: UIView {
     // MARK: - Functions to update and animate view
     
     func updatePosition(to: CGFloat) {
+        // make sure all views are the correct size
+//        if backgroundView != nil && backgroundView.frame.width != frame.width {
+//            backgroundView.frame = CGRect(origin: .zero, size: frame.size)
+//        }
+//        
+//        if navyView != nil && navyView.frame != frame {
+//            navyView.frame = frame
+//        }
+    
         position = to
         let moveToX = (position * frame.width) - (positionView.frame.width / 2)
         
@@ -433,7 +441,6 @@ class SliderView: UIView {
         let width = endX - startingX
         
         let navyFrame = CGRect(x: startingX, y: 0, width: width, height: frame.height)
-        
         if animated {
             UIView.animate(withDuration: animationDuration, delay: 0.0, usingSpringWithDamping: 0.6, initialSpringVelocity: 0.0, options: [.curveEaseOut], animations: {
                 if self.navyView == nil {
