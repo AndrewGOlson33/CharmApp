@@ -39,6 +39,7 @@ class ScorePhraseModel: NSObject {
     public private(set) var negative = ChatScore(withScore: 0, andPosition: 0)
     public private(set) var unclassified: Int = 0
     public private(set) var repeatedWords: Int = 0
+    public private(set) var comments: String = ""
     private var words: [String] = []
     private var unclassifiedArray: [String] = []
     
@@ -94,7 +95,7 @@ class ScorePhraseModel: NSObject {
             words.append(word)
         }
         
-        let score = getEstimatedPhraseStrength(length: wordCount, concrete: concreteCount, first: firstCount, second: secondCount)
+        let score = getEstimatedPhraseStrength(length: wordCount, concrete: concreteCount, first: firstCount, second: secondCount, pos: positiveScore, neg: negativeScore)
         
         
         strenth = getChatScore(for: .Strength, withScore: score)
@@ -105,6 +106,25 @@ class ScorePhraseModel: NSObject {
         second = getChatScore(for: .Second, withScore: secondCount)
         positive = getChatScore(for: .Positive, withScore: positiveScore)
         negative = getChatScore(for: .Negative, withScore: negativeScore)
+        
+        print("~>Score: \(score)")
+        
+        // determine comment string
+        if score == 10 {
+            comments = "Great job!"
+        } else if wordCount < 7 {
+            comments = "Comments:\nCharm noticed your phrase length was under 7 words. This suggests you are not adding enough to the conversation. Try saying more things."
+        }  else if concreteCount == 0 {
+            comments = "Comments:\nCharm noticed you didn't use any concrete words. This suggests others might not understand what you are saying. Try saying more concrete words."
+        } else if secondCount == 0 {
+            comments = "Comments:\nCharm noticed you didn't use any second person \"you\" pronouns. This suggests you are focusing the converation on \"me\" instead of \"you and me\". Try adding a second person \"you\" pronoun."
+        } else if firstCount == 0 {
+            comments = "Comments:\nCharm noticed you didn't use any first person \"I\" pronouns. This suggests you are focusing the converation on \"you\" instead of \"you and me\". Try adding a first person \"I\" pronoun."
+        } else if abs(negativeScore) + positiveScore < 4 {
+            comments = "Comments:\nCharm noticed you didn't use any emotional words. This suggests you are being \"nice\". Try mentioning some good things or some bad things."
+        } else if negativeScore + positiveScore < 0 {
+            comments = "Comments: Charm noticed you used negative emotional words. Try mentioning some good things with the bad things."
+        }
         
         print("~>I counted: \(wordCount) words, and had a concrete count of: \(concreteCount), abstract count of: \(abstractCount), first count of: \(firstCount), second count of: \(secondCount), positive score: \(positiveScore), negative score: \(negativeScore) with an estimated phrase strength of: \(score), and \(unclassified) unclassified words.")
         
@@ -181,15 +201,17 @@ class ScorePhraseModel: NSObject {
         }
     }
     
-    private func getEstimatedPhraseStrength(length: Int, concrete: Int, first: Int, second: Int) -> Int {
+    private func getEstimatedPhraseStrength(length: Int, concrete: Int, first: Int, second: Int, pos: Int, neg: Int) -> Int {
         
         var score = 5
         score += length >= 7 ? 1 : 0
         score += concrete >= 1 ? 1 : 0
         score += first >= 1 ? 1 : 0
         score += second >= 1 ? 1 : 0
+        score += pos + abs(neg) >= 4 ? 1 : 0
+        score += pos + neg <= -3 ? -4 : 0
         
-        return score
+        return score >= 5 ? score : 5
         
     }
     

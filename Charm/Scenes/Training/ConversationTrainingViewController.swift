@@ -15,10 +15,19 @@ class ConversationTrainingViewController: UIViewController {
     
     // MARK: - IBOutlets
     
-    @IBOutlet weak var lblYouSaid: UILabel!
-    @IBOutlet weak var lblTheySaid: UILabel!
+    // Views
+    @IBOutlet weak var viewFeedback: UIView!
+    @IBOutlet weak var viewTopChat: UIView!
+    @IBOutlet weak var viewBottomChat: UIView!
+    @IBOutlet weak var viewSlider: SliderView!
+    
+    // Text
+    
+    @IBOutlet weak var lblTopChat: UILabel!
+    @IBOutlet weak var lblBottomChat: UILabel!
     @IBOutlet weak var txtReply: UITextView!
-    @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var lblScore: UILabel!
+    @IBOutlet weak var lblFeedback: UILabel!
     
     // buttons
     
@@ -26,9 +35,9 @@ class ConversationTrainingViewController: UIViewController {
     @IBOutlet weak var btnRecordStop: UIImageView!
     @IBOutlet weak var btnScoreReset: UIImageView!
     
-    // Layout Constraints
-    @IBOutlet weak var setHighIfOnlyTheySaid: NSLayoutConstraint!
-    @IBOutlet weak var setLowIfOnlyTheySaid: NSLayoutConstraint!
+    // Layout constraints
+    @IBOutlet weak var youSaidOnTop: NSLayoutConstraint!
+    @IBOutlet weak var theySaidOnTop: NSLayoutConstraint!
     
     // MARK: - Properties
     
@@ -66,12 +75,12 @@ class ConversationTrainingViewController: UIViewController {
         // load speech
         speaker = AVSpeechSynthesizer()
 
-        // Load initial prompts
-        updatePrompts()
-        
         txtReply.delegate = self
         txtReply.textColor = .lightGray
         txtReply.text = "tap microphone to respond to prompt"
+        
+        // Prepare slider for setup
+        viewSlider.alpha = 0.0
         
         // Setup Button Taps
 
@@ -95,13 +104,32 @@ class ConversationTrainingViewController: UIViewController {
         
         // set speech model delegate so we can get responses from voice recognition
         speechModel.delegate = self
+        
+        // setup ui elements
+        viewFeedback.layer.borderColor = #colorLiteral(red: 0.830419898, green: 0.835508287, blue: 0.835278213, alpha: 1)
+        viewFeedback.layer.borderWidth = 1.0
+        viewFeedback.layer.cornerRadius = 16
+        txtReply.layer.cornerRadius = 16
+        txtReply.layer.masksToBounds = true
+        txtReply.backgroundColor = #colorLiteral(red: 0.9724403024, green: 0.9726101756, blue: 0.9724423289, alpha: 1)
+        
+        // setup prompt bubbles
+        viewTopChat.layer.maskedCorners = [.layerMaxXMaxYCorner, .layerMaxXMinYCorner, .layerMinXMinYCorner]
+        viewBottomChat.layer.maskedCorners = [.layerMaxXMinYCorner, .layerMinXMaxYCorner, .layerMinXMinYCorner]
+        
+        viewTopChat.layer.cornerRadius = 16
+        viewBottomChat.layer.cornerRadius = 16
+        
+        // Load initial prompts
+        updatePrompts()
+
     }
     
     // load navigation bar items
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        tabBarController?.navigationItem.title = "Reply to Phrase"
+        tabBarController?.navigationItem.title = "Practice with Topic"
         let info = UIBarButtonItem(title: "Learn More", style: .plain, target: self, action: #selector(infoButtonTapped))
         tabBarController?.navigationItem.rightBarButtonItem = info
         
@@ -123,37 +151,34 @@ class ConversationTrainingViewController: UIViewController {
         audioSession.removeObserver(self, forKeyPath: Observation.VolumeKey)
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        updateFeedbackResponses()
+        UIView.animate(withDuration: 0.5) {
+            self.viewSlider.alpha = 1.0
+        }
+    }
+    
     // MARK: - UI Setup Functions
     private func updatePrompts() {
-        
         guard let prompt = trainingViewModel.getRandomConversationPrompt() else { return }
         UIView.animate(withDuration: 0.25, animations: {
-            self.lblYouSaid.alpha = 0
-            self.lblTheySaid.alpha = 0
+            self.viewTopChat.alpha = 0.0
+            self.viewBottomChat.alpha = 0.0
             self.txtReply.textColor = .lightGray
             self.txtReply.text = "tap microphone to respond to prompt"
-        }) { (_) in
-            let theySaid = prompt.theySaid
-            self.lblTheySaid.text = "They said: \(theySaid)"
-            
-            if let youSaid = prompt.youSaid {
-                self.lblYouSaid.text = "You said: \(youSaid)"
-                self.lblYouSaid.isHidden = false
-                UIView.animate(withDuration: 0.25, animations: {
-                    self.lblYouSaid.alpha = 1.0
-                    self.lblTheySaid.alpha = 1.0
-                    self.setLowIfOnlyTheySaid.priority = .defaultHigh
-                    self.setHighIfOnlyTheySaid.priority = .defaultLow
-                    self.view.layoutIfNeeded()
-                })
-            } else {
-                self.lblYouSaid.isHidden = true
-                self.lblYouSaid.text = ""
-                self.setLowIfOnlyTheySaid.priority = .defaultLow
-                self.setHighIfOnlyTheySaid.priority = .defaultHigh
-                self.lblTheySaid.alpha = 1.0
-                self.view.layoutIfNeeded()
+            self.txtReply.isUserInteractionEnabled = true
+            self.lblFeedback.text = "Comments:\nYour feedback will appear here."
+            if self.viewSlider.isSetup {
+                self.viewSlider.updatePosition(to: 0.0)
             }
+        }) { (_) in
+            let promptString = prompt.prompt
+            self.lblTopChat.text = "\(promptString)"
+            UIView.animate(withDuration: 0.25, animations: {
+                self.viewTopChat.alpha = 1.0
+            })
             
             self.speakTextTapped(self)
         }
@@ -164,11 +189,9 @@ class ConversationTrainingViewController: UIViewController {
     
     @IBAction func speakTextTapped(_ sender: Any) {
         DispatchQueue.main.async {
-            let yousaid = self.lblYouSaid.isHidden ? "" : self.lblYouSaid.text ?? ""
-            let pause = yousaid.isEmpty ? "" : ","
-            let phrase = "\(yousaid) \(pause) \(self.lblTheySaid.text ?? "")"
+            guard let prompt = self.lblTopChat.text else { return }
             if self.speaker.isSpeaking { self.speaker.stopSpeaking(at: .immediate) }
-            let utterance = AVSpeechUtterance(string: phrase)
+            let utterance = AVSpeechUtterance(string: prompt)
             utterance.voice = AVSpeechSynthesisVoice(language: "en-US")
             self.speaker.speak(utterance)
         }
@@ -215,9 +238,18 @@ class ConversationTrainingViewController: UIViewController {
             }
             
             trainingViewModel.score(response: text)
-            tableView.reloadData()
+            txtReply.isUserInteractionEnabled = false
+            let replyText = txtReply.text
+            lblBottomChat.text = replyText
+            txtReply.text = ""
+            
+            UIView.animate(withDuration: 0.25) {
+                self.viewBottomChat.alpha = 1.0
+            }
+            
             shouldReset = true
             animate(button: btnScoreReset, toImage: reset)
+            updateFeedbackResponses()
         } else {
             updatePrompts()
             shouldReset = false
@@ -265,6 +297,30 @@ class ConversationTrainingViewController: UIViewController {
                 button.image = image
                 UIView.animate(withDuration: 0.25, animations: {
                     button.alpha = 1.0
+                })
+            }
+        }
+    }
+    
+    private func updateFeedbackResponses() {
+        let strength = trainingViewModel.strength
+        
+        DispatchQueue.main.async {
+            if !self.viewSlider.isSetup {
+                self.viewSlider.setup(for: .fillFromLeft, at: CGFloat(strength.position))
+            } else {
+                self.viewSlider.updatePosition(to:  CGFloat(strength.position))
+                UIView.animate(withDuration: 0.2, animations: {
+                    self.lblScore.alpha = 0.0
+                    self.lblFeedback.alpha = 0.0
+                }, completion: { (_) in
+                    self.lblScore.text = "\(strength.score)/10"
+                    self.lblFeedback.text = self.trainingViewModel.feedback
+                    UIView.animate(withDuration: 0.2, animations: {
+                        self.lblScore.alpha = 1.0
+                        self.lblFeedback.alpha = 1.0
+                        self.view.layoutIfNeeded()
+                    })
                 })
             }
         }

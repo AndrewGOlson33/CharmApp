@@ -15,7 +15,9 @@ class ChatTrainingViewModel: NSObject {
     
     // scores for populating scale bar data
     var strength: ChatScore {
-        return scoreModel.strenth
+        let score: Double = scoreModel.strenth.score >= 5 ? Double(scoreModel.strenth.score) : 5
+        let position = (score - 5.0) / 5.0
+        return ChatScore(withScore: scoreModel.strenth.score, andPosition: position)
     }
     
     var length: ChatScore {
@@ -46,11 +48,15 @@ class ChatTrainingViewModel: NSObject {
         return scoreModel.negative
     }
     
+    var feedback: String {
+        return scoreModel.comments
+    }
+    
     // training model
     let model = TrainingModelCapsule.shared
     
-    var prompts: [ConversationPrompts] {
-        return model.model.converstaionPrompt
+    var prompts: [ConversationPrompt] {
+        return model.model.conversationPrompts
     }
     
     var wordPrompts: [ConcreteNounFlashcard] {
@@ -59,7 +65,7 @@ class ChatTrainingViewModel: NSObject {
     
     // MARK: - Functions
     
-    func getRandomConversationPrompt() -> ConversationPrompts? {
+    func getRandomConversationPrompt() -> ConversationPrompt? {
         guard prompts.count > 0 else { return nil }
         return prompts[Int(arc4random_uniform(UInt32(prompts.count)))]
     }

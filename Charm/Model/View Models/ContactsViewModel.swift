@@ -1097,7 +1097,7 @@ extension ContactsViewModel: FriendManagementDelegate {
                 }
             }
             
-            composeVC.body = "Hello \(friend.firstName), your friend\(userName) has invited you Charm. Charm is an app that helps people have more engaging conversations and create a deep connection. Download now.\n\n\(shortLink)"
+            composeVC.body = "Hey \(friend.firstName), your friend \(userName) has invited you Charm. Charm is an app \(userName) is using to have better conversations.  Download using the link below.\n\n\(shortLink)"
         
             
             // Present the view controller modally.

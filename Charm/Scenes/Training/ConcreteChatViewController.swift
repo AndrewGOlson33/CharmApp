@@ -54,6 +54,8 @@ class ConcreteChatViewController: UIViewController {
     let chart = UIImage(named: Image.Update)!
     let reset = UIImage(named: Image.Reset)!
     
+    var viewHasAppeared: Bool = false
+    
     // MARK: - View Lifecycle Functions
     
     override func viewDidLoad() {
@@ -117,6 +119,13 @@ class ConcreteChatViewController: UIViewController {
         
         if speaker.isSpeaking { speaker.stopSpeaking(at: .immediate) }
         audioSession.removeObserver(self, forKeyPath: Observation.VolumeKey)
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        viewHasAppeared = true
+        tableView.reloadData()
     }
     
     // MARK: - UI Setup Functions
@@ -254,7 +263,7 @@ extension ConcreteChatViewController: UITableViewDelegate, UITableViewDataSource
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: CellID.ScaleBar, for: indexPath) as! ScaleBarTableViewCell
-        
+        guard viewHasAppeared else { return cell }
         switch indexPath.row {
         case 0:
             let strength = trainingViewModel.strength

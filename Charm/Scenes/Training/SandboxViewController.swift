@@ -43,6 +43,8 @@ class SandboxViewController: UIViewController {
     let chart = UIImage(named: Image.Update)!
     let reset = UIImage(named: Image.Reset)!
     
+    var viewHasAppeared: Bool = false
+    
     // MARK: - View Lifecycle
 
     override func viewDidLoad() {
@@ -85,6 +87,7 @@ class SandboxViewController: UIViewController {
         super.viewDidAppear(animated)
         // Make sure constraints are finished loading before setting up bubbles
         chartDidLoad = true
+        viewHasAppeared = true
         scoresTableView.reloadData()
     }
     
@@ -292,7 +295,7 @@ extension SandboxViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: CellID.ScaleBar, for: indexPath) as! ScaleBarTableViewCell
-        
+        guard viewHasAppeared else { return cell }
         cell.lblDescription.text = indexPath.row == 0 ? "Average" : "Last Phrase"
         
         switch indexPath.row {

@@ -19,7 +19,7 @@ class TrainingModelCapsule {
     
     var model: TrainingData = TrainingData()
     var isModelLoaded: Bool {
-        return model.abstractNounConcreteFlashcards.count > 0 && model.concreteNounFlashcards.count > 0 && model.converstaionPrompt.count > 0 && model.negativeWords.count > 0 && model.positiveWords.count > 0
+        return model.abstractNounConcreteFlashcards.count > 0 && model.concreteNounFlashcards.count > 0 && model.conversationPrompts.count > 0 && model.negativeWords.count > 0 && model.positiveWords.count > 0
     }
     
     init() {
@@ -125,7 +125,7 @@ struct TrainingData: Codable {
     }
     var positiveWords: [ScoredWord] = []
     var negativeWords: [ScoredWord] = []
-    var converstaionPrompt: [ConversationPrompts] = []
+    var conversationPrompts: [ConversationPrompt] = []
     var unclassifiedNouns: [String]? = []
 }
 
@@ -188,13 +188,11 @@ struct NegativeWord: Codable {
     }
 }
 
-struct ConversationPrompts: Codable {
-    var youSaid: String?
-    var theySaid: String
+struct ConversationPrompt: Codable {
+    var prompt: String
     
     enum CodingKeys: String, CodingKey {
-        case youSaid = "You Said"
-        case theySaid = "They Said"
+        case prompt = "prompt"
     }
 }
 
