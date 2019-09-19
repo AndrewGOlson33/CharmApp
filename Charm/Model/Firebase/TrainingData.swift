@@ -29,7 +29,7 @@ class TrainingModelCapsule {
     
     func observerFirebase() {
         print("~>Observing firebase training")
-        Database.database().reference().child(FirebaseStructure.Training.TrainingDatabase).observeSingleEvent(of: .value) { (snapshot) in
+        Database.database().reference().child(FirebaseStructure.Training.TrainingDatabase).observe(.value) { (snapshot) in
             guard let value = snapshot.value else { return }
             do {
                 self.model = try FirebaseDecoder().decode(TrainingData.self, from: value)
