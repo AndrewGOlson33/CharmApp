@@ -16,6 +16,7 @@ class MainMenuViewController: UIViewController {
     // MARK: - IBOutlets
     
     @IBOutlet var buttonViewGroup: [UIView]!
+    @IBOutlet var cornersButtonGroup: [UIView]!
     
     // MARK: - Properties
     
@@ -33,6 +34,12 @@ class MainMenuViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        if #available(iOS 13.0, *) {
+            let app = UINavigationBarAppearance()
+            app.backgroundColor = #colorLiteral(red: 0, green: 0.1725181639, blue: 0.3249038756, alpha: 1)
+            self.navigationController?.navigationBar.scrollEdgeAppearance = app
+        }
         
         // Setup buttons
         setupButtons()
@@ -170,28 +177,29 @@ class MainMenuViewController: UIViewController {
     // UI Related
     
     fileprivate func setupButtons() {
+        
+        for button in cornersButtonGroup {
+            button.layer.cornerRadius = 4
+        }
+        
         for (index, button) in buttonViewGroup.enumerated() {
-            
-            button.layer.cornerRadius = 18
-            button.layer.borderColor = UIColor.white.cgColor
-            button.layer.borderWidth = 1.0
             button.layer.shadowColor = UIColor.black.cgColor
-            button.layer.shadowOpacity = 0.6
-            button.layer.shadowRadius = 8.0
+            button.layer.shadowRadius = 10
+            button.layer.shadowOpacity = 0.2
             button.layer.shadowOffset = CGSize(width: 2, height: 2)
-            button.alpha = 0.9
-            
+                        
             var tap: UITapGestureRecognizer!
             
             switch index {
             case 0:
                 tap = UITapGestureRecognizer(target: self, action: #selector(chatButtonTapped(_:)))
             case 1:
-                tap = UITapGestureRecognizer(target: self, action: #selector(metricsButtonTapped(_:)))
+                tap = UITapGestureRecognizer(target: self, action: #selector(trainButtonTapped(_:)))    
             case 2:
-                tap = UITapGestureRecognizer(target: self, action: #selector(learnButtonTapped(_:)))
+                tap = UITapGestureRecognizer(target: self, action: #selector(metricsButtonTapped(_:)))
             default:
-                tap = UITapGestureRecognizer(target: self, action: #selector(trainButtonTapped(_:)))
+                tap = UITapGestureRecognizer(target: self, action: #selector(learnButtonTapped(_:)))
+                
             }
             
             button.addGestureRecognizer(tap)

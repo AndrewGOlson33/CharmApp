@@ -111,7 +111,7 @@ class ScorePhraseModel: NSObject {
         
         // determine comment string
         if score == 10 {
-            comments = "Great job!"
+            comments = "Comments:\nGreat job! You talked about me and you. Clearly communicated your ideas and shared your emotions."
         } else if wordCount < 7 {
             comments = "Comments:\nCharm noticed your phrase length was under 7 words. This suggests you are not adding enough to the conversation. Try saying more things."
         }  else if concreteCount == 0 {
@@ -209,7 +209,7 @@ class ScorePhraseModel: NSObject {
         score += first >= 1 ? 1 : 0
         score += second >= 1 ? 1 : 0
         score += pos + abs(neg) >= 4 ? 1 : 0
-        score += pos + neg <= -3 ? -4 : 0
+        score += pos + neg <= -3 ? -6 : 0
         
         return score >= 5 ? score : 5
         

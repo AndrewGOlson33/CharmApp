@@ -17,8 +17,10 @@ class SandboxViewController: UIViewController {
     
     @IBOutlet weak var scoresTableView: UITableView!
     @IBOutlet weak var txtReply: UITextView!
-    @IBOutlet weak var btnRecordStop: UIImageView!
-    @IBOutlet weak var btnScoreReset: UIImageView!
+    @IBOutlet weak var btnRecordStop: UIButton!
+    @IBOutlet weak var btnScoreReset: UIButton!
+//    @IBOutlet weak var btnRecordStop: UIImageView!
+//    @IBOutlet weak var btnScoreReset: UIImageView!
     
     // MARK: - Properties
     
@@ -57,17 +59,17 @@ class SandboxViewController: UIViewController {
         
         // Setup Button Taps
         
-        let recordStopTap = UITapGestureRecognizer(target: self, action: #selector(recordButtonTapped(_:)))
-        recordStopTap.numberOfTapsRequired = 1
-        recordStopTap.numberOfTouchesRequired = 1
-        btnRecordStop.addGestureRecognizer(recordStopTap)
-        btnRecordStop.isUserInteractionEnabled = true
-        
-        let scoreResetTap = UITapGestureRecognizer(target: self, action: #selector(scoreLoadButtonTapped(_:)))
-        scoreResetTap.numberOfTapsRequired = 1
-        scoreResetTap.numberOfTouchesRequired = 1
-        btnScoreReset.addGestureRecognizer(scoreResetTap)
-        btnScoreReset.isUserInteractionEnabled = true
+//        let recordStopTap = UITapGestureRecognizer(target: self, action: #selector(recordButtonTapped(_:)))
+//        recordStopTap.numberOfTapsRequired = 1
+//        recordStopTap.numberOfTouchesRequired = 1
+//        btnRecordStop.addGestureRecognizer(recordStopTap)
+//        btnRecordStop.isUserInteractionEnabled = true
+//
+//        let scoreResetTap = UITapGestureRecognizer(target: self, action: #selector(scoreLoadButtonTapped(_:)))
+//        scoreResetTap.numberOfTapsRequired = 1
+//        scoreResetTap.numberOfTouchesRequired = 1
+//        btnScoreReset.addGestureRecognizer(scoreResetTap)
+//        btnScoreReset.isUserInteractionEnabled = true
         
         // set speech model delegate so we can get responses from voice recognition
         speechModel.delegate = self
@@ -234,12 +236,12 @@ class SandboxViewController: UIViewController {
     
     // Animation Helpers
     
-    private func animate(button: UIImageView, toImage image: UIImage) {
+    private func animate(button: UIButton, toImage image: UIImage) {
         DispatchQueue.main.async {
             UIView.animate(withDuration: 0.25, animations: {
                 button.alpha = 0
             }) { (_) in
-                button.image = image
+                button.setImage(image, for: .normal)
                 UIView.animate(withDuration: 0.25, animations: {
                     button.alpha = 1.0
                 })
@@ -344,7 +346,11 @@ extension SandboxViewController: SpeechRecognitionDelegate {
 extension SandboxViewController: UITextViewDelegate {
     
     func textViewDidBeginEditing(_ textView: UITextView) {
-        textView.textColor = .black
+        if #available(iOS 13.0, *) {
+            textView.textColor = .label
+        } else {
+            textView.textColor = .black
+        }
         textView.text = textView.text == "tap microphone and start speaking" ? "" : textView.text
         view.frame.origin.y -= view.frame.height / 3
     }

@@ -315,11 +315,20 @@ class SliderView: UIView {
         // frame background should be clear
         backgroundColor = .clear
         
-        backgroundView = UIView(frame: CGRect(x: 0, y: 0, width: bounds.width, height: bounds.height))
+        backgroundView = UIView(frame: CGRect(x: 0, y: 0, width: frame.width, height: frame.height))
         backgroundView.clipsToBounds = true
         backgroundView.layer.cornerRadius = frame.height / 2
         backgroundView.backgroundColor = #colorLiteral(red: 0.9132656455, green: 0.9216780066, blue: 0.9215492606, alpha: 1)
         addSubview(backgroundView)
+        
+        // add constraints
+        self.addConstraints([
+            NSLayoutConstraint(item: backgroundView!, attribute: .centerX, relatedBy: .equal, toItem: self, attribute: .centerX, multiplier: 1.0, constant: 0),
+            NSLayoutConstraint(item: backgroundView!, attribute: .centerY, relatedBy: .equal, toItem: self, attribute: .centerY, multiplier: 1.0, constant: 0),
+            NSLayoutConstraint(item: backgroundView!, attribute: .width, relatedBy: .equal, toItem: self, attribute: .width, multiplier: 1.0, constant: 0),
+            NSLayoutConstraint(item: backgroundView!, attribute: .height, relatedBy: .equal, toItem: self, attribute: .height, multiplier: 1.0, constant: 0)
+        ])
+        
     }
     
     private func setupPositionIndicator() {

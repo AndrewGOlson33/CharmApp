@@ -63,7 +63,7 @@ class ConcreteFlashcardsViewController: UIViewController, FlashcardsHistoryDeleg
 
         // Setup borders and shadows for buttons
         for button in buttonCollection {
-            button.layer.cornerRadius = 6//button.frame.height / 6
+            button.layer.cornerRadius = 4
         }
         
         // Start animating activity view and turn on firebase listener

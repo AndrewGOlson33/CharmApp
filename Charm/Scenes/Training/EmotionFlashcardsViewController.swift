@@ -53,7 +53,7 @@ class EmotionFlashcardsViewController: UIViewController, FlashcardsHistoryDelega
         
         // Setup borders and shadows for buttons
         for button in buttonCollection {
-            button.layer.cornerRadius = 6
+            button.layer.cornerRadius = 4
         }
         
         streakBar.alpha = 0.0

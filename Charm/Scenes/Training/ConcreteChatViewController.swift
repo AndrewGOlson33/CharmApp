@@ -22,9 +22,13 @@ class ConcreteChatViewController: UIViewController {
     
     // buttons
     
-    @IBOutlet weak var btnReplay: UIImageView!
-    @IBOutlet weak var btnRecordStop: UIImageView!
-    @IBOutlet weak var btnScoreReset: UIImageView!
+    @IBOutlet weak var btnReplay: UIButton!
+    @IBOutlet weak var btnRecordStop: UIButton!
+    @IBOutlet weak var btnScoreReset: UIButton!
+    
+//    @IBOutlet weak var btnReplay: UIImageView!
+//    @IBOutlet weak var btnRecordStop: UIImageView!
+//    @IBOutlet weak var btnScoreReset: UIImageView!
     
     // MARK: - Properties
     
@@ -73,23 +77,23 @@ class ConcreteChatViewController: UIViewController {
         
         // Setup Button Taps
         
-        let replayTap = UITapGestureRecognizer(target: self, action: #selector(speakTextTapped(_:)))
-        replayTap.numberOfTapsRequired = 1
-        replayTap.numberOfTouchesRequired = 1
-        btnReplay.addGestureRecognizer(replayTap)
-        btnReplay.isUserInteractionEnabled = true
-        
-        let recordStopTap = UITapGestureRecognizer(target: self, action: #selector(recordButtonTapped(_:)))
-        recordStopTap.numberOfTapsRequired = 1
-        recordStopTap.numberOfTouchesRequired = 1
-        btnRecordStop.addGestureRecognizer(recordStopTap)
-        btnRecordStop.isUserInteractionEnabled = true
-        
-        let scoreResetTap = UITapGestureRecognizer(target: self, action: #selector(scoreLoadButtonTapped(_:)))
-        scoreResetTap.numberOfTapsRequired = 1
-        scoreResetTap.numberOfTouchesRequired = 1
-        btnScoreReset.addGestureRecognizer(scoreResetTap)
-        btnScoreReset.isUserInteractionEnabled = true
+//        let replayTap = UITapGestureRecognizer(target: self, action: #selector(speakTextTapped(_:)))
+//        replayTap.numberOfTapsRequired = 1
+//        replayTap.numberOfTouchesRequired = 1
+//        btnReplay.addGestureRecognizer(replayTap)
+//        btnReplay.isUserInteractionEnabled = true
+//
+//        let recordStopTap = UITapGestureRecognizer(target: self, action: #selector(recordButtonTapped(_:)))
+//        recordStopTap.numberOfTapsRequired = 1
+//        recordStopTap.numberOfTouchesRequired = 1
+//        btnRecordStop.addGestureRecognizer(recordStopTap)
+//        btnRecordStop.isUserInteractionEnabled = true
+//
+//        let scoreResetTap = UITapGestureRecognizer(target: self, action: #selector(scoreLoadButtonTapped(_:)))
+//        scoreResetTap.numberOfTapsRequired = 1
+//        scoreResetTap.numberOfTouchesRequired = 1
+//        btnScoreReset.addGestureRecognizer(scoreResetTap)
+//        btnScoreReset.isUserInteractionEnabled = true
         
         // set speech model delegate so we can get responses from voice recognition
         speechModel.delegate = self
@@ -238,12 +242,12 @@ class ConcreteChatViewController: UIViewController {
     
     // Animation Helpers
     
-    private func animate(button: UIImageView, toImage image: UIImage) {
+    private func animate(button: UIButton, toImage image: UIImage) {
         DispatchQueue.main.async {
             UIView.animate(withDuration: 0.25, animations: {
                 button.alpha = 0
             }) { (_) in
-                button.image = image
+                button.setImage(image, for: .normal)
                 UIView.animate(withDuration: 0.25, animations: {
                     button.alpha = 1.0
                 })
@@ -267,7 +271,7 @@ extension ConcreteChatViewController: UITableViewDelegate, UITableViewDataSource
         switch indexPath.row {
         case 0:
             let strength = trainingViewModel.strength
-            cell.lblDescription.text = "Estimated Phrase Strength"
+            cell.lblDescription.text = "Phrase Strength"
             cell.lblScore.text = "\(strength.score)"
             
             if !cell.sliderView.isSetup {
@@ -369,7 +373,11 @@ extension ConcreteChatViewController: SpeechRecognitionDelegate {
 extension ConcreteChatViewController: UITextViewDelegate {
     
     func textViewDidBeginEditing(_ textView: UITextView) {
-        textView.textColor = .black
+        if #available(iOS 13.0, *) {
+            textView.textColor = .label
+        } else {
+            textView.textColor = .black
+        }
         textView.text = textView.text == "tap microphone to respond to prompt" ? "" : textView.text
         view.frame.origin.y -= view.frame.height / 3
     }

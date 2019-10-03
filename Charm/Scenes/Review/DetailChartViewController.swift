@@ -51,6 +51,7 @@ class DetailChartViewController: UIViewController {
     
     // Helps deal with layout glitches caused by highcharts
     var chartDidLoad: Bool = false
+    var viewHasAppeared: Bool = false
     
     // make sure to not accidentally tap on more info button
     var isTableViewScrolling: Bool = false
@@ -109,6 +110,11 @@ class DetailChartViewController: UIViewController {
         guard snapshot != nil else { return }
         loadData()
         setupChart()
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            self.viewHasAppeared = true
+            self.tableView.reloadData()
+        }
     }
     
     @objc private func infoButtonTapped() {
@@ -158,7 +164,7 @@ class DetailChartViewController: UIViewController {
             
             // setup slider bar data
             if let position = snapshot.getTopLevelRawValue(forSummaryItem: .IdeaEngagement), let score = snapshot.getTopLevelScoreValue(forSummaryItem: .IdeaEngagement) {
-                let cellInfo = SliderCellInfo(details: SliderDetails(type: .fillFromLeft), title: "Estimated Idea Engagement", score: score, position: CGFloat(position))
+                let cellInfo = SliderCellInfo(details: SliderDetails(type: .fillFromLeft), title: "Idea Engagement", score: score, position: CGFloat(position))
                 sliderData.append(cellInfo)
             }
             
@@ -211,7 +217,7 @@ class DetailChartViewController: UIViewController {
             
             // setup slider bar data
             if let position = snapshot.getTopLevelRawValue(forSummaryItem: .ConversationEngagement), let score = snapshot.getTopLevelScoreValue(forSummaryItem: .ConversationEngagement) {
-                let cellInfo = SliderCellInfo(details: SliderDetails(type: .fillFromLeft), title: "Estimated Conversation Engagement", score: score, position: CGFloat(position))
+                let cellInfo = SliderCellInfo(details: SliderDetails(type: .fillFromLeft), title: "Conversation Engagement", score: score, position: CGFloat(position))
                 sliderData.append(cellInfo)
             }
             
@@ -247,7 +253,7 @@ class DetailChartViewController: UIViewController {
             
             // setup slider bar data
             if let position = snapshot.getTopLevelRawValue(forSummaryItem: .PersonalConnection), let score = snapshot.getTopLevelScoreValue(forSummaryItem: .PersonalConnection) {
-                let cellInfo = SliderCellInfo(details: SliderDetails(type: .fillFromLeft), title: "Estimated Personal Engagement", score: score, position: CGFloat(position))
+                let cellInfo = SliderCellInfo(details: SliderDetails(type: .fillFromLeft), title: "Personal Engagement", score: score, position: CGFloat(position))
                 sliderData.append(cellInfo)
             }
             
@@ -286,7 +292,7 @@ class DetailChartViewController: UIViewController {
             
             // setup scale bar data
             if let position = snapshot.getTopLevelRawValue(forSummaryItem: .EmotionalConnection), let score = snapshot.getTopLevelScoreValue(forSummaryItem: .EmotionalConnection) {
-                let cellInfo = SliderCellInfo(details: SliderDetails(type: .fillFromLeft), title: "Estimated Emotional Connection", score: score, position: CGFloat(position))
+                let cellInfo = SliderCellInfo(details: SliderDetails(type: .fillFromLeft), title: "Emotional Connection", score: score, position: CGFloat(position))
                 sliderData.append(cellInfo)
             }
             
@@ -661,7 +667,6 @@ class DetailChartViewController: UIViewController {
         
         chartView.options = options
         tableView.reloadData()
-        
     }
 
 }
@@ -718,11 +723,23 @@ extension DetailChartViewController: UITableViewDelegate, UITableViewDataSource 
             let info = sliderData[row]
             cell.lblDescription.text = info.title
             
-            if info.details.hasRed {
-                cell.sliderView.setup(for: info.details.type, at: info.position, minBlue: info.details.minBlue, maxBlue: info.details.maxBlue, minRed: info.details.minRedValue, maxRed: info.details.maxRedValue)
-            } else {
-                cell.sliderView.setup(for: info.details.type, at: info.position, minBlue: info.details.minBlue, maxBlue: info.details.maxBlue)
+            if !cell.sliderView.isSetup && viewHasAppeared {
+                if info.details.hasRed {
+                    cell.sliderView.setup(for: info.details.type, at: info.position, minBlue: info.details.minBlue, maxBlue: info.details.maxBlue, minRed: info.details.minRedValue, maxRed: info.details.maxRedValue)
+                } else {
+                    cell.sliderView.setup(for: info.details.type, at: info.position, minBlue: info.details.minBlue, maxBlue: info.details.maxBlue)
+                }
+                
+                cell.sliderView.setNeedsLayout()
+                
+                UIView.animate(withDuration: 0.5) {
+                    cell.sliderView.alpha = 1.0
+                }
+            } else if !viewHasAppeared {
+                cell.sliderView.alpha = 0.0
             }
+            
+            
             
             switch info.details.valueType {
             case .double:

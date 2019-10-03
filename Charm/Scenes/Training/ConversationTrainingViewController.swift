@@ -31,9 +31,12 @@ class ConversationTrainingViewController: UIViewController {
     
     // buttons
     
-    @IBOutlet weak var btnReplay: UIImageView!
-    @IBOutlet weak var btnRecordStop: UIImageView!
-    @IBOutlet weak var btnScoreReset: UIImageView!
+//    @IBOutlet weak var btnReplay: UIImageView!
+    @IBOutlet weak var btnReplay: UIButton!
+    @IBOutlet weak var btnRecordStop: UIButton!
+    @IBOutlet weak var btnScoreReset: UIButton!
+//    @IBOutlet weak var btnRecordStop: UIImageView!
+//    @IBOutlet weak var btnScoreReset: UIImageView!
     
     // Layout constraints
     @IBOutlet weak var youSaidOnTop: NSLayoutConstraint!
@@ -84,23 +87,23 @@ class ConversationTrainingViewController: UIViewController {
         
         // Setup Button Taps
 
-        let replayTap = UITapGestureRecognizer(target: self, action: #selector(speakTextTapped(_:)))
-        replayTap.numberOfTapsRequired = 1
-        replayTap.numberOfTouchesRequired = 1
-        btnReplay.addGestureRecognizer(replayTap)
-        btnReplay.isUserInteractionEnabled = true
-        
-        let recordStopTap = UITapGestureRecognizer(target: self, action: #selector(recordButtonTapped(_:)))
-        recordStopTap.numberOfTapsRequired = 1
-        recordStopTap.numberOfTouchesRequired = 1
-        btnRecordStop.addGestureRecognizer(recordStopTap)
-        btnRecordStop.isUserInteractionEnabled = true
-        
-        let scoreResetTap = UITapGestureRecognizer(target: self, action: #selector(scoreLoadButtonTapped(_:)))
-        scoreResetTap.numberOfTapsRequired = 1
-        scoreResetTap.numberOfTouchesRequired = 1
-        btnScoreReset.addGestureRecognizer(scoreResetTap)
-        btnScoreReset.isUserInteractionEnabled = true
+//        let replayTap = UITapGestureRecognizer(target: self, action: #selector(speakTextTapped(_:)))
+//        replayTap.numberOfTapsRequired = 1
+//        replayTap.numberOfTouchesRequired = 1
+//        btnReplay.addGestureRecognizer(replayTap)
+//        btnReplay.isUserInteractionEnabled = true
+//
+//        let recordStopTap = UITapGestureRecognizer(target: self, action: #selector(recordButtonTapped(_:)))
+//        recordStopTap.numberOfTapsRequired = 1
+//        recordStopTap.numberOfTouchesRequired = 1
+//        btnRecordStop.addGestureRecognizer(recordStopTap)
+//        btnRecordStop.isUserInteractionEnabled = true
+//
+//        let scoreResetTap = UITapGestureRecognizer(target: self, action: #selector(scoreLoadButtonTapped(_:)))
+//        scoreResetTap.numberOfTapsRequired = 1
+//        scoreResetTap.numberOfTouchesRequired = 1
+//        btnScoreReset.addGestureRecognizer(scoreResetTap)
+//        btnScoreReset.isUserInteractionEnabled = true
         
         // set speech model delegate so we can get responses from voice recognition
         speechModel.delegate = self
@@ -111,8 +114,7 @@ class ConversationTrainingViewController: UIViewController {
         viewFeedback.layer.cornerRadius = 16
         txtReply.layer.cornerRadius = 16
         txtReply.layer.masksToBounds = true
-        txtReply.backgroundColor = #colorLiteral(red: 0.9724403024, green: 0.9726101756, blue: 0.9724423289, alpha: 1)
-        
+//        txtReply.backgroundColor = UIColor.
         // setup prompt bubbles
         viewTopChat.layer.maskedCorners = [.layerMaxXMaxYCorner, .layerMaxXMinYCorner, .layerMinXMinYCorner]
         viewBottomChat.layer.maskedCorners = [.layerMaxXMinYCorner, .layerMinXMaxYCorner, .layerMinXMinYCorner]
@@ -289,12 +291,12 @@ class ConversationTrainingViewController: UIViewController {
     
     // Animation Helpers
     
-    private func animate(button: UIImageView, toImage image: UIImage) {
+    private func animate(button: UIButton, toImage image: UIImage) {
         DispatchQueue.main.async {
             UIView.animate(withDuration: 0.25, animations: {
                 button.alpha = 0
             }) { (_) in
-                button.image = image
+                button.setImage(image, for: .normal)
                 UIView.animate(withDuration: 0.25, animations: {
                     button.alpha = 1.0
                 })
@@ -342,7 +344,7 @@ extension ConversationTrainingViewController: UITableViewDelegate, UITableViewDa
         switch indexPath.row {
         case 0:
             let strength = trainingViewModel.strength
-            cell.lblDescription.text = "Estimated Phrase Strength"
+            cell.lblDescription.text = "Phrase Strength"
             cell.lblScore.text = "\(strength.score)"
             
             if !cell.sliderView.isSetup {
@@ -445,7 +447,11 @@ extension ConversationTrainingViewController: SpeechRecognitionDelegate {
 extension ConversationTrainingViewController: UITextViewDelegate {
     
     func textViewDidBeginEditing(_ textView: UITextView) {
-        textView.textColor = .black
+        if #available(iOS 13.0, *) {
+            textView.textColor = .label
+        } else {
+            textView.textColor = .black
+        }
         textView.text = textView.text == "tap microphone to respond to prompt" ? "" : textView.text
         view.frame.origin.y -= view.frame.height / 3
     }
