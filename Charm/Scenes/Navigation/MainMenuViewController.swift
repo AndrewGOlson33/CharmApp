@@ -68,6 +68,8 @@ class MainMenuViewController: UIViewController {
         validateProductIdentifiers()
         
         setupMetricsObserver()
+        
+        enableKeepSynced()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -348,6 +350,11 @@ class MainMenuViewController: UIViewController {
             }
         }
         
+    }
+    
+    fileprivate func enableKeepSynced() {
+        let users = Database.database().reference().child(FirebaseStructure.Users)
+        users.keepSynced(true)
     }
     
     // Observes Training History

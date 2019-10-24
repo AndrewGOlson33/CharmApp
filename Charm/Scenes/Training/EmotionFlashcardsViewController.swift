@@ -128,7 +128,13 @@ class EmotionFlashcardsViewController: UIViewController, FlashcardsHistoryDelega
         DispatchQueue.global(qos: .utility).async {
             do {
                 let data = try FirebaseEncoder().encode(history)
-                Database.database().reference().child(FirebaseStructure.Users).child(uid).child(FirebaseStructure.Training.TrainingDatabase).setValue(data)
+                print("~>Setting data on: \(uid) with: \(data)")
+               let reference = Database.database().reference().child(FirebaseStructure.Users).child(uid).child(FirebaseStructure.Training.TrainingDatabase)
+                reference.keepSynced(true)
+                reference.setValue(data) { (error, reference) in
+                    print("~>Error: \(String(describing: error)) reference: \(reference)")
+                    print("~>Completed set value.")
+                }
             } catch let error {
                 print("~>There was an error converting the data: \(error)")
             }

@@ -43,7 +43,7 @@ class ChatTableViewController: UITableViewController {
         let usersRef = Database.database().reference().child(FirebaseStructure.Users)
         var hasCompleted: Bool = false
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 10) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 30) {
             guard !hasCompleted else { return }
             
             print("~>Request timed out.")
@@ -52,7 +52,11 @@ class ChatTableViewController: UITableViewController {
             self.present(errorAlert, animated: true, completion: nil)
             completion(true)
         }
-        usersRef.child(friend.id!).child(FirebaseStructure.CharmUser.Call).observeSingleEvent(of: .value) { (snapshot) in
+        
+        let callRef = usersRef.child(friend.id!).child(FirebaseStructure.CharmUser.Call)
+        callRef.keepSynced(true)
+        
+        callRef.observeSingleEvent(of: .value) { (snapshot) in
             if let value = snapshot.value, !(value is NSNull) {
                 print("~>Got value: \(value)")
                 do {
@@ -139,7 +143,8 @@ class ChatTableViewController: UITableViewController {
         check(isFriendBusy: friend, showBusyAlert: false) { (busy) in
             viewActivity.stopAnimating()
             guard !busy else {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: { [weak self] in
+                    guard let self = self else { return }
                     self.check(isFriendBusy: friend, showBusyAlert: true, completion: { (busy) in
                         guard !busy else { return }
                         self.call(friend)
