@@ -10,10 +10,10 @@ import UIKit
 import WebKit
 
 enum InfoDetail: String {
-    case Emotions = "https://www.charismaanalytics.com/emotional-connection-tutorial"
-    case Conversation = "https://www.charismaanalytics.com/conversation-engagement-tutorial"
-    case Ideas = "https://www.charismaanalytics.com/idea-engagement-tutorial"
-    case Connection = "https://www.charismaanalytics.com/personal-connection-tutorial"
+    case emotions = "https://www.charismaanalytics.com/emotional-connection-tutorial"
+    case conversation = "https://www.charismaanalytics.com/conversation-engagement-tutorial"
+    case ideas = "https://www.charismaanalytics.com/idea-engagement-tutorial"
+    case connection = "https://www.charismaanalytics.com/personal-connection-tutorial"
 }
 
 class InfoDetailViewController: UIViewController {
@@ -64,17 +64,13 @@ class InfoDetailViewController: UIViewController {
         var title = "More Information"
         
         switch detail {
-        case .Conversation:
-//            txtConversation.isHidden = false
+        case .conversation:
             title = "Conversation"
-        case .Connection:
-//            txtConnection.isHidden = false
+        case .connection:
             title = "Connection"
-        case .Emotions:
-//            txtEmotions.isHidden = false
+        case .emotions:
             title = "Emotions"
-        case .Ideas:
-//            txtIdeas.isHidden = false
+        case .ideas:
             title = "Ideas"
         }
         
@@ -93,11 +89,11 @@ class InfoDetailViewController: UIViewController {
     }
     
     @objc private func showSupport() {
-        performSegue(withIdentifier: SegueID.SubmitFeedback, sender: nil)
+        performSegue(withIdentifier: SegueID.submitFeedback, sender: nil)
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        guard segue.identifier == SegueID.SubmitFeedback, let vc = segue.destination as? SendFeedbackViewController else { return }
+        guard segue.identifier == SegueID.submitFeedback, let vc = segue.destination as? SendFeedbackViewController else { return }
         vc.titleString = "Enter Question"
     }
 }

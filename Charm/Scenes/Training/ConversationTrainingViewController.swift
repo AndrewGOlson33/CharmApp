@@ -63,12 +63,12 @@ class ConversationTrainingViewController: UIViewController {
     
     // Button Images
     
-    let mic = UIImage(named: Image.Mic)!
-    let replay = UIImage(named: Image.Speaker)!
-    let mute = UIImage(named: Image.Mute)!
-    let stop = UIImage(named: Image.Stop)!
-    let chart = UIImage(named: Image.Update)!
-    let reset = UIImage(named: Image.Reset)!
+    let mic = UIImage(named: Image.mic)!
+    let replay = UIImage(named: Image.speaker)!
+    let mute = UIImage(named: Image.mute)!
+    let stop = UIImage(named: Image.stop)!
+    let chart = UIImage(named: Image.update)!
+    let reset = UIImage(named: Image.reset)!
     
     // MARK: - View Lifecycle Functions
 
@@ -263,8 +263,8 @@ class ConversationTrainingViewController: UIViewController {
     // MARK: - Private Helper Functions
     
     @objc private func infoButtonTapped() {
-        guard let info = storyboard?.instantiateViewController(withIdentifier: StoryboardID.Info) as? InfoDetailViewController else { return }
-        info.type = .Conversation
+        guard let info = storyboard?.instantiateViewController(withIdentifier: StoryboardID.info) as? InfoDetailViewController else { return }
+        info.type = .conversation
         tabBarController?.navigationController?.pushViewController(info, animated: true)
     }
     
@@ -339,7 +339,7 @@ extension ConversationTrainingViewController: UITableViewDelegate, UITableViewDa
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: CellID.ScaleBar, for: indexPath) as! ScaleBarTableViewCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: CellID.scaleBar, for: indexPath) as! ScaleBarTableViewCell
         
         switch indexPath.row {
         case 0:

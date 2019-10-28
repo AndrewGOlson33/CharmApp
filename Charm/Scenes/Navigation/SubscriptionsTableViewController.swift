@@ -9,7 +9,6 @@
 import UIKit
 import StoreKit
 import Firebase
-import CodableFirebase
 
 class SubscriptionsTableViewController: UITableViewController {
     
@@ -48,9 +47,9 @@ class SubscriptionsTableViewController: UITableViewController {
         
         for option in options {
             switch option.product.productIdentifier {
-            case SubscriptionID.Standard:
+            case SubscriptionID.standard:
                 if lblStandardPrice.text != option.priceDetail { lblStandardPrice.text = option.priceDetail }
-            case SubscriptionID.Premium:
+            case SubscriptionID.premium:
                 if lblPremiumPrice.text != option.priceDetail { lblPremiumPrice.text = option.priceDetail }
             default:
                 print("~>Update app")
@@ -65,9 +64,9 @@ class SubscriptionsTableViewController: UITableViewController {
         
         if let current = SubscriptionService.shared.currentSubscription, current.isActive {
             switch current.productId {
-            case SubscriptionID.Standard:
+            case SubscriptionID.standard:
                 cellStandard.accessoryType = .checkmark
-            case SubscriptionID.Premium:
+            case SubscriptionID.premium:
                 cellPremium.accessoryType = .checkmark
             default:
                 break
@@ -140,7 +139,7 @@ class SubscriptionsTableViewController: UITableViewController {
         // a new subscription so add credits and set renew date to today
         if !restoreFromButton {
             let date = Date(timeInterval: -1800, since: Date())
-            CharmUser.shared.userProfile.renewDate = date
+            FirebaseModel.shared.charmUser.userProfile.renewDate = date
         }
         
         createAlert(withTitle: restoreFromButton ? "Restore Complete" : "Purchase Complete", andMessage: restoreFromButton ? "Your purchase has been restored." : "Congratulations on your purchase!  You may cancel anytime through iTunes.", andDoneButton: "Great!", purchased: true)
@@ -184,7 +183,7 @@ class SubscriptionsTableViewController: UITableViewController {
                     UserDefaults.standard.set(true, forKey: Defaults.validLicense)
                     
                     // Add credits
-                    if CharmUser.shared.userProfile.renewDate < Date() {
+                    if FirebaseModel.shared.charmUser.userProfile.renewDate < Date() {
                         let status = SubscriptionService.shared.updateCredits()
                         print("~>Attempted to update credits and got status: \(status)")
                     } else {
@@ -209,7 +208,7 @@ class SubscriptionsTableViewController: UITableViewController {
     
     private func saveUserProfileToFirebase() {
         
-        guard CharmUser.shared != nil, let id = CharmUser.shared.id else {
+        guard FirebaseModel.shared.charmUser != nil, let id = FirebaseModel.shared.charmUser.id else {
             DispatchQueue.global(qos: .utility).asyncAfter(deadline: .now() + 5.0) {
                 self.saveUserProfileToFirebase()
                 return
@@ -218,15 +217,8 @@ class SubscriptionsTableViewController: UITableViewController {
         }
         
         DispatchQueue.global(qos: .utility).async {
-            let profile = CharmUser.shared.userProfile
-            
-            do {
-                let data = try FirebaseEncoder().encode(profile)
-                Database.database().reference().child(FirebaseStructure.Users).child(id).child(FirebaseStructure.CharmUser.Profile).setValue(data)
-                print("~>Set user profile with new date")
-            } catch let error {
-                print("~>There was an error: \(error)")
-            }
+            let profile = FirebaseModel.shared.charmUser.userProfile
+            Database.database().reference().child(FirebaseStructure.usersLocation).child(id).child(FirebaseStructure.CharmUser.profileLocation).setValue(profile.toAny())
         }
     }
 
@@ -252,7 +244,7 @@ class SubscriptionsTableViewController: UITableViewController {
         tableView.deselectRow(at: indexPath, animated: true)
         
         switch cid {
-        case CellID.Free:
+        case CellID.free:
             if !fromSettings {
                 parentView?.showNavigation()
                 return
@@ -266,10 +258,10 @@ class SubscriptionsTableViewController: UITableViewController {
                 
                 present(cancelAlert, animated: true, completion: nil)
             }
-        case CellID.Standard:
-            subscribe(to: SubscriptionID.Standard)
-        case CellID.Premium:
-            subscribe(to: SubscriptionID.Premium)
+        case CellID.standard:
+            subscribe(to: SubscriptionID.standard)
+        case CellID.premium:
+            subscribe(to: SubscriptionID.premium)
         default:
             print("~>Did not tap a supported cell")
         }

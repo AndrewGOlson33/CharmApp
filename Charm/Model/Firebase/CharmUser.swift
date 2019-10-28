@@ -8,22 +8,55 @@
 
 import Foundation
 import Firebase
-import CodableFirebase
 
-struct CharmUser: Codable, Identifiable {
-    
+enum FirebaseItemError: Error {
+    case noSnapshot
+    case invalidData
+    case invalidParameter
+}
+
+struct CharmUser: FirebaseItem {
+       
     var id: String? = nil
+    var ref: DatabaseReference?
     var userProfile: UserProfile
     var friendList: FriendList?
     var currentCall: Call?
-    var trainingData: TrainingHistory?
+    var trainingData: TrainingHistory
     var tokenID: [String : Bool]? = nil
     
-    static var shared: CharmUser!
-    
+    // Init to create a new user
     init(name: String, email: String) {
         userProfile = UserProfile(name: name, email: email)
         friendList = FriendList()
+        trainingData = try! TrainingHistory()
+    }
+    
+    init(snapshot: DataSnapshot) throws {
+        guard let topValues = snapshot.value as? [String : Any] else {
+            throw FirebaseItemError.invalidData
+        }
+        
+        let profileSnapshot = snapshot.childSnapshot(forPath: FirebaseStructure.CharmUser.profileLocation)
+        let friendListSnapshot = snapshot.childSnapshot(forPath: FirebaseStructure.CharmUser.friendListLocation)
+        let trainingSnapshot = snapshot.childSnapshot(forPath: FirebaseStructure.Training.trainingDatabase)
+        id = snapshot.key
+        ref = snapshot.ref
+        do {
+            userProfile = try UserProfile(snapshot: profileSnapshot)
+            friendList = try FriendList(snapshot: friendListSnapshot)
+            trainingData = try TrainingHistory(snapshot: trainingSnapshot)
+        } catch {
+            throw FirebaseItemError.invalidData
+        }
+        
+        tokenID = topValues[FirebaseStructure.CharmUser.token] as? [String : Bool]
+    }
+    
+    func toAny() -> [AnyHashable:Any] {
+        return [
+            FirebaseStructure.CharmUser.profileLocation : userProfile.toAny()
+        ]
     }
     
 }
@@ -31,7 +64,8 @@ struct CharmUser: Codable, Identifiable {
 
 // User Profile
 
-struct UserProfile: Codable {
+struct UserProfile: FirebaseItem {
+    
     enum MembershipStatus: Int, Codable {
         case unknown = 0
         case notSubscribed = 1
@@ -39,10 +73,12 @@ struct UserProfile: Codable {
         case formerSubscriber = 3
     }
     
+    var id: String?
+    var ref: DatabaseReference?
     var firstName: String
     var lastName: String
     var email: String
-    var phone: String?
+    var phone: String
     var numCredits: Int
     var renewDate: Date
     var membershipStatus: MembershipStatus
@@ -59,7 +95,7 @@ struct UserProfile: Codable {
         return dFormatter.string(from: renewDate)
     }
     
-    init(name: String, email: String) {
+    init(name: String, email: String, phone: String = "") {
         
         let userName = UserProfile.getFirstLast(from: name)
         firstName = userName.first
@@ -68,6 +104,27 @@ struct UserProfile: Codable {
         numCredits = 3
         renewDate = Date()
         membershipStatus = .unknown
+        self.phone = phone
+    }
+    
+    init(snapshot: DataSnapshot) throws {
+        guard let values = snapshot.value as? [String:Any] else {
+            throw FirebaseItemError.invalidData
+        }
+        
+        id = snapshot.key
+        ref = snapshot.ref
+        
+        firstName = values[FirebaseStructure.CharmUser.UserProfile.firstName] as? String ?? ""
+        lastName = values[FirebaseStructure.CharmUser.UserProfile.lastName] as? String ?? ""
+        email = values[FirebaseStructure.CharmUser.UserProfile.email] as? String ?? ""
+        numCredits = values[FirebaseStructure.CharmUser.UserProfile.numCredits] as? Int ?? 0
+        phone = values[FirebaseStructure.CharmUser.UserProfile.phone] as? String ?? ""
+        let timeSinceReferenceDate = values[FirebaseStructure.CharmUser.UserProfile.renewDate] as? Double ?? -1.0
+        let membershipStatusRawValue = values[FirebaseStructure.CharmUser.UserProfile.membershipStatus] as? Int ?? 0
+        
+        renewDate = timeSinceReferenceDate == -1 ? Date() : Date(timeIntervalSinceReferenceDate: timeSinceReferenceDate)
+        membershipStatus = MembershipStatus(rawValue: membershipStatusRawValue) ?? .unknown
     }
     
     mutating func updateUser(name: String) {
@@ -79,16 +136,10 @@ struct UserProfile: Codable {
         if names.first != "" {
             firstName = names.first
             lastName = names.last
+            let data = self.toAny()
             
-            do {
-                let data = try FirebaseEncoder().encode(self)
-                
-                DispatchQueue.global(qos: .utility).async {
-                    Database.database().reference().child(FirebaseStructure.Users).child(Auth.auth().currentUser!.uid).child(FirebaseStructure.CharmUser.Profile).setValue(data)
-                }
-                
-            } catch let error {
-                print("~>There was an error updating the name: \(error)")
+            DispatchQueue.global(qos: .utility).async {
+                Database.database().reference().child(FirebaseStructure.usersLocation).child(Auth.auth().currentUser!.uid).child(FirebaseStructure.CharmUser.profileLocation).setValue(data)
             }
         }
         
@@ -105,31 +156,59 @@ struct UserProfile: Codable {
         
         return (first: first, last: last)
     }
+    
+    func toAny() -> [AnyHashable:Any] {
+        return [
+            FirebaseStructure.CharmUser.UserProfile.firstName : firstName as NSString,
+            FirebaseStructure.CharmUser.UserProfile.lastName : lastName as NSString,
+            FirebaseStructure.CharmUser.UserProfile.email : email as NSString,
+            FirebaseStructure.CharmUser.UserProfile.phone : phone as NSString,
+            FirebaseStructure.CharmUser.UserProfile.numCredits : numCredits as NSNumber,
+            FirebaseStructure.CharmUser.UserProfile.renewDate : renewDate.timeIntervalSinceReferenceDate as NSNumber,
+            FirebaseStructure.CharmUser.UserProfile.membershipStatus : membershipStatus.rawValue as NSNumber
+        ]
+    }
 
 }
 
 // Call
 
-struct Call: Codable {
-    enum CallStatus: Int, Codable {
+struct Call: FirebaseItem {
+    
+    enum CallStatus: Int {
         case connected = 0
         case disconnected = 1
         case incoming = 2
         case outgoing = 3
         case rejected = 4
+        case unknown = 5
     }
     
+    var id: String?
+    var ref: DatabaseReference?
     var sessionID: String
     var status: CallStatus
     var fromUserID: String
     var room: String
     
     var myCallRef: DatabaseReference {
-        return Database.database().reference().child(FirebaseStructure.Users).child(Auth.auth().currentUser!.uid).child(FirebaseStructure.CharmUser.Call)
+        return Database.database().reference().child(FirebaseStructure.usersLocation).child(Auth.auth().currentUser!.uid).child(FirebaseStructure.CharmUser.currentCallLocation)
     }
     
     var friendCallRef: DatabaseReference {
-        return Database.database().reference().child(FirebaseStructure.Users).child(fromUserID).child(FirebaseStructure.CharmUser.Call)
+        return Database.database().reference().child(FirebaseStructure.usersLocation).child(fromUserID).child(FirebaseStructure.CharmUser.currentCallLocation)
+    }
+    
+    init(snapshot: DataSnapshot) throws {
+        guard let values = snapshot.value as? [String:Any] else { throw FirebaseItemError.invalidData }
+        id = snapshot.key
+        ref = snapshot.ref
+        
+        sessionID = values[FirebaseStructure.CharmUser.CurrentCall.sessionID] as? String ?? ""
+        let statusInt = values[FirebaseStructure.CharmUser.CurrentCall.callStatus] as? Int ?? 5
+        status = CallStatus(rawValue: statusInt) ?? .unknown
+        fromUserID = values[FirebaseStructure.CharmUser.CurrentCall.from] as? String ?? ""
+        room = values[FirebaseStructure.CharmUser.CurrentCall.room] as? String ?? ""
     }
     
     init(sessionID: String, status: CallStatus, from: String, in room: String) {
@@ -138,11 +217,120 @@ struct Call: Codable {
         self.fromUserID = from
         self.room = room
     }
+    
+    func toAny() -> [AnyHashable : Any] {
+        return [
+            FirebaseStructure.CharmUser.CurrentCall.sessionID : sessionID as NSString,
+            FirebaseStructure.CharmUser.CurrentCall.callStatus : status.rawValue as NSNumber,
+            FirebaseStructure.CharmUser.CurrentCall.from : fromUserID as NSString,
+            FirebaseStructure.CharmUser.CurrentCall.room : room as NSString
+        ]
+    }
 }
 
 // Friends List
 
-struct FriendList: Codable {
+struct FriendList: FirebaseItem {
+    var id: String?
+    var ref: DatabaseReference?
+    
+    init() {
+    }
+    
+    init(currentFriends: [Friend], pendingSentApproval: [Friend], pendingReceivedApproval: [Friend], sentText: [Friend]) {
+        self.currentFriends = currentFriends
+        self.pendingSentApproval = pendingSentApproval
+        self.pendingReceivedApproval = pendingReceivedApproval
+        self.sentText = sentText
+    }
+    
+    init(snapshot: DataSnapshot) throws {
+        let currentFriendsSS = snapshot.childSnapshot(forPath: FirebaseStructure.CharmUser.FriendList.currentFriends)
+        let pendngSentSS = snapshot.childSnapshot(forPath: FirebaseStructure.CharmUser.FriendList.pendingSentApproval)
+        let pendngReceivedSS = snapshot.childSnapshot(forPath: FirebaseStructure.CharmUser.FriendList.pendingReceivedApproval)
+        let sentTextSS = snapshot.childSnapshot(forPath: FirebaseStructure.CharmUser.FriendList.sentText)
+        
+        id = snapshot.key
+        ref = snapshot.ref
+        
+        if currentFriends == nil { currentFriends = [] }
+        if pendingSentApproval == nil { pendingSentApproval = [] }
+        if pendingReceivedApproval == nil { pendingReceivedApproval = [] }
+        if sentText == nil { sentText = [] }
+        
+        if currentFriendsSS.exists() {
+            for child in currentFriendsSS.children {
+                if let childSnap = child as? DataSnapshot {
+                    do {
+                        let friend = try Friend(snapshot: childSnap)
+                        if !currentFriends!.contains(where: { (existing) -> Bool in
+                            friend.id == existing.id
+                        }) {
+                            currentFriends?.append(friend)
+                        }
+                    } catch let error {
+                        print("~>Got an error trying to convert: \(error)")
+                    }
+                   
+                }
+            }
+        }
+        
+        if pendngSentSS.exists() {
+            for child in pendngSentSS.children {
+                if let childSnap = child as? DataSnapshot {
+                    do {
+                        let friend = try Friend(snapshot: childSnap)
+                        if !pendingSentApproval!.contains(where: { (existing) -> Bool in
+                            friend.id == existing.id
+                        }) {
+                            pendingSentApproval?.append(friend)
+                        }
+                    } catch let error {
+                        print("~>Got an error trying to convert: \(error)")
+                    }
+                   
+                }
+            }
+        }
+        
+        if pendngReceivedSS.exists() {
+            for child in pendngReceivedSS.children {
+                if let childSnap = child as? DataSnapshot {
+                    do {
+                        let friend = try Friend(snapshot: childSnap)
+                        if !pendingReceivedApproval!.contains(where: { (existing) -> Bool in
+                            friend.id == existing.id
+                        }) {
+                            pendingReceivedApproval?.append(friend)
+                        }
+                    } catch let error {
+                        print("~>Got an error trying to convert: \(error)")
+                    }
+                   
+                }
+            }
+        }
+        
+        if sentTextSS.exists() {
+            for child in sentTextSS.children {
+                if let childSnap = child as? DataSnapshot {
+                    do {
+                        let friend = try Friend(snapshot: childSnap)
+                        if !sentText!.contains(where: { (existing) -> Bool in
+                            friend.id == existing.id
+                        }) {
+                            sentText?.append(friend)
+                        }
+                    } catch let error {
+                        print("~>Got an error trying to convert: \(error)")
+                    }
+                   
+                }
+            }
+        }
+    }
+    
     var currentFriends: [Friend]? = [] {
         didSet {
             currentFriends?.sort(by: { (lhs, rhs) -> Bool in
@@ -180,212 +368,249 @@ struct FriendList: Codable {
         if let pendingReceived = pendingReceivedApproval { count += pendingReceived.count }
         return count
     }
+    
+    func toAny() -> [AnyHashable : Any] {
+        var current: NSArray = []
+        var pendingSent: NSArray = []
+        var pendingReceived: NSArray = []
+        var sentTextNSArray: NSArray = []
+        
+        if let currentArray = currentFriends { current = currentArray as NSArray }
+        if let pendingSentArray = pendingSentApproval { pendingSent = pendingSentArray as NSArray }
+        if let pendingReceivedArray = pendingReceivedApproval { pendingReceived = pendingReceivedArray as NSArray }
+        if let sentTextArray = sentText { sentTextNSArray = sentTextArray as NSArray }
+        
+        return [
+            FirebaseStructure.CharmUser.FriendList.currentFriends : current,
+            FirebaseStructure.CharmUser.FriendList.pendingSentApproval : pendingSent,
+            FirebaseStructure.CharmUser.FriendList.pendingReceivedApproval : pendingReceived,
+            FirebaseStructure.CharmUser.FriendList.sentText : sentTextNSArray,
+        ]
+    }
+    
+    func save() {
+        for var friend in currentFriends ?? [] {
+            if let fID = friend.friendId, !fID.isEmpty, fID != friend.id {
+                if let ref = friend.ref { ref.removeValue() }
+                let friendRef = ref?.child(FirebaseStructure.CharmUser.FriendList.currentFriends).child(fID)
+                friend.friendId = ""
+                friend.id = friendRef?.key
+                friend.ref = friendRef
+            }
+            
+            friend.save()
+        }
+        
+        for var friend in pendingSentApproval ?? [] {
+            if let fID = friend.friendId, !fID.isEmpty, fID != friend.id  {
+                if let ref = friend.ref { ref.removeValue() }
+                let friendRef = ref?.child(FirebaseStructure.CharmUser.FriendList.pendingSentApproval).child(fID)
+                friend.friendId = ""
+                friend.id = friendRef?.key
+                friend.ref = friendRef
+            }
+            
+            friend.save()
+        }
+        
+        for var friend in pendingReceivedApproval ?? [] {
+            if let fID = friend.friendId, !fID.isEmpty, fID != friend.id  {
+                if let ref = friend.ref { ref.removeValue() }
+                let friendRef = ref?.child(FirebaseStructure.CharmUser.FriendList.pendingReceivedApproval).child(fID)
+                friend.friendId = ""
+                friend.id = friendRef?.key
+                friend.ref = friendRef
+            }
+            
+            friend.save()
+        }
+        
+        for var friend in sentText ?? [] {
+            if let fID = friend.friendId, !fID.isEmpty, fID != friend.id  {
+                if let ref = friend.ref { ref.removeValue() }
+                let friendRef = ref?.child(FirebaseStructure.CharmUser.FriendList.sentText).child(fID)
+                friend.friendId = ""
+                friend.id = friendRef?.key
+                friend.ref = friendRef
+            }
+            
+            friend.save()
+        }
+    }
 }
 
 // Friend Info
 
-struct Friend: Codable, Identifiable {
+struct Friend: FirebaseItem {
+    
     var id: String? = nil
+    var ref: DatabaseReference?
+    var friendId: String? = nil
     var firstName: String
     var lastName: String
     var email: String
-    var phone: String? = nil
+    var phone: String
     
-    init(id: String, first: String, last: String, email: String) {
+    init(id: String, first: String, last: String, email: String, phone: String = "") {
         self.id = id
         firstName = first
         lastName = last
         self.email = email
+        self.phone = phone
     }
+    
+    init(snapshot: DataSnapshot) throws {
+        guard let values = snapshot.value as? [String : Any] else {
+            throw FirebaseItemError.invalidData
+        }
+        
+        id = snapshot.key
+        ref = snapshot.ref
+        
+        firstName = values[FirebaseStructure.Friend.firstName] as? String ?? ""
+        lastName = values[FirebaseStructure.Friend.lastName] as? String ?? ""
+        email = values[FirebaseStructure.Friend.email] as? String ?? ""
+        phone = values[FirebaseStructure.Friend.phone] as? String ?? ""
+        friendId = values[FirebaseStructure.Friend.id] as? String ?? ""
+    }
+    
+    func toAny() -> [AnyHashable : Any] {
+        let id: String
+        if let fID = friendId { id = fID } else { id = "" }
+        return [
+            FirebaseStructure.Friend.firstName : firstName as NSString,
+            FirebaseStructure.Friend.lastName : lastName as NSString,
+            FirebaseStructure.Friend.email : email as NSString,
+            FirebaseStructure.Friend.phone : phone as NSString,
+            FirebaseStructure.Friend.id : id as NSString
+        ]
+    }
+
 }
 
 // Training History
 
-struct TrainingHistory: Codable {
-    var concreteAverage: ConcreteTrainingHistory
-    var emotionsAverage: EmotionsTrainingHistory
-    var sandboxHistory: SandboxTrainingHistory?
+struct TrainingHistory: FirebaseItem {
+    
+    var id: String?
+    var ref: DatabaseReference?
+    var concreteAverage: TrainingStatistics
+    var emotionsAverage: TrainingStatistics
+    
+    init() throws {
+        guard let uid = FirebaseModel.shared.charmUser.id else { throw FirebaseItemError.invalidParameter }
+        concreteAverage = TrainingStatistics()
+        emotionsAverage = TrainingStatistics()
+        
+        ref = Database.database().reference().child(FirebaseStructure.usersLocation).child(uid).child(FirebaseStructure.Training.trainingDatabase)
+        id = ref?.key
+        self.save()
+    }
+    
+    init(snapshot: DataSnapshot) throws {
+        id = snapshot.key
+        ref = snapshot.ref
+        
+        let concreteSnap = snapshot.childSnapshot(forPath: FirebaseStructure.Training.concreteHistory)
+        let emotionsSnap = snapshot.childSnapshot(forPath: FirebaseStructure.Training.emotionHistory)
+        
+        var shouldSave: Bool = false
+        
+        if concreteSnap.exists() {
+            do {
+                concreteAverage = try TrainingStatistics(snapshot: concreteSnap)
+            } catch {
+                concreteAverage = TrainingStatistics()
+            }
+        } else { concreteAverage = TrainingStatistics(); shouldSave = true }
+        
+        if emotionsSnap.exists() {
+            do {
+                emotionsAverage = try TrainingStatistics(snapshot: emotionsSnap)
+            } catch {
+                emotionsAverage = TrainingStatistics()
+            }
+        } else { emotionsAverage = TrainingStatistics(); shouldSave = true }
+        
+        if shouldSave {
+            self.save()
+        }
+    }
+    
+    func toAny() -> [AnyHashable : Any] {
+        return [
+            FirebaseStructure.Training.concreteHistory : concreteAverage.toAny(),
+            FirebaseStructure.Training.emotionHistory : emotionsAverage.toAny()
+        ]
+    }
+    
+}
+
+struct TrainingStatistics: FirebaseItem {
+    
+    var id: String?
+    var ref: DatabaseReference?
+    var numQuestions: Int = 0
+    var numCorrect: Int = 0
+    var correctRecord: Int = 1
+    
+    // computed vars
+    var doubleNumQuestions: Double {
+        return Double(numQuestions)
+    }
+    
+    var doubleNumCorrect: Double {
+        return Double(numCorrect)
+    }
+    
+    var percentOfRecord: Double {
+        return Double(numCorrect) / Double(correctRecord)
+    }
+    
+    var numWrong: Int {
+        return numQuestions - numCorrect
+    }
+    
+    var averageScore: Double {
+        return numQuestions == 0 ? 0.0 : Double(doubleNumCorrect / doubleNumQuestions)
+    }
+    
+    var scoreValue: Double {
+        return ceil(averageScore*100)/100
+    }
+    
+    var currentStreakDetail: String {
+        return "Current Streak: \(numCorrect)"
+    }
+    
+    var highScoreDetail: String {
+        return "High Score: \(highScore)"
+    }
+    
+    var highScore: Int {
+        return correctRecord
+    }
+    
+    init(snapshot: DataSnapshot) throws {
+        guard let values = snapshot.value as? [String:Any] else { throw FirebaseItemError.invalidData }
+        id = snapshot.key
+        ref = snapshot.ref
+        numQuestions = values[FirebaseStructure.Training.Stats.numQuestions] as? Int ?? 0
+        numCorrect = values[FirebaseStructure.Training.Stats.numCorrect] as? Int ?? 0
+        correctRecord = values[FirebaseStructure.Training.Stats.correctRecord] as? Int ?? 0
+    }
     
     init() {
-        concreteAverage = ConcreteTrainingHistory()
-        emotionsAverage = EmotionsTrainingHistory()
-    }
-}
-
-struct ConcreteTrainingHistory: Codable {
-    var numQuestions: Int = 0
-    var numCorrect: Int = 0
-    var correctRecord: Int! = 1
-    
-    var doubleNumQuestions: Double {
-        return Double(numQuestions)
+        numQuestions = 0
+        numCorrect = 0
+        correctRecord = 1
     }
     
-    var doubleNumCorrect: Double {
-        return Double(numCorrect)
+    func toAny() -> [AnyHashable : Any] {
+        return [
+            FirebaseStructure.Training.Stats.numQuestions : numQuestions as NSNumber,
+            FirebaseStructure.Training.Stats.numCorrect : numCorrect as NSNumber,
+            FirebaseStructure.Training.Stats.correctRecord : correctRecord as NSNumber
+        ]
     }
-    
-    var percentOfRecord: Double {
-        return Double(numCorrect) / Double(correctRecord ?? 1)
-    }
-    
-    // computed vars
-    var numWrong: Int {
-        return numQuestions - numCorrect
-    }
-    
-    var averageScore: Double {
-        return numQuestions == 0 ? 0.0 : Double(doubleNumCorrect / doubleNumQuestions)
-    }
-    
-    var scoreValue: Double {
-        return ceil(averageScore*100)/100
-    }
-    
-    var currentStreakDetail: String {
-        return "Current Streak: \(numCorrect)"
-    }
-    
-    var highScoreDetail: String {
-        return "High Score: \(highScore)"
-    }
-    
-    var highScore: Int {
-        if let score = correctRecord {
-            return score
-        } else {
-            return 0
-        }
-    }
-}
-
-struct EmotionsTrainingHistory: Codable {
-    var numQuestions: Int = 0
-    var numCorrect: Int = 0
-    var correctRecord: Int! = 1
-    
-    var doubleNumQuestions: Double {
-        return Double(numQuestions)
-    }
-    
-    var doubleNumCorrect: Double {
-        return Double(numCorrect)
-    }
-    
-    var percentOfRecord: Double {
-        return Double(numCorrect) / Double(correctRecord ?? 1)
-    }
-    
-    // computed vars
-    var numWrong: Int {
-        return numQuestions - numCorrect
-    }
-    
-    var averageScore: Double {
-        return numQuestions == 0 ? 0.0 : Double(doubleNumCorrect / doubleNumQuestions)
-    }
-    
-    var scoreValue: Double {
-        return ceil(averageScore*100)/100
-    }
-    
-    var currentStreakDetail: String {
-        return "Current Streak: \(numCorrect)"
-    }
-    
-    var highScoreDetail: String {
-        return "High Score: \(highScore)"
-    }
-    
-    var highScore: Int {
-        if let score = correctRecord {
-            return score
-        } else {
-            return 0
-        }
-    }
-}
-
-struct SandboxTrainingHistory: Codable {
-    
-    var history: [SandboxScore] = []
-    
-    var average: SandboxAverage {
-        let count: Double = Double(history.count)
-        let length = (Double(history.map{$0.length}.reduce(0, +)) / count).rounded()
-        let concrete = (Double(history.map{$0.concrete}.reduce(0, +)) / count).rounded()
-        let abstract = (Double(history.map{$0.abstract}.reduce(0, +)) / count).rounded()
-        let unclassified = (Double(history.map{$0.unclassified}.reduce(0, +)) / count).rounded()
-        let first = (Double(history.map{$0.first}.reduce(0, +)) / count).rounded()
-        let second = (Double(history.map{$0.second}.reduce(0, +)) / count).rounded()
-        let positive = (Double(history.map{$0.positive}.reduce(0, +)) / count).rounded()
-        let negative = (Double(history.map{$0.negative}.reduce(0, +)) / count).rounded()
-        let repeated = (Double(history.map{$0.repeated}.reduce(0, +)) / count).rounded()
-        
-        return SandboxAverage(length: length, concrete: concrete, abstract: abstract, unclassified: unclassified, first: first, second: second, positive: positive, negative: negative, repeated: repeated)
-    }
-    
-    mutating func append(_ score: SandboxScore) {
-        if history.count >= 10 { history.removeFirst() }
-        history.append(score)
-        
-        // upload new history to firebase
-        do {
-            let data = try FirebaseEncoder().encode(self)
-            Database.database().reference().child(FirebaseStructure.Users).child(Auth.auth().currentUser!.uid).child(FirebaseStructure.Training.TrainingDatabase).child(FirebaseStructure.Training.SandboxHistory).setValue(data)
-        } catch let error {
-            print("~>There was an error converting the data into firebase format: \(error)")
-        }
-    }
-    
-}
-
-struct SandboxAverage {
-    var length: Double
-    var concrete: Double
-    var abstract: Double
-    var unclassified: Double
-    var first: Double
-    var second: Double
-    var positive: Double
-    var negative: Double
-    var repeated: Double
-    
-    init(length: Double, concrete: Double, abstract: Double, unclassified: Double, first: Double, second: Double, positive: Double, negative: Double, repeated: Double) {
-        self.length = length
-        self.concrete = concrete
-        self.abstract = abstract
-        self.unclassified = unclassified
-        self.first = first
-        self.second = second
-        self.positive = positive
-        self.negative = negative
-        self.repeated = repeated
-    }
-}
-
-struct SandboxScore: Codable {
-    
-    var length: Int
-    var concrete: Int
-    var abstract: Int
-    var unclassified: Int
-    var first: Int
-    var second: Int
-    var positive: Int
-    var negative: Int
-    var repeated: Int
-    
-    init(length: Int, concrete: Int, abstract: Int, unclassified: Int, first: Int, second: Int, positive: Int, negative: Int, repeated: Int) {
-        self.length = length
-        self.concrete = concrete
-        self.abstract = abstract
-        self.unclassified = unclassified
-        self.first = first
-        self.second = second
-        self.positive = positive
-        self.negative = negative
-        self.repeated = repeated
-    }
-    
 }

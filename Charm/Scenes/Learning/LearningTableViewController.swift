@@ -32,13 +32,18 @@ class LearningTableViewController: UITableViewController {
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: CellID.VideoList, for: indexPath) as! VideoTableViewCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: CellID.videoList, for: indexPath) as! VideoTableViewCell
         
         return viewModel.configure(cell: cell, forIndexPath: indexPath)
     }
     
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         return viewModel.sections.sections[section].sectionTitle
+    }
+    
+    override func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
+        guard let header = view as? UITableViewHeaderFooterView else  { return }
+        header.textLabel?.font = UIFont.boldSystemFont(ofSize: 24)
     }
     
     // play video

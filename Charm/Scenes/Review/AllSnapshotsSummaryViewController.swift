@@ -30,7 +30,7 @@ class AllSnapshotsSummaryViewController: UIViewController {
     // MARK: - Properties
     
     // snapshot data
-    private var snapshots = UserSnapshotData.shared.snapshots
+    private var snapshots = FirebaseModel.shared.snapshots
     
     // data from snapshots for chart
     var xAxisCategories: [String] = []
@@ -75,11 +75,11 @@ class AllSnapshotsSummaryViewController: UIViewController {
             // we only should be loading snapshots with valid dates (all should be valid)
             if let date = snapshot.date {
                 xAxisCategories.insert(dFormatter.string(from: date), at: 0)
-                ideaData.add(score: Int(snapshot.getTopLevelScoreValue(forSummaryItem: .IdeaEngagement) ?? 0))
-                convoData.add(score: Int(snapshot.getTopLevelScoreValue(forSummaryItem: .ConversationEngagement) ?? 0))
-                personalData.add(score: Int(snapshot.getTopLevelScoreValue(forSummaryItem: .PersonalConnection) ?? 0))
-                emotionalData.add(score: Int(snapshot.getTopLevelScoreValue(forSummaryItem: .EmotionalConnection) ?? 0))
-                smilingData.add(score: Int(snapshot.getTopLevelScoreValue(forSummaryItem: .SmilingPercentage) ?? 0))
+                ideaData.add(score: Int(snapshot.getTopLevelScoreValue(forSummaryItem: .ideaEngagement) ?? 0))
+                convoData.add(score: Int(snapshot.getTopLevelScoreValue(forSummaryItem: .conversationEngagement) ?? 0))
+                personalData.add(score: Int(snapshot.getTopLevelScoreValue(forSummaryItem: .personalConnection) ?? 0))
+                emotionalData.add(score: Int(snapshot.getTopLevelScoreValue(forSummaryItem: .emotionalConnection) ?? 0))
+                smilingData.add(score: Int(snapshot.getTopLevelScoreValue(forSummaryItem: .smilingPercentage) ?? 0))
             }
         }
         
@@ -170,7 +170,7 @@ extension AllSnapshotsSummaryViewController: UITableViewDelegate, UITableViewDat
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: CellID.SnapshotList, for: indexPath) as! SnapshotSummaryTableViewCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: CellID.snapshotList, for: indexPath) as! SnapshotSummaryTableViewCell
         
         cell.snapshot = snapshots[indexPath.row]
         return cell
@@ -180,7 +180,7 @@ extension AllSnapshotsSummaryViewController: UITableViewDelegate, UITableViewDat
         tableView.deselectRow(at: indexPath, animated: true)
         let snapshot = snapshots[indexPath.row]
         
-        UserSnapshotData.shared.selectedSnapshot = snapshot
+        FirebaseModel.shared.selectedSnapshot = snapshot
         navigationController?.popViewController(animated: true)
     }
     

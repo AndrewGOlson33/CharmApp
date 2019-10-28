@@ -61,11 +61,11 @@ class SnapshotSummaryTableViewCell: UITableViewCell {
         let date = snapshot.date
 
         let friend = snapshot.friend
-        let idea = Int(snapshot.getTopLevelScoreValue(forSummaryItem: .IdeaEngagement) ?? 0)
-        let conversation = Int(snapshot.getTopLevelScoreValue(forSummaryItem: .ConversationEngagement) ?? 0)
-        let personal = Int(snapshot.getTopLevelScoreValue(forSummaryItem: .PersonalConnection) ?? 0)
-        let emotional = Int(snapshot.getTopLevelScoreValue(forSummaryItem: .EmotionalConnection) ?? 0)
-        let smiling = Int(snapshot.getTopLevelScoreValue(forSummaryItem: .SmilingPercentage) ?? 0)
+        let idea = Int(snapshot.getTopLevelScoreValue(forSummaryItem: .ideaEngagement) ?? 0)
+        let conversation = Int(snapshot.getTopLevelScoreValue(forSummaryItem: .conversationEngagement) ?? 0)
+        let personal = Int(snapshot.getTopLevelScoreValue(forSummaryItem: .personalConnection) ?? 0)
+        let emotional = Int(snapshot.getTopLevelScoreValue(forSummaryItem: .emotionalConnection) ?? 0)
+        let smiling = Int(snapshot.getTopLevelScoreValue(forSummaryItem: .smilingPercentage) ?? 0)
         
         if friend != friendName {
             friendName = friend

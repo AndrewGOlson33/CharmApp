@@ -23,7 +23,7 @@ class UpdateSubscriptionViewController: UIViewController {
     }
     
     @IBAction func showTermsOfUse(_ sender: Any) {
-        performSegue(withIdentifier: SegueID.ShowInfo, sender: DocumentType.TermsOfUse)
+        performSegue(withIdentifier: SegueID.showInfo, sender: DocumentType.TermsOfUse)
     }
     
     // MARK: - Navigation
@@ -32,10 +32,10 @@ class UpdateSubscriptionViewController: UIViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         
         // get container view controller
-        if segue.identifier == SegueID.SubscriptionTable, let vc = segue.destination as? SubscriptionsTableViewController {
+        if segue.identifier == SegueID.subscriptionTable, let vc = segue.destination as? SubscriptionsTableViewController {
             vc.viewActivity = viewActivity
             vc.fromSettings = true
-        } else if segue.identifier == SegueID.ShowInfo, let infoVC = segue.destination as? InfoModuleViewController, let type = sender as? DocumentType {
+        } else if segue.identifier == SegueID.showInfo, let infoVC = segue.destination as? InfoModuleViewController, let type = sender as? DocumentType {
             infoVC.documentType = type
         }
     }

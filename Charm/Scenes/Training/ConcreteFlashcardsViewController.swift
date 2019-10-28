@@ -8,7 +8,6 @@
 
 import UIKit
 import Firebase
-import CodableFirebase
 import AVKit
 
 protocol FlashcardsHistoryDelegate {
@@ -67,11 +66,11 @@ class ConcreteFlashcardsViewController: UIViewController, FlashcardsHistoryDeleg
         }
         
         // Start animating activity view and turn on firebase listener
-        if viewModel.trainingModel.model.concreteNounFlashcards.count == 0 || viewModel.trainingModel.model.abstractNounConcreteFlashcards.count == 0 {
+        if viewModel.trainingModel?.concreteNounFlashcards.count == 0 || viewModel.trainingModel?.abstractNounFlashcards.count == 0 {
             viewLoading.layer.cornerRadius = 20
             viewLoading.isHidden = false
             activityIndicator.startAnimating()
-            NotificationCenter.default.addObserver(self, selector: #selector(firebaseModelLoaded), name: FirebaseNotification.TrainingModelLoaded, object: nil)
+            NotificationCenter.default.addObserver(self, selector: #selector(firebaseModelLoaded), name: FirebaseNotification.trainingModelLoaded, object: nil)
         } else {
             firebaseModelLoaded()
         }
@@ -107,32 +106,21 @@ class ConcreteFlashcardsViewController: UIViewController, FlashcardsHistoryDeleg
         abstractFrame = btnAbstract.frame
         
         // setup listener for when score updates
-        NotificationCenter.default.addObserver(self, selector: #selector(historyUpdatedFromServer), name: FirebaseNotification.TrainingHistoryUpdated, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(historyUpdatedFromServer), name: FirebaseNotification.trainingHistoryUpdated, object: nil)
     }
     
     // Remove observer when view is not visible
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        NotificationCenter.default.removeObserver(self, name: FirebaseNotification.TrainingHistoryUpdated, object: nil)
+        NotificationCenter.default.removeObserver(self, name: FirebaseNotification.trainingHistoryUpdated, object: nil)
         
         
         // Save history when leaving screen
-        guard let uid = CharmUser.shared.id else { return }
-        var history: TrainingHistory!
-        
-        if let existing = CharmUser.shared.trainingData {
-            history = existing
-        } else {
-            history = TrainingHistory()
-        }
-        
+        let history = FirebaseModel.shared.charmUser.trainingData
+            
         DispatchQueue.global(qos: .utility).async {
-            do {
-                let data = try FirebaseEncoder().encode(history)
-                Database.database().reference().child(FirebaseStructure.Users).child(uid).child(FirebaseStructure.Training.TrainingDatabase).setValue(data)
-            } catch let error {
-                print("~>There was an error converting the data: \(error)")
-            }
+            history.save()
+            history.ref?.keepSynced(true)
         }
     }
     
@@ -140,8 +128,8 @@ class ConcreteFlashcardsViewController: UIViewController, FlashcardsHistoryDeleg
     
     @objc private func infoButtonTapped() {
         
-        guard let info = storyboard?.instantiateViewController(withIdentifier: StoryboardID.Info) as? InfoDetailViewController else { return }
-        info.type = .Ideas
+        guard let info = storyboard?.instantiateViewController(withIdentifier: StoryboardID.info) as? InfoDetailViewController else { return }
+        info.type = .ideas
         tabBarController?.navigationController?.pushViewController(info, animated: true)
     }
     
@@ -155,7 +143,7 @@ class ConcreteFlashcardsViewController: UIViewController, FlashcardsHistoryDeleg
     // Setup UI once the firebase model is loaded
     @objc private func firebaseModelLoaded() {
         // remove listener
-        NotificationCenter.default.removeObserver(self, name: FirebaseNotification.TrainingModelLoaded, object: nil)
+        NotificationCenter.default.removeObserver(self, name: FirebaseNotification.trainingModelLoaded, object: nil)
         
         // setup first flashcard
         lblWord.text = viewModel.getFlashCard().capitalizedFirst
@@ -175,7 +163,7 @@ class ConcreteFlashcardsViewController: UIViewController, FlashcardsHistoryDeleg
     // Updates UI When Training Data Updates
     
     @objc private func historyUpdatedFromServer() {
-        NotificationCenter.default.removeObserver(self, name: FirebaseNotification.TrainingHistoryUpdated, object: nil)
+        NotificationCenter.default.removeObserver(self, name: FirebaseNotification.trainingHistoryUpdated, object: nil)
         trainingHistoryUpdated()
     }
     
@@ -250,7 +238,7 @@ class ConcreteFlashcardsViewController: UIViewController, FlashcardsHistoryDeleg
     // MARK: - Button Handling
     
     @IBAction func resetButtonTapped(_ sender: Any) {
-        viewModel.resetRecord(forType: .Concrete)
+        viewModel.resetRecord(forType: .concrete)
     }
     
 }
@@ -279,7 +267,7 @@ extension ConcreteFlashcardsViewController: UIGestureRecognizerDelegate {
                 lastTouchedButton = nil
                 
                 // submit answer and get response
-                let response = viewModel.getResponse(answeredWith: .Concrete, forFlashcardType: .Concrete)
+                let response = viewModel.getResponse(answeredWith: .concrete, forFlashcardType: .concrete)
                 handle(response: response)
                 
             } else if abstractFrame.contains(touch.location(in: view)) {
@@ -287,7 +275,7 @@ extension ConcreteFlashcardsViewController: UIGestureRecognizerDelegate {
                 lastTouchedButton = nil
                 
                 // submit answer and get response
-                let response = viewModel.getResponse(answeredWith: .Abstract, forFlashcardType: .Concrete)
+                let response = viewModel.getResponse(answeredWith: .abstract, forFlashcardType: .concrete)
                 handle(response: response)
             }
         }

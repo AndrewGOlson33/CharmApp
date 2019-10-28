@@ -8,7 +8,6 @@
 
 import UIKit
 import Firebase
-import CodableFirebase
 
 class ChatTableViewController: UITableViewController {
     
@@ -40,7 +39,7 @@ class ChatTableViewController: UITableViewController {
     // MARK: - Private Helper Functions
     
     fileprivate func check(isFriendBusy friend: Friend, showBusyAlert: Bool, completion: @escaping(_ isBusy: Bool) -> Void) {
-        let usersRef = Database.database().reference().child(FirebaseStructure.Users)
+        let usersRef = Database.database().reference().child(FirebaseStructure.usersLocation)
         var hasCompleted: Bool = false
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 30) {
@@ -53,14 +52,14 @@ class ChatTableViewController: UITableViewController {
             completion(true)
         }
         
-        let callRef = usersRef.child(friend.id!).child(FirebaseStructure.CharmUser.Call)
+        let callRef = usersRef.child(friend.id!).child(FirebaseStructure.CharmUser.currentCallLocation)
         callRef.keepSynced(true)
         
         callRef.observeSingleEvent(of: .value) { (snapshot) in
-            if let value = snapshot.value, !(value is NSNull) {
-                print("~>Got value: \(value)")
+            if snapshot.exists() {
+                print("~>Got call snapshot: \(snapshot)")
                 do {
-                    let friendCurrentCall = try FirebaseDecoder().decode(Call.self, from: value)
+                    let friendCurrentCall = try Call(snapshot: snapshot)
                     // check if user is already on a call
                     if friendCurrentCall.status == .connected && showBusyAlert {
                         let busyAlert = UIAlertController(title: "Busy", message: "\(friend.firstName) is currently on another call.  Please try calling later.", preferredStyle: .alert)
@@ -103,10 +102,10 @@ class ChatTableViewController: UITableViewController {
         
         // if a user has no friends, return the empty chat list cell
         if viewModel.currentFriends.count == 0 {
-            return tableView.dequeueReusableCell(withIdentifier: CellID.EmptyChatList)!
+            return tableView.dequeueReusableCell(withIdentifier: CellID.emptyChatList)!
         }
         
-        var cell = tableView.dequeueReusableCell(withIdentifier: CellID.ChatList, for: indexPath) as! ChatFriendListTableViewCell
+        var cell = tableView.dequeueReusableCell(withIdentifier: CellID.chatList, for: indexPath) as! ChatFriendListTableViewCell
 
         cell = viewModel.configureCell(atIndex: indexPath.row, withCell: cell, filtered: isFiltering())
         
@@ -120,7 +119,7 @@ class ChatTableViewController: UITableViewController {
             print("~>Not enough credits to make a call.")
             let creditsAlert = UIAlertController(title: "Insufficient Credits", message: "You are out of credits. Please choose a subscription plan if you wish to continue making video calls.", preferredStyle: .alert)
             creditsAlert.addAction(UIAlertAction(title: "Subscribe", style: .default, handler: { (_) in
-                self.performSegue(withIdentifier: SegueID.Subscriptions, sender: self)
+                self.performSegue(withIdentifier: SegueID.subscriptions, sender: self)
             }))
             creditsAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
             self.present(creditsAlert, animated: true, completion: nil)
@@ -163,7 +162,7 @@ class ChatTableViewController: UITableViewController {
         let callAlert = UIAlertController(title: title, message: message, preferredStyle: .alert)
         callAlert.addAction(UIAlertAction(title: "Cancel", style: .default, handler: nil))
         callAlert.addAction(UIAlertAction(title: "Call", style: .cancel, handler: { (_) in
-            self.performSegue(withIdentifier: SegueID.VideoCall, sender: friend)
+            self.performSegue(withIdentifier: SegueID.videoCall, sender: friend)
         }))
         present(callAlert, animated: true, completion: nil)
     }
@@ -194,10 +193,10 @@ class ChatTableViewController: UITableViewController {
     // MARK: - Segue (start call)
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == SegueID.VideoCall, let videoVC = segue.destination as? VideoCallViewController, let friend = sender as? Friend {
+        if segue.identifier == SegueID.videoCall, let videoVC = segue.destination as? VideoCallViewController, let friend = sender as? Friend {
             videoVC.friend = friend
             videoVC.myUser = viewModel.user!
-        } else if segue.identifier == SegueID.FriendList, let friendVC = segue.destination as? FriendListTableViewController {
+        } else if segue.identifier == SegueID.friendList, let friendVC = segue.destination as? FriendListTableViewController {
             friendVC.showContacts = false
         }
     }

@@ -9,7 +9,6 @@
 import UIKit
 import StoreKit
 import Firebase
-import CodableFirebase
 
 class SubscriptionsViewController: UIViewController {
     
@@ -89,7 +88,7 @@ class SubscriptionsViewController: UIViewController {
                     UserDefaults.standard.set(true, forKey: Defaults.validLicense)
                     
                     // Add credits
-                    if CharmUser.shared.userProfile.renewDate < Date() {
+                    if FirebaseModel.shared.charmUser.userProfile.renewDate < Date() {
                         let status = SubscriptionService.shared.updateCredits()
                         print("~>Attempted to update credits and got status: \(status)")
                     } else {
@@ -109,7 +108,7 @@ class SubscriptionsViewController: UIViewController {
     
     private func saveUserProfileToFirebase() {
         
-        guard CharmUser.shared != nil, let id = CharmUser.shared.id else {
+        guard FirebaseModel.shared.charmUser != nil, let id = FirebaseModel.shared.charmUser.id else {
             DispatchQueue.global(qos: .utility).asyncAfter(deadline: .now() + 5.0) {
                 self.saveUserProfileToFirebase()
                 return
@@ -118,15 +117,9 @@ class SubscriptionsViewController: UIViewController {
         }
         
         DispatchQueue.global(qos: .utility).async {
-            let profile = CharmUser.shared.userProfile
+            let profile = FirebaseModel.shared.charmUser.userProfile
             
-            do {
-                let data = try FirebaseEncoder().encode(profile)
-                Database.database().reference().child(FirebaseStructure.Users).child(id).child(FirebaseStructure.CharmUser.Profile).setValue(data)
-                print("~>Set user profile with new date")
-            } catch let error {
-                print("~>There was an error: \(error)")
-            }
+            Database.database().reference().child(FirebaseStructure.usersLocation).child(id).child(FirebaseStructure.CharmUser.profileLocation).setValue(profile.toAny())
         }
         
         
@@ -138,7 +131,7 @@ class SubscriptionsViewController: UIViewController {
         // a new subscription so add credits and set renew date to today
         if !restoreFromButton {
             let date = Date(timeInterval: -1800, since: Date())
-            CharmUser.shared.userProfile.renewDate = date
+            FirebaseModel.shared.charmUser.userProfile.renewDate = date
         }
         
         createAlert(withTitle: restoreFromButton ? "Restore Complete" : "Purchase Complete", andMessage: restoreFromButton ? "Your purchase has been restored." : "Congratulations on your purchase!  You may cancel anytime through iTunes.", andDoneButton: "Great!", purchased: true)
@@ -186,7 +179,7 @@ extension SubscriptionsViewController: UITableViewDelegate, UITableViewDataSourc
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: CellID.SubscriptionsList, for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: CellID.subscriptionsList, for: indexPath)
         
         guard let option = SubscriptionService.shared.options?[indexPath.row] else {
             print("~>No data")

@@ -10,7 +10,6 @@ import UIKit
 import Firebase
 import FirebaseUI
 import FirebaseMessaging
-import CodableFirebase
 import UserNotificationsUI
 import UserNotifications
 import StoreKit
@@ -44,10 +43,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     // MARK: - App Delegate Functions
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        // Configure Firebase 
+        // Configure Firebase
         FirebaseApp.configure()
-        Database.database().isPersistenceEnabled = true
-        DynamicLinks.performDiagnostics(completion: nil)
+        Database.database().isPersistenceEnabled = false // true
+//        DynamicLinks.performDiagnostics { (info, error) in
+//            print("~>Info: \(info) error: \(error)")
+//        }
         
         Messaging.messaging().delegate = self
         
@@ -76,7 +77,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         if AppStatus.shared.notFirstLaunch {
             checkStatusChange()
         }
-        
+
         return true
     }
     
@@ -96,16 +97,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     private func saveTraining() {
         // Save history when leaving screen
-        guard let history = CharmUser.shared.trainingData, let uid = CharmUser.shared.id else { return }
+        let history = FirebaseModel.shared.charmUser.trainingData
         
         DispatchQueue.global(qos: .utility).async {
-            do {
-                let data = try FirebaseEncoder().encode(history)
-                Database.database().reference().child(FirebaseStructure.Users).child(uid).child(FirebaseStructure.Training.TrainingDatabase).setValue(data)
-                print("~>Saved training.")
-            } catch let error {
-                print("~>There was an error converting the data: \(error)")
-            }
+            history.save()
         }
     }
     
@@ -176,7 +171,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         print("APNs token retrieved: \(deviceToken)")
         
         // With swizzling disabled you must set the APNs token here.
-        // Messaging.messaging().apnsToken = deviceToken
+//         Messaging.messaging().apnsToken = deviceToken
     }
     
     func applicationWillTerminate(_ application: UIApplication) {
@@ -194,8 +189,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     // MARK: - Helper Functions
     
     func removeActiveCalls() {
-        guard let user = CharmUser.shared else { return }
-        let myCallsRef = Database.database().reference().child(FirebaseStructure.Users).child(user.id!).child(FirebaseStructure.CharmUser.Call)
+        guard let user = FirebaseModel.shared.charmUser else { return }
+        let myCallsRef = Database.database().reference().child(FirebaseStructure.usersLocation).child(user.id!).child(FirebaseStructure.CharmUser.currentCallLocation)
         myCallsRef.removeValue()
         print("~>Did remove active calls.")
     }

@@ -10,7 +10,7 @@ import UIKit
 
 class SnapshotsListTableViewController: UITableViewController {
     
-    var snapshots = UserSnapshotData.shared.snapshots
+    var snapshots = FirebaseModel.shared.snapshots
     
     let dFormatter = DateFormatter()
 
@@ -28,7 +28,7 @@ class SnapshotsListTableViewController: UITableViewController {
 
  
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: CellID.SnapshotList, for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: CellID.snapshotList, for: indexPath)
 
         let snapshot = snapshots[indexPath.row]
         
@@ -50,7 +50,7 @@ class SnapshotsListTableViewController: UITableViewController {
         tableView.deselectRow(at: indexPath, animated: true)
         let snapshot = snapshots[indexPath.row]
         
-        UserSnapshotData.shared.selectedSnapshot = snapshot
+        FirebaseModel.shared.selectedSnapshot = snapshot
         navigationController?.popViewController(animated: true)
     }
 

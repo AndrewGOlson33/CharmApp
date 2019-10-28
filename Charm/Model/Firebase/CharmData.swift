@@ -8,7 +8,6 @@
 
 import Foundation
 import Firebase
-import CodableFirebase
 
 struct SnapshotsLoading {
     var isLoading: Bool = false
@@ -16,26 +15,9 @@ struct SnapshotsLoading {
     static var shared = SnapshotsLoading()
 }
 
-struct UserSnapshotData {
-    var snapshots: [Snapshot] = [] {
-        didSet {
-            snapshots.sort { (lhs, rhs) -> Bool in
-                lhs.date ?? Date.distantPast > rhs.date ?? Date.distantPast
-            }
-            
-            NotificationCenter.default.post(name: FirebaseNotification.SnapshotLoaded, object: nil)
-        }
-    }
-    
-    var selectedSnapshot: Snapshot? = nil
-    var isSample: Bool {
-        return snapshots.isEmpty
-    }
-    
-    static var shared = UserSnapshotData()
-}
-
-struct Snapshot: Codable {
+struct Snapshot: FirebaseItem, Codable {
+    var id: String?
+    var ref: DatabaseReference?
     
     var date: Date? {
         guard let string = dateString else {
@@ -56,13 +38,12 @@ struct Snapshot: Codable {
     var graphTone: [Sentiment]
     var tableViewTone: [Sentiment]
     var friends: [[String:String]]?
+    var transcript: [Transcript]?
     
     var friend: String {
         guard let friends = friends, let friend = friends.first, let name = friend.first else { return "Unknown User" }
         return name.value
     }
-    
-    var transcript: [Transcript]?
     
     // coding keys
     
@@ -75,6 +56,92 @@ struct Snapshot: Codable {
         case tableViewTone = "Sentiment_Raw" // used to be sentimentRaw
         case friends = "friendsName"
         case transcript = "Transcript"
+    }
+    
+    init(snapshot: DataSnapshot) throws {
+        guard snapshot.exists() else { throw FirebaseItemError.noSnapshot }
+        id = snapshot.key
+        ref = snapshot.ref
+        dateString = id
+        
+        // start with empty values
+        topLevelMetrics = []
+        ideaEngagement = []
+        conversation = []
+        connection = []
+        graphTone = []
+        tableViewTone = []
+        friends = [[:]]
+        
+        // top level metrics
+        let topLevelSnap = snapshot.childSnapshot(forPath: CodingKeys.topLevelMetrics.rawValue)
+        for child in topLevelSnap.children {
+            guard let snapshot = child as? DataSnapshot else { continue }
+            topLevelMetrics.append(try TopLevelMetric(snapshot: snapshot))
+        }
+        
+        // idea engagement (concrete)
+        let concreteSnap = snapshot.childSnapshot(forPath: CodingKeys.ideaEngagement.rawValue)
+        for child in concreteSnap.children {
+            guard let snapshot = child as? DataSnapshot else { continue }
+            ideaEngagement.append(try IdeaEngagement(snapshot: snapshot))
+        }
+        
+        // conversation (back and forth)
+        let convoSnap = snapshot.childSnapshot(forPath: CodingKeys.conversation.rawValue)
+        for child in convoSnap.children {
+            guard let snapshot = child as? DataSnapshot else { continue }
+            conversation.append(try Conversation(snapshot: snapshot))
+        }
+        
+        // connection (personal pronouns)
+        let connectionSnap = snapshot.childSnapshot(forPath: CodingKeys.connection.rawValue)
+        for child in connectionSnap.children {
+            guard let snapshot = child as? DataSnapshot else { continue }
+            connection.append(try PersonalPronouns(snapshot: snapshot))
+        }
+        
+        // graphTone (Sentiment)
+        let sentSnap = snapshot.childSnapshot(forPath: CodingKeys.graphTone.rawValue)
+        for child in sentSnap.children {
+            guard let snapshot = child as? DataSnapshot else { continue }
+            graphTone.append(try Sentiment(snapshot: snapshot))
+        }
+        
+        // table view tone (Sentiment Raw)
+        let toneSnap = snapshot.childSnapshot(forPath: CodingKeys.tableViewTone.rawValue)
+        for child in toneSnap.children {
+            guard let snapshot = child as? DataSnapshot else { continue }
+            tableViewTone.append(try Sentiment(snapshot: snapshot))
+        }
+        
+        // friends (which is really just one friend)
+        let friendsSnap = snapshot.childSnapshot(forPath: CodingKeys.friends.rawValue)
+        for child in friendsSnap.children {
+            guard let snapshot = child as? DataSnapshot, let friend = snapshot.value as? [String:String] else { continue }
+            friends?.append(friend)
+        }
+        
+        // Transcript
+        let tranSnap = snapshot.childSnapshot(forPath: CodingKeys.transcript.rawValue)
+        if tranSnap.exists() {
+            transcript = []
+            for child in tranSnap.children {
+                guard let snapshot = child as? DataSnapshot else { continue }
+                transcript?.append(try Transcript(snapshot: snapshot))
+            }
+        }
+        
+    }
+    
+    // snapshots cannot be saved
+    func toAny() -> [AnyHashable : Any] {
+        return [:]
+    }
+    
+    // snapshots cannot be saved
+    func save() {
+        return
     }
     
     // Snapshot Value Getters
@@ -113,8 +180,9 @@ struct Snapshot: Codable {
 
 // MARK: - Top Level Data
 
-struct TopLevelMetric: Codable {
-    
+struct TopLevelMetric: FirebaseItem, Codable {
+    var id: String?
+    var ref: DatabaseReference?
     var metric: String
     var rank: Double
     var raw: Double
@@ -129,17 +197,41 @@ struct TopLevelMetric: Codable {
         case score = "Score"
         case feedback = "Feedback"
     }
+    
+    init(snapshot: DataSnapshot) throws {
+        guard snapshot.exists() else { throw FirebaseItemError.noSnapshot }
+        guard let values = snapshot.value as? [String:Any] else { throw FirebaseItemError.invalidData }
+        id = snapshot.key
+        ref = snapshot.ref
+        
+        metric = values[CodingKeys.metric.rawValue] as? String ?? ""
+        feedback = values[CodingKeys.feedback.rawValue] as? String ?? ""
+        rank = values[CodingKeys.rank.rawValue] as? Double ?? 0.0
+        raw = values[CodingKeys.raw.rawValue] as? Double ?? 0.0
+        score = values[CodingKeys.score.rawValue] as? Double ?? 0.0
+    }
+    
+    func toAny() -> [AnyHashable : Any] {
+        return [:]
+    }
+    
+    func save() {
+        return
+    }
 }
 
 // MARK: - Word Choice Data
 
-struct IdeaEngagement: Codable {
+struct IdeaEngagement: FirebaseItem, Codable {
+    
+    var id: String?
+    var ref: DatabaseReference?
     var score: Double
     var word: String
     private var concrete: Int
     
     var isConcrete: Bool {
-        return concrete.boolValue
+        return concrete == 1 ? true : false
     }
     
     // coding keys to how data is stored on firebase
@@ -147,6 +239,25 @@ struct IdeaEngagement: Codable {
         case score = "ema3"  // used to be score
         case word = "token"
         case concrete = "concrete"
+    }
+    
+    init(snapshot: DataSnapshot) throws {
+        guard snapshot.exists() else { throw FirebaseItemError.noSnapshot }
+        guard let values = snapshot.value as? [String:Any] else { throw FirebaseItemError.invalidData }
+        id = snapshot.key
+        ref = snapshot.ref
+        
+        score = values[CodingKeys.score.rawValue] as? Double ?? 0.0
+        word = values[CodingKeys.word.rawValue] as? String ?? ""
+        concrete = values[CodingKeys.concrete.rawValue] as? Int ?? 0
+    }
+    
+    func toAny() -> [AnyHashable : Any] {
+        return [:]
+    }
+    
+    func save() {
+        return
     }
 }
 
@@ -158,7 +269,9 @@ extension Int {
 
 // MARK: - Back and Forth
 
-struct Conversation: Codable {
+struct Conversation: FirebaseItem, Codable {
+    var id: String?
+    var ref: DatabaseReference?
     var adjustedAvg: Double?
     var person: String
     var word: String
@@ -169,11 +282,32 @@ struct Conversation: Codable {
         case word = "word"
     }
     
+    init(snapshot: DataSnapshot) throws {
+        guard snapshot.exists() else { throw FirebaseItemError.noSnapshot }
+        guard let values = snapshot.value as? [String:Any] else { throw FirebaseItemError.invalidData }
+        id = snapshot.key
+        ref = snapshot.ref
+        
+        adjustedAvg = values[CodingKeys.adjustedAvg.rawValue] as? Double
+        person = values[CodingKeys.person.rawValue] as? String ?? ""
+        word = values[CodingKeys.word.rawValue] as? String ?? ""
+    }
+    
+    func toAny() -> [AnyHashable : Any] {
+        return [:]
+    }
+    
+    func save() {
+        return
+    }
+    
 }
 
 // MARK: - Personal Pronouns (Connection)
 
-struct PersonalPronouns: Codable {
+struct PersonalPronouns: FirebaseItem, Codable {
+    var id: String?
+    var ref: DatabaseReference?
     var adjustedAverage: Double?
     var classification: Int
     var shift: Int?
@@ -185,11 +319,33 @@ struct PersonalPronouns: Codable {
         case shift = "higlight"
         case word = "word"
     }
+    
+    init(snapshot: DataSnapshot) throws {
+        guard snapshot.exists() else { throw FirebaseItemError.noSnapshot }
+        guard let values = snapshot.value as? [String:Any] else { throw FirebaseItemError.invalidData }
+        id = snapshot.key
+        ref = snapshot.ref
+        
+        adjustedAverage = values[CodingKeys.adjustedAverage.rawValue] as? Double
+        classification = values[CodingKeys.classification.rawValue] as? Int ?? 1
+        shift = values[CodingKeys.shift.rawValue] as? Int
+        word = values[CodingKeys.word.rawValue] as? String ?? ""
+    }
+    
+    func toAny() -> [AnyHashable : Any] {
+        return [:]
+    }
+    
+    func save() {
+        return
+    }
 }
 
 // MARK: - Sentiment (Tone)
 
-struct Sentiment: Codable {
+struct Sentiment: FirebaseItem, Codable {
+    var id: String?
+    var ref: DatabaseReference?
     var roll3: Double
     var rollNeg3: Double
     var rollPos3: Double
@@ -203,12 +359,35 @@ struct Sentiment: Codable {
         case score = "score"
         case word = "word"
     }
+    
+    init(snapshot: DataSnapshot) throws {
+        guard snapshot.exists() else { throw FirebaseItemError.noSnapshot }
+        guard let values = snapshot.value as? [String:Any] else { throw FirebaseItemError.invalidData }
+        id = snapshot.key
+        ref = snapshot.ref
+        
+        roll3 = values[CodingKeys.roll3.rawValue] as? Double ?? 0.0
+        rollNeg3 = values[CodingKeys.rollNeg3.rawValue] as? Double ?? 0.0
+        rollPos3 = values[CodingKeys.rollPos3.rawValue] as? Double ?? 0.0
+        score = values[CodingKeys.score.rawValue] as? Int ?? 1
+        word = values[CodingKeys.word.rawValue] as? String ?? ""
+    }
+    
+    func toAny() -> [AnyHashable : Any] {
+        return [:]
+    }
+    
+    func save() {
+        return
+    }
 }
 
 // MARK: - Transcript
 
-struct Transcript: Codable {
-    var person: String? = ""
+struct Transcript: FirebaseItem, Codable {
+    var id: String?
+    var ref: DatabaseReference?
+    var person: String
     var phrase: Int
     var words: String
     
@@ -216,6 +395,25 @@ struct Transcript: Codable {
         case person = "Person"
         case phrase = "Phrase"
         case words = "Words"
+    }
+    
+    init(snapshot: DataSnapshot) throws {
+        guard snapshot.exists() else { throw FirebaseItemError.noSnapshot }
+        guard let values = snapshot.value as? [String:Any] else { throw FirebaseItemError.invalidData }
+        id = snapshot.key
+        ref = snapshot.ref
+        
+        person = values[CodingKeys.person.rawValue] as? String ?? ""
+        phrase = values[CodingKeys.phrase.rawValue] as? Int ?? Int(snapshot.key) ?? 0
+        words = values[CodingKeys.words.rawValue] as? String ?? ""
+    }
+    
+    func toAny() -> [AnyHashable : Any] {
+        return [:]
+    }
+    
+    func save() {
+        return
     }
 }
 
@@ -325,7 +523,7 @@ struct SliderDetails {
     }
 }
 
-struct TranscriptCellInfo {
+struct TranscriptCellInfo: Codable {
     
     var text: String
     var position: Int?

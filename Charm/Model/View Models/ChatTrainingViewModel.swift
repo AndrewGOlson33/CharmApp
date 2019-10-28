@@ -53,14 +53,14 @@ class ChatTrainingViewModel: NSObject {
     }
     
     // training model
-    let model = TrainingModelCapsule.shared
+    let model = FirebaseModel.shared.trainingModel
     
     var prompts: [ConversationPrompt] {
-        return model.model.conversationPrompts
+        return model?.conversationPrompts ?? []
     }
     
-    var wordPrompts: [ConcreteNounFlashcard] {
-        return model.model.concreteNounFlashcards
+    var wordPrompts: [NounFlashcard] {
+        return model?.concreteNounFlashcards ?? []
     }
     
     // MARK: - Functions
@@ -70,7 +70,7 @@ class ChatTrainingViewModel: NSObject {
         return prompts[Int(arc4random_uniform(UInt32(prompts.count)))]
     }
     
-    func getRandomWordPrompt() -> ConcreteNounFlashcard? {
+    func getRandomWordPrompt() -> NounFlashcard? {
         guard wordPrompts.count > 0 else { return nil }
         return wordPrompts[Int(arc4random_uniform(UInt32(wordPrompts.count)))]
     }

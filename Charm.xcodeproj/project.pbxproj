@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		440B49E3FFECF797577DDB57 /* Pods_Charm.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 16C20027951EB6711E199488 /* Pods_Charm.framework */; };
 		65030B78224948FE00079AFC /* ConcreteChatViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65030B77224948FE00079AFC /* ConcreteChatViewController.swift */; };
 		65030B7A22494C1900079AFC /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65030B7922494C1900079AFC /* Extensions.swift */; };
 		65030B7C2249508C00079AFC /* SandboxViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65030B7B2249508C00079AFC /* SandboxViewController.swift */; };
@@ -23,6 +22,7 @@
 		650E9F5722455885000EADEE /* ScorePhrase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 650E9F5622455885000EADEE /* ScorePhrase.swift */; };
 		65172714230B006800028E87 /* UIPaddedLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65172713230B006800028E87 /* UIPaddedLabel.swift */; };
 		65172716230B2AA300028E87 /* AIFeedbackTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65172715230B2AA300028E87 /* AIFeedbackTableViewCell.swift */; };
+		6517FB452367137400BEAE2E /* FirebaseModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6517FB442367137400BEAE2E /* FirebaseModel.swift */; };
 		6528D85222565F540058D0DC /* EmotionFlashcardsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6528D85122565F540058D0DC /* EmotionFlashcardsViewController.swift */; };
 		6534C2C92269F7520051F6D1 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6534C2C82269F7520051F6D1 /* GoogleService-Info.plist */; };
 		6534C2D0226A15E00051F6D1 /* Session.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6534C2CB226A15E00051F6D1 /* Session.swift */; };
@@ -77,11 +77,11 @@
 		65F5A027222FF8A8001262FB /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 65F5A025222FF8A8001262FB /* Main.storyboard */; };
 		65F5A029222FF8A9001262FB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 65F5A028222FF8A9001262FB /* Assets.xcassets */; };
 		65F5A02C222FF8A9001262FB /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 65F5A02A222FF8A9001262FB /* LaunchScreen.storyboard */; };
+		A63F5B02CC0299AD6BBD65D2 /* Pods_Charm.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BAA620061AA4DB1753B54FBB /* Pods_Charm.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		16C20027951EB6711E199488 /* Pods_Charm.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Charm.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		32AEF01E8A1AE05F8906832B /* Pods-Charm.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Charm.debug.xcconfig"; path = "Target Support Files/Pods-Charm/Pods-Charm.debug.xcconfig"; sourceTree = "<group>"; };
+		2677D4168519961F858CCA54 /* Pods-Charm.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Charm.release.xcconfig"; path = "Target Support Files/Pods-Charm/Pods-Charm.release.xcconfig"; sourceTree = "<group>"; };
 		65030B77224948FE00079AFC /* ConcreteChatViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConcreteChatViewController.swift; sourceTree = "<group>"; };
 		65030B7922494C1900079AFC /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		65030B7B2249508C00079AFC /* SandboxViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SandboxViewController.swift; sourceTree = "<group>"; };
@@ -97,6 +97,7 @@
 		650E9F5622455885000EADEE /* ScorePhrase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScorePhrase.swift; sourceTree = "<group>"; };
 		65172713230B006800028E87 /* UIPaddedLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIPaddedLabel.swift; sourceTree = "<group>"; };
 		65172715230B2AA300028E87 /* AIFeedbackTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIFeedbackTableViewCell.swift; sourceTree = "<group>"; };
+		6517FB442367137400BEAE2E /* FirebaseModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseModel.swift; sourceTree = "<group>"; };
 		6528D85122565F540058D0DC /* EmotionFlashcardsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmotionFlashcardsViewController.swift; sourceTree = "<group>"; };
 		6534C2C82269F7520051F6D1 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		6534C2CB226A15E00051F6D1 /* Session.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Session.swift; sourceTree = "<group>"; };
@@ -154,7 +155,8 @@
 		65F5A028222FF8A9001262FB /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		65F5A02B222FF8A9001262FB /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		65F5A02D222FF8A9001262FB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		70F986996E3218D755A9790F /* Pods-Charm.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Charm.release.xcconfig"; path = "Target Support Files/Pods-Charm/Pods-Charm.release.xcconfig"; sourceTree = "<group>"; };
+		BAA620061AA4DB1753B54FBB /* Pods_Charm.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Charm.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		C4FB669F69F539EFF4810D48 /* Pods-Charm.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Charm.debug.xcconfig"; path = "Target Support Files/Pods-Charm/Pods-Charm.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -162,8 +164,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				440B49E3FFECF797577DDB57 /* Pods_Charm.framework in Frameworks */,
 				6534C2D6226A16170051F6D1 /* StoreKit.framework in Frameworks */,
+				A63F5B02CC0299AD6BBD65D2 /* Pods_Charm.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -174,7 +176,7 @@
 			isa = PBXGroup;
 			children = (
 				6534C2D5226A16170051F6D1 /* StoreKit.framework */,
-				16C20027951EB6711E199488 /* Pods_Charm.framework */,
+				BAA620061AA4DB1753B54FBB /* Pods_Charm.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -373,6 +375,7 @@
 				65C1705B223FCD030081B55F /* CharmData.swift */,
 				657E72072243F4A7001EE828 /* TrainingData.swift */,
 				65F1C19A2260C38C00F0BD69 /* CharmBugReports.swift */,
+				6517FB442367137400BEAE2E /* FirebaseModel.swift */,
 			);
 			path = Firebase;
 			sourceTree = "<group>";
@@ -413,8 +416,8 @@
 		CF38F698B10C8A0F6ACAB617 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				32AEF01E8A1AE05F8906832B /* Pods-Charm.debug.xcconfig */,
-				70F986996E3218D755A9790F /* Pods-Charm.release.xcconfig */,
+				C4FB669F69F539EFF4810D48 /* Pods-Charm.debug.xcconfig */,
+				2677D4168519961F858CCA54 /* Pods-Charm.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -426,12 +429,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 65F5A030222FF8A9001262FB /* Build configuration list for PBXNativeTarget "Charm" */;
 			buildPhases = (
-				0E47302162D505BBBFCAD366 /* [CP] Check Pods Manifest.lock */,
+				07E26B41E52809B9BDAA761F /* [CP] Check Pods Manifest.lock */,
 				65F5A01A222FF8A8001262FB /* Sources */,
 				65F5A01B222FF8A8001262FB /* Frameworks */,
 				65F5A01C222FF8A8001262FB /* Resources */,
-				15B75009746FBE11390C7DF8 /* [CP] Embed Pods Frameworks */,
-				4719971D28B07957EBABA813 /* [CP] Copy Pods Resources */,
+				555FB28C18CD4D4F838BEDED /* [CP] Embed Pods Frameworks */,
+				5C70A9FB4F2E3FB74E32E6B0 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -503,7 +506,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		0E47302162D505BBBFCAD366 /* [CP] Check Pods Manifest.lock */ = {
+		07E26B41E52809B9BDAA761F /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -525,7 +528,7 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		15B75009746FBE11390C7DF8 /* [CP] Embed Pods Frameworks */ = {
+		555FB28C18CD4D4F838BEDED /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -542,7 +545,7 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Charm/Pods-Charm-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		4719971D28B07957EBABA813 /* [CP] Copy Pods Resources */ = {
+		5C70A9FB4F2E3FB74E32E6B0 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -566,6 +569,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6517FB452367137400BEAE2E /* FirebaseModel.swift in Sources */,
 				657330DC224164490066624B /* ConnectionViewController.swift in Sources */,
 				65C55C2122318BE300336243 /* VideoCallViewController.swift in Sources */,
 				65F1C1972260BB3B00F0BD69 /* InfoModuleViewController.swift in Sources */,
@@ -772,7 +776,7 @@
 		};
 		65F5A031222FF8A9001262FB /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 32AEF01E8A1AE05F8906832B /* Pods-Charm.debug.xcconfig */;
+			baseConfigurationReference = C4FB669F69F539EFF4810D48 /* Pods-Charm.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Charm/Charm.entitlements;
@@ -797,7 +801,7 @@
 		};
 		65F5A032222FF8A9001262FB /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 70F986996E3218D755A9790F /* Pods-Charm.release.xcconfig */;
+			baseConfigurationReference = 2677D4168519961F858CCA54 /* Pods-Charm.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Charm/Charm.entitlements;

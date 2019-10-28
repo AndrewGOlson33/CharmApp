@@ -8,7 +8,6 @@
 
 import UIKit
 import Firebase
-import CodableFirebase
 import Contacts
 
 class FriendListTableViewController: UITableViewController {
@@ -132,10 +131,10 @@ class FriendListTableViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if isContactsViewShowing && viewModel.currentFriends.count == 0 {
-            return tableView.dequeueReusableCell(withIdentifier: CellID.EmptyChatList)!
+            return tableView.dequeueReusableCell(withIdentifier: CellID.emptyChatList)!
         }
         
-        var cell = tableView.dequeueReusableCell(withIdentifier: CellID.FriendList, for: indexPath) as! FriendListTableViewCell
+        var cell = tableView.dequeueReusableCell(withIdentifier: CellID.friendList, for: indexPath) as! FriendListTableViewCell
         
         let filtered = isFiltering()
         

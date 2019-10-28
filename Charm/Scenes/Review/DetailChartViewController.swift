@@ -79,9 +79,9 @@ class DetailChartViewController: UIViewController {
         dFormatter.dateStyle = .medium
         
         // load summary data
-        if let data = UserSnapshotData.shared.selectedSnapshot {
+        if let data = FirebaseModel.shared.selectedSnapshot {
             snapshot = data
-        } else if let data = UserSnapshotData.shared.snapshots.first {
+        } else if let data = FirebaseModel.shared.snapshots.first {
             snapshot = data
         }
         
@@ -103,7 +103,7 @@ class DetailChartViewController: UIViewController {
         super.viewDidAppear(animated)
         
         // load a new snapshot if needed
-        if let newSnapshot = UserSnapshotData.shared.selectedSnapshot {
+        if let newSnapshot = FirebaseModel.shared.selectedSnapshot {
             snapshot = newSnapshot
         }
         
@@ -118,18 +118,18 @@ class DetailChartViewController: UIViewController {
     }
     
     @objc private func infoButtonTapped() {
-        guard let info = storyboard?.instantiateViewController(withIdentifier: StoryboardID.Info) as? InfoDetailViewController else { return }
-        var type: InfoDetail = .Connection
+        guard let info = storyboard?.instantiateViewController(withIdentifier: StoryboardID.info) as? InfoDetailViewController else { return }
+        var type: InfoDetail = .connection
         
         switch chartType! {
-        case .Connection:
-            type = .Connection
-        case .Conversation:
-            type = .Conversation
-        case .Emotions:
-            type = .Emotions
-        case .IdeaEngagement:
-            type = .Ideas
+        case .connection:
+            type = .connection
+        case .conversation:
+            type = .conversation
+        case .emotions:
+            type = .emotions
+        case .ideaEngagement:
+            type = .ideas
         }
         
         info.type = type
@@ -137,7 +137,7 @@ class DetailChartViewController: UIViewController {
     }
     
     private func loadData() {
-        let isSample = UserSnapshotData.shared.isSample
+        let isSample = FirebaseModel.shared.isSnapshotSample
         
         // clear any old values
         chartData = []
@@ -146,7 +146,7 @@ class DetailChartViewController: UIViewController {
         
         // setup data based on type
         switch chartType! {
-        case .IdeaEngagement:
+        case .ideaEngagement:
             
             let ideaEngagement = snapshot.ideaEngagement
             
@@ -163,20 +163,20 @@ class DetailChartViewController: UIViewController {
             }
             
             // setup slider bar data
-            if let position = snapshot.getTopLevelRawValue(forSummaryItem: .IdeaEngagement), let score = snapshot.getTopLevelScoreValue(forSummaryItem: .IdeaEngagement) {
+            if let position = snapshot.getTopLevelRawValue(forSummaryItem: .ideaEngagement), let score = snapshot.getTopLevelScoreValue(forSummaryItem: .ideaEngagement) {
                 let cellInfo = SliderCellInfo(details: SliderDetails(type: .fillFromLeft), title: "Idea Engagement", score: score, position: CGFloat(position))
                 sliderData.append(cellInfo)
             }
             
-            if let position = snapshot.getTopLevelRawValue(forSummaryItem: .Concrete), let score = snapshot.getTopLevelRankValue(forSummaryItem: .Concrete) {
+            if let position = snapshot.getTopLevelRawValue(forSummaryItem: .concrete), let score = snapshot.getTopLevelRankValue(forSummaryItem: .concrete) {
                 let cellInfo = SliderCellInfo(details: SliderDetails(type: .fixed, valueType: .percent, minBlue: 0.33, maxBlue: 0.67), title: "Concrete Details(%)", score: score, position: CGFloat(position))
                 sliderData.append(cellInfo)
             }
             
             // get feedback text
-            feedback = snapshot.getTopLevelFeedback(forSummaryItem: .IdeaEngagement)
+            feedback = snapshot.getTopLevelFeedback(forSummaryItem: .ideaEngagement)
             
-        case .Conversation:
+        case .conversation:
             let conversation = snapshot.conversation
             // setup chart data
             
@@ -184,7 +184,7 @@ class DetailChartViewController: UIViewController {
             if let trans = snapshot.transcript {
                 var position = 0
                 for phrase in trans {
-                    let person: String = phrase.person != nil ? phrase.person! : "Unknown"
+                    let person: String = phrase.person
                     
                     transcript.append(TranscriptCellInfo(withText: "[\(person)]: \(phrase.words)", at: position))
                     position += phrase.words.numberOfWords
@@ -216,25 +216,25 @@ class DetailChartViewController: UIViewController {
             }
             
             // setup slider bar data
-            if let position = snapshot.getTopLevelRawValue(forSummaryItem: .ConversationEngagement), let score = snapshot.getTopLevelScoreValue(forSummaryItem: .ConversationEngagement) {
+            if let position = snapshot.getTopLevelRawValue(forSummaryItem: .conversationEngagement), let score = snapshot.getTopLevelScoreValue(forSummaryItem: .conversationEngagement) {
                 let cellInfo = SliderCellInfo(details: SliderDetails(type: .fillFromLeft), title: "Conversation Engagement", score: score, position: CGFloat(position))
                 sliderData.append(cellInfo)
             }
             
-            if let position = snapshot.getTopLevelRawValue(forSummaryItem: .TalkingPercentage), let score = snapshot.getTopLevelRankValue(forSummaryItem: .TalkingPercentage) {
+            if let position = snapshot.getTopLevelRawValue(forSummaryItem: .talkingPercentage), let score = snapshot.getTopLevelRankValue(forSummaryItem: .talkingPercentage) {
                 let cellInfo = SliderCellInfo(details: SliderDetails(type: .fixed, valueType: .percent, minBlue: 0.33, maxBlue: 0.67), title: "Talking(%)", score: score, position: CGFloat(position))
                 sliderData.append(cellInfo)
             }
             
             // get feedback text
-            feedback = snapshot.getTopLevelFeedback(forSummaryItem: .ConversationEngagement)
+            feedback = snapshot.getTopLevelFeedback(forSummaryItem: .conversationEngagement)
             
-        case .Connection:
+        case .connection:
             let connection = snapshot.connection
             // setup chart data
             for (index, item) in connection.enumerated() {
                 // add transcript data
-                let pronoun = Pronoun.init(rawValue: item.classification) ?? .FirstPerson
+                let pronoun = Pronoun.init(rawValue: item.classification) ?? .firstPerson
                 let text = "[\(index)]: \(item.word) (\(pronoun.description))"
                 transcript.append(TranscriptCellInfo(withText: text))
                 
@@ -252,20 +252,20 @@ class DetailChartViewController: UIViewController {
             }
             
             // setup slider bar data
-            if let position = snapshot.getTopLevelRawValue(forSummaryItem: .PersonalConnection), let score = snapshot.getTopLevelScoreValue(forSummaryItem: .PersonalConnection) {
+            if let position = snapshot.getTopLevelRawValue(forSummaryItem: .personalConnection), let score = snapshot.getTopLevelScoreValue(forSummaryItem: .personalConnection) {
                 let cellInfo = SliderCellInfo(details: SliderDetails(type: .fillFromLeft), title: "Personal Engagement", score: score, position: CGFloat(position))
                 sliderData.append(cellInfo)
             }
             
-            if let position = snapshot.getTopLevelRawValue(forSummaryItem: .FirstPerson), let score = snapshot.getTopLevelRankValue(forSummaryItem: .FirstPerson) {
+            if let position = snapshot.getTopLevelRawValue(forSummaryItem: .firstPerson), let score = snapshot.getTopLevelRankValue(forSummaryItem: .firstPerson) {
                 let cellInfo = SliderCellInfo(details: SliderDetails(type: .fixed, valueType: .percent, minBlue: 0.375, maxBlue: 0.625), title: "First Person(%)", score: score, position: CGFloat(position))
                 sliderData.append(cellInfo)
             }
             
             // get feedback text
-            feedback = snapshot.getTopLevelFeedback(forSummaryItem: .PersonalConnection)
+            feedback = snapshot.getTopLevelFeedback(forSummaryItem: .personalConnection)
         
-        case .Emotions:
+        case .emotions:
             posData = []
             negData = []
             let toneGraph = snapshot.graphTone
@@ -291,17 +291,17 @@ class DetailChartViewController: UIViewController {
             }
             
             // setup scale bar data
-            if let position = snapshot.getTopLevelRawValue(forSummaryItem: .EmotionalConnection), let score = snapshot.getTopLevelScoreValue(forSummaryItem: .EmotionalConnection) {
+            if let position = snapshot.getTopLevelRawValue(forSummaryItem: .emotionalConnection), let score = snapshot.getTopLevelScoreValue(forSummaryItem: .emotionalConnection) {
                 let cellInfo = SliderCellInfo(details: SliderDetails(type: .fillFromLeft), title: "Emotional Connection", score: score, position: CGFloat(position))
                 sliderData.append(cellInfo)
             }
             
-            if let position = snapshot.getTopLevelRawValue(forSummaryItem: .PositiveWords), let score = snapshot.getTopLevelRankValue(forSummaryItem: .PositiveWords) {
+            if let position = snapshot.getTopLevelRawValue(forSummaryItem: .positiveWords), let score = snapshot.getTopLevelRankValue(forSummaryItem: .positiveWords) {
                 let cellInfo = SliderCellInfo(details: SliderDetails(type: .fixed, valueType: .percent, minBlue: 0.67, maxBlue: 1.0), title: "Positive Word(%)", score: score, position: CGFloat(position))
                 sliderData.append(cellInfo)
             }
             
-            if let position = snapshot.getTopLevelRawValue(forSummaryItem: .NegativeWords), let score = snapshot.getTopLevelRankValue(forSummaryItem: .NegativeWords) {
+            if let position = snapshot.getTopLevelRawValue(forSummaryItem: .negativeWords), let score = snapshot.getTopLevelRankValue(forSummaryItem: .negativeWords) {
                 let cellInfo = SliderCellInfo(details: SliderDetails(type: .fixed, valueType: .percent, minBlue: 0.0, maxBlue: 0.0, minRed: 0.9, maxRed: 1.0), title: "Negative Word(%)", score: score, position: CGFloat(position))
                 sliderData.append(cellInfo)
             }
@@ -313,7 +313,7 @@ class DetailChartViewController: UIViewController {
             }
             
             // get feedback text
-            feedback = snapshot.getTopLevelFeedback(forSummaryItem: .EmotionalConnection)
+            feedback = snapshot.getTopLevelFeedback(forSummaryItem: .emotionalConnection)
         }
         
         tableView.reloadData()
@@ -338,7 +338,7 @@ class DetailChartViewController: UIViewController {
         var upperBoundValue: Double
         
         switch chartType! {
-        case .IdeaEngagement:
+        case .ideaEngagement:
             colorArray = [
                 [NSNumber(value: 0), "rgb(242, 0, 0, 1)"],
                 [NSNumber(value: 0.2), "rgba(242, 0, 0, 0)"],
@@ -352,7 +352,7 @@ class DetailChartViewController: UIViewController {
             
             lowerBoundValue = -0.5
             upperBoundValue = 0.5
-        case .Conversation:
+        case .conversation:
             colorArray = [
                 [NSNumber(value: 0), "rgb(242, 0, 0, 1)"],
                 [NSNumber(value: 0.15), "rgba(242, 0, 0, 0)"],
@@ -365,7 +365,7 @@ class DetailChartViewController: UIViewController {
             
             lowerBoundValue = -0.7
             upperBoundValue = 0.7
-        case .Connection:
+        case .connection:
             colorArray = [
 //                [NSNumber(value: 0), "rgb(86, 0 ,0)"],
 //                [NSNumber(value: 0.5), "rgba(216,0,0, 0)"],
@@ -383,7 +383,7 @@ class DetailChartViewController: UIViewController {
             
             lowerBoundValue = -0.5
             upperBoundValue = 0.5
-        case .Emotions:
+        case .emotions:
             colorArray = [
                 [NSNumber(value: 0.0), "rgb(0, 242, 0, 1)"],
                 [NSNumber(value: 0.2), "rgb(0, 242, 0, 0)"],
@@ -421,7 +421,7 @@ class DetailChartViewController: UIViewController {
         yaxis.labels.enabled = false
         yaxis.visible = true
         
-        if chartType != .Emotions {
+        if chartType != .emotions {
             let upperBounds = HIPlotLines()
             upperBounds.color = HIColor(hexValue: "e4e4e4")
             upperBounds.width = 2
@@ -466,7 +466,7 @@ class DetailChartViewController: UIViewController {
         
         let plotoptions = HIPlotOptions()
         plotoptions.area = HIArea()
-        if chartType != .Emotions {
+        if chartType != .emotions {
             plotoptions.area.fillColor = HIColor(linearGradient: [
                 "x1": NSNumber(value: 0),
                 "x2": NSNumber(value: 0),
@@ -492,7 +492,7 @@ class DetailChartViewController: UIViewController {
                 var shouldScroll = false
                 var indexPath: IndexPath = IndexPath(row: 0, section: 0)
                 switch self.chartType! {
-                case .Emotions:
+                case .emotions:
                     let tone = self.snapshot.graphTone[row]
                     print("~>Word is: \(tone.word)")
                     var didFind = false
@@ -539,7 +539,7 @@ class DetailChartViewController: UIViewController {
                             self.chartView.removeAnnotation(byId: "annotation")
                         })
                     }
-                case .Conversation:
+                case .conversation:
                     guard let first = self.transcript.first, first.position != nil else { fallthrough }
                     var currentPosition: Int = 0
                     var previousIndex: Int = 0
@@ -711,7 +711,7 @@ extension DetailChartViewController: UITableViewDelegate, UITableViewDataSource 
             }
             
             if setupFeedback {
-                let cell = tableView.dequeueReusableCell(withIdentifier: CellID.AIFeedbback, for: indexPath) as! AIFeedbackTableViewCell
+                let cell = tableView.dequeueReusableCell(withIdentifier: CellID.aiFeedbback, for: indexPath) as! AIFeedbackTableViewCell
                 guard let feedback = self.feedback else { return cell }
                 cell.feedbackText = feedback
                 cell.accessoryType = .detailButton
@@ -719,7 +719,7 @@ extension DetailChartViewController: UITableViewDelegate, UITableViewDataSource 
             }
             
             // setup scalebar
-            let cell = tableView.dequeueReusableCell(withIdentifier: CellID.ScaleBar, for: indexPath) as! ScaleBarTableViewCell
+            let cell = tableView.dequeueReusableCell(withIdentifier: CellID.scaleBar, for: indexPath) as! ScaleBarTableViewCell
             let info = sliderData[row]
             cell.lblDescription.text = info.title
             
@@ -754,7 +754,7 @@ extension DetailChartViewController: UITableViewDelegate, UITableViewDataSource 
             return cell
         default:
             // setup transcript
-            let cell = tableView.dequeueReusableCell(withIdentifier: CellID.Transcript, for: indexPath) as! TranscriptTableViewCell
+            let cell = tableView.dequeueReusableCell(withIdentifier: CellID.transcript, for: indexPath) as! TranscriptTableViewCell
             let info = transcript[indexPath.row]
             cell.lblTranscriptText.text = info.text
             return cell
@@ -790,7 +790,7 @@ extension DetailChartViewController: UITableViewDelegate, UITableViewDataSource 
             var item: HIPoint = HIPoint()
             var word: String = ""
             
-            if chartType! == .Emotions {
+            if chartType! == .emotions {
                 // find the correct data point
                 let toneGraph = snapshot.graphTone
                 let rawItem = snapshot.tableViewTone[indexPath.row]
@@ -802,7 +802,7 @@ extension DetailChartViewController: UITableViewDelegate, UITableViewDataSource 
                         word = toneItem.word
                     }
                 }
-            } else if chartType! == .Conversation, let first = transcript.first, first.position != nil {
+            } else if chartType! == .conversation, let first = transcript.first, first.position != nil {
                 let transcriptItem = transcript[indexPath.row]
                 guard let position = transcriptItem.position else { return }
                 if chartView.options.series[0].data.count < position && calloutData.count < position {

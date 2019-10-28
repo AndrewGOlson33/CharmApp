@@ -8,7 +8,6 @@
 
 import UIKit
 import Firebase
-import CodableFirebase
 import AVKit
 
 class EmotionFlashcardsViewController: UIViewController, FlashcardsHistoryDelegate {
@@ -60,11 +59,11 @@ class EmotionFlashcardsViewController: UIViewController, FlashcardsHistoryDelega
         viewModel.delegate = self
         
         // Start animating activity view and turn on firebase listener
-        if viewModel.trainingModel.model.positiveWords.count == 0 || viewModel.trainingModel.model.negativeWords.count == 0 || viewModel.trainingModel.model.abstractNounConcreteFlashcards.count == 0 {
+        if viewModel.trainingModel?.positiveWords.count == 0 || viewModel.trainingModel?.negativeWords.count == 0 || viewModel.trainingModel?.abstractNounFlashcards.count == 0 {
             viewLoading.layer.cornerRadius = 20
             viewLoading.isHidden = false
             activityIndicator.startAnimating()
-            NotificationCenter.default.addObserver(self, selector: #selector(firebaseModelLoaded), name: FirebaseNotification.TrainingModelLoaded, object: nil)
+            NotificationCenter.default.addObserver(self, selector: #selector(firebaseModelLoaded), name: FirebaseNotification.trainingModelLoaded, object: nil)
         } else {
             firebaseModelLoaded()
         }
@@ -107,55 +106,39 @@ class EmotionFlashcardsViewController: UIViewController, FlashcardsHistoryDelega
         negativeFrame = btnNegative.frame
         
         // setup listener for when score updates
-        NotificationCenter.default.addObserver(self, selector: #selector(historyUpdatedFromServer), name: FirebaseNotification.TrainingHistoryUpdated, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(historyUpdatedFromServer), name: FirebaseNotification.trainingHistoryUpdated, object: nil)
     }
     
     // Remove observer when view is not visible
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        NotificationCenter.default.removeObserver(self, name: FirebaseNotification.TrainingHistoryUpdated, object: nil)
+        NotificationCenter.default.removeObserver(self, name: FirebaseNotification.trainingHistoryUpdated, object: nil)
         
         // Save history when leaving screen
-        guard let uid = CharmUser.shared.id else { return }
-        var history: TrainingHistory!
-        
-        if let existing = CharmUser.shared.trainingData {
-            history = existing
-        } else {
-            history = TrainingHistory()
-        }
-        
+        let history = FirebaseModel.shared.charmUser.trainingData
+            
         DispatchQueue.global(qos: .utility).async {
-            do {
-                let data = try FirebaseEncoder().encode(history)
-                print("~>Setting data on: \(uid) with: \(data)")
-               let reference = Database.database().reference().child(FirebaseStructure.Users).child(uid).child(FirebaseStructure.Training.TrainingDatabase)
-                reference.keepSynced(true)
-                reference.setValue(data) { (error, reference) in
-                    print("~>Error: \(String(describing: error)) reference: \(reference)")
-                    print("~>Completed set value.")
-                }
-            } catch let error {
-                print("~>There was an error converting the data: \(error)")
-            }
+            history.save()
+            history.ref?.keepSynced(true)
         }
+            
     }
     
     // MARK: - Private Helper Functions
     
     @objc private func infoButtonTapped() {
-        guard let info = storyboard?.instantiateViewController(withIdentifier: StoryboardID.Info) as? InfoDetailViewController else { return }
-        info.type = .Emotions
+        guard let info = storyboard?.instantiateViewController(withIdentifier: StoryboardID.info) as? InfoDetailViewController else { return }
+        info.type = .emotions
         tabBarController?.navigationController?.pushViewController(info, animated: true)
     }
     
     // Setup UI once the firebase model is loaded
     @objc private func firebaseModelLoaded() {
         // remove listener
-        NotificationCenter.default.removeObserver(self, name: FirebaseNotification.TrainingModelLoaded, object: nil)
+        NotificationCenter.default.removeObserver(self, name: FirebaseNotification.trainingModelLoaded, object: nil)
         
         // setup first flashcard
-        lblWord.text = viewModel.getFlashCard(ofType: .Emotions).capitalizedFirst
+        lblWord.text = viewModel.getFlashCard(ofType: .emotions).capitalizedFirst
         lblWord.alpha = 0.0
         lblWord.isHidden = false
         
@@ -172,7 +155,7 @@ class EmotionFlashcardsViewController: UIViewController, FlashcardsHistoryDelega
     // Updates UI When Training Data Updates
     
     @objc private func historyUpdatedFromServer() {
-        NotificationCenter.default.removeObserver(self, name: FirebaseNotification.TrainingHistoryUpdated, object: nil)
+        NotificationCenter.default.removeObserver(self, name: FirebaseNotification.trainingHistoryUpdated, object: nil)
         trainingHistoryUpdated()
     }
     
@@ -197,7 +180,7 @@ class EmotionFlashcardsViewController: UIViewController, FlashcardsHistoryDelega
     
     // Updates Score
     private func updateScore(withCorrectAnswer correct: Bool) {
-        viewModel.calculateAverageScore(addingCorrect: correct, toType: .Emotions)
+        viewModel.calculateAverageScore(addingCorrect: correct, toType: .emotions)
         
     }
     
@@ -225,7 +208,7 @@ class EmotionFlashcardsViewController: UIViewController, FlashcardsHistoryDelega
     
     // Animation helper to setup new word
     private func updateFlashcard() {
-        let newWord = viewModel.getFlashCard(ofType: .Emotions).capitalizedFirst
+        let newWord = viewModel.getFlashCard(ofType: .emotions).capitalizedFirst
         UIView.animate(withDuration: 0.25, delay: 0.05, animations: {
             self.lblWord.alpha = 0.0
         }) { (_) in
@@ -250,7 +233,7 @@ class EmotionFlashcardsViewController: UIViewController, FlashcardsHistoryDelega
     // MARK: - Button Handling
     
     @IBAction func resetButtonTapped(_ sender: Any) {
-        viewModel.resetRecord(forType: .Emotions)
+        viewModel.resetRecord(forType: .emotions)
     }
     
 }
@@ -279,7 +262,7 @@ extension EmotionFlashcardsViewController: UIGestureRecognizerDelegate {
                 lastTouchedButton = nil
                 
                 // submit answer and get response
-                let response = viewModel.getResponse(answeredWith: .Positive, forFlashcardType: .Emotions)
+                let response = viewModel.getResponse(answeredWith: .positive, forFlashcardType: .emotions)
                 handle(response: response)
                 
             } else if negativeFrame.contains(touch.location(in: view)) {
@@ -287,7 +270,7 @@ extension EmotionFlashcardsViewController: UIGestureRecognizerDelegate {
                 lastTouchedButton = nil
                 
                 // submit answer and get response
-                let response = viewModel.getResponse(answeredWith: .Negative, forFlashcardType: .Emotions)
+                let response = viewModel.getResponse(answeredWith: .negative, forFlashcardType: .emotions)
                 handle(response: response)
             }
         }

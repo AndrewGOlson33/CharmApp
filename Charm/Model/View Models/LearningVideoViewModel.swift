@@ -8,7 +8,6 @@
 
 import UIKit
 import Firebase
-import CodableFirebase
 
 class LearningVideoViewModel: NSObject {
     
@@ -60,24 +59,18 @@ class LearningVideoViewModel: NSObject {
     // MARK: - Private Helper Functions
     
     // Load video files
-    fileprivate func loadVideos() {
-        // get database references
-        let learningRef = Database.database().reference().child(FirebaseStructure.Videos.Learning)
-        
+    private func loadVideos() {
+        let learningRef = Database.database().reference().child(FirebaseStructure.Videos.learning).child(FirebaseStructure.Videos.sections)
+
         learningRef.observe(.value) { (snapshot) in
-            print("~>Got learning: \(String(describing: snapshot.value))")
-            guard let value = snapshot.value else { return }
-            
             do {
-                self.sections = try FirebaseDecoder().decode(VideoSections.self, from: value)
+                self.sections = try VideoSections(snapshot: snapshot)
                 self.delegate?.updateTableView()
-                print("~>sections: \(self.sections.sections.count)")
                 if self.sections.sections.count == 0 {
                     self.showInternetConnectionAlert()
                 }
             } catch let error {
                 print("~>There was an error decoding the video section: \(error)")
-                print("~>Value: \(String(describing: value))")
                 self.delegate?.updateTableView()
                 self.showInternetConnectionAlert()
             }

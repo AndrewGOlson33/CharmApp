@@ -23,9 +23,9 @@ public struct PaidSubscription {
         case none = "Not Subscribed"
         
         init(productId: String) {
-            if productId.contains(SubscriptionID.Standard) {
+            if productId.contains(SubscriptionID.standard) {
                 self = .Standard
-            } else if productId.contains(SubscriptionID.Premium) {
+            } else if productId.contains(SubscriptionID.premium) {
                 self = .Premium
             } else {
                 self = .none

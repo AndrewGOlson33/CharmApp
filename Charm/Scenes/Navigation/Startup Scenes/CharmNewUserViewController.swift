@@ -9,7 +9,6 @@
 import UIKit
 import Firebase
 import FirebaseAuth
-import CodableFirebase
 
 class CharmNewUserViewController: UIViewController {
     
@@ -270,14 +269,13 @@ extension CharmNewUserViewController {
     
     private func loadUser(withUID uid: String) {
         // read user
-        Database.database().reference().child(FirebaseStructure.Users).child(uid).observeSingleEvent (of: .value) { (snapshot) in
+        Database.database().reference().child(FirebaseStructure.usersLocation).child(uid).observeSingleEvent (of: .value) { (snapshot) in
             if snapshot.exists() {
                 // setup a user item
-                guard let value = snapshot.value else { fatalError("~>Unable to get value from snapshot") }
                 DispatchQueue.main.async {
                     do {
-                        let user = try FirebaseDecoder().decode(CharmUser.self, from: value)
-                        CharmUser.shared = user
+                        let user = try CharmUser(snapshot: snapshot)
+                        FirebaseModel.shared.charmUser = user
                         self.showSubscriptionSelection()
                     } catch let error {
                         print("~>There was an error creating object: \(error)")
@@ -295,21 +293,10 @@ extension CharmNewUserViewController {
                     var user = CharmUser(name: info.name, email: info.email)
                     user.id = uid
                     
-                    do {
-                        let data = try FirebaseEncoder().encode(user)
-                        Database.database().reference().child(FirebaseStructure.Users).child(uid).setValue(data)
-                        CharmUser.shared = user
-                        DispatchQueue.main.async {
-                            self.showSubscriptionSelection()
-                        }
-                        
-                    } catch let error {
-                        print("~>There was an error encoding user: \(error)")
-                        DispatchQueue.main.async {
-                            self.showLoginError()
-                        }
-                        
-                        return
+                    Database.database().reference().child(FirebaseStructure.usersLocation).child(uid).setValue(user.toAny())
+                    FirebaseModel.shared.charmUser = user
+                    DispatchQueue.main.async {
+                        self.showSubscriptionSelection()
                     }
                     
                 }
@@ -337,7 +324,7 @@ extension CharmNewUserViewController {
     }
     
     private func showSubscriptionSelection() {
-        performSegue(withIdentifier: SegueID.Subscriptions, sender: nil)
+        performSegue(withIdentifier: SegueID.subscriptions, sender: nil)
     }
     
 }

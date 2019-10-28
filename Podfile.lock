@@ -1,5 +1,4 @@
 PODS:
-  - CodableFirebase (0.2.1)
   - Firebase/Auth (6.11.0):
     - Firebase/CoreOnly
     - FirebaseAuth (~> 6.3.1)
@@ -109,16 +108,15 @@ PODS:
   - GTMSessionFetcher/Core (1.3.0)
   - Highcharts (7.2.0)
   - leveldb-library (1.22)
-  - nanopb (0.3.904):
-    - nanopb/decode (= 0.3.904)
-    - nanopb/encode (= 0.3.904)
-  - nanopb/decode (0.3.904)
-  - nanopb/encode (0.3.904)
+  - nanopb (0.3.9011):
+    - nanopb/decode (= 0.3.9011)
+    - nanopb/encode (= 0.3.9011)
+  - nanopb/decode (0.3.9011)
+  - nanopb/encode (0.3.9011)
   - OpenTok (2.16.3)
   - Protobuf (3.10.0)
 
 DEPENDENCIES:
-  - CodableFirebase
   - Firebase/Core
   - Firebase/Database
   - Firebase/DynamicLinks
@@ -131,7 +129,6 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
-    - CodableFirebase
     - Firebase
     - FirebaseAnalytics
     - FirebaseAnalyticsInterop
@@ -158,7 +155,6 @@ SPEC REPOS:
     - Protobuf
 
 SPEC CHECKSUMS:
-  CodableFirebase: 0bf201991eeec35eb9fcd987d271ea463cf34a80
   Firebase: bc9cfc7a96c73268656d5aaab453ff1b4b530e0e
   FirebaseAnalytics: 0e3ecff2c5d86070f7d4325e21f1edabfbd558dc
   FirebaseAnalyticsInterop: d48b6ab67bcf016a05e55b71fc39c61c0cb6b7f3
@@ -180,10 +176,10 @@ SPEC CHECKSUMS:
   GTMSessionFetcher: 43b8b64263023d4f32caa0b40f4c8bfa3c5f36d8
   Highcharts: 8f947193ff8ef2de03310eb2a5c8497706763afc
   leveldb-library: 55d93ee664b4007aac644a782d11da33fba316f7
-  nanopb: 06f6030d554e6473f5e172460173fcf80f5548f4
+  nanopb: 18003b5e52dab79db540fe93fe9579f399bd1ccd
   OpenTok: e17e1333108837cf0669be5de8f3155d1eb7ac12
   Protobuf: a4dc852ad69c027ca2166ed287b856697814375b
 
-PODFILE CHECKSUM: 927a808cc9bf01cf434d774129c6174bf8d933e3
+PODFILE CHECKSUM: 1da3c631f2ab2b26f973878e3a87b7dc1ddcf900
 
-COCOAPODS: 1.8.3
+COCOAPODS: 1.8.4

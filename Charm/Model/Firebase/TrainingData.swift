@@ -8,113 +8,21 @@
 
 import Foundation
 import Firebase
-import CodableFirebase
 
 enum WordType: String {
-    case Concrete = "Concrete"
-    case Abstract = "Abstract"
+    case concrete = "Concrete"
+    case abstract = "Abstract"
 }
 
-class TrainingModelCapsule {
+struct TrainingData: FirebaseItem {
+    var id: String?
+    var ref: DatabaseReference?
+    var concreteNouns: [NounWord] = []
+    var abstractNouns: [NounWord] = []
+    var neutralWords: [NounFlashcard] = []
+    var concreteNounFlashcards: [NounFlashcard] = []
+    var abstractNounFlashcards: [NounFlashcard] = []
     
-    var model: TrainingData = TrainingData()
-    var isModelLoaded: Bool {
-        return model.abstractNounConcreteFlashcards.count > 0 && model.concreteNounFlashcards.count > 0 && model.conversationPrompts.count > 0 && model.negativeWords.count > 0 && model.positiveWords.count > 0
-    }
-    
-    init() {
-        // start observing firebase
-        observerFirebase()
-    }
-    
-    func observerFirebase() {
-        print("~>Observing firebase training")
-        Database.database().reference().child(FirebaseStructure.Training.TrainingDatabase).observe(.value) { (snapshot) in
-            guard let value = snapshot.value else { return }
-            do {
-                self.model = try FirebaseDecoder().decode(TrainingData.self, from: value)
-                NotificationCenter.default.post(Notification(name: FirebaseNotification.TrainingModelLoaded))
-            } catch let error {
-                print("~>There was an error converting data: \(error)")
-            }
-        }
-    }
-    
-    static var shared = TrainingModelCapsule()
-    
-    func checkType(of word: String) -> WordType {
-        
-        if model.abstractNouns.contains(where: { (abstract) -> Bool in
-            return abstract.word.lowercased() == word.lowercased()
-        }) {
-            return .Abstract
-        }
-        
-        if model.concreteNouns.contains(where: { (concrete) -> Bool in
-            return concrete.word.lowercased() == word.lowercased()
-        }) {
-            return .Concrete
-        }
-        
-        // add to the unknown list
-        uploadUnclassified(nouns: [word])
-        return .Concrete
-    }
-    
-    func checkTypes(from wordChoices: [IdeaEngagement], completion: @escaping(_ wordTypes: [WordType]) -> Void) {
-        
-        var unclassified: [String] = []
-        var types: [WordType] = []
-        
-        for word in wordChoices {
-            if model.abstractNouns.contains(where: { (abstract) -> Bool in
-                return abstract.word.lowercased() == word.word.lowercased()
-            }) {
-                types.append(.Abstract)
-                continue
-            } else if model.concreteNouns.contains(where: { (concrete) -> Bool in
-                return concrete.word.lowercased() == word.word.lowercased()
-            }) {
-                types.append(.Concrete)
-            } else {
-                types.append(.Concrete)
-                unclassified.append(word.word)
-            }
-        }
-        
-        // add to the unknown list
-        
-        if unclassified.count > 0 {
-            uploadUnclassified(nouns: unclassified)
-        }
-        
-        completion(types)
-    }
-    
-    private func uploadUnclassified(nouns: [String]) {
-        var upload: [String] = []
-        if let existing = model.unclassifiedNouns {
-            upload = existing
-            for word in nouns {
-                if !existing.contains(word.lowercased()) { upload.append(word.lowercased()) }
-            }
-        } else {
-            upload = nouns.map { $0.lowercased() }
-        }
-        
-        DispatchQueue.global(qos: .utility).async {
-            Database.database().reference().child(FirebaseStructure.Training.TrainingDatabase).child(FirebaseStructure.Training.UnclassifiedNouns).setValue(upload)
-        }
-    }
-    
-}
-
-struct TrainingData: Codable {
-    var concreteNouns: [ConcreteNoun] = []
-    var abstractNouns: [AbstractNoun] = []
-    var neutralWords: [NeutralWord] = []
-    var concreteNounFlashcards: [ConcreteNounFlashcard] = []
-    var abstractNounConcreteFlashcards: [AbstractNounFlashcard] = []
     var firstPerson: [String] = []
     var firstPersonLowercased: [String] {
         return firstPerson.map {$0.lowercased()}
@@ -127,78 +35,201 @@ struct TrainingData: Codable {
     var negativeWords: [ScoredWord] = []
     var conversationPrompts: [ConversationPrompt] = []
     var unclassifiedNouns: [String]? = []
+    
+    init(snapshot: DataSnapshot) throws {
+        guard snapshot.exists() else { throw FirebaseItemError.noSnapshot }
+        id = snapshot.key
+        ref = snapshot.ref
+        
+        let concreteSnap = snapshot.childSnapshot(forPath: "concreteNouns")
+        for child in concreteSnap.children {
+            guard let snapshot = child as? DataSnapshot else { continue }
+            concreteNouns.append(try NounWord(snapshot: snapshot))
+        }
+        
+        let abstractSnap = snapshot.childSnapshot(forPath: "abstractNouns")
+        for child in abstractSnap.children {
+            guard let snapshot = child as? DataSnapshot else { continue }
+            abstractNouns.append(try NounWord(snapshot: snapshot))
+        }
+        
+        let neutralSnap = snapshot.childSnapshot(forPath: "neutralWords")
+        for child in neutralSnap.children {
+            guard let snapshot = child as? DataSnapshot else { continue }
+            neutralWords.append(try NounFlashcard(snapshot: snapshot))
+        }
+        
+        let concreteFlashSnap = snapshot.childSnapshot(forPath: "concreteNounFlashcards")
+        for child in concreteFlashSnap.children {
+            guard let snapshot = child as? DataSnapshot else { continue }
+            concreteNounFlashcards.append(try NounFlashcard(snapshot: snapshot))
+        }
+        
+        let abstractFlashSnap = snapshot.childSnapshot(forPath: "abstractNounConcreteFlashcards")
+        for child in abstractFlashSnap.children {
+            guard let snapshot = child as? DataSnapshot else { continue }
+            abstractNounFlashcards.append(try NounFlashcard(snapshot: snapshot))
+        }
+        
+        if let firstPersonValues = snapshot.childSnapshot(forPath: "firstPerson").value as? [String:String] {
+            for word in firstPersonValues.values {
+                firstPerson.append(word)
+            }
+        }
+        
+        if let secondPersonValues = snapshot.childSnapshot(forPath: "secondPerson").value as? [String:String] {
+            for word in secondPersonValues.values {
+                secondPerson.append(word)
+            }
+        }
+        
+        let positiveSnap = snapshot.childSnapshot(forPath: "positiveWords")
+        for child in positiveSnap.children {
+            guard let snapshot = child as? DataSnapshot else { continue }
+            positiveWords.append(try ScoredWord(snapshot: snapshot))
+        }
+        
+        let negativeSnap = snapshot.childSnapshot(forPath: "negativeWords")
+        for child in negativeSnap.children {
+            guard let snapshot = child as? DataSnapshot else { continue }
+            negativeWords.append(try ScoredWord(snapshot: snapshot))
+        }
+        
+        let promptSnap = snapshot.childSnapshot(forPath: "conversationPrompts")
+        for child in promptSnap.children {
+            guard let snapshot = child as? DataSnapshot else { continue }
+            conversationPrompts.append(try ConversationPrompt(snapshot: snapshot))
+        }
+        
+        if let unclassifiedValues = snapshot.childSnapshot(forPath: "unclassifiedNouns").value as? [String:String] {
+            var unclass: [String] = []
+            for word in unclassifiedValues.values {
+                unclass.append(word)
+            }
+        
+            unclassifiedNouns = unclass
+        }
+    }
+    
+    func toAny() -> [AnyHashable : Any] {
+        return [:]
+    }
+    
+    func save() {
+        return
+    }
 }
 
-struct ConcreteNounFlashcard: Codable {
+struct NounFlashcard: FirebaseItem, Codable {
+    var id: String?
+    var ref: DatabaseReference?
     var word: String
     
     enum CodingKeys: String, CodingKey {
         case word = "X1"
     }
-}
-
-struct AbstractNounFlashcard: Codable {
-    var word: String
     
-    enum CodingKeys: String, CodingKey {
-        case word = "X1"
+    init(snapshot: DataSnapshot) throws {
+        guard snapshot.exists() else { throw FirebaseItemError.noSnapshot }
+        guard let values = snapshot.value as? [String:String] else { throw FirebaseItemError.invalidData }
+        id = snapshot.key
+        ref = snapshot.ref
+        
+        word = values[CodingKeys.word.rawValue] ?? ""
+    }
+    
+    func toAny() -> [AnyHashable : Any] {
+        return [:]
+    }
+    
+    func save() {
+        return
     }
 }
 
-struct ConcreteNoun: Codable {
-    
-    var word: String
-    
-    enum CodingKeys: String, CodingKey {
-        case word = "X3"
-    }
-    
-}
-
-struct AbstractNoun: Codable {
-    
-    var word: String
-    
-    enum CodingKeys: String, CodingKey {
-        case word = "X3"
-    }
-}
-
-struct NeutralWord: Codable {
-    var word: String
-    
-    enum CodingKeys: String, CodingKey {
-        case word = "X1"
-    }
-}
-
-struct PositiveWord: Codable {
+struct NounWord: FirebaseItem, Codable {
+    var id: String?
+    var ref: DatabaseReference?
     var word: String
     
     enum CodingKeys: String, CodingKey {
         case word = "X3"
     }
-}
-
-struct NegativeWord: Codable {
-    var word: String
     
-    enum CodingKeys: String, CodingKey {
-        case word = "X3"
+    init(snapshot: DataSnapshot) throws {
+        guard snapshot.exists() else { throw FirebaseItemError.noSnapshot }
+        guard let values = snapshot.value as? [String:String] else { throw FirebaseItemError.invalidData }
+        id = snapshot.key
+        ref = snapshot.ref
+        
+        word = values[CodingKeys.word.rawValue] ?? ""
     }
+    
+    func toAny() -> [AnyHashable : Any] {
+        return [:]
+    }
+    
+    func save() {
+        return
+    }
+    
 }
 
-struct ConversationPrompt: Codable {
+struct ConversationPrompt: FirebaseItem, Codable {
+    var id: String?
+    var ref: DatabaseReference?
     var prompt: String
     
     enum CodingKeys: String, CodingKey {
         case prompt = "prompt"
     }
+    
+    init(snapshot: DataSnapshot) throws {
+        guard snapshot.exists() else { throw FirebaseItemError.noSnapshot }
+        guard let values = snapshot.value as? [String:String] else { throw FirebaseItemError.invalidData }
+        id = snapshot.key
+        ref = snapshot.ref
+        
+        prompt = values[CodingKeys.prompt.rawValue] ?? ""
+    }
+    
+    func toAny() -> [AnyHashable : Any] {
+        return [:]
+    }
+    
+    func save() {
+        return
+    }
 }
 
-struct ScoredWord: Codable {
+struct ScoredWord: FirebaseItem, Codable {
+    var id: String?
+    var ref: DatabaseReference?
     var score: Int
     var word: String
+    
+    enum CodingKeys: String, CodingKey {
+        case score = "score"
+        case word = "word"
+    }
+    
+    init(snapshot: DataSnapshot) throws {
+        guard snapshot.exists() else { throw FirebaseItemError.noSnapshot }
+        guard let values = snapshot.value as? [String:Any] else { throw FirebaseItemError.invalidData }
+        id = snapshot.key
+        ref = snapshot.ref
+        
+        score = values[CodingKeys.score.rawValue] as? Int ?? 0
+        word = values[CodingKeys.word.rawValue] as? String ?? ""
+    }
+    
+    func toAny() -> [AnyHashable : Any] {
+        return [:]
+    }
+    
+    func save() {
+        return
+    }
 }
 
 struct ChatScore {

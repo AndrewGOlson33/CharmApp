@@ -28,7 +28,7 @@ class StartupSubscriptionsViewController: UIViewController {
     }
     
     @IBAction func showTermsOfUse(_ sender: Any) {
-        performSegue(withIdentifier: SegueID.ShowInfo, sender: DocumentType.TermsOfUse)
+        performSegue(withIdentifier: SegueID.showInfo, sender: DocumentType.TermsOfUse)
     }
     
     // MARK: - Navigation
@@ -36,19 +36,19 @@ class StartupSubscriptionsViewController: UIViewController {
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         // get container view controller
-        if segue.identifier == SegueID.SubscriptionTable, let vc = segue.destination as? SubscriptionsTableViewController {
+        if segue.identifier == SegueID.subscriptionTable, let vc = segue.destination as? SubscriptionsTableViewController {
             vc.viewActivity = viewActivity
             vc.fromSettings = false
             vc.parentView = self
             subscriptionView = vc
-        } else if segue.identifier == SegueID.ShowInfo, let infoVC = segue.destination as? InfoModuleViewController, let type = sender as? DocumentType {
+        } else if segue.identifier == SegueID.showInfo, let infoVC = segue.destination as? InfoModuleViewController, let type = sender as? DocumentType {
             infoVC.documentType = type
         }
     }
     
     func showNavigation() {
         DispatchQueue.main.async {
-            let nav = self.storyboard?.instantiateViewController(withIdentifier: StoryboardID.NavigationHome)
+            let nav = self.storyboard?.instantiateViewController(withIdentifier: StoryboardID.navigationHome)
             let appDelegate = (UIApplication.shared.delegate as! AppDelegate)
             // clear out any calls as needed
             appDelegate.window?.rootViewController = nav

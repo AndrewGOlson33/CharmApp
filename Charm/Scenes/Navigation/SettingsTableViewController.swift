@@ -8,7 +8,6 @@
 
 import UIKit
 import Firebase
-import CodableFirebase
 
 enum DocumentType {
     case PrivacyPolicy
@@ -75,7 +74,7 @@ class SettingsTableViewController: UITableViewController {
     }
     
     @objc private func updateLabels() {
-        user = CharmUser.shared
+        user = FirebaseModel.shared.charmUser
         
         // setup labels
         lblEmail.text = user.userProfile.email
@@ -92,11 +91,11 @@ class SettingsTableViewController: UITableViewController {
         }
         
         // setup phone number toggle
-        tglPhoneNumber.isOn = user.userProfile.phone != nil
+        tglPhoneNumber.isOn = user.userProfile.phone != ""
         txtPhone.isEnabled = tglPhoneNumber.isOn
         
-        if let phone = self.user.userProfile.phone {
-            self.txtPhone.text = phone
+        if !self.user.userProfile.phone.isEmpty {
+            self.txtPhone.text = self.user.userProfile.phone
         }
     }
     
@@ -111,18 +110,18 @@ class SettingsTableViewController: UITableViewController {
         tableView.deselectRow(at: indexPath, animated: true)
         
         switch cid {
-        case CellID.FriendList:
-            performSegue(withIdentifier: SegueID.FriendList, sender: self)
-        case CellID.SubscriptionsList:
-            performSegue(withIdentifier: SegueID.Subscriptions, sender: self)
-        case CellID.Feedback:
-            performSegue(withIdentifier: SegueID.SubmitFeedback, sender: self)
-        case CellID.LogOut:
+        case CellID.friendList:
+            performSegue(withIdentifier: SegueID.friendList, sender: self)
+        case CellID.subscriptionsList:
+            performSegue(withIdentifier: SegueID.subscriptions, sender: self)
+        case CellID.feedback:
+            performSegue(withIdentifier: SegueID.submitFeedback, sender: self)
+        case CellID.logOut:
             logoutButtonTapped()
-        case CellID.TermsOfUse:
-            performSegue(withIdentifier: SegueID.ShowInfo, sender: DocumentType.TermsOfUse)
-        case CellID.PrivacyPolicy:
-            performSegue(withIdentifier: SegueID.ShowInfo, sender: DocumentType.PrivacyPolicy)
+        case CellID.termsOfUse:
+            performSegue(withIdentifier: SegueID.showInfo, sender: DocumentType.TermsOfUse)
+        case CellID.privacyPolicy:
+            performSegue(withIdentifier: SegueID.showInfo, sender: DocumentType.PrivacyPolicy)
         default:
             print("~>Not handled")
         }
@@ -137,7 +136,7 @@ class SettingsTableViewController: UITableViewController {
     
     private func showLoginScreen() {
         DispatchQueue.main.async {
-            let login = self.storyboard?.instantiateViewController(withIdentifier: StoryboardID.Login)
+            let login = self.storyboard?.instantiateViewController(withIdentifier: StoryboardID.login)
             let appDelegate = (UIApplication.shared.delegate as! AppDelegate)
             // clear out any calls as needed
             appDelegate.window?.rootViewController = login
@@ -165,7 +164,7 @@ class SettingsTableViewController: UITableViewController {
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == SegueID.ShowInfo, let infoVC = segue.destination as? InfoModuleViewController, let type = sender as? DocumentType {
+        if segue.identifier == SegueID.showInfo, let infoVC = segue.destination as? InfoModuleViewController, let type = sender as? DocumentType {
             infoVC.documentType = type
         }
     }
@@ -187,7 +186,7 @@ extension SettingsTableViewController: UITextFieldDelegate {
         guard let phone = txtPhone.text else { return }
         
         // save number to firebase
-        let ref = Database.database().reference().child(FirebaseStructure.Users)
+        let ref = Database.database().reference().child(FirebaseStructure.usersLocation)
         let phoneQuery = ref.queryOrdered(byChild: "userProfile/phone").queryEqual(toValue: phone).queryLimited(toFirst: 1)
         phoneQuery.observeSingleEvent(of: .value) { (snapshot) in
             
@@ -195,9 +194,11 @@ extension SettingsTableViewController: UITextFieldDelegate {
                 self.handleNotFound()
             }
             
-            if let results = snapshot.value as? [AnyHashable:Any], let first = results.first?.value {
+            if let first = snapshot.children.first(where: { (_) -> Bool in
+                return true
+            }) as? DataSnapshot {
                 do {
-                    let charmUser = try FirebaseDecoder().decode(CharmUser.self, from: first)
+                    let charmUser = try CharmUser(snapshot: first)
                     self.handleFound(charmUser)
                 } catch let error {
                     print("~>There was an error: \(error)")
@@ -241,17 +242,9 @@ extension SettingsTableViewController: UITextFieldDelegate {
         
         user.userProfile.phone = phone
         
-        do {
-            let profile = try FirebaseEncoder().encode(user.userProfile)
-            DispatchQueue.global(qos: .utility).async {
-                Database.database().reference().child(FirebaseStructure.Users).child(uid).child(FirebaseStructure.CharmUser.Profile).setValue(profile)
-            }
-            
-        } catch let error {
-            print("~>There was an error trying to encode the phone user profile: \(error)")
-            let alert = UIAlertController(title: "Error", message: "An unknown error occurred, please try again later.", preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-            present(alert, animated: true, completion: nil)
+        DispatchQueue.global(qos: .utility).async { [weak self] in
+            guard let self = self else { return }
+            Database.database().reference().child(FirebaseStructure.usersLocation).child(uid).child(FirebaseStructure.CharmUser.profileLocation).setValue(self.user.userProfile.toAny())
         }
     }
     

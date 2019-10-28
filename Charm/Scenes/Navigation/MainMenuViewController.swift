@@ -8,7 +8,6 @@
 
 import UIKit
 import Firebase
-import CodableFirebase
 import StoreKit
 
 class MainMenuViewController: UIViewController {
@@ -20,13 +19,11 @@ class MainMenuViewController: UIViewController {
     
     // MARK: - Properties
     
-    var isFirebaseConnected: Bool = true
+    var firebaseModel = FirebaseModel.shared
+
     var firstSetup: Bool = true
     var loadingFriendFromNotification: Bool = false
     var checkedCredits: Bool = false
-    
-    // private vars for posting notifications
-    private var shouldPostTrainingHistoryNotification: Bool = false
     
     // temp values
     var requestProd = SKProductsRequest()
@@ -43,39 +40,24 @@ class MainMenuViewController: UIViewController {
         
         // Setup buttons
         setupButtons()
-        
-        // Setup loss of internet observer
-        setupConnetionObserver()
-        
-        // Setup user observer
-        setupUser()
-        
+
         // Setup added friend observer
         NotificationCenter.default.addObserver(self, selector: #selector(addFriend(_:)), name: FirebaseNotification.GotFriendFromLink, object: nil)
-        
-        // Setup user's snapshot data observer
-        setupDataObserver()
-        
-        // Setup user's training history observer
-        setupTrainingHistoryObserver()
         
         // Upload Device Token
         uploadDeviceToken()
         
         // Start loading contacts list
-        let _ = ContactsViewModel.shared.contacts
+//        let _ = ContactsViewModel.shared.contacts
         
         validateProductIdentifiers()
-        
         setupMetricsObserver()
-        
-        enableKeepSynced()
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        guard CharmUser.shared != nil else {
+        guard firebaseModel.charmUser != nil else {
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                 self.viewDidAppear(animated)
                 return
@@ -101,7 +83,7 @@ class MainMenuViewController: UIViewController {
         print("~>Attempted to update credits and got status: \(status)")
         
         if !checkedCredits && (status == .receiptsNotLoaded || status == .userNotLoaded) {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 5.0) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
                 self.checkedCredits = true
                 self.checkCredits()
                 return
@@ -115,7 +97,7 @@ class MainMenuViewController: UIViewController {
     // Status Update
     
     fileprivate func checkStatus() {
-        guard CharmUser.shared != nil && SubscriptionService.shared.receiptsCurrent else {
+        guard firebaseModel.charmUser != nil && SubscriptionService.shared.receiptsCurrent else {
             SubscriptionService.shared.uploadReceipt()
             DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
                 self.checkStatus()
@@ -124,56 +106,31 @@ class MainMenuViewController: UIViewController {
             return
         }
         print("~>Checking status and have receipts.")
-        print("~>Have a membership status of: \(CharmUser.shared.userProfile.membershipStatus)")
+        print("~>Have a membership status of: \(firebaseModel.charmUser.userProfile.membershipStatus)")
         if let subscription = SubscriptionService.shared.currentSubscription, !subscription.isActive {
-            switch CharmUser.shared.userProfile.membershipStatus {
+            switch firebaseModel.charmUser.userProfile.membershipStatus {
             case .currentSubscriber:
-                CharmUser.shared.userProfile.membershipStatus = .formerSubscriber
-                saveUserProfileToFirebase()
+                firebaseModel.charmUser.userProfile.membershipStatus = .formerSubscriber
+                firebaseModel.charmUser.save()
             case .unknown:
-                CharmUser.shared.userProfile.membershipStatus = .notSubscribed
-                saveUserProfileToFirebase()
+                firebaseModel.charmUser.userProfile.membershipStatus = .notSubscribed
+                firebaseModel.charmUser.save()
             case .notSubscribed, .formerSubscriber:
-                saveUserProfileToFirebase()
+                firebaseModel.charmUser.save()
                 return
             }
         } else if let subscription = SubscriptionService.shared.currentSubscription, !subscription.isActive {
-            if CharmUser.shared.userProfile.membershipStatus != .currentSubscriber {
-                CharmUser.shared.userProfile.membershipStatus = .currentSubscriber
-                saveUserProfileToFirebase()
+            if firebaseModel.charmUser.userProfile.membershipStatus != .currentSubscriber {
+                firebaseModel.charmUser.userProfile.membershipStatus = .currentSubscriber
+                firebaseModel.charmUser.save()
             }
         } else {
-            if CharmUser.shared.userProfile.membershipStatus != .notSubscribed {
-                CharmUser.shared.userProfile.membershipStatus = .notSubscribed
+            if firebaseModel.charmUser.userProfile.membershipStatus != .notSubscribed {
+                firebaseModel.charmUser.userProfile.membershipStatus = .notSubscribed
             }
         }
         
         
-    }
-    
-    // Update status of user
-    
-    private func saveUserProfileToFirebase() {
-        
-        guard CharmUser.shared != nil, let id = CharmUser.shared.id else {
-            DispatchQueue.global(qos: .utility).asyncAfter(deadline: .now() + 5.0) {
-                self.saveUserProfileToFirebase()
-                return
-            }
-            return
-        }
-        
-        DispatchQueue.global(qos: .utility).async {
-            let profile = CharmUser.shared.userProfile
-            
-            do {
-                let data = try FirebaseEncoder().encode(profile)
-                Database.database().reference().child(FirebaseStructure.Users).child(id).child(FirebaseStructure.CharmUser.Profile).setValue(data)
-                print("~>Set user profile with new date")
-            } catch let error {
-                print("~>There was an error: \(error)")
-            }
-        }
     }
     
     // UI Related
@@ -211,23 +168,16 @@ class MainMenuViewController: UIViewController {
     
     // Firebase Related
     
-    fileprivate func setupConnetionObserver() {
-        let connectedRef = Database.database().reference(withPath: ".info/connected")
-        connectedRef.observe(.value, with: { connected in
-            if let boolean = connected.value as? Bool, boolean == true {
-                print("~>Connected")
-                if !self.isFirebaseConnected {
-                    if self.firstSetup { return }
-                    self.showConnectionAlert()
-                }
-            } else {
-                if self.firstSetup { return }
-                self.showConnectionAlert()
-            }
-        })
+    fileprivate func setupConnectionObserver() {
+        NotificationCenter.default.addObserver(self, selector: #selector(handleConnectionAlert(_:)), name: FirebaseNotification.connectionStatusChanged, object: nil)
     }
     
-    fileprivate func showConnectionAlert() {
+    @objc fileprivate func handleConnectionAlert(_ notification: Notification) {
+        guard let status = notification.object as? Bool else { print("~>No status"); return }
+        showConnectionAlert(status: status)
+    }
+    
+    fileprivate func showConnectionAlert(status: Bool) {
         DispatchQueue.main.async {
             let appDelegate = UIApplication.shared.delegate as! AppDelegate
             if appDelegate.restoreFromBackground {
@@ -235,9 +185,8 @@ class MainMenuViewController: UIViewController {
                 return
             }
             
-            self.isFirebaseConnected = !self.isFirebaseConnected
-            let title = self.isFirebaseConnected ? "Connection Restored" : "Connection Lost"
-            let message = self.isFirebaseConnected ? "Connection to the database server has been restored." : "Lost connection to databse server.  Please check your internet connection."
+            let title = status ? "Connection Restored" : "Connection Lost"
+            let message = status ? "Connection to the database server has been restored." : "Lost connection to databse server.  Please check your internet connection."
             
             let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
@@ -245,148 +194,96 @@ class MainMenuViewController: UIViewController {
         }
     }
     
-    fileprivate func setupUser() {
-        Database.database().reference().child(FirebaseStructure.Users).child(Auth.auth().currentUser!.uid).observe(.value) { (snapshot) in
-            guard let value = snapshot.value else { return }
-            DispatchQueue.main.async {
-                do {
-                    let user = try FirebaseDecoder().decode(CharmUser.self, from: value)
-                    CharmUser.shared = user
-                    // Post a notification that the user changed, along with the user obejct
-                    NotificationCenter.default.post(name: FirebaseNotification.CharmUserDidUpdate, object: user)
-                    // post training history notification if needed
-                    if self.shouldPostTrainingHistoryNotification {
-                        NotificationCenter.default.post(name: FirebaseNotification.TrainingHistoryUpdated, object: nil)
-                        self.shouldPostTrainingHistoryNotification = false
-                    }
-                    // If there is a call, post a notification about that call
-                    if let call = user.currentCall {
-                        if call.status == .incoming {
-                            NotificationCenter.default.post(name: FirebaseNotification.CharmUserIncomingCall, object: call)
-                            DispatchQueue.main.async {
-                                let delegate = UIApplication.shared.delegate as! AppDelegate
-                                print("~>Incoming call status: \(delegate.incomingCall)")
-                                if delegate.incomingCall {
-                                    delegate.incomingCall = false
-                                    self.setupIncoming(call: call)
-                                    return
-                                } else {
-                                    let alert = UIAlertController(title: "Incoming Call", message: "You have an incoming call.", preferredStyle: .alert)
-                                    alert.addAction(UIAlertAction(title: "Accept", style: .default, handler: { (_) in
-                                        self.setupIncoming(call: call)
-                                    }))
-                                    alert.addAction(UIAlertAction(title: "Ignore", style: .cancel, handler: { _ in
-                                        guard let call = CharmUser.shared.currentCall else { return }
-                                        self.reject(call: call)
-                                    }))
-                                    self.navigationController?.present(alert, animated: true, completion: nil)
-                                }
-                            }
-                        } else if self.firstSetup && call.status == .connected {
-                            DispatchQueue.main.async {
-                                let delegate = UIApplication.shared.delegate as! AppDelegate
-                                if delegate.incomingCall {
-                                    delegate.incomingCall = false
-                                } else {
-                                    delegate.removeActiveCalls()
-                                }
-                            }
-                        } else if call.status == .rejected {
-                            // remove the value first
-                            if let videoVC = self.navigationController!.topViewController! as? VideoCallViewController {
-                                videoVC.endCallButtonTapped(videoVC.btnEndCall!)
-                            } else {
-                                call.myCallRef.removeValue()
-                            }
-                            
-                            let rejectedAlert = UIAlertController(title: "Unable to Place Call", message: "The person you are trying to reach is not available at this time.  Please try again later.", preferredStyle: .alert)
-                            rejectedAlert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-                            self.present(rejectedAlert, animated: true, completion: nil)
-                        }
-                    }
-                    self.firstSetup = false
-                    if (UIApplication.shared.delegate as! AppDelegate).showContactListFromNotification {
-                        (UIApplication.shared.delegate as! AppDelegate).showContactListFromNotification = false
-                        self.performSegue(withIdentifier: SegueID.FriendList, sender: self)
-                    }
-                } catch let error {
-                    print("~>There was an error: \(error)")
-                    return
-                }
-            }
-        }
-    }
-    
-    // Observes snapshot data
-    fileprivate func setupDataObserver() {
-        let snapShotRef = Database.database().reference().child(FirebaseStructure.Users).child(Auth.auth().currentUser!.uid).child(FirebaseStructure.CharmUser.Snapshot)
-        SnapshotsLoading.shared.isLoading = true
-        DispatchQueue.global(qos: .utility).async {
-            snapShotRef.observe(.value) { (snapshot) in
-                guard let values = snapshot.value as? [String:Any] else {
-                    print("~>Couldn't convert values to [String:Any], possibly no data exists.")
-                    SnapshotsLoading.shared.isLoading = false
-                    return
-                }
-                SnapshotsLoading.shared.isLoading = true
-                
-                for value in values {
-                    do {
-                        let key = value.key
-                        var snapshotData = try FirebaseDecoder().decode(Snapshot.self, from: value.value)
-                        snapshotData.dateString = key
-                        guard snapshotData.date != nil else { continue }
-                        guard !UserSnapshotData.shared.snapshots.contains(where: { (snapshot) -> Bool in
-                            snapshot.date == snapshotData.date
-                        }) else { continue }
-                        UserSnapshotData.shared.snapshots.append(snapshotData)
-                    } catch let error {
-                        print("~>Error getting snapshot data: \(error)")
-                    }
-                }
-                
-                SnapshotsLoading.shared.isLoading = false
-                UserSnapshotData.shared.selectedSnapshot = UserSnapshotData.shared.snapshots.first
-            }
-        }
-        
-    }
-    
-    fileprivate func enableKeepSynced() {
-        let users = Database.database().reference().child(FirebaseStructure.Users)
-        users.keepSynced(true)
-    }
-    
-    // Observes Training History
-    fileprivate func setupTrainingHistoryObserver() {
-        let historyRef = Database.database().reference().child(FirebaseStructure.Users).child(Auth.auth().currentUser!.uid).child(FirebaseStructure.Training.TrainingDatabase)
-        DispatchQueue.global(qos: .utility).async {
-            historyRef.observe(.value) { (snapshot) in
-                self.shouldPostTrainingHistoryNotification = true
-            }
-        }
-        
-    }
+//    fileprivate func setupUser() {
+//        Database.database().reference().child(FirebaseStructure.usersLocation).child(Auth.auth().currentUser!.uid).observe(.value) { (snapshot) in
+//            DispatchQueue.main.async {
+//                do {
+//                    let user = try CharmUser(snapshot: snapshot)
+//                    firebaseModel.charmUser = user
+//                    // Post a notification that the user changed, along with the user obejct
+//                    NotificationCenter.default.post(name: FirebaseNotification.CharmUserDidUpdate, object: user)
+//                    // post training history notification if needed
+//                    if self.shouldPostTrainingHistoryNotification {
+//                        NotificationCenter.default.post(name: FirebaseNotification.TrainingHistoryUpdated, object: nil)
+//                        self.shouldPostTrainingHistoryNotification = false
+//                    }
+//                    // If there is a call, post a notification about that call
+//                    if let call = user.currentCall {
+//                        if call.status == .incoming {
+//                            NotificationCenter.default.post(name: FirebaseNotification.CharmUserIncomingCall, object: call)
+//                            DispatchQueue.main.async {
+//                                let delegate = UIApplication.shared.delegate as! AppDelegate
+//                                print("~>Incoming call status: \(delegate.incomingCall)")
+//                                if delegate.incomingCall {
+//                                    delegate.incomingCall = false
+//                                    self.setupIncoming(call: call)
+//                                    return
+//                                } else {
+//                                    let alert = UIAlertController(title: "Incoming Call", message: "You have an incoming call.", preferredStyle: .alert)
+//                                    alert.addAction(UIAlertAction(title: "Accept", style: .default, handler: { (_) in
+//                                        self.setupIncoming(call: call)
+//                                    }))
+//                                    alert.addAction(UIAlertAction(title: "Ignore", style: .cancel, handler: { _ in
+//                                        guard let call = firebaseModel.charmUser.currentCall else { return }
+//                                        self.reject(call: call)
+//                                    }))
+//                                    self.navigationController?.present(alert, animated: true, completion: nil)
+//                                }
+//                            }
+//                        } else if self.firstSetup && call.status == .connected {
+//                            DispatchQueue.main.async {
+//                                let delegate = UIApplication.shared.delegate as! AppDelegate
+//                                if delegate.incomingCall {
+//                                    delegate.incomingCall = false
+//                                } else {
+//                                    delegate.removeActiveCalls()
+//                                }
+//                            }
+//                        } else if call.status == .rejected {
+//                            // remove the value first
+//                            if let videoVC = self.navigationController!.topViewController! as? VideoCallViewController {
+//                                videoVC.endCallButtonTapped(videoVC.btnEndCall!)
+//                            } else {
+//                                call.myCallRef.removeValue()
+//                            }
+//
+//                            let rejectedAlert = UIAlertController(title: "Unable to Place Call", message: "The person you are trying to reach is not available at this time.  Please try again later.", preferredStyle: .alert)
+//                            rejectedAlert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+//                            self.present(rejectedAlert, animated: true, completion: nil)
+//                        }
+//                    }
+//                    self.firstSetup = false
+//                    if (UIApplication.shared.delegate as! AppDelegate).showContactListFromNotification {
+//                        (UIApplication.shared.delegate as! AppDelegate).showContactListFromNotification = false
+//                        self.performSegue(withIdentifier: SegueID.friendList, sender: self)
+//                    }
+//                } catch let error {
+//                    print("~>There was an error: \(error)")
+//                    return
+//                }
+//            }
+//        }
+//    }
     
     fileprivate func reject(call: Call) {
         call.myCallRef.removeValue()
-        
-        let friendCall = Call(sessionID: call.sessionID, status: .rejected, from: Auth.auth().currentUser!.uid, in: call.room)
-        
-        DispatchQueue.global(qos: .utility).async {
-            do {
-                let data = try FirebaseEncoder().encode(friendCall)
-                call.friendCallRef.setValue(data)
-            } catch let error {
-                print("~>There was an error converting call data: \(error)")
-            }
-        }
+        // TODO: - Enable rejecting calls again
+//        let friendCall = Call(sessionID: call.sessionID, status: .rejected, from: Auth.auth().currentUser!.uid, in: call.room)
+//
+//        DispatchQueue.global(qos: .utility).async {
+//            do {
+//                let data = try FirebaseEncoder().encode(friendCall)
+//                call.friendCallRef.setValue(data)
+//            } catch let error {
+//                print("~>There was an error converting call data: \(error)")
+//            }
+//        }
         
     }
     
     fileprivate func setupIncoming(call: Call) {
         DispatchQueue.main.async {
-            let myUser = CharmUser.shared
+            let myUser = self.firebaseModel.charmUser
             guard let friend = myUser?.friendList?.currentFriends?.first(where: { (friend) -> Bool in
                 friend.id! == call.fromUserID
             }) else {
@@ -400,7 +297,7 @@ class MainMenuViewController: UIViewController {
                 return
             }
             
-            let callVC = self.storyboard?.instantiateViewController(withIdentifier: StoryboardID.VideoCall) as! VideoCallViewController
+            let callVC = self.storyboard?.instantiateViewController(withIdentifier: StoryboardID.videoCall) as! VideoCallViewController
             callVC.myUser = myUser
             callVC.friend = friend
             callVC.kSessionId = call.sessionID
@@ -424,7 +321,7 @@ class MainMenuViewController: UIViewController {
                 } else if let result = result {
                     
                     print("~>Remote instance ID token: \(result.token)")
-                    if var user = CharmUser.shared, let id = user.id {
+                    if var user = self.firebaseModel.charmUser, let id = user.id {
                         if user.tokenID == nil {
                             user.tokenID = [result.token : true]
                         } else if !user.tokenID!.contains(where: { (token) -> Bool in
@@ -436,7 +333,7 @@ class MainMenuViewController: UIViewController {
                             return
                         }
                         print("~>User token set to: \(String(describing: user.tokenID))")
-                        Database.database().reference().child(FirebaseStructure.Users).child(id).child(FirebaseStructure.CharmUser.Token).setValue(user.tokenID)
+                        Database.database().reference().child(FirebaseStructure.usersLocation).child(id).child(FirebaseStructure.CharmUser.token).setValue(user.tokenID)
                     }
                 }
             }
@@ -448,26 +345,25 @@ class MainMenuViewController: UIViewController {
     // MARK: - Button Handling
     
     @objc func chatButtonTapped(_ sender: Any) {
-        performSegue(withIdentifier: SegueID.Chat, sender: self)
+        performSegue(withIdentifier: SegueID.chat, sender: self)
     }
     
     @objc func metricsButtonTapped(_ sender: Any) {
-        performSegue(withIdentifier: SegueID.MetricsTab, sender: self)
+        performSegue(withIdentifier: SegueID.metricsTab, sender: self)
     }
     
     @objc func learnButtonTapped(_ sender: Any) {
-        performSegue(withIdentifier: SegueID.VideoTraining, sender: self)
+        performSegue(withIdentifier: SegueID.videoTraining, sender: self)
     }
     
     @objc func trainButtonTapped(_ sender: Any) {
-        performSegue(withIdentifier: SegueID.TrainingTab, sender: self)
+        performSegue(withIdentifier: SegueID.trainingTab, sender: self)
     }
     
     // MARK: - Prepare For Segue
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        print("~>Going to segue with id: \(String(describing: segue.identifier)) and destination: \(segue.destination))")
-        if segue.identifier == SegueID.FriendList, let friendsVC = segue.destination as? FriendListTableViewController {
+        if segue.identifier == SegueID.friendList, let friendsVC = segue.destination as? FriendListTableViewController {
             friendsVC.showContacts = false
         }
     }
@@ -483,7 +379,7 @@ class MainMenuViewController: UIViewController {
     fileprivate func addFriend(withID id: String) {
         DispatchQueue.global(qos: .utility).async {
             // first move friend from received to current friends
-            guard var user = CharmUser.shared else { return }
+            guard var user = self.firebaseModel.charmUser else { return }
             
             if user.friendList?.currentFriends == nil { user.friendList?.currentFriends = [] }
             
@@ -522,10 +418,9 @@ class MainMenuViewController: UIViewController {
             // finally move user from sent to current friends on friend's friend list'
             guard let myID = user.id else { return }
             
-            Database.database().reference().child(FirebaseStructure.Users).child(id).observeSingleEvent(of: .value) { (snapshot) in
-                guard let value = snapshot.value else { return }
+            Database.database().reference().child(FirebaseStructure.usersLocation).child(id).observeSingleEvent(of: .value) { (snapshot) in
                 // get the user object
-                var friendUser = try! FirebaseDecoder().decode(CharmUser.self, from: value)
+                var friendUser = try! CharmUser(snapshot: snapshot)
                 if friendUser.friendList?.currentFriends == nil { friendUser.friendList?.currentFriends = [] }
                 let friendObject = Friend(id: id, first: friendUser.userProfile.firstName, last: friendUser.userProfile.lastName, email: friendUser.userProfile.email)
                 let meAsFriend = Friend(id: myID, first: user.userProfile.firstName, last: user.userProfile.lastName, email: user.userProfile.email)
@@ -534,19 +429,14 @@ class MainMenuViewController: UIViewController {
                 user.friendList?.currentFriends?.append(friendObject)
                 
                 // write changes to firebase
-                do {
-                    let friendCurrent = try FirebaseEncoder().encode(friendUser.friendList!.currentFriends!)
-                    let myCurrent = try FirebaseEncoder().encode(user.friendList!.currentFriends!)
-                    Database.database().reference().child(FirebaseStructure.Users).child(id).child(FirebaseStructure.CharmUser.Friends).child(FirebaseStructure.CharmUser.FriendList.CurrentFriends).setValue(friendCurrent)
-                    
-                    Database.database().reference().child(FirebaseStructure.Users).child(myID).child(FirebaseStructure.CharmUser.Friends).child(FirebaseStructure.CharmUser.FriendList.CurrentFriends).setValue(myCurrent)
-                    
-                    self.loadingFriendFromNotification = false
-                    (UIApplication.shared.delegate as! AppDelegate).friendID = ""
-                    
-                } catch let error {
-                    print("~>Got an error: \(error)")
-                }
+                let friendCurrent = friendUser.friendList!.toAny()
+                let myCurrent = user.friendList!.toAny()
+                Database.database().reference().child(FirebaseStructure.usersLocation).child(id).child(FirebaseStructure.CharmUser.friendListLocation).child(FirebaseStructure.CharmUser.FriendList.currentFriends).setValue(friendCurrent)
+                
+                Database.database().reference().child(FirebaseStructure.usersLocation).child(myID).child(FirebaseStructure.CharmUser.friendListLocation).child(FirebaseStructure.CharmUser.FriendList.currentFriends).setValue(myCurrent)
+                
+                self.loadingFriendFromNotification = false
+                (UIApplication.shared.delegate as! AppDelegate).friendID = ""
             }
         }
     }

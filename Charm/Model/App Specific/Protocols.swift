@@ -7,12 +7,25 @@
 //
 
 import Foundation
+import Firebase
 
 // MARK: - Protocols
 
 // Use for Firebase Objects that need to have the uid stored in model
-protocol Identifiable {
+protocol FirebaseItem {
     var id: String? { get set }
+    var ref: DatabaseReference? { get }
+    
+    init(snapshot: DataSnapshot) throws
+    func toAny() -> [AnyHashable : Any]
+    func save()
+}
+
+extension FirebaseItem {
+    func save() {
+        guard let ref = ref else { return }
+        ref.setValue(self.toAny())
+    }
 }
 
 // MARK: - Delegates

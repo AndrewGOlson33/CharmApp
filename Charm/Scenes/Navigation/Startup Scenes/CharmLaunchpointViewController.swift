@@ -9,7 +9,6 @@
 import UIKit
 import Contacts
 import Firebase
-import CodableFirebase
 
 class CharmLaunchpointViewController: UIViewController {
     
@@ -22,11 +21,8 @@ class CharmLaunchpointViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        print("~>View did load")
         viewActivityContainer.layer.cornerRadius = 16
-        
-        // Start pulling training data
-        let _ = TrainingModelCapsule.shared.model.abstractNouns
 
         startActivity()
         
@@ -107,7 +103,7 @@ class CharmLaunchpointViewController: UIViewController {
     
     private func showLogin() {
         DispatchQueue.main.async {
-            let nav = self.storyboard?.instantiateViewController(withIdentifier: StoryboardID.Login)
+            let nav = self.storyboard?.instantiateViewController(withIdentifier: StoryboardID.login)
             let appDelegate = (UIApplication.shared.delegate as! AppDelegate)
             // clear out any calls as needed
             appDelegate.window?.rootViewController = nav
@@ -117,7 +113,7 @@ class CharmLaunchpointViewController: UIViewController {
     
     private func showNavigation() {
         DispatchQueue.main.async {
-            let nav = self.storyboard?.instantiateViewController(withIdentifier: StoryboardID.NavigationHome)
+            let nav = self.storyboard?.instantiateViewController(withIdentifier: StoryboardID.navigationHome)
             let appDelegate = (UIApplication.shared.delegate as! AppDelegate)
             // clear out any calls as needed
             appDelegate.window?.rootViewController = nav
@@ -129,14 +125,13 @@ class CharmLaunchpointViewController: UIViewController {
     
     private func loadUser(withUID uid: String) {
         // read user
-        Database.database().reference().child(FirebaseStructure.Users).child(uid).observeSingleEvent (of: .value) { (snapshot) in
+        Database.database().reference().child(FirebaseStructure.usersLocation).child(uid).observeSingleEvent (of: .value) { (snapshot) in
             if snapshot.exists() {
                 // setup a user item
-                guard let value = snapshot.value else { fatalError("~>Unable to get value from snapshot") }
                 DispatchQueue.main.async {
                     do {
-                        let user = try FirebaseDecoder().decode(CharmUser.self, from: value)
-                        CharmUser.shared = user
+                        let user = try CharmUser(snapshot: snapshot)
+                        FirebaseModel.shared.charmUser = user
                         self.showNavigation()
                     } catch let error {
                         print("~>There was an error creating object: \(error)")

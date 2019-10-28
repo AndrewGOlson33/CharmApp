@@ -140,7 +140,7 @@ class ReviewSummaryViewController: UIViewController {
         }
         // load summary data
         if snapshot == nil {
-            guard let data = UserSnapshotData.shared.snapshots.first else {
+            guard let data = FirebaseModel.shared.snapshots.first else {
                 
                 // setup example
                 loadJSONSnapshotData()
@@ -151,17 +151,17 @@ class ReviewSummaryViewController: UIViewController {
             
             // Set data
             snapshot = data
-            UserSnapshotData.shared.selectedSnapshot = snapshot
-        } else if let selected = UserSnapshotData.shared.selectedSnapshot {
+            FirebaseModel.shared.selectedSnapshot = snapshot
+        } else if let selected = FirebaseModel.shared.selectedSnapshot {
             snapshot = selected
         } else {
-            if let first = UserSnapshotData.shared.snapshots.first, let shared = UserSnapshotData.shared.selectedSnapshot, first.date != shared.date {
-                UserSnapshotData.shared.selectedSnapshot = first
-            } else if let first = UserSnapshotData.shared.snapshots.first, UserSnapshotData.shared.selectedSnapshot == nil {
-                UserSnapshotData.shared.selectedSnapshot = first
+            if let first = FirebaseModel.shared.snapshots.first, let shared = FirebaseModel.shared.selectedSnapshot, first.date != shared.date {
+                FirebaseModel.shared.selectedSnapshot = first
+            } else if let first = FirebaseModel.shared.snapshots.first, FirebaseModel.shared.selectedSnapshot == nil {
+                FirebaseModel.shared.selectedSnapshot = first
             }
             
-            snapshot = UserSnapshotData.shared.selectedSnapshot
+            snapshot = FirebaseModel.shared.selectedSnapshot
         }
         
         
@@ -177,21 +177,22 @@ class ReviewSummaryViewController: UIViewController {
     // MARK: - Private Helper Functions
     
     private func loadJSONSnapshotData() {
+        print("load json snapshot data")
         viewEffect.isHidden = false
         let noSnapshotsAlert = UIAlertController(title: "No Snapshots Available", message: "Here you can view your converstation metrics.\n\nYour metrics are scored by our servers, and are based on the speaking styles of the world's most charming people.\n\nYou can generate metrics by calling a friend.  It takes our servers about 15 minutes to process your metrics after your call has completed.", preferredStyle: .alert)
         noSnapshotsAlert.addAction(UIAlertAction(title: "View Sample Snapshot", style: .default, handler:{ (_) in
             self.viewEffect.isHidden = true
         }))
-        
+
         present(noSnapshotsAlert, animated: true, completion: nil)
         
         guard let path = Bundle.main.path(forResource: "snapshotData", ofType: "json") else { fatalError("~>Unable to find default JSON file.") }
-        
+
         do {
             let data = try Data(contentsOf: URL(fileURLWithPath: path), options: .mappedIfSafe)
             let snapshotData = try JSONDecoder().decode(Snapshot.self, from: data)
             self.snapshot = snapshotData
-            UserSnapshotData.shared.selectedSnapshot = snapshot
+            FirebaseModel.shared.selectedSnapshot = snapshot
         } catch let error {
             fatalError("~>Got an error decoding JSON: \(error)")
         }
@@ -204,8 +205,6 @@ class ReviewSummaryViewController: UIViewController {
             }
         }
         
-//        viewWillAppear(true)
-//        removeSnapshotObserver()
         setupSnapshotData()
     }
     
@@ -272,24 +271,24 @@ class ReviewSummaryViewController: UIViewController {
         // get and set data
         
         // get values for area chart
-//        let concrete = snapshot.getTopLevelScoreValue(forSummaryItem: .Concrete) ?? 0
+//        let concrete = snapshot.getTopLevelScoreValue(forSummaryItem: .concrete) ?? 0
 //        let talking = snapshot.getTopLevelScoreValue(forSummaryItem: .TalkingPercentage) ?? 0
-//        let firstPerson = snapshot.getTopLevelScoreValue(forSummaryItem: .FirstPerson) ?? 0
-//        let positiveWords = snapshot.getTopLevelScoreValue(forSummaryItem: .PositiveWords) ?? 0
-        let smiling = snapshot.getTopLevelScoreValue(forSummaryItem: .SmilingPercentage) ?? 0
+//        let firstPerson = snapshot.getTopLevelScoreValue(forSummaryItem: .firstPerson) ?? 0
+//        let positiveWords = snapshot.getTopLevelScoreValue(forSummaryItem: .positiveWords) ?? 0
+        let smiling = snapshot.getTopLevelScoreValue(forSummaryItem: .smilingPercentage) ?? 0
         
         // get values for line chart
-        let ideaEngagement = snapshot.getTopLevelScoreValue(forSummaryItem: .IdeaEngagement) ?? 0
-        let conversationEngagement = snapshot.getTopLevelScoreValue(forSummaryItem: .ConversationEngagement) ?? 0
-        let personalConnection = snapshot.getTopLevelScoreValue(forSummaryItem: .PersonalConnection) ?? 0
-        let emotionalConnection = snapshot.getTopLevelScoreValue(forSummaryItem: .EmotionalConnection) ?? 0
+        let ideaEngagement = snapshot.getTopLevelScoreValue(forSummaryItem: .ideaEngagement) ?? 0
+        let conversationEngagement = snapshot.getTopLevelScoreValue(forSummaryItem: .conversationEngagement) ?? 0
+        let personalConnection = snapshot.getTopLevelScoreValue(forSummaryItem: .personalConnection) ?? 0
+        let emotionalConnection = snapshot.getTopLevelScoreValue(forSummaryItem: .emotionalConnection) ?? 0
         
         // get scores for cell info
-        let ideaPercent = snapshot.getTopLevelRawValue(forSummaryItem: .IdeaEngagement) ?? 0
-        let conversationPercent = snapshot.getTopLevelRawValue(forSummaryItem: .ConversationEngagement) ?? 0
-        let personalConnectionPercent = snapshot.getTopLevelRawValue(forSummaryItem: .PersonalConnection) ?? 0
-        let emotionalConnectionPercent = snapshot.getTopLevelRawValue(forSummaryItem: .EmotionalConnection) ?? 0
-        let smilingPercent = snapshot.getTopLevelRawValue(forSummaryItem: .SmilingPercentage) ?? 0
+        let ideaPercent = snapshot.getTopLevelRawValue(forSummaryItem: .ideaEngagement) ?? 0
+        let conversationPercent = snapshot.getTopLevelRawValue(forSummaryItem: .conversationEngagement) ?? 0
+        let personalConnectionPercent = snapshot.getTopLevelRawValue(forSummaryItem: .personalConnection) ?? 0
+        let emotionalConnectionPercent = snapshot.getTopLevelRawValue(forSummaryItem: .emotionalConnection) ?? 0
+        let smilingPercent = snapshot.getTopLevelRawValue(forSummaryItem: .smilingPercentage) ?? 0
 
         // setup cell info array
         cellInfo.append(SummaryCellInfo(title: "Idea Engagement", score: ideaEngagement, percent: ideaPercent))
@@ -397,8 +396,8 @@ class ReviewSummaryViewController: UIViewController {
 extension ReviewSummaryViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-//        return SnapshotsLoading.shared.isLoading ? 0 : UserSnapshotData.shared.snapshots.count > 1 ? cellInfo.count + 1 : cellInfo.count
-        if UserSnapshotData.shared.snapshots.count > 1 && tabBarController?.navigationItem.rightBarButtonItem == nil  {
+//        return SnapshotsLoading.shared.isLoading ? 0 : FirebaseModel.shared.snapshots.count > 1 ? cellInfo.count + 1 : cellInfo.count
+        if FirebaseModel.shared.snapshots.count > 1 && tabBarController?.navigationItem.rightBarButtonItem == nil  {
             let info = UIBarButtonItem(title: "View Progress", style: .plain, target: self, action: #selector(showHistoryProgress))
             tabBarController?.navigationItem.rightBarButtonItem = info
         }
@@ -409,10 +408,10 @@ extension ReviewSummaryViewController: UITableViewDelegate, UITableViewDataSourc
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
 //        guard indexPath.row != cellInfo.count else {
-//            return tableView.dequeueReusableCell(withIdentifier: CellID.ViewPrevious, for: indexPath)
+//            return tableView.dequeueReusableCell(withIdentifier: CellID.viewPrevious, for: indexPath)
 //        }
         
-        let cell = tableView.dequeueReusableCell(withIdentifier: CellID.SummaryMetric, for: indexPath) as! SummaryMetricTableViewCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: CellID.summaryMetric, for: indexPath) as! SummaryMetricTableViewCell
         let info = cellInfo[indexPath.row]
         cell.lblMetricTitle.text = info.summaryTitle
         cell.lblMetricScore.text = info.detailedScore
@@ -454,7 +453,7 @@ extension ReviewSummaryViewController: UITableViewDelegate, UITableViewDataSourc
     }
     
     @objc private func showHistoryProgress() {
-        performSegue(withIdentifier: SegueID.SnapshotsList, sender: self)
+        performSegue(withIdentifier: SegueID.snapshotsList, sender: self)
     }
     
 }

@@ -9,7 +9,6 @@
 import Foundation
 import StoreKit
 import Firebase
-import CodableFirebase
 
 enum CreditUpdateStatus {
     case noSubscription
@@ -20,8 +19,8 @@ enum CreditUpdateStatus {
 }
 
 class SubscriptionService: NSObject {
-    static let CharmThreeCreditsMonthlySubscription = SubscriptionID.Standard
-    static let CharmFiveCreditsMonthlySubscription = SubscriptionID.Premium
+    static let CharmThreeCreditsMonthlySubscription = SubscriptionID.standard
+    static let CharmFiveCreditsMonthlySubscription = SubscriptionID.premium
     static let sessionIdSetNotification = Notification.Name("SubscriptionServiceSessionIdSetNotification")
     static let optionsLoadedNotification = Notification.Name("SubscriptionServiceOptionsLoadedNotification")
     static let restoreSuccessfulNotification = Notification.Name("SubscriptionServiceRestoreSuccessfulNotification")
@@ -51,12 +50,12 @@ class SubscriptionService: NSObject {
     }
     
     func updateCredits() -> CreditUpdateStatus {
-        guard CharmUser.shared != nil else { return .userNotLoaded }
+        guard FirebaseModel.shared.charmUser != nil else { return .userNotLoaded }
         guard hasReceiptData && receiptsCurrent else { return .receiptsNotLoaded }
         guard let subscription = currentSubscription, subscription.isActive else { return .noSubscription }
         
-        if CharmUser.shared.userProfile.renewDate > Date() {
-            print("~>Renew date is in the future: \(CharmUser.shared.userProfile.renewDateString)")
+        if FirebaseModel.shared.charmUser.userProfile.renewDate > Date() {
+            print("~>Renew date is in the future: \(FirebaseModel.shared.charmUser.userProfile.renewDateString)")
             return .noChanges
         } else {
             print("~>Should be adding credits")
@@ -66,7 +65,7 @@ class SubscriptionService: NSObject {
     }
     
     private func addCredits() {
-        if CharmUser.shared.userProfile.renewDate > Date() {
+        if FirebaseModel.shared.charmUser.userProfile.renewDate > Date() {
             print("~>Save user profile to database.")
             saveUserProfileToFirebase()
             return
@@ -76,31 +75,23 @@ class SubscriptionService: NSObject {
             print("~>Returning with 0 credits.")
             return
         }
-        CharmUser.shared.userProfile.numCredits += numCredits
+        FirebaseModel.shared.charmUser.userProfile.numCredits += numCredits
         
         // add a month
         let aMonth = DateComponents(month: 1)
-        guard let newDate = Calendar.current.date(byAdding: aMonth, to: CharmUser.shared.userProfile.renewDate) else { return }
-        CharmUser.shared.userProfile.renewDate = newDate
-        print("~>Charm user got a new date: \(CharmUser.shared.userProfile.renewDateString)")
+        guard let newDate = Calendar.current.date(byAdding: aMonth, to: FirebaseModel.shared.charmUser.userProfile.renewDate) else { return }
+        FirebaseModel.shared.charmUser.userProfile.renewDate = newDate
+        print("~>Charm user got a new date: \(FirebaseModel.shared.charmUser.userProfile.renewDateString)")
         addCredits()
     }
     
     private func saveUserProfileToFirebase() {
         
-        if CharmUser.shared.userProfile.membershipStatus != .currentSubscriber { CharmUser.shared.userProfile.membershipStatus = .currentSubscriber }
+        if FirebaseModel.shared.charmUser.userProfile.membershipStatus != .currentSubscriber { FirebaseModel.shared.charmUser.userProfile.membershipStatus = .currentSubscriber }
         
-        let profile = CharmUser.shared.userProfile
+        let profile = FirebaseModel.shared.charmUser.userProfile
         
-        DispatchQueue.global(qos: .utility).async {
-            do {
-                let data = try FirebaseEncoder().encode(profile)
-                Database.database().reference().child(FirebaseStructure.Users).child(CharmUser.shared.id!).child(FirebaseStructure.CharmUser.Profile).setValue(data)
-                print("~>Set user profile with new date")
-            } catch let error {
-                print("~>There was an error: \(error)")
-            }
-        }
+        Database.database().reference().child(FirebaseStructure.usersLocation).child(FirebaseModel.shared.charmUser.id!).child(FirebaseStructure.CharmUser.profileLocation).setValue(profile.toAny())
         
         
     }

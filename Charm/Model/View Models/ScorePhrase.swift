@@ -15,18 +15,18 @@ class ScorePhraseModel: NSObject {
     // Enum for Score Type
     
     enum ChatScoreCategory {
-        case Strength
-        case Length
-        case Concrete
-        case Abstract
-        case First
-        case Second
-        case Positive
-        case Negative
+        case strength
+        case length
+        case concrete
+        case abstract
+        case first
+        case second
+        case positive
+        case negative
     }
     
     // training data model
-    let model = TrainingModelCapsule.shared
+    let model = FirebaseModel.shared.trainingModel
     
     // public scored properties
     public private(set) var strenth = ChatScore(withScore: 0, andPosition: 0)
@@ -98,14 +98,14 @@ class ScorePhraseModel: NSObject {
         let score = getEstimatedPhraseStrength(length: wordCount, concrete: concreteCount, first: firstCount, second: secondCount, pos: positiveScore, neg: negativeScore)
         
         
-        strenth = getChatScore(for: .Strength, withScore: score)
-        length = getChatScore(for: .Length, withScore: wordCount)
-        concrete = getChatScore(for: .Concrete, withScore: concreteCount)
-        abstract = getChatScore(for: .Abstract, withScore: abstractCount)
-        first = getChatScore(for: .First, withScore: firstCount)
-        second = getChatScore(for: .Second, withScore: secondCount)
-        positive = getChatScore(for: .Positive, withScore: positiveScore)
-        negative = getChatScore(for: .Negative, withScore: negativeScore)
+        strenth = getChatScore(for: .strength, withScore: score)
+        length = getChatScore(for: .length, withScore: wordCount)
+        concrete = getChatScore(for: .concrete, withScore: concreteCount)
+        abstract = getChatScore(for: .abstract, withScore: abstractCount)
+        first = getChatScore(for: .first, withScore: firstCount)
+        second = getChatScore(for: .second, withScore: secondCount)
+        positive = getChatScore(for: .positive, withScore: positiveScore)
+        negative = getChatScore(for: .negative, withScore: negativeScore)
         
         print("~>Score: \(score)")
         
@@ -133,7 +133,7 @@ class ScorePhraseModel: NSObject {
     
     private func uploadUnclassified(nouns: [String]) {
         var upload: [String] = []
-        if let existing = model.model.unclassifiedNouns {
+        if let model = model, let existing = model.unclassifiedNouns {
             upload = existing
             for word in nouns {
                 if !existing.contains(word.lowercased()) { upload.append(word.lowercased()) }
@@ -143,46 +143,32 @@ class ScorePhraseModel: NSObject {
         }
         
         DispatchQueue.global(qos: .utility).async {
-            Database.database().reference().child(FirebaseStructure.Training.TrainingDatabase).child(FirebaseStructure.Training.UnclassifiedNouns).setValue(upload)
-        }
-    }
-    
-    func getSandboxScore() -> SandboxScore {
-        
-        return SandboxScore(length: length.score, concrete: concrete.score, abstract: abstract.score, unclassified: unclassified, first: first.score, second: second.score, positive: positive.score, negative: negative.score, repeated: repeatedWords)
-        
-    }
-    
-    func getSandboxAverage() -> SandboxAverage {
-        if let user = CharmUser.shared, let trainingData = user.trainingData, let history = trainingData.sandboxHistory {
-            return history.average
-        } else {
-            return SandboxAverage(length: 0, concrete: 0, abstract: 0, unclassified: 0, first: 0, second: 0, positive: 0, negative: 0, repeated: 0)
+            Database.database().reference().child(FirebaseStructure.Training.trainingDatabase).child(FirebaseStructure.Training.unclassifiedNouns).setValue(upload)
         }
     }
     
     private func checkConcrete(word: String) -> Bool {
-        return model.model.concreteNouns.contains(where: { (noun) -> Bool in
+        return model?.concreteNouns.contains(where: { (noun) -> Bool in
             return noun.word.lowercased() == word.lowercased()
-        })
+        }) ?? false
     }
     
     private func checkAbstract(word: String) -> Bool {
-        return model.model.abstractNouns.contains(where: { (noun) -> Bool in
+        return model?.abstractNouns.contains(where: { (noun) -> Bool in
             return noun.word.lowercased() == word.lowercased()
-        })
+        }) ?? false
     }
     
     private func checkFirstPerson(word: String) -> Bool {
-        return model.model.firstPersonLowercased.contains(word.lowercased())
+        return model?.firstPersonLowercased.contains(word.lowercased()) ?? false
     }
     
     private func checkSecondPerson(word: String) -> Bool {
-        return model.model.secondPersonLowercased.contains(word.lowercased())
+        return model?.secondPersonLowercased.contains(word.lowercased()) ?? false
     }
     
     private func getPositiveScore(word: String) -> Int {
-        if let word = model.model.positiveWords.first(where: { (scored) -> Bool in
+        if let word = model?.positiveWords.first(where: { (scored) -> Bool in
             return word.lowercased() == scored.word.lowercased()
         }) {
             return word.score
@@ -192,7 +178,7 @@ class ScorePhraseModel: NSObject {
     }
     
     private func getNegativeScore(word: String) -> Int {
-        if let word = model.model.negativeWords.first(where: { (scored) -> Bool in
+        if let word = model?.negativeWords.first(where: { (scored) -> Bool in
             return word.lowercased() == scored.word.lowercased()
         }) {
             return word.score
@@ -224,12 +210,12 @@ class ScorePhraseModel: NSObject {
     private func getScorePercent(score: Int, category: ChatScoreCategory) -> Double {
         
         switch category {
-        case .Strength:
+        case .strength:
             return Double(score) / 10.0
-        case .Length:
+        case .length:
             let percent = Double(score) / 15.0
             return percent > 1 ? 1 : percent
-        case .Positive, .Negative:
+        case .positive, .negative:
             let percent = Double(abs(score)) / 4.0
             return percent > 1 ? 1 : percent
         default:

@@ -9,7 +9,6 @@
 import UIKit
 import OpenTok
 import Firebase
-import CodableFirebase
 import AVKit
 
 class Publisher {
@@ -236,7 +235,7 @@ class VideoCallViewController: UIViewController {
         print("~>Random: \(random)")
         
 //        let room = "\(myID)+\(friendID)"
-        guard let url = URL(string: "\(Server.BaseURL)\(Server.Room)/\(room)") else {
+        guard let url = URL(string: "\(Server.baseURL)\(Server.room)/\(room)") else {
             self.showCallErrorAlert()
             return
         }
@@ -256,7 +255,7 @@ class VideoCallViewController: UIViewController {
         }
         print("~>Setting up for room: \(room)")
 //        room = "\(friendID)+\(myID)"
-        guard let url = URL(string: "\(Server.BaseURL)\(Server.Room)/\(room)") else {
+        guard let url = URL(string: "\(Server.baseURL)\(Server.room)/\(room)") else {
             self.showCallErrorAlert()
             return
         }
@@ -309,7 +308,7 @@ class VideoCallViewController: UIViewController {
         // Setup Call Objects and reference
         var myCall: Call!
         var friendCall: Call!
-        let usersRef = Database.database().reference().child(FirebaseStructure.Users)
+        let usersRef = Database.database().reference().child(FirebaseStructure.usersLocation)
         
         if status == .outgoing {
             myCall = Call(sessionID: id, status: .outgoing, from: friend.id!, in: room)
@@ -321,19 +320,12 @@ class VideoCallViewController: UIViewController {
         
         // Write call objects to Firebase
         DispatchQueue.global(qos: .utility).async {
-            do {
-                // encode data
-                let myCallData = try FirebaseEncoder().encode(myCall)
-                let friendCallData = try FirebaseEncoder().encode(friendCall)
-                // upload to firebase
-                usersRef.child(self.friend.id!).child(FirebaseStructure.CharmUser.Call).setValue(friendCallData)
-                usersRef.child(self.myUser.id!).child(FirebaseStructure.CharmUser.Call).setValue(myCallData)
-            } catch let error {
-                print("~>Got an error converting objects for firebase: \(error)")
-                DispatchQueue.main.async {
-                    self.showCallErrorAlert()
-                }
-            }
+            // encode data
+            let myCallData = myCall.toAny()
+            let friendCallData = friendCall.toAny()
+            // upload to firebase
+            usersRef.child(self.friend.id!).child(FirebaseStructure.CharmUser.currentCallLocation).setValue(friendCallData)
+            usersRef.child(self.myUser.id!).child(FirebaseStructure.CharmUser.currentCallLocation).setValue(myCallData)
         }
         
     }
@@ -426,7 +418,7 @@ class VideoCallViewController: UIViewController {
     
     func startArchive() {
         DispatchQueue.main.async {
-            let fullURL = "\(Server.BaseURL)\(Server.Archive)\(Server.StartArchive)"
+            let fullURL = "\(Server.baseURL)\(Server.archive)\(Server.startArchive)"
             let url = URL(string: fullURL)
             var urlRequest: URLRequest? = nil
             if let url = url {
@@ -446,19 +438,11 @@ class VideoCallViewController: UIViewController {
             let session = URLSession(configuration: configuration)
             
             let dataTask = session.dataTask(with: request) { (data, response, error) in
-                
-                print("~>Got response: \(String(describing: response))")
                 if let error = error {
                     print("~>Got an error trying to start an archive: \(error)")
                 } else {
-                    print("~>Archive started.")
                     if self.isInitiatingUser {
                         self.pendingArchive = SessionArchive(id: self.kSessionId, callerId: self.myUser.id!, calledId: self.friend.id!, callerName: self.myUser.userProfile.firstName, calledName: self.friend.firstName)
-                        print("~>My name: \(self.myUser.userProfile.firstName) friend name: \(self.friend.firstName)")
-                        print("~>Session id: \(self.kSessionId)")
-
-                        guard let pending = self.pendingArchive else { return }
-                        print("~>Added pending to firebase: \(pending.addPending())")
                     } else {
                         print("~>No need to upload to pending twice.")
                     }
@@ -476,7 +460,7 @@ class VideoCallViewController: UIViewController {
         
         guard !archiveHasBeenStopped else { return }
         
-        let fullURL = "\(Server.BaseURL)\(Server.Archive)/\(archiveId)\(Server.StopArchive)"
+        let fullURL = "\(Server.baseURL)\(Server.archive)/\(archiveId)\(Server.stopArchive)"
         let url = URL(string: fullURL)
         var urlRequest: URLRequest? = nil
         if let url = url {
@@ -535,9 +519,9 @@ class VideoCallViewController: UIViewController {
         if !callWasConnected {
             print("~>Call was not connected.")
             // remove both user's call data
-            let usersRef = Database.database().reference().child(FirebaseStructure.Users)
-            usersRef.child(myUser.id!).child(FirebaseStructure.CharmUser.Call).removeValue()
-            usersRef.child(friend.id!).child(FirebaseStructure.CharmUser.Call).removeValue()
+            let usersRef = Database.database().reference().child(FirebaseStructure.usersLocation)
+            usersRef.child(myUser.id!).child(FirebaseStructure.CharmUser.currentCallLocation).removeValue()
+            usersRef.child(friend.id!).child(FirebaseStructure.CharmUser.currentCallLocation).removeValue()
             print("~>Removed call references.")
             
             // remove the pending archive
@@ -570,13 +554,7 @@ extension VideoCallViewController: OTSessionDelegate {
         }
         DispatchQueue.global(qos: .utility).async {
             // remove call
-            let call: Call? = nil
-            do {
-                let callData = try FirebaseEncoder().encode(call)
-                Database.database().reference().child(FirebaseStructure.Users).child(self.myUser.id!).child(FirebaseStructure.CharmUser.Call).setValue(callData)
-            } catch let error {
-                print("~>There was an error converting the nil call object: \(error)")
-            }
+            Database.database().reference().child(FirebaseStructure.usersLocation).child(self.myUser.id!).child(FirebaseStructure.CharmUser.currentCallLocation).removeValue()
         }
     }
     
@@ -669,7 +647,7 @@ extension VideoCallViewController: OTSubscriberDelegate {
                 self.myUser.userProfile.numCredits -= 1
                 let tokens = self.myUser.userProfile.numCredits < 0 ? 0 : self.myUser.userProfile.numCredits
                 DispatchQueue.global(qos: .utility).async {
-                    Database.database().reference().child(FirebaseStructure.Users).child(self.myUser.id!).child(FirebaseStructure.CharmUser.Profile).child(FirebaseStructure.CharmUser.UserProfile.NumCredits).setValue(tokens)
+                    Database.database().reference().child(FirebaseStructure.usersLocation).child(self.myUser.id!).child(FirebaseStructure.CharmUser.profileLocation).child(FirebaseStructure.CharmUser.UserProfile.numCredits).setValue(tokens)
                 }
                 
                 if self.pendingArchive != nil {
