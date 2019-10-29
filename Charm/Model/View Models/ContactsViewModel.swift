@@ -11,6 +11,8 @@ import Firebase
 import Contacts
 import MessageUI
 
+// TODO: - Setup an isLoadingContacts bool that notifies delegate, create delegate methods for true and false changes
+
 class ContactsViewModel: NSObject {
     
     enum ContactType {
@@ -28,6 +30,9 @@ class ContactsViewModel: NSObject {
     
     // user object
     var user = FirebaseModel.shared.charmUser
+    
+    // all users
+    var allUsers: [CharmUser] = []
     
     // compute friends list properties
     var currentFriends: [Friend] {
@@ -115,12 +120,40 @@ class ContactsViewModel: NSObject {
         super.init()
         NotificationCenter.default.addObserver(self, selector: #selector(updatedUser), name: FirebaseNotification.CharmUserDidUpdate, object: nil)
         
-        // load contact list
-        loadContacts()
-        setupAddFriendsArrays()
-        
-        // refresh table view
-        delegate?.updateTableView()
+        guard let user = user else { return }
+        if !UserDefaults.standard.bool(forKey: Defaults.hasMigrated) {
+            user.friendList?.save()
+            
+            DispatchQueue.global(qos: .background).asyncAfter(deadline: .now() + 30.0) { [weak self] in
+                guard self != nil else { return }
+                UserDefaults.standard.set(true, forKey: Defaults.hasMigrated)
+            }
+        }
+    }
+    
+    private func loadUserList() {
+        DispatchQueue.global(qos: .utility).async { [weak self] in
+            guard self != nil else { return }
+            
+            Database.database().reference().child(FirebaseStructure.usersLocation).observe(.value) { [weak self] (snapshot) in
+                guard let self = self else { return }
+                self.allUsers = []
+                for child in snapshot.children {
+                    do {
+                        guard let userSnap = child as? DataSnapshot else { continue }
+                        if !self.allUsers.contains(where: { (user) -> Bool in
+                            user.ref == userSnap.ref
+                        }) { self.allUsers.append(try CharmUser(snapshot: userSnap)) }
+                    } catch let error {
+                        print("~>There was an error trying to load a user from the child snapshot: \(error)")
+                    }
+                    
+                }
+                
+                print("~>Loaded user list.")
+                self.setupAddFriendsArrays()
+            }
+        }
     }
     
     // MARK: - Data Access
@@ -207,7 +240,9 @@ class ContactsViewModel: NSObject {
         }
         
         let store = CNContactStore()
-        store.requestAccess(for: .contacts) { (granted, error) in
+        store.requestAccess(for: .contacts) { [weak self] (granted, error) in
+            
+            guard let self = self else { return }
             
             // make sure access is granted
             guard granted else {
@@ -234,6 +269,9 @@ class ContactsViewModel: NSObject {
             } catch let error {
                 print("~>Got an error: \(error)")
             }
+            
+            // load all users
+            self.loadUserList()
         }
     }
     
@@ -348,121 +386,68 @@ class ContactsViewModel: NSObject {
     
     // setup the arrays for adding contacts
     fileprivate func setupAddFriendsArrays() {
-        let ref = Database.database().reference().child(FirebaseStructure.usersLocation)
         
-        DispatchQueue.global(qos: .utility).async {
-            let contactsGroup = DispatchGroup()
+        DispatchQueue.global(qos: .utility).async { [weak self] in
+            guard let self = self else { return }
             
             // only loop through contacts we know are not in the user's friend list
             for contact in self.notInContacts {
-                var found: Bool = false
-                contactsGroup.enter()
-                let contactGroup = DispatchGroup()
-                
-                for email in contact.emailAddresses {
-                    contactGroup.enter()
-                    let value = email.value as String
-                    let emailQuery = ref.queryOrdered(byChild: "userProfile/email").queryEqual(toValue: value).queryLimited(toFirst: 1)
-                    emailQuery.observeSingleEvent(of: .value) { (snapshot) in
-                        if !snapshot.exists() {
-                            contactGroup.leave()
-                            return
-                        }
-                        
-                        if let first = snapshot.children.first(where: { (_) -> Bool in
-                            return true
-                        }) as? DataSnapshot {
-                            print("~>Found something.")
-                            found = true
-                            let friendUser = try! CharmUser(snapshot: first) //try! FirebaseDecoder().decode(CharmUser.self, from: first)
-                            let friend = Friend(id: friendUser.id!, first: friendUser.userProfile.firstName, last: friendUser.userProfile.lastName, email: friendUser.userProfile.email)
-                            if !(friend.id == self.user?.id) && !self.existingUsers.contains(where: { (existing) -> Bool in
-                                return existing.email == friend.email
-                            }) && !self.pendingReceived.contains(where: { (existing) -> Bool in
-                                return existing.email == friend.email
-                            }) && !self.pendingSent.contains(where: { (existing) -> Bool in
-                                return existing.email == friend.email
-                            }) {
-                                self.existingUsers.append(friend)
-                            }
-                            
-                            contactGroup.leave()
+                var friendUser: CharmUser? = nil
+                if self.allUsers.contains(where: { (user) -> Bool in
+                    for email in contact.emailAddresses {
+                        let email = email.value as String
+                        if email.lowercased() == user.userProfile.email { friendUser = user; return true }
+                    }
+                    
+                    for number in contact.phoneNumbers {
+                        let phone = number.value.stringValue.filter("0123456789".contains)
+                        if phone == user.userProfile.phone { friendUser = user; return true }
+                    }
+                    
+                    return false
+                }) {
+                    guard let friendUser = friendUser, let id = friendUser.id else { continue }
+                    let friend = Friend(id: id, first: friendUser.userProfile.firstName, last: friendUser.userProfile.lastName, email: friendUser.userProfile.email)
+                    if !(friend.id == self.user?.id) && !self.existingUsers.contains(where: { (existing) -> Bool in
+                        return existing.email == friend.email
+                    }) && !self.pendingReceived.contains(where: { (existing) -> Bool in
+                        return existing.email == friend.email
+                    }) && !self.pendingSent.contains(where: { (existing) -> Bool in
+                        return existing.email == friend.email
+                    }) {
+                        self.existingUsers.append(friend)
+                    }
+                } else {
+                    // get user data to create the contact with
+                    let firstName = contact.givenName
+                    let lastName = contact.familyName
+                    var emailAddress = ""
+                    if let emailItem = contact.emailAddresses.first {
+                        emailAddress = emailItem.value as String
+                    }
+                    
+                    var phone: String = ""
+                    
+                    for number in contact.phoneNumbers {
+                        guard let label = number.label else { continue }
+                        if label.lowercased().contains("iphone") || label.lowercased().contains("mobile") || label.lowercased().contains("iphone") || label.lowercased().contains("main") {
+                            phone = number.value.stringValue
+                            break
                         }
                     }
-                }
-                
-                for number in contact.phoneNumbers {
-                    contactGroup.enter()
-                    let phone = number.value.stringValue.filter("0123456789".contains)
-                    let phoneQuery = ref.queryOrdered(byChild: "userProfile/phone").queryEqual(toValue: phone).queryLimited(toFirst: 1)
-                    phoneQuery.observeSingleEvent(of: .value) { (snapshot) in
-                        if !snapshot.exists() {
-                            contactGroup.leave()
-                            return
-                        }
-                        
-                        if let first = snapshot.children.first(where: { (_) -> Bool in
-                            return true
-                        }) as? DataSnapshot {
-                            do {
-                                let friendUser = try CharmUser(snapshot: first)
-                                let friend = Friend(id: friendUser.id!, first: friendUser.userProfile.firstName, last: friendUser.userProfile.lastName, email: friendUser.userProfile.email)
-                                print("~>Existing phone number in contacts: \(friend.firstName) \(friend.lastName) \(friend.email)")
-                                if !(friend.id == self.user?.id) && !self.existingUsers.contains(where: { (existing) -> Bool in
-                                    return existing.email == friend.email
-                                }) && !self.pendingReceived.contains(where: { (existing) -> Bool in
-                                    return existing.email == friend.email
-                                }) && !self.pendingSent.contains(where: { (existing) -> Bool in
-                                    return existing.email == friend.email
-                                }) {
-                                    self.existingUsers.append(friend)
-                                }
-                                contactGroup.leave()
-                            } catch let error {
-                                print("~>There was an error: \(error)")
-                                contactGroup.leave()
-                            }
-                            
-                        }
+                    
+                    if phone.isEmpty { phone = contact.phoneNumbers.first?.value.stringValue ?? "" }
+                    
+                    guard !firstName.isEmpty && !phone.isEmpty && !self.currentFriends.contains(where: { (friend) -> Bool in
+                        return friend.email == emailAddress || friend.phone == phone
+                    }) else {
+                        continue
                     }
-                }
-                
-                contactGroup.notify(queue: .main) {
-                    if !found {
-                        let firstName = contact.givenName
-                        let lastName = contact.familyName
-                        var emailAddress = ""
-                        if let emailItem = contact.emailAddresses.first {
-                            emailAddress = emailItem.value as String
-                        }
-                        
-                        
-                        var phone: String = ""
-                        var found: Bool = false
-                        
-                        for number in contact.phoneNumbers {
-                            guard let label = number.label else { continue }
-                            if label.lowercased().contains("iphone") || label.lowercased().contains("mobile") || label.lowercased().contains("iphone") || label.lowercased().contains("main") {
-                                phone = number.value.stringValue
-                                found = true
-                                break
-                            }
-                        }
-                        
-                        if !found {
-                            phone = contact.phoneNumbers.first?.value.stringValue ?? ""
-                        }
-                        
-                        
-                        guard !firstName.isEmpty && !phone.isEmpty && !self.currentFriends.contains(where: { (friend) -> Bool in
-                            return friend.email == emailAddress || friend.phone == phone
-                        }) else {
-                            contactsGroup.leave()
-                            return
-                        }
-                        var friend = Friend(id: "N/A", first: firstName, last: lastName, email: emailAddress)
-                        friend.phone = phone
-                        if !self.usersToInvite.contains(where: { (existing) -> Bool in
+                    
+                    guard let key = Database.database().reference().childByAutoId().key else { continue }
+                    let friend = Friend(id: key, first: firstName, last: lastName, email: emailAddress, phone: phone)
+                    
+                    if !self.usersToInvite.contains(where: { (existing) -> Bool in
                             return existing.email == friend.email && existing.phone == friend.phone && existing.firstName == existing.firstName && existing.lastName == friend.lastName
                         }) && !self.pendingReceived.contains(where: { (existing) -> Bool in
                             return existing.email == friend.email && existing.phone == friend.phone && existing.firstName == existing.firstName && existing.lastName == friend.lastName
@@ -471,21 +456,16 @@ class ContactsViewModel: NSObject {
                         }) && !self.sentText.contains(where: { (existing) -> Bool in
                             return existing.email == friend.email && existing.phone == friend.phone && existing.firstName == existing.firstName && existing.lastName == friend.lastName
                         })  { self.usersToInvite.append(friend) }
-                        contactsGroup.leave()
-                        self.delegate?.updateTableView()
-                    } else {
-                        contactsGroup.leave()
-                        self.delegate?.updateTableView()
-                    }
                 }
-                
-                
             }
             
-            contactsGroup.notify(queue: .main) {
+            
+            DispatchQueue.main.async { [weak self] in
+                guard let self = self else { return }
                 self.delegate?.updateTableView()
-                self.performFriendListMaintenence()
             }
+            
+            self.performFriendListMaintenence()
         }
         
         
@@ -500,10 +480,6 @@ class ContactsViewModel: NSObject {
         
         // load contact list
         loadContacts()
-        setupAddFriendsArrays()
-        
-        // refresh table view
-        delegate?.updateTableView()
     }
 }
 
@@ -512,180 +488,96 @@ class ContactsViewModel: NSObject {
 extension ContactsViewModel: FriendManagementDelegate {
     
     func delete(friend: Friend, fromTableView tableView: UITableView, atIndexPath indexPath: IndexPath, ofType type: ContactType) {
-        // Make sure this is all done on the main thread
         
-//        DispatchQueue.main.async {
-//            guard let user = self.user, let myId = user.id, let id = friend.id else { return }
-//            
-//            var myTypeLocation: String = ""
-//            var friendTypeLocation: String = ""
-//            var myNewFriends: [Friend]!
-//            tableView.beginUpdates()
-//            switch type {
-//            case .Current:
-//                myTypeLocation = FirebaseStructure.CharmUser.FriendList.currentFriends
-//                friendTypeLocation = FirebaseStructure.CharmUser.FriendList.currentFriends
-//                self.user!.friendList!.currentFriends!.remove(at: indexPath.row)
-//                myNewFriends = self.user!.friendList!.currentFriends!
-//            case .PendingReceived:
-//                myTypeLocation = FirebaseStructure.CharmUser.FriendList.PendingReceivedApproval
-//                friendTypeLocation = FirebaseStructure.CharmUser.FriendList.PendingSentApproval
-//                self.user!.friendList!.pendingReceivedApproval!.remove(at: indexPath.row)
-//                myNewFriends = self.user!.friendList!.pendingReceivedApproval!
-//            case .PendingSent:
-//                myTypeLocation = FirebaseStructure.CharmUser.FriendList.PendingSentApproval
-//                friendTypeLocation = FirebaseStructure.CharmUser.FriendList.PendingReceivedApproval
-//                self.user!.friendList!.pendingSentApproval!.remove(at: indexPath.row)
-//                myNewFriends = self.user!.friendList!.pendingSentApproval!
-//            default:
-//                tableView.endUpdates()
-//                return
-//            }
-//            
-//            tableView.deleteRows(at: [indexPath], with: .automatic)
-//            tableView.endUpdates()
-//            
-//            let myRef = Database.database().reference().child(FirebaseStructure.usersLocation).child(myId).child(FirebaseStructure.CharmUser.friendListLocation).child(myTypeLocation)
-//            let friendRef = Database.database().reference().child(FirebaseStructure.usersLocation).child(id).child(FirebaseStructure.CharmUser.friendListLocation).child(friendTypeLocation)
-//            
-//            DispatchQueue.global(qos: .utility).async {
-//                friendRef.observeSingleEvent(of: .value, with: { (snapshot) in
-//                    var friendsFriendlist: [Friend] = []
-//                    do {
-//                        // first get friendlist for friend
-//                        for friend in snapshot.children {
-//                            guard let friendSnap = friend as? DataSnapshot else { continue }
-//                            friendsFriendlist.append(try Friend(snapshot: friendSnap))
-//                        }
-//                        
-//                        guard let index = friendsFriendlist.firstIndex(where: { (friend) -> Bool in
-//                            friend.id == myId
-//                        }) else {
-//                            print("~>Not in friend's list, just deleting from mine.")
-//                            let myFriendData = try FirebaseEncoder().encode(myNewFriends)
-//                            myRef.setValue(myFriendData)
-//                            return
-//                        }
-//                        
-//                        friendsFriendlist.remove(at: index)
-//                        
-//                        // now encode and save data
-//                        let myFriendData = try FirebaseEncoder().encode(myNewFriends)
-//                        let friendsData = try FirebaseEncoder().encode(friendsFriendlist)
-//                        
-//                        myRef.setValue(myFriendData)
-//                        friendRef.setValue(friendsData)
-//                    } catch let error {
-//                        print("~>There was an error converting friend lists to delete: \(error)")
-//                    }
-//                })
-//            }
-//        }
+        // TODO: - Enable activity monitor for this task
+        guard let user = self.user, let myId = user.id else { return }
+        
+        DispatchQueue.global(qos: .utility).async { [weak self] in
+            guard let self = self else { return }
+            var removeCharmUser: Friend? = nil
+            for user in self.allUsers {
+                if user.id != friend.id { continue }
+                if let fl = user.friendList {
+                    if let cf = fl.currentFriends, cf.contains(where: { (friend) -> Bool in
+                        if friend.id == myId { removeCharmUser = friend; return true }
+                        return false
+                    }) { break }
+                    else if let ps = fl.pendingSentApproval, ps.contains(where: { (friend) -> Bool in
+                        if friend.id == myId { removeCharmUser = friend; return true }
+                        return false
+                    }) { break }
+                    else if let pr = fl.pendingReceivedApproval, pr.contains(where: { (friend) -> Bool in
+                        if friend.id == myId { removeCharmUser = friend; return true }
+                        return false
+                    }) { break }
+                }
+            }
+            
+            friend.ref?.removeValue()
+            if let charmUser = removeCharmUser { charmUser.ref?.removeValue() }
+        }
     }
     
     func approveFriendRequest(withId id: String) {
+        // TODO: - Add activity view support
+        
         // first move friend from received to current friends
-//        guard var user = user, let myID = user.id else {
-//            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-//                self.approveFriendRequest(withId: id)
-//                return
-//            }
-//            return
-//        }
-//
-//        // set base reference
-//        let ref = Database.database().reference()
-//
-//        let received = user.friendList!.pendingReceivedApproval
-//        if user.friendList?.currentFriends == nil { user.friendList?.currentFriends = [] }
-//
-//        for (index, friend) in received!.enumerated() {
-//            if friend.id == id {
-//                user.friendList?.currentFriends?.append(friend)
-//                user.friendList!.pendingReceivedApproval?.remove(at: index)
-//                print("~>Removed item.")
-//                break
-//            }
-//        }
-//
-//        if user.friendList!.pendingReceivedApproval?.count == 0 { user.friendList!.pendingReceivedApproval = nil }
-//
-//        // write data to firebase
-//
-//        DispatchQueue.global(qos: .utility).async {
-//            do {
-//                let friendList = try FirebaseEncoder().encode(user.friendList!)
-//                print("~>Setting uid: \(user.id!) friendlist: \(friendList)")
-//                ref.child(FirebaseStructure.usersLocation).child(user.id!).child(FirebaseStructure.CharmUser.friendListLocation).setValue(friendList) {
-//                    (error:Error?, ref:DatabaseReference) in
-//                    if let error = error {
-//                        print("~>Data could not be saved: \(error).")
-//                    } else {
-//                        print("~>Data saved successfully!")
-//                    }
-//                }
-//
-//            } catch let error {
-//                print("~>Got an error: \(error)")
-//                return
-//            }
-//
-//            // finally move user from sent to current friends on friend's friend list
-//
-//            ref.child(FirebaseStructure.usersLocation).child(id).observeSingleEvent(of: .value) { (snapshot) in
-//
-//                print("~>Got friend's snapshot, now going to update friend list.")
-//                // get the user object
-//                var friendUser = try! CharmUser(snapshot: snapshot)
-//                if friendUser.friendList == nil { friendUser.friendList = FriendList() }
-//                let pending = friendUser.friendList?.pendingSentApproval
-//                if friendUser.friendList?.currentFriends == nil { friendUser.friendList?.currentFriends = [] }
-//
-//                if pending == nil {
-//                    print("~>Returning because of nil pending.")
-//                    return
-//                }
-//
-//                var meFriend: Friend!
-//                for (index, user) in pending!.enumerated() {
-//                    if user.id == myID {
-//                        meFriend = user
-//                        friendUser.friendList!.pendingSentApproval!.remove(at: index)
-//                        friendUser.friendList?.currentFriends?.append(meFriend)
-//                        print("~>Removed item from friend's friend list.")
-//                        break
-//                    }
-//                }
-//
-//                if friendUser.friendList!.pendingSentApproval?.count == 0 { friendUser.friendList!.pendingSentApproval = nil }
-//
-//                // write changes to firebase
-//                do {
-//                    let friendsFriendList = try FirebaseEncoder().encode(friendUser.friendList!)
-//                    print("~>Going to set friend user's friends list: \(friendsFriendList)")
-//                    ref.child(FirebaseStructure.usersLocation).child(id).child(FirebaseStructure.CharmUser.friendListLocation).setValue(friendsFriendList) {
-//                        (error:Error?, ref:DatabaseReference) in
-//                        if let error = error {
-//                            print("~>Data could not be saved: \(error).")
-//                        } else {
-//                            print("~>Data saved successfully!")
-//                        }
-//                    }
-//
-//                } catch let error {
-//                    print("~>Got an error: \(error)")
-//                }
-//            }
-//        }
+        guard let user = user, let myID = user.id, allUsers.count > 0 else {
+            DispatchQueue.global(qos: .utility).asyncAfter(deadline: .now() + 0.5) { [weak self] in
+            guard let self = self else { return }
+                self.approveFriendRequest(withId: id)
+                return
+            }
+            return
+        }
         
-        
+        DispatchQueue.global(qos: .utility).async { [weak self] in
+            guard let self = self else { return }
+            
+            guard let friendUser: CharmUser = self.allUsers.first(where: { (charmUser) -> Bool in
+                charmUser.id == id
+            }) else { return }
+            
+            // grab both friend lists
+            guard var friendList = user.friendList, let received = friendList.pendingReceivedApproval else { return }
+            if friendList.currentFriends == nil { friendList.currentFriends = [] }
+            
+            guard var friendFriendList = friendUser.friendList, let sent = friendFriendList.pendingSentApproval else { return }
+            if friendFriendList.currentFriends == nil { friendFriendList.currentFriends =  [] }
+            
+            // remove from current locations on respective friend lists
+            guard var user = sent.first(where: { (friend) -> Bool in
+                friend.id == myID
+            }) else { return }
+            
+            guard var friend = received.first(where: { (friend) -> Bool in
+                friend.id == id
+            }) else { return }
+            
+            // remove from location
+            user.ref?.removeValue()
+            friend.ref?.removeValue()
+            
+            // setup new ref
+            
+            let usersRoot = Database.database().reference().child(FirebaseStructure.usersLocation)
+            let newUserRef = usersRoot.child(id).child(FirebaseStructure.CharmUser.friendListLocation).child(FirebaseStructure.CharmUser.FriendList.currentFriends).child(myID)
+            let newFriendRef = usersRoot.child(myID).child(FirebaseStructure.CharmUser.friendListLocation).child(FirebaseStructure.CharmUser.FriendList.currentFriends).child(id)
+            
+            user.ref = newUserRef
+            friend.ref = newFriendRef
+            
+            user.save()
+            friend.save()
+        }
     }
     
     // MARK: - Private Helper Function to Perform Maintenence
     
     func performFriendListMaintenence() {
         guard let user = user else {
-            DispatchQueue.global(qos: .utility).asyncAfter(deadline: .now() + 1.0) {
+            DispatchQueue.global(qos: .utility).asyncAfter(deadline: .now() + 1.0) { [weak self] in
+                guard let self = self else { return }
                 self.performFriendListMaintenence()
                 return
             }
@@ -741,18 +633,10 @@ extension ContactsViewModel: FriendManagementDelegate {
         }
         
         if changesToSelf {
-            let list = friendList.toAny()
-            Database.database().reference().child(FirebaseStructure.usersLocation).child(user.id!).child(FirebaseStructure.CharmUser.friendListLocation).setValue(list) {
-                (error:Error?, ref:DatabaseReference) in
-                if let error = error {
-                    print("~>Data could not be saved: \(error).")
-                } else {
-                    print("~>Data saved successfully!")
-                }
-            }
+            friendList.save()
         }
         
-        // Do it all over again very thirty minutes in the background
+        // Do it all over again every thirty minutes in the background
         
         DispatchQueue.global(qos: .utility).asyncAfter(deadline: .now() + 1800) {
             self.performFriendListMaintenence()
@@ -794,16 +678,7 @@ extension ContactsViewModel: FriendManagementDelegate {
                                 friend.id == self.user?.id
                             })
                             
-                            let data = list.toAny()
-                            
-                            ref.setValue(data) {
-                                (error:Error?, ref:DatabaseReference) in
-                                if let error = error {
-                                    print("~>Data could not be saved: \(error).")
-                                } else {
-                                    print("~>Data saved successfully!")
-                                }
-                            }
+                            list.save()
                         }
                         
                     case .PendingReceived:
@@ -828,16 +703,7 @@ extension ContactsViewModel: FriendManagementDelegate {
                                 friend.id == self.user?.id
                             })
                             
-                            let data = list.toAny() //try FirebaseEncoder().encode(list)
-                            
-                            ref.setValue(data) {
-                                (error:Error?, ref:DatabaseReference) in
-                                if let error = error {
-                                    print("~>Data could not be saved: \(error).")
-                                } else {
-                                    print("~>Data saved successfully!")
-                                }
-                            }
+                            list.save()
                         }
                         
                     case .PendingSent:
@@ -862,16 +728,7 @@ extension ContactsViewModel: FriendManagementDelegate {
                                 friend.id == self.user?.id
                             })
                             
-                            let data = list.toAny() //try FirebaseEncoder().encode(list)
-                            
-                            ref.setValue(data) {
-                                (error:Error?, ref:DatabaseReference) in
-                                if let error = error {
-                                    print("~>Data could not be saved: \(error).")
-                                } else {
-                                    print("~>Data saved successfully!")
-                                }
-                            }
+                            list.save()
                         }
                     default:
                         print("~>Default")
@@ -889,104 +746,51 @@ extension ContactsViewModel: FriendManagementDelegate {
     // MARK: - Private Helper Functions that do the heavy lifting for friend adding
     
     func sendEmailRequest(toFriend friend: Friend) {
-        // setup views for displaying error alerts
-//        let navVC = (UIApplication.shared.delegate as! AppDelegate).window!.rootViewController as! UINavigationController
-//        let alert = UIAlertController(title: "", message: "", preferredStyle: .alert)
-//        alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: nil))
-//
-//        let ref = Database.database().reference()
-//        let emailQuery = ref.child(FirebaseStructure.usersLocation).queryOrdered(byChild: "userProfile/email").queryEqual(toValue: friend.email).queryLimited(toFirst: 1)
-//
-//        DispatchQueue.global(qos: .utility).async {
-//            emailQuery.observeSingleEvent(of: .value) { (snapshot) in
-//                guard let first = snapshot.children.first(where: { (_) -> Bool in
-//                    return true
-//                }) as? DataSnapshot else {
-//                    alert.title = "Unable to Send Request"
-//                    alert.message = "The request not able to be sent at this time.  Please try again later."
-//                    DispatchQueue.main.async {
-//                        navVC.present(alert, animated: true, completion: nil)
-//                    }
-//
-//                    return
-//                }
-//
-//                // get friend user setup, and add self to their incoming friends
-//                var friendUser = try! CharmUser(snapshot: first)
-//
-//                // create a friend list if needed
-//                // if the user already has a list, make sure we don't have
-//                // a pending reques from them already
-//                if friendUser.friendList == nil {
-//                    friendUser.friendList = FriendList()
-//                } else if let myList = self.user!.friendList, let received = myList.pendingReceivedApproval {
-//                    for friend in received {
-//                        if friend.id == friendUser.id {
-//                            alert.title = "Accept Request"
-//                            alert.message = "This user has already sent you a friend request.  Please accept their request to add as a friend."
-//                            DispatchQueue.main.async {
-//                                navVC.present(alert, animated: true, completion: nil)
-//                            }
-//
-//                            return
-//                        }
-//                    }
-//                }
-//
-//                let meAsFriend = Friend(id: self.user!.id!, first: self.user!.userProfile.firstName, last: self.user!.userProfile.lastName, email: self.user!.userProfile.email)
-//
-//
-//                if friendUser.friendList!.pendingReceivedApproval == nil { friendUser.friendList!.pendingReceivedApproval = [] }
-//                friendUser.friendList!.pendingReceivedApproval?.append(meAsFriend)
-//
-//                // set friend user as a friend item, and add them to user's sent requests
-//                if self.user!.friendList == nil { self.user!.friendList = FriendList() }
-//                if self.user!.friendList?.pendingSentApproval == nil { self.user!.friendList!.pendingSentApproval = [] }
-//                self.user!.friendList!.pendingSentApproval?.append(friend)
-//
-//                do {
-//                    let myData = try FirebaseEncoder().encode(friendUser.friendList!.pendingReceivedApproval)
-//                    let friendData = try FirebaseEncoder().encode(self.user!.friendList!.pendingSentApproval)
-//                    // Write data to firebase
-//                    ref.child(FirebaseStructure.usersLocation).child(friendUser.id!).child(FirebaseStructure.CharmUser.friendListLocation).child(FirebaseStructure.CharmUser.FriendList.PendingReceivedApproval).setValue(myData) {
-//                        (error:Error?, ref:DatabaseReference) in
-//                        if let error = error {
-//                            print("~>Data could not be saved: \(error).")
-//                        } else {
-//                            print("~>Data saved successfully!")
-//                        }
-//                    }
-//
-//                    ref.child(FirebaseStructure.usersLocation).child(self.user!.id!).child(FirebaseStructure.CharmUser.friendListLocation).child(FirebaseStructure.CharmUser.FriendList.PendingSentApproval).setValue(friendData) {
-//                        (error:Error?, ref:DatabaseReference) in
-//                        if let error = error {
-//                            print("~>Data could not be saved: \(error).")
-//                        } else {
-//                            print("~>Data saved successfully!")
-//                        }
-//                    }
-//
-//                    alert.title = "Sent Request"
-//                    alert.message = "Your friend request has been sent.  Once the request has been approved by your friend, they will show up on your friends list."
-//                    DispatchQueue.main.async {
-//                        navVC.present(alert, animated: true, completion: nil)
-//                    }
-//
-//                    self.existingUsers.removeAll(where: { (existing) -> Bool in
-//                        return existing.email == friend.email
-//                    })
-//                    self.delegate?.updateTableView()
-//                } catch let error {
-//                    alert.title = "Request Failed"
-//                    alert.message = "Your friend request failed.  Please try again later."
-//                    print("~>Got an error: \(error)")
-//                    DispatchQueue.main.async {
-//                        navVC.present(alert, animated: true, completion: nil)
-//                    }
-//
-//                }
-//            }
-//        }
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            guard let self = self, let user = self.user, let friendId = friend.id, let myId = user.id else { return }
+            guard var meAsFriend = FirebaseModel.shared.meAsFriend else { return }
+            var friend = friend
+            // get the friend user
+            guard var friendUser = self.allUsers.first(where: { (user) -> Bool in
+                user.id == friendId
+            }) else {
+                DispatchQueue.main.async { [weak self] in
+                    guard let self = self else { return }
+                    self.showAlert(title: "Error", message: "An error occurred while trying to add the user.  Please force close the app, and try again.")
+                }
+                return
+            }
+            
+            if friendUser.friendList == nil { friendUser.friendList = FriendList() }
+            else if let myList = user.friendList, let received = myList.pendingReceivedApproval, received.contains(where: { (friend) -> Bool in
+                friend.id == friendUser.id
+            }) {
+                DispatchQueue.main.async { [weak self] in
+                    guard let self = self else { return }
+                    self.showAlert(title: "Pending Request", message: "This user has already sent you a friend request.  Please accept their request to add as a friend.")
+                }
+                return
+            }
+            
+            let usersRef = Database.database().reference().child(FirebaseStructure.usersLocation)
+            let meAsFriendRef = usersRef.child(friendId).child(FirebaseStructure.CharmUser.friendListLocation).child(FirebaseStructure.CharmUser.FriendList.pendingReceivedApproval).child(myId)
+            let friendRef = usersRef.child(myId).child(FirebaseStructure.CharmUser.friendListLocation).child(FirebaseStructure.CharmUser.FriendList.pendingSentApproval).child(friendId)
+            
+            friend.ref = friendRef
+            meAsFriend.ref = meAsFriendRef
+            
+            friend.save()
+            meAsFriend.save()
+            
+            self.resetFriendLists()
+        }
+    }
+    
+    fileprivate func resetFriendLists() {
+        contacts.removeAll()
+        notInContacts.removeAll()
+        existingUsers.removeAll()
+        usersToInvite.removeAll()
     }
     
     func sendTextRequest(toFriend friend: Friend) {
@@ -1054,15 +858,6 @@ extension ContactsViewModel: FriendManagementDelegate {
                 return
             }
             
-            // this should succeed 100% of the time, so user will never see this error
-//            guard let phone = friend.phone else {
-//                alert.title = "Error Adding Friend"
-//                alert.message = "Unable to add friend at this time.  Please restart the app and try again."
-//                navVC.present(alert, animated: true, completion: nil)
-//                viewActivity.stopAnimating()
-//                return
-//            }
-            
             let phone = friend.phone
             
             // setup message
@@ -1098,19 +893,19 @@ extension ContactsViewModel: FriendManagementDelegate {
     
     fileprivate func updateSentText(with friendList: FriendList, forUid uid: String) {
         DispatchQueue.global(qos: .utility).async {
-            do {
-                let data = friendList.toAny() //try FirebaseEncoder().encode(friendList)
-                Database.database().reference().child(FirebaseStructure.usersLocation).child(uid).child(FirebaseStructure.CharmUser.friendListLocation).setValue(data) {
-                    (error:Error?, ref:DatabaseReference) in
-                    if let error = error {
-                        print("~>Data could not be saved: \(error).")
-                    } else {
-                        print("~>Data saved successfully!")
-                    }
-                }
-            } catch let error {
-                print("~>There was an error trying to convert friendlist: \(error)")
-            }
+            friendList.save()
+        }
+    }
+    
+    fileprivate func showAlert(title: String, message: String) {
+        DispatchQueue.main.async { [weak self] in
+            guard self != nil else { return }
+            
+            // setup views for displaying error alerts
+            let navVC = (UIApplication.shared.delegate as! AppDelegate).window!.rootViewController as! UINavigationController
+            let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: nil))
+            navVC.present(alert, animated: true, completion: nil)
         }
     }
     

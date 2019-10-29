@@ -94,7 +94,6 @@ class FlashcardsViewModel: NSObject {
         }
         
         completion(trainingHistory.concreteAverage)
-        print("~>Sent: \(trainingHistory.concreteAverage)")
     }
     
     func getAverageEmotionsScore(completion: @escaping(_ emotionsHistory: TrainingStatistics) -> Void) {
@@ -164,7 +163,6 @@ class FlashcardsViewModel: NSObject {
 
     // TODO: - Update this so it only calls once in a while
     fileprivate func upload(trainingHistory history: TrainingHistory, forUid uid: String) {
-        print("~>Call training history delegate.")
         delegate?.trainingHistoryUpdated()
         
         guard delayUploadCount == 3 else {

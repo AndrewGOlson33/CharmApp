@@ -59,6 +59,12 @@ struct CharmUser: FirebaseItem {
         ]
     }
     
+    func save() {
+        userProfile.save()
+        friendList?.save()
+        trainingData.save()
+    }
+    
 }
 
 
@@ -370,30 +376,17 @@ struct FriendList: FirebaseItem {
     }
     
     func toAny() -> [AnyHashable : Any] {
-        var current: NSArray = []
-        var pendingSent: NSArray = []
-        var pendingReceived: NSArray = []
-        var sentTextNSArray: NSArray = []
-        
-        if let currentArray = currentFriends { current = currentArray as NSArray }
-        if let pendingSentArray = pendingSentApproval { pendingSent = pendingSentArray as NSArray }
-        if let pendingReceivedArray = pendingReceivedApproval { pendingReceived = pendingReceivedArray as NSArray }
-        if let sentTextArray = sentText { sentTextNSArray = sentTextArray as NSArray }
-        
-        return [
-            FirebaseStructure.CharmUser.FriendList.currentFriends : current,
-            FirebaseStructure.CharmUser.FriendList.pendingSentApproval : pendingSent,
-            FirebaseStructure.CharmUser.FriendList.pendingReceivedApproval : pendingReceived,
-            FirebaseStructure.CharmUser.FriendList.sentText : sentTextNSArray,
-        ]
+
+        // save via save function, not toAny
+        return [:]
     }
     
     func save() {
         for var friend in currentFriends ?? [] {
-            if let fID = friend.friendId, !fID.isEmpty, fID != friend.id {
+            if let fID = friend.friendId, fID != friend.id {
                 if let ref = friend.ref { ref.removeValue() }
                 let friendRef = ref?.child(FirebaseStructure.CharmUser.FriendList.currentFriends).child(fID)
-                friend.friendId = ""
+                friend.friendId = friendRef?.key
                 friend.id = friendRef?.key
                 friend.ref = friendRef
             }
@@ -402,10 +395,10 @@ struct FriendList: FirebaseItem {
         }
         
         for var friend in pendingSentApproval ?? [] {
-            if let fID = friend.friendId, !fID.isEmpty, fID != friend.id  {
+            if let fID = friend.friendId, fID != friend.id  {
                 if let ref = friend.ref { ref.removeValue() }
                 let friendRef = ref?.child(FirebaseStructure.CharmUser.FriendList.pendingSentApproval).child(fID)
-                friend.friendId = ""
+                friend.friendId = friendRef?.key
                 friend.id = friendRef?.key
                 friend.ref = friendRef
             }
@@ -414,10 +407,10 @@ struct FriendList: FirebaseItem {
         }
         
         for var friend in pendingReceivedApproval ?? [] {
-            if let fID = friend.friendId, !fID.isEmpty, fID != friend.id  {
+            if let fID = friend.friendId, fID != friend.id  {
                 if let ref = friend.ref { ref.removeValue() }
                 let friendRef = ref?.child(FirebaseStructure.CharmUser.FriendList.pendingReceivedApproval).child(fID)
-                friend.friendId = ""
+                friend.friendId = friendRef?.key
                 friend.id = friendRef?.key
                 friend.ref = friendRef
             }
@@ -426,10 +419,10 @@ struct FriendList: FirebaseItem {
         }
         
         for var friend in sentText ?? [] {
-            if let fID = friend.friendId, !fID.isEmpty, fID != friend.id  {
+            if let fID = friend.friendId, (fID != friend.id || fID == "N/A")  {
                 if let ref = friend.ref { ref.removeValue() }
-                let friendRef = ref?.child(FirebaseStructure.CharmUser.FriendList.sentText).child(fID)
-                friend.friendId = ""
+                let friendRef = ref?.child(FirebaseStructure.CharmUser.FriendList.sentText).childByAutoId()
+                friend.friendId = friendRef?.key
                 friend.id = friendRef?.key
                 friend.ref = friendRef
             }
@@ -454,6 +447,7 @@ struct Friend: FirebaseItem {
     init(id: String, first: String, last: String, email: String, phone: String = "") {
         self.id = id
         firstName = first
+        friendId = id
         lastName = last
         self.email = email
         self.phone = phone

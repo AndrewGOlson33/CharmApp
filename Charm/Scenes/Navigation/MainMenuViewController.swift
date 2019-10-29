@@ -48,7 +48,7 @@ class MainMenuViewController: UIViewController {
         uploadDeviceToken()
         
         // Start loading contacts list
-//        let _ = ContactsViewModel.shared.contacts
+        let _ = ContactsViewModel.shared.contacts
         
         validateProductIdentifiers()
         setupMetricsObserver()

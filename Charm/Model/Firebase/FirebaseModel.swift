@@ -42,6 +42,13 @@ class FirebaseModel {
         return snapshots.count == 0
     }
     
+    // contacts
+    var meAsFriend: Friend? {
+        guard let id = charmUser.id, let user = charmUser else { return nil }
+        let profile = user.userProfile
+        return Friend(id: id, first: profile.firstName, last: profile.lastName, email: profile.email, phone: profile.phone)
+    }
+    
     init() {
         setupConnectionObserver()
         setupUserObserver()
