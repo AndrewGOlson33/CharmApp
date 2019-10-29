@@ -40,6 +40,7 @@ protocol FriendManagementDelegate {
 // Delegate that allows a view model to update table view
 protocol TableViewRefreshDelegate {
     func updateTableView()
+    func showActivity(_ animating: Bool)
 }
 
 // Delegate that sends setup info back to sign in screen

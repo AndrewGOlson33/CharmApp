@@ -4347,7 +4347,7 @@ Your feedback will appear here.</string>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="749" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="HUw-Bj-Ehy">
-                                <rect key="frame" x="104" y="239.5" width="112" height="35.5"/>
+                                <rect key="frame" x="104" y="256.5" width="112" height="57.5"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="48"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
@@ -4368,22 +4368,22 @@ Your feedback will appear here.</string>
                                 </constraints>
                             </view>
                             <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Response Phrase" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="SFw-sC-GwV">
-                                <rect key="frame" x="104" y="295" width="112" height="17"/>
+                                <rect key="frame" x="104" y="334" width="112" height="17"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="w6Z-uL-hoa">
-                                <rect key="frame" x="32" y="320" width="256" height="69.5"/>
+                                <rect key="frame" x="32" y="359" width="256" height="50"/>
                                 <subviews>
                                     <imageView userInteractionEnabled="NO" alpha="0.40000000000000002" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="icn_positive_white" translatesAutoresizingMaskIntoConstraints="NO" id="QFj-5l-82s">
-                                        <rect key="frame" x="8" y="-7" width="83.5" height="83.5"/>
+                                        <rect key="frame" x="8" y="-5" width="60" height="60"/>
                                         <constraints>
                                             <constraint firstAttribute="width" secondItem="QFj-5l-82s" secondAttribute="height" multiplier="1:1" id="TOu-fG-4K5"/>
                                         </constraints>
                                     </imageView>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Positive" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bMO-gG-1oi">
-                                        <rect key="frame" x="95.5" y="24" width="65" height="21"/>
+                                        <rect key="frame" x="95.5" y="14.5" width="65" height="21"/>
                                         <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <nil key="highlightedColor"/>
@@ -4401,16 +4401,16 @@ Your feedback will appear here.</string>
                                 </constraints>
                             </view>
                             <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="TnW-4A-bNe">
-                                <rect key="frame" x="32" y="409.5" width="256" height="69.5"/>
+                                <rect key="frame" x="32" y="429" width="256" height="50"/>
                                 <subviews>
                                     <imageView userInteractionEnabled="NO" alpha="0.40000000000000002" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="icn_negative_white" translatesAutoresizingMaskIntoConstraints="NO" id="nHB-L2-gc7">
-                                        <rect key="frame" x="8" y="-7" width="83.5" height="83.5"/>
+                                        <rect key="frame" x="8" y="-5" width="60" height="60"/>
                                         <constraints>
                                             <constraint firstAttribute="width" secondItem="nHB-L2-gc7" secondAttribute="height" multiplier="1:1" id="Nvc-Om-q55"/>
                                         </constraints>
                                     </imageView>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Negative" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="77M-VJ-3Jl">
-                                        <rect key="frame" x="99.5" y="24" width="57" height="21"/>
+                                        <rect key="frame" x="91.5" y="14.5" width="73" height="21"/>
                                         <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <nil key="highlightedColor"/>

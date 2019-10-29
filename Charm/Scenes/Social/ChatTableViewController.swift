@@ -14,7 +14,10 @@ class ChatTableViewController: UITableViewController {
     // MARK: - Properties
 
     // User object that holds friend list
-    let viewModel = ContactsViewModel()
+    let viewModel = ContactsViewModel.shared
+    
+    // activity view
+    let activityView = UIActivityIndicatorView()
     
     // Search controller
     let searchController = UISearchController(searchResultsController: nil)
@@ -34,6 +37,29 @@ class ChatTableViewController: UITableViewController {
         tableView.tableHeaderView = searchController.searchBar
         definesPresentationContext = true
         searchController.searchBar.delegate = self
+        
+        // setup activity view
+        
+        if #available(iOS 13.0, *) {
+            activityView.style = .large
+            activityView.color = .label
+        } else {
+            activityView.style = .whiteLarge
+            activityView.color = .black
+        }
+        
+        
+        
+        activityView.hidesWhenStopped = true
+        view.addSubview(activityView)
+        
+        // Position it at the center of the ViewController.
+        activityView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            activityView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            activityView.centerYAnchor.constraint(equalTo: view.centerYAnchor)])
+        
+        showActivity(viewModel.isLoading)
     }
     
     // MARK: - Private Helper Functions
@@ -229,6 +255,16 @@ extension ChatTableViewController: TableViewRefreshDelegate {
     
     func updateTableView() {
         tableView.reloadData()
+    }
+    
+    func showActivity(_ animating: Bool) {
+        if animating && !activityView.isAnimating {
+            activityView.startAnimating()
+            view.isUserInteractionEnabled = false
+        } else if !animating && activityView.isAnimating {
+            activityView.stopAnimating()
+            view.isUserInteractionEnabled = true
+        }
     }
     
 }

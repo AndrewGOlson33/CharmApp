@@ -13,12 +13,37 @@ import Firebase
 class LearningTableViewController: UITableViewController {
     
     let viewModel = LearningVideoViewModel.shared
+    
+    let activityView = UIActivityIndicatorView()
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
         // enable view model to reload table view data
         viewModel.delegate = self
+        
+        // setup activity view
+        
+        if #available(iOS 13.0, *) {
+            activityView.style = .large
+            activityView.color = .label
+        } else {
+            activityView.style = .whiteLarge
+            activityView.color = .black
+        }
+        
+        
+        
+        activityView.hidesWhenStopped = true
+        view.addSubview(activityView)
+        
+        // Position it at the center of the ViewController.
+        activityView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            activityView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            activityView.centerYAnchor.constraint(equalTo: view.centerYAnchor)])
+        
+        showActivity(viewModel.isLoading)
     }
 
     // MARK: - Table view data source
@@ -86,6 +111,10 @@ extension LearningTableViewController: TableViewRefreshDelegate {
     
     func updateTableView() {
         tableView.reloadData()
+    }
+    
+    func showActivity(_ animating: Bool) {
+        
     }
     
 }

@@ -20,6 +20,12 @@ class LearningVideoViewModel: NSObject {
         return sections?.sections.count ?? 0
     }
     
+    var isLoading: Bool = false {
+        didSet {
+            delegate?.showActivity(isLoading)
+        }
+    }
+    
     static var shared = LearningVideoViewModel()
     
     // MARK: - Class Init
@@ -60,18 +66,21 @@ class LearningVideoViewModel: NSObject {
     
     // Load video files
     private func loadVideos() {
+        isLoading = true
         let learningRef = Database.database().reference().child(FirebaseStructure.Videos.learning).child(FirebaseStructure.Videos.sections)
 
         learningRef.observe(.value) { (snapshot) in
             do {
                 self.sections = try VideoSections(snapshot: snapshot)
                 self.delegate?.updateTableView()
+                self.isLoading = false
                 if self.sections.sections.count == 0 {
                     self.showInternetConnectionAlert()
                 }
             } catch let error {
                 print("~>There was an error decoding the video section: \(error)")
                 self.delegate?.updateTableView()
+                self.isLoading = false
                 self.showInternetConnectionAlert()
             }
         }
