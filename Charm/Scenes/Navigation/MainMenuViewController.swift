@@ -40,9 +40,6 @@ class MainMenuViewController: UIViewController {
         
         // Setup buttons
         setupButtons()
-
-        // Setup added friend observer
-        NotificationCenter.default.addObserver(self, selector: #selector(addFriend(_:)), name: FirebaseNotification.GotFriendFromLink, object: nil)
         
         // Upload Device Token
         uploadDeviceToken()
@@ -52,6 +49,15 @@ class MainMenuViewController: UIViewController {
         
         validateProductIdentifiers()
         setupMetricsObserver()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        // Setup added friend observer
+        NotificationCenter.default.addObserver(self, selector: #selector(addFriend(_:)), name: FirebaseNotification.GotFriendFromLink, object: nil)
+        
+        // Setup open friend list observer
+        NotificationCenter.default.addObserver(self, selector: #selector(addFriend(_:)), name: FirebaseNotification.showContactListFromNotification, object: nil)
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -194,119 +200,6 @@ class MainMenuViewController: UIViewController {
         }
     }
     
-//    fileprivate func setupUser() {
-//        Database.database().reference().child(FirebaseStructure.usersLocation).child(Auth.auth().currentUser!.uid).observe(.value) { (snapshot) in
-//            DispatchQueue.main.async {
-//                do {
-//                    let user = try CharmUser(snapshot: snapshot)
-//                    firebaseModel.charmUser = user
-//                    // Post a notification that the user changed, along with the user obejct
-//                    NotificationCenter.default.post(name: FirebaseNotification.CharmUserDidUpdate, object: user)
-//                    // post training history notification if needed
-//                    if self.shouldPostTrainingHistoryNotification {
-//                        NotificationCenter.default.post(name: FirebaseNotification.TrainingHistoryUpdated, object: nil)
-//                        self.shouldPostTrainingHistoryNotification = false
-//                    }
-//                    // If there is a call, post a notification about that call
-//                    if let call = user.currentCall {
-//                        if call.status == .incoming {
-//                            NotificationCenter.default.post(name: FirebaseNotification.CharmUserIncomingCall, object: call)
-//                            DispatchQueue.main.async {
-//                                let delegate = UIApplication.shared.delegate as! AppDelegate
-//                                print("~>Incoming call status: \(delegate.incomingCall)")
-//                                if delegate.incomingCall {
-//                                    delegate.incomingCall = false
-//                                    self.setupIncoming(call: call)
-//                                    return
-//                                } else {
-//                                    let alert = UIAlertController(title: "Incoming Call", message: "You have an incoming call.", preferredStyle: .alert)
-//                                    alert.addAction(UIAlertAction(title: "Accept", style: .default, handler: { (_) in
-//                                        self.setupIncoming(call: call)
-//                                    }))
-//                                    alert.addAction(UIAlertAction(title: "Ignore", style: .cancel, handler: { _ in
-//                                        guard let call = firebaseModel.charmUser.currentCall else { return }
-//                                        self.reject(call: call)
-//                                    }))
-//                                    self.navigationController?.present(alert, animated: true, completion: nil)
-//                                }
-//                            }
-//                        } else if self.firstSetup && call.status == .connected {
-//                            DispatchQueue.main.async {
-//                                let delegate = UIApplication.shared.delegate as! AppDelegate
-//                                if delegate.incomingCall {
-//                                    delegate.incomingCall = false
-//                                } else {
-//                                    delegate.removeActiveCalls()
-//                                }
-//                            }
-//                        } else if call.status == .rejected {
-//                            // remove the value first
-//                            if let videoVC = self.navigationController!.topViewController! as? VideoCallViewController {
-//                                videoVC.endCallButtonTapped(videoVC.btnEndCall!)
-//                            } else {
-//                                call.myCallRef.removeValue()
-//                            }
-//
-//                            let rejectedAlert = UIAlertController(title: "Unable to Place Call", message: "The person you are trying to reach is not available at this time.  Please try again later.", preferredStyle: .alert)
-//                            rejectedAlert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-//                            self.present(rejectedAlert, animated: true, completion: nil)
-//                        }
-//                    }
-//                    self.firstSetup = false
-//                    if (UIApplication.shared.delegate as! AppDelegate).showContactListFromNotification {
-//                        (UIApplication.shared.delegate as! AppDelegate).showContactListFromNotification = false
-//                        self.performSegue(withIdentifier: SegueID.friendList, sender: self)
-//                    }
-//                } catch let error {
-//                    print("~>There was an error: \(error)")
-//                    return
-//                }
-//            }
-//        }
-//    }
-    
-    fileprivate func reject(call: Call) {
-        call.myCallRef.removeValue()
-        // TODO: - Enable rejecting calls again
-//        let friendCall = Call(sessionID: call.sessionID, status: .rejected, from: Auth.auth().currentUser!.uid, in: call.room)
-//
-//        DispatchQueue.global(qos: .utility).async {
-//            do {
-//                let data = try FirebaseEncoder().encode(friendCall)
-//                call.friendCallRef.setValue(data)
-//            } catch let error {
-//                print("~>There was an error converting call data: \(error)")
-//            }
-//        }
-        
-    }
-    
-    fileprivate func setupIncoming(call: Call) {
-        DispatchQueue.main.async {
-            let myUser = self.firebaseModel.charmUser
-            guard let friend = myUser?.friendList?.currentFriends?.first(where: { (friend) -> Bool in
-                friend.id! == call.fromUserID
-            }) else {
-                let connectionError = UIAlertController(title: "Error", message: "There was an error connecting your call.  Do you want to try again?", preferredStyle: .alert)
-                connectionError.addAction(UIAlertAction(title: "No", style: .cancel, handler: nil))
-                connectionError.addAction(UIAlertAction(title: "Yes", style: .default, handler: { (_) in
-                    self.setupIncoming(call: call)
-                    return
-                }))
-                self.present(connectionError, animated: true, completion: nil)
-                return
-            }
-            
-            let callVC = self.storyboard?.instantiateViewController(withIdentifier: StoryboardID.videoCall) as! VideoCallViewController
-            callVC.myUser = myUser
-            callVC.friend = friend
-            callVC.kSessionId = call.sessionID
-            callVC.room = call.room
-            
-            self.navigationController?.pushViewController(callVC, animated: true)
-        }
-    }
-    
     fileprivate func setupMetricsObserver() {
         NotificationCenter.default.addObserver(self, selector: #selector(metricsButtonTapped(_:)), name: FirebaseNotification.NewSnapshot, object: nil)
     }
@@ -374,6 +267,13 @@ class MainMenuViewController: UIViewController {
         loadingFriendFromNotification = true
         guard let id = notification.object as? String else { return }
         addFriend(withID: id)
+    }
+    
+    @objc fileprivate func showFriendListFrom(_ notification: Notification) {
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            self.performSegue(withIdentifier: SegueID.friendList, sender: self)
+        }
     }
     
     fileprivate func addFriend(withID id: String) {

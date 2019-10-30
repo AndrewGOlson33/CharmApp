@@ -256,13 +256,17 @@ extension FriendListTableViewController: TableViewRefreshDelegate {
     }
     
     func showActivity(_ animating: Bool) {
-        if animating && !activityView.isAnimating {
-            activityView.startAnimating()
-            view.isUserInteractionEnabled = false
-        } else if !animating && activityView.isAnimating {
-            activityView.stopAnimating()
-            view.isUserInteractionEnabled = true
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            if animating && !self.activityView.isAnimating {
+                self.activityView.startAnimating()
+                self.view.isUserInteractionEnabled = false
+            } else if !animating && self.activityView.isAnimating {
+                self.activityView.stopAnimating()
+                self.view.isUserInteractionEnabled = true
+            }
         }
+        
     }
     
 }

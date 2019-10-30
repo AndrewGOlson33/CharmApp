@@ -221,6 +221,7 @@ enum FirebaseNotification {
     static let SnapshotLoaded = Notification.Name("notificationSnapshotDataLoaded")
     static let NewSnapshot = Notification.Name("notificationnewSnapshotNotificationReceived")
     static let connectionStatusChanged = Notification.Name("notificationConnectionStatusChanged")
+    static let showContactListFromNotification = Notification.Name("notificationShowContactListFromNotification")
 }
 
 // MARK: - Database Constants

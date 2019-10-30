@@ -15,7 +15,7 @@ class FirebaseModel {
     static let shared = FirebaseModel()
     
     // setup variables
-    var isSetupPhaseComplete = true
+    var isSetupPhaseComplete = false
     
     // training model
     var trainingModel: TrainingData!
@@ -55,6 +55,7 @@ class FirebaseModel {
         setupTrainingHistoryObserver()
         setupSnapshotObserver()
         setupTrainingModel()
+        setupCallObserver()
     }
     
     // MARK: - Connection Observer
@@ -85,7 +86,6 @@ class FirebaseModel {
                     // set the user and notify listeners that user has updated
                     self.charmUser = try CharmUser(snapshot: snapshot)
                     NotificationCenter.default.post(name: FirebaseNotification.CharmUserDidUpdate, object: self.charmUser)
-                    self.handleCalls()
                 } catch let error {
                     print("~>There was an error: \(error)")
                     return
@@ -143,10 +143,144 @@ class FirebaseModel {
     
     // MARK: - Call handler
     
-    private func handleCalls() {
-        guard let user = charmUser, let call = user.currentCall else { return }
-        print("~>Handling calls")
-        NotificationCenter.default.post(name: FirebaseNotification.CharmUserHasCall, object: call)
+    private func setupCallObserver() {
+        DispatchQueue.global(qos: .utility).async { [weak self] in
+            guard let self = self else { return }
+            guard let authUser = Auth.auth().currentUser else { return }
+            Database.database().reference().child(FirebaseStructure.usersLocation).child(authUser.uid).child(FirebaseStructure.CharmUser.currentCallLocation).observe(.value) { [weak self] (snapshot) in
+                guard let self = self else { return }
+                guard snapshot.exists() else {
+                    if !self.isSetupPhaseComplete { self.isSetupPhaseComplete = true }
+                    return
+                }
+                do {
+                    let call = try Call(snapshot: snapshot)
+                    self.handle(call: call)
+                    if !self.isSetupPhaseComplete { self.isSetupPhaseComplete = true }
+                } catch let error {
+                    print("~>There was an error trying to capture the call: \(error)")
+                }
+            }
+        }
+        
+    }
+    
+    private func handle(call: Call) {
+        switch call.status {
+        case .incoming:
+            handleIncoming(call)
+        case .connected:
+            handleConnected(call)
+        case .rejected:
+            handleRejected(call)
+        default:
+            print("~>Status: \(call.status)")
+            return
+        }
+    }
+    
+    private func handleIncoming(_ call: Call) {
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            guard let delegate = UIApplication.shared.delegate as? AppDelegate else { return }
+            guard let user = self.charmUser, let fl = user.friendList, let cf = fl.currentFriends, let friend = cf.first(where: { (friend) -> Bool in
+                friend.id == call.fromUserID
+            }) else { return }
+            if delegate.incomingCall {
+                delegate.incomingCall = false
+                self.setupIncoming(call: call, with: friend)
+                return
+            } else {
+                self.showIncomingCallAlert(forCall: call, from: friend)
+            }
+        }
+    }
+    
+    private func handleConnected(_ call: Call) {
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self, self.isSetupPhaseComplete else { return }
+            guard let delegate = UIApplication.shared.delegate as? AppDelegate else { return }
+            if delegate.incomingCall { delegate.incomingCall = false } else { delegate.removeActiveCalls() }
+        }
+    }
+    
+    private func handleRejected(_ call: Call) {
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            guard let delegate = UIApplication.shared.delegate as? AppDelegate else { return }
+           guard let window = delegate.window, let navVC = window.rootViewController as? UINavigationController else {
+               DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+                   guard let self = self else { return }
+                   self.handleRejected(call)
+               }
+               return
+           }
+            
+            if let videoVC = navVC.topViewController as? VideoCallViewController {
+                videoVC.endCallButtonTapped(videoVC.btnEndCall!)
+            } else {
+                call.myCallRef.removeValue()
+            }
+            
+            let rejectedAlert = UIAlertController(title: "Unable to Place Call", message: "The person you are trying to reach is not available at this time.  Please try again later.", preferredStyle: .alert)
+            rejectedAlert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+            navVC.present(rejectedAlert, animated: true, completion: nil)
+        }
+    }
+    
+    private func showIncomingCallAlert(forCall call: Call, from friend: Friend) {
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            guard let delegate = UIApplication.shared.delegate as? AppDelegate else { return }
+            guard let window = delegate.window, let navVC = window.rootViewController as? UINavigationController else {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+                    guard let self = self else { return }
+                    self.showIncomingCallAlert(forCall: call, from: friend)
+                }
+                return
+            }
+            
+            let alert = UIAlertController(title: "Incoming Call", message: "You have an incoming call from \(friend.firstName) \(friend.lastName)", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "Accept", style: .default, handler: { [weak self] (_) in
+                guard let self = self else { return }
+                self.setupIncoming(call: call, with: friend)
+            }))
+            alert.addAction(UIAlertAction(title: "Ignore", style: .cancel, handler: { [weak self] (_) in
+                guard let self = self else { return }
+                self.rejectIncoming(call: call, from: friend)
+            }))
+            
+            navVC.present(alert, animated: true, completion: nil)
+        }
+    }
+    
+    private func setupIncoming(call: Call, with friend: Friend) {
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            guard let delegate = UIApplication.shared.delegate as? AppDelegate else { return }
+            guard let window = delegate.window, let navVC = window.rootViewController as? UINavigationController else {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+                    guard let self = self else { return }
+                    self.setupIncoming(call: call, with: friend)
+                }
+                return
+            }
+            
+            let callVC = navVC.storyboard?.instantiateViewController(withIdentifier: StoryboardID.videoCall) as! VideoCallViewController
+            guard let myUser = self.charmUser else { return }
+            callVC.myUser = myUser
+            callVC.friend = friend
+            callVC.kSessionId = call.sessionID
+            callVC.room = call.room
+            navVC.pushViewController(callVC, animated: true)
+        }
+    }
+    
+    private func rejectIncoming(call: Call, from friend: Friend) {
+        call.myCallRef.removeValue()
+        var friendCall = Call(sessionID: call.sessionID, status: .rejected, from: Auth.auth().currentUser!.uid, in: call.room)
+        friendCall.ref = call.friendCallRef
+        friendCall.save()
     }
     
     // MARK: - Training Model

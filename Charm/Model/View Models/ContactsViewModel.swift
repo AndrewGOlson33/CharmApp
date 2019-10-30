@@ -471,6 +471,7 @@ class ContactsViewModel: NSObject {
             DispatchQueue.main.async { [weak self] in
                 guard let self = self else { return }
                 self.isLoading = false
+                self.checkForShowContactListNotification()
                 self.delegate?.updateTableView()
             }
             
@@ -481,6 +482,14 @@ class ContactsViewModel: NSObject {
     }
     
     // MARK: - Notifications
+    
+    private func checkForShowContactListNotification() {
+        guard let delegate = UIApplication.shared.delegate as? AppDelegate else { return }
+        if delegate.showContactListFromNotification {
+            delegate.showContactListFromNotification = false
+            NotificationCenter.default.post(name: FirebaseNotification.showContactListFromNotification, object: nil)
+        }
+    }
     
     // updates should be live
     @objc private func updatedUser(_ sender: Notification) {

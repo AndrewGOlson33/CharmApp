@@ -21,7 +21,6 @@ struct CharmUser: FirebaseItem {
     var ref: DatabaseReference?
     var userProfile: UserProfile
     var friendList: FriendList?
-    var currentCall: Call?
     var trainingData: TrainingHistory
     var tokenID: [String : Bool]? = nil
     

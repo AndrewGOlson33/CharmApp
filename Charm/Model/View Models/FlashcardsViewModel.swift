@@ -161,7 +161,6 @@ class FlashcardsViewModel: NSObject {
         self.upload(trainingHistory: trainingHistory, forUid: uid)
     }
 
-    // TODO: - Update this so it only calls once in a while
     fileprivate func upload(trainingHistory history: TrainingHistory, forUid uid: String) {
         delegate?.trainingHistoryUpdated()
         
