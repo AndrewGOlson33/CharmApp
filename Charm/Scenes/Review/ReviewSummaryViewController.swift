@@ -18,9 +18,39 @@ class ReviewSummaryViewController: UIViewController {
     @IBOutlet weak var activityView: UIActivityIndicatorView!
     @IBOutlet weak var viewEffect: UIVisualEffectView!
     
-    // for chart and table data
-    @IBOutlet weak var chartView: HIChartView!
-    @IBOutlet weak var tableView: UITableView!
+    // For displaying data
+    
+    // charts
+    @IBOutlet weak var mindChart: HIChartView!
+    @IBOutlet weak var heartChart: HIChartView!
+    
+    // title label
+    @IBOutlet weak var lblSummaryTitle: UILabel!
+    
+    // score labels
+    @IBOutlet weak var lblWordEngScore: UILabel!
+    @IBOutlet weak var lblConvoEngScore: UILabel!
+    @IBOutlet weak var lblPersonalConScore: UILabel!
+    @IBOutlet weak var lblEmoConScore: UILabel!
+    @IBOutlet weak var lblSmilingScore: UILabel!
+    
+    // Slider Views
+    @IBOutlet weak var wordEngSlider: SliderView!
+    @IBOutlet weak var convoEngSlider: SliderView!
+    @IBOutlet weak var personalConSlider: SliderView!
+    @IBOutlet weak var emoConSlider: SliderView!
+    @IBOutlet weak var smilingSlider: SliderView!
+    
+    // for button handling
+    @IBOutlet weak var viewWordEng: UIView!
+    @IBOutlet weak var viewConvoEng: UIView!
+    @IBOutlet weak var viewPerCon: UIView!
+    @IBOutlet weak var viewEmoCon: UIView!
+    @IBOutlet weak var viewSmiling: UIView!
+    
+    // buttons
+    @IBOutlet weak var btnHistory: UIButton!
+    
     
     // MARK: - Properties
     
@@ -28,12 +58,9 @@ class ReviewSummaryViewController: UIViewController {
     var snapshot: Snapshot!
     var cellInfo: [SummaryCellInfo] = []
     
-    // date formatter for setting chart title
-    let dFormatter = DateFormatter()
-    
-    // Helps deal with layout glitches caused by highcharts
-    var chartDidLoad: Bool = false
-    var viewHasAppeared: Bool = false
+    // calculated averages
+    var mindAverage: Double = 0.0
+    var heartAverage: Double = 0.0
     
     // MARK: - View Lifecycle Functions
     
@@ -49,22 +76,12 @@ class ReviewSummaryViewController: UIViewController {
         viewLoading.layer.shadowRadius = 8
         viewLoading.layer.shadowOpacity = 0.6
         viewLoading.layer.shadowOffset = CGSize(width: 2, height: 2)
-        
-        // setup date formatter
-        dFormatter.dateStyle = .medium
-        
-        // Resolve layout issues caused by highcharts
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
-            self.chartDidLoad = true
-            self.tableView.reloadData()
-        }
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        viewHasAppeared = true
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            self.tableView.reloadData()
+            
         }
         
         if #available(iOS 13.0, *) {
@@ -80,20 +97,44 @@ class ReviewSummaryViewController: UIViewController {
                 self.navigationController?.navigationBar.scrollEdgeAppearance = navBarAppearance
         }
         
+        setupSnapshotData()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         tabBarController?.navigationItem.title = "Summary"
         
-        setupSnapshotData()
+        DispatchQueue.main.async {
+            self.viewLoading.alpha = 0.0
+            self.viewLoading.isHidden = false
+            self.activityView.startAnimating()
+            
+            // disable tab bar buttons
+            if let items = self.tabBarController?.tabBar.items {
+                for item in items {
+                    item.isEnabled = false
+                }
+            }
+            
+            UIView.animate(withDuration: 0.25, animations: {
+                self.viewLoading.alpha = 1.0
+            })
+        }
     }
     
     deinit {
         NotificationCenter.default.removeObserver(self)
     }
     
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        removeSnapshotObserver()
+    }
+    
+    // MARK: - Private Helper Functions
+    
     private func setupSnapshotData() {
+        // if snapshots are still loading, show the loading view
         guard !SnapshotsLoading.shared.isLoading else {
             if viewLoading.isHidden {
                 DispatchQueue.main.async {
@@ -121,6 +162,7 @@ class ReviewSummaryViewController: UIViewController {
             return
         }
         
+        // hide the loading view if it is showing
         if !viewLoading.isHidden {
             DispatchQueue.main.async {
                 UIView.animate(withDuration: 0.25, animations: {
@@ -138,6 +180,7 @@ class ReviewSummaryViewController: UIViewController {
                 })
             }
         }
+        
         // load summary data
         if snapshot == nil {
             guard let data = FirebaseModel.shared.snapshots.first else {
@@ -164,17 +207,205 @@ class ReviewSummaryViewController: UIViewController {
             snapshot = FirebaseModel.shared.selectedSnapshot
         }
         
+        // do button setup
+        setupButtons()
         
-        // setup chart
-        setupSummaryChart()
+        // setup scores and charts
+        loadScoreData()
+        setupScoreUI()
+        setupCharts()
     }
     
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        removeSnapshotObserver()
+    private func setupButtons() {
+        if FirebaseModel.shared.snapshots.count > 1 { btnHistory.isHidden = false }
+        
+        // setup tap gesture recognizers
+        let wordTap = UITapGestureRecognizer(target: self, action: #selector(handle(_:)))
+        wordTap.numberOfTouchesRequired = 1
+        viewWordEng.addGestureRecognizer(wordTap)
+        
+        let convoTap = UITapGestureRecognizer(target: self, action: #selector(handle(_:)))
+        convoTap.numberOfTouchesRequired = 1
+        viewConvoEng.addGestureRecognizer(convoTap)
+        
+        let perConTap = UITapGestureRecognizer(target: self, action: #selector(handle(_:)))
+        perConTap.numberOfTouchesRequired = 1
+        viewPerCon.addGestureRecognizer(perConTap)
+        
+        let emoConTap = UITapGestureRecognizer(target: self, action: #selector(handle(_:)))
+        emoConTap.numberOfTouchesRequired = 1
+        viewEmoCon.addGestureRecognizer(emoConTap)
     }
     
-    // MARK: - Private Helper Functions
+    private func loadScoreData() {
+        // get values for line chart
+        let ideaEngagement = snapshot.getTopLevelScoreValue(forSummaryItem: .ideaEngagement) ?? 0
+        let conversationEngagement = snapshot.getTopLevelScoreValue(forSummaryItem: .conversationEngagement) ?? 0
+        let personalConnection = snapshot.getTopLevelScoreValue(forSummaryItem: .personalConnection) ?? 0
+        let emotionalConnection = snapshot.getTopLevelScoreValue(forSummaryItem: .emotionalConnection) ?? 0
+        let smiling = snapshot.getTopLevelScoreValue(forSummaryItem: .smilingPercentage) ?? 0
+        
+        // get scores for cell info
+        let ideaPercent = snapshot.getTopLevelRawValue(forSummaryItem: .ideaEngagement) ?? 0
+        let conversationPercent = snapshot.getTopLevelRawValue(forSummaryItem: .conversationEngagement) ?? 0
+        let personalConnectionPercent = snapshot.getTopLevelRawValue(forSummaryItem: .personalConnection) ?? 0
+        let emotionalConnectionPercent = snapshot.getTopLevelRawValue(forSummaryItem: .emotionalConnection) ?? 0
+        let smilingPercent = snapshot.getTopLevelRawValue(forSummaryItem: .smilingPercentage) ?? 0
+
+        // setup cell info array
+        cellInfo.append(SummaryCellInfo(title: "Word Engagement", score: ideaEngagement, percent: ideaPercent))
+        cellInfo.append(SummaryCellInfo(title: "Conversation Engagement", score: conversationEngagement, percent: conversationPercent))
+        cellInfo.append(SummaryCellInfo(title: "Personal Connection", score: personalConnection, percent: personalConnectionPercent))
+        cellInfo.append(SummaryCellInfo(title: "Emotional Connection", score: emotionalConnection, percent: emotionalConnectionPercent))
+        cellInfo.append(SummaryCellInfo(title: "Smiling", score: smiling, percent: smilingPercent))
+        
+        // load averages
+        mindAverage = (ideaEngagement + conversationEngagement) / 2.0
+        heartAverage = (personalConnection + emotionalConnection + smiling) / 3.0
+    }
+    
+    private func setupScoreUI() {
+        guard let snapshot = self.snapshot else { return }
+        let dateString = snapshot.friendlyDateString.isEmpty ? "" : "\n" + snapshot.friendlyDateString
+        lblSummaryTitle.text = "Your conversation with \(snapshot.friend)\(dateString)"
+        
+        for info in cellInfo {
+            switch info.title {
+            case "Word Engagement":
+                lblWordEngScore.text = info.scoreString
+                wordEngSlider.setup(for: .fillFromLeft, at: CGFloat(info.percent))
+            case "Conversation Engagement":
+                lblConvoEngScore.text = info.scoreString
+                convoEngSlider.setup(for: .fillFromLeft, at: CGFloat(info.percent))
+            case "Personal Connection":
+                lblPersonalConScore.text = info.scoreString
+                personalConSlider.setup(for: .fillFromLeft, at: CGFloat(info.percent))
+            case "Emotional Connection":
+                lblEmoConScore.text = info.scoreString
+                emoConSlider.setup(for: .fillFromLeft, at: CGFloat(info.percent))
+            case "Smiling":
+                lblSmilingScore.text = info.scoreString
+                smilingSlider.setup(for: .fillFromLeft, at: CGFloat(info.percent))
+            default:
+                return
+            }
+        }
+    }
+    
+    private func setupCharts() {
+        setup(chartView: mindChart, withScore: mindAverage, andColor: #colorLiteral(red: 0.4862745098, green: 0.7098039216, blue: 0.9254901961, alpha: 1))
+        setup(chartView: heartChart, withScore: heartAverage, andColor: #colorLiteral(red: 0.4941176471, green: 0, blue: 0, alpha: 1))
+    }
+    
+    private func setup(chartView: HIChartView, withScore score: Double, andColor color: UIColor) {
+        guard snapshot != nil else { return }
+        
+        // Initialize Chart Options
+        let options = HIOptions()
+        
+        // tooltip
+        let tooltip = HITooltip()
+        tooltip.enabled = false
+        
+        // Setup Chart
+        let chart = HIChart()
+        chart.type = "solidgauge"
+        
+        // title
+        let title = HITitle()
+        title.text = ""
+        
+        // hide hamburger button
+        let navigation = HINavigation()
+        let buttonOptions = HIButtonOptions()
+        buttonOptions.enabled = false
+        navigation.buttonOptions = buttonOptions
+        
+        // pane
+        let pane = HIPane()
+        pane.startAngle = 0
+        pane.endAngle = 360
+        
+        // pane background
+        let paneBackground = HIBackground()
+        paneBackground.outerRadius = "100%"
+        paneBackground.innerRadius = "70%"
+        paneBackground.borderWidth = 0
+        let bgColor = color.withAlphaComponent(0.35)
+        let bgColorString = getHex(for: bgColor)
+        let backgroundColor = HIGradientColorObject()
+        backgroundColor.linearGradient = HILinearGradientColorObject()
+        backgroundColor.linearGradient.y1 = 0
+        backgroundColor.linearGradient.y2 = 1
+        backgroundColor.stops = [
+            [0, bgColorString],
+            [1, bgColorString]
+        ]
+        paneBackground.backgroundColor = backgroundColor
+        
+        pane.background = [paneBackground]
+        
+        // y axis
+        
+        let yAxis = HIYAxis()
+        let yTitle = HITitle()
+        yTitle.text = "\(round(score * 10) / 10)"
+        yTitle.style = HICSSObject()
+        yTitle.style.fontWeight = "bold"
+        yTitle.style.fontSize = "20"
+        let center = chartView.bounds.height / 4 - 5
+        yTitle.y = center as NSNumber
+        yAxis.min = 0
+        yAxis.max = 100
+        yAxis.lineWidth = 0
+        yAxis.tickPosition = ""
+        yAxis.tickAmount = 0
+        yAxis.tickPositions = []
+        yAxis.title = yTitle
+        
+        // plot options
+        let plotOptions = HIPlotOptions()
+        plotOptions.solidgauge = HISolidgauge()
+        let labelsOptions = HIDataLabelsOptionsObject()
+        labelsOptions.enabled = false
+        plotOptions.solidgauge.dataLabels = [labelsOptions]
+        plotOptions.solidgauge.linecap = "round"
+        plotOptions.solidgauge.stickyTracking = false
+        plotOptions.solidgauge.rounded = true
+        
+        let gage = HISolidgauge()
+        gage.name = ""
+        let data = HIData()
+        data.color = HIColor(uiColor: color)
+        data.radius = "100%"
+        data.innerRadius = "70%"
+        let percent = (score / 10 * 100)
+        data.y = percent as NSNumber
+        gage.data = [data]
+        
+        options.chart = chart
+        options.title = title
+        options.tooltip = tooltip
+        options.pane = pane
+        options.yAxis = [yAxis]
+        options.plotOptions = plotOptions
+        options.series = [gage]
+        options.credits = HICredits()
+        options.credits.enabled = false
+        options.navigation = navigation
+        
+        chartView.options = options
+    }
+    
+    private func getHex(for color: UIColor) -> String {
+        let ciColor = CIColor(color: color)
+        let r = Int(ciColor.red * 255.0)
+        let g = Int(ciColor.green * 255.0)
+        let b = Int(ciColor.blue * 255.0)
+        let a = Int(ciColor.alpha * 255.0)
+        
+        return "#" + String(format: "%02x%02x%02x%02x", r, g, b, a)
+    }
     
     private func loadJSONSnapshotData() {
         print("load json snapshot data")
@@ -211,251 +442,17 @@ class ReviewSummaryViewController: UIViewController {
     fileprivate func removeSnapshotObserver() {
         NotificationCenter.default.removeObserver(self, name: FirebaseNotification.SnapshotLoaded, object: nil)
     }
+        
+    // MARK: - Handle Button Actions
     
-
-    fileprivate func setupSummaryChart() {
-        // make sure there is data from summary
-        guard snapshot != nil else {
-            // No data case is handled in load methods (will show a screen overlay with label saying there are no snapshots)
-            return
-        }
-        
-        // clear out cell info array so we don't add a ton of unwanted cell
-        cellInfo = []
-        
-        // Setup Chart
-        let options = HIOptions()
-        let chart = HIChart()
-        chart.polar = true
-        chartView.plugins = ["variable-pie"]
-        chart.type = "variable-pie"
-        let title = HITitle()
-        
-        // Create a legend so we can hide it
-        let legend = HILegend()
-        legend.enabled = false
-        
-        // setup pane so polygon is facing up
-//        let pane = HIPane()
-//        pane.startAngle = 180
-//        pane.size = view.frame.width * 0.5
-        
-        // get date to use for title
-        if let date = snapshot.date {
-            let dateString = dFormatter.string(from: date)
-            title.text = "Your Snapshot from \(dateString)"
-        } else {
-            title.text = "Your Latest Snapshot"
-        }
-        
-        let tooltip = HITooltip()
-        tooltip.headerFormat = ""
-        tooltip.pointFormat = "<span style=\"color:{point.color}\">\u{25CF}</span> <b> {point.name}</b><br/>Score: <b>{point.value}</b>"
-        
-        let yAxis = HIYAxis()
-        yAxis.min = 0
-        yAxis.lineWidth = 0
-        yAxis.gridLineInterpolation = "polygon"
-        
-//        let xAxis = HIXAxis()
-//        xAxis.categories = [
-//            "Idea Engagement",
-//            "Conversation Engagement",
-//            "Personal Connection",
-//            "Emotional Connection",
-//            "Smiling"
-//        ]
-//        xAxis.tickmarkPlacement = "on"
-//        xAxis.lineWidth = 0
-        
-        // get and set data
-        
-        // get values for area chart
-//        let concrete = snapshot.getTopLevelScoreValue(forSummaryItem: .concrete) ?? 0
-//        let talking = snapshot.getTopLevelScoreValue(forSummaryItem: .TalkingPercentage) ?? 0
-//        let firstPerson = snapshot.getTopLevelScoreValue(forSummaryItem: .firstPerson) ?? 0
-//        let positiveWords = snapshot.getTopLevelScoreValue(forSummaryItem: .positiveWords) ?? 0
-        let smiling = snapshot.getTopLevelScoreValue(forSummaryItem: .smilingPercentage) ?? 0
-        
-        // get values for line chart
-        let ideaEngagement = snapshot.getTopLevelScoreValue(forSummaryItem: .ideaEngagement) ?? 0
-        let conversationEngagement = snapshot.getTopLevelScoreValue(forSummaryItem: .conversationEngagement) ?? 0
-        let personalConnection = snapshot.getTopLevelScoreValue(forSummaryItem: .personalConnection) ?? 0
-        let emotionalConnection = snapshot.getTopLevelScoreValue(forSummaryItem: .emotionalConnection) ?? 0
-        
-        // get scores for cell info
-        let ideaPercent = snapshot.getTopLevelRawValue(forSummaryItem: .ideaEngagement) ?? 0
-        let conversationPercent = snapshot.getTopLevelRawValue(forSummaryItem: .conversationEngagement) ?? 0
-        let personalConnectionPercent = snapshot.getTopLevelRawValue(forSummaryItem: .personalConnection) ?? 0
-        let emotionalConnectionPercent = snapshot.getTopLevelRawValue(forSummaryItem: .emotionalConnection) ?? 0
-        let smilingPercent = snapshot.getTopLevelRawValue(forSummaryItem: .smilingPercentage) ?? 0
-
-        // setup cell info array
-        cellInfo.append(SummaryCellInfo(title: "Idea Engagement", score: ideaEngagement, percent: ideaPercent))
-        cellInfo.append(SummaryCellInfo(title: "Conversation Engagement", score: conversationEngagement, percent: conversationPercent))
-        cellInfo.append(SummaryCellInfo(title: "Personal Connection", score: personalConnection, percent: personalConnectionPercent))
-        cellInfo.append(SummaryCellInfo(title: "Emotional Connection", score: emotionalConnection, percent: emotionalConnectionPercent))
-        cellInfo.append(SummaryCellInfo(title: "Smiling", score: smiling, percent: smilingPercent))
-
-        // setup charts
-//        let area = HIArea()
-//        area.data = [
-//            ["name": "Concrete", "y": concrete],
-//            ["name": "Talking %", "y": talking],
-//            ["name": "First Person", "y": firstPerson],
-//            ["name": "Positive Words", "y": positiveWords],
-//            ["name": "Smiling %", "y": smiling]
-//        ]
-//        area.pointPlacement = "on"
-//
-//        let line = HILine()
-//        line.data = [
-//            ["name": "Idea Engagement", "y": ideaEngagement],
-//            ["name": "Conversation Engagement", "y": conversationEngagement],
-//            ["name": "Personal Connection", "y": personalConnection],
-//            ["name": "Emotional Connection", "y": emotionalConnection],
-//            ["name": "Smiling %", "y": smiling]
-//        ]
-        
-        let plotoptions = HIPlotOptions()
-        
-        
-        let pie = HIVariablepie()
-        pie.dataLabels = []
-        let width: Double = 7
-        
-        pie.minPointSize = 10
-        pie.innerSize = "20%"
-        pie.zMin = 0
-//        pie.zMax = 9
-        pie.name = "Snapshot Summary"
-
-        pie.data = [
-//            ["name": "Concrete", "y": width, "z": concrete.value(), "value": concrete],
-//            ["name": "Talking %", "y": width, "z": talking.value(), "value": talking],
-//            ["name": "First Person", "y": width, "z": firstPerson.value(), "value": firstPerson],
-//            ["name": "Positive Words", "y": width, "z": positiveWords.value(), "value": positiveWords],
-            ["name": "Idea Engagement", "y": width, "z": ideaEngagement.value(), "value": ideaEngagement],
-            ["name": "Conversation Engagement", "y": width, "z": conversationEngagement.value(), "value": conversationEngagement],
-            ["name": "Personal Connection", "y": width, "z": personalConnection.value(), "value": personalConnection],
-            ["name": "Emotional Connection", "y": width, "z": emotionalConnection.value(), "value": emotionalConnection],
-            ["name": "Smiling %", "y": width, "z": smiling.value(), "value": smiling],
-        ]
-        
-//        plotoptions.pie = HIPie()
-//        let dataLabel = HIDataLabelsOptionsObject()
-//        dataLabel.enabled = false
-//        plotoptions.pie.dataLabels = [dataLabel]
-//
-//        let variablePie = HIVariablepie()
-//        variablePie.minPointSize = 10
-//        variablePie.innerSize = "20%"
-//        variablePie.zMin = 0
-//        variablePie.name = "Snapshot Summary"
-//        variablePie.dataLabels = []
-//        variablePie.data = [
-//            ["name": "Concrete", "y": concrete],
-//            ["name": "Talking %", "y": talking],
-//            ["name": "First Person", "y": firstPerson],
-//            ["name": "Positive Words", "y": positiveWords],
-//            ["name": "Idea Engagement", "y": ideaEngagement],
-//            ["name": "Conversation Engagement", "y": conversationEngagement],
-//            ["name": "Personal Connection", "y": personalConnection],
-//            ["name": "Emotional Connection", "y": emotionalConnection],
-//            ["name": "Smiling %", "y": smiling],
-//        ]
-        
-        // hide hamburger button
-        let navigation = HINavigation()
-        let buttonOptions = HIButtonOptions()
-        buttonOptions.enabled = false
-        navigation.buttonOptions = buttonOptions
-        options.navigation = navigation
-        
-        // load options and show chart
-        options.chart = chart
-        options.title = title
-        options.tooltip = tooltip
-        options.legend = legend
-//        options.pane = pane
-        options.yAxis = [yAxis]
-//        options.xAxis = [xAxis]
-        options.plotOptions = plotoptions
-        options.series = NSMutableArray(objects: pie) as? [HISeries]
-        
-        // remove credits
-        options.credits = HICredits()
-        options.credits.enabled = false
-        chartView.options = options
-    
-        // load data into tableview
-        tableView.reloadData()
-    }
-}
-
-extension ReviewSummaryViewController: UITableViewDelegate, UITableViewDataSource {
-    
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-//        return SnapshotsLoading.shared.isLoading ? 0 : FirebaseModel.shared.snapshots.count > 1 ? cellInfo.count + 1 : cellInfo.count
-        if FirebaseModel.shared.snapshots.count > 1 && tabBarController?.navigationItem.rightBarButtonItem == nil  {
-            let info = UIBarButtonItem(title: "View Progress", style: .plain, target: self, action: #selector(showHistoryProgress))
-            tabBarController?.navigationItem.rightBarButtonItem = info
-        }
-        
-        return SnapshotsLoading.shared.isLoading ? 0 : cellInfo.count
+    @objc private func handle(_ tap: UITapGestureRecognizer) {
+        guard let view = tap.view else { return }
+        tabBarController?.selectedIndex = view.tag
     }
     
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
-//        guard indexPath.row != cellInfo.count else {
-//            return tableView.dequeueReusableCell(withIdentifier: CellID.viewPrevious, for: indexPath)
-//        }
-        
-        let cell = tableView.dequeueReusableCell(withIdentifier: CellID.summaryMetric, for: indexPath) as! SummaryMetricTableViewCell
-        let info = cellInfo[indexPath.row]
-        cell.lblMetricTitle.text = info.summaryTitle
-        cell.lblMetricScore.text = info.detailedScore
-        if !cell.sliderView.isSetup && viewHasAppeared {
-            cell.sliderView.setup(for: .fillFromLeft, at: CGFloat(info.percent))
-            UIView.animate(withDuration: 0.5) {
-                cell.sliderView.alpha = 1.0
-            }
-        } else if !viewHasAppeared {
-            cell.sliderView.alpha = 0.0
-        }
-        return cell
-    }
-    
-    // MARK: - Popover Setup Helper Functions
-
-    func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
-        let view = UIView(frame: CGRect(origin: .zero, size: CGSize(width: tableView.frame.width, height: 1)))
-        view.backgroundColor = .clear
-        return view
-    }
-    
-    func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-        return 1
-    }
-        
-    // MARK: - Handle TableView Actions
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        tableView.deselectRow(at: indexPath, animated: true)
-        
-        if indexPath.row < 4 {
-            tabBarController?.selectedIndex = indexPath.row + 1
-        }
-        
-//        else if indexPath.row == 5 {
-//            showHistoryProgress()
-//        }
-    }
-    
-    @objc private func showHistoryProgress() {
+    @IBAction func showHistoryProgress(_ sender: Any) {
         performSegue(withIdentifier: SegueID.snapshotsList, sender: self)
     }
-    
 }
 
 // MARK: - Extension to double to enable squaring

@@ -31,11 +31,32 @@ class SnapshotSummaryTableViewCell: UITableViewCell {
     private var title: String = ""
     private var friendName: String = "Unknown User"
     private var date: Date? = nil
-    private var scoreIdea: Int = 0
-    private var scoreConversation: Int = 0
-    private var scorePersonal: Int = 0
-    private var scoreEmotional: Int = 0
-    private var scoreSmiling: Int = 0
+    private var scoreIdea: Double = 0 {
+        didSet {
+            scoreIdea = round(scoreIdea * 10) / 10
+        }
+    }
+    private var scoreConversation: Double = 0 {
+        didSet {
+            scoreConversation = round(scoreConversation * 10) / 10
+        }
+    }
+    private var scorePersonal: Double = 0 {
+        didSet {
+            scorePersonal = round(scorePersonal * 10) / 10
+        }
+    }
+    private var scoreEmotional: Double = 0 {
+        didSet {
+            scoreEmotional = round(scoreEmotional * 10) / 10
+        }
+    }
+    
+    private var scoreSmiling: Double = 0 {
+        didSet {
+            scoreSmiling = round(scoreSmiling * 10) / 10
+        }
+    }
     
     // date formatter
     let dFormatter = DateFormatter()
@@ -61,11 +82,11 @@ class SnapshotSummaryTableViewCell: UITableViewCell {
         let date = snapshot.date
 
         let friend = snapshot.friend
-        let idea = Int(snapshot.getTopLevelScoreValue(forSummaryItem: .ideaEngagement) ?? 0)
-        let conversation = Int(snapshot.getTopLevelScoreValue(forSummaryItem: .conversationEngagement) ?? 0)
-        let personal = Int(snapshot.getTopLevelScoreValue(forSummaryItem: .personalConnection) ?? 0)
-        let emotional = Int(snapshot.getTopLevelScoreValue(forSummaryItem: .emotionalConnection) ?? 0)
-        let smiling = Int(snapshot.getTopLevelScoreValue(forSummaryItem: .smilingPercentage) ?? 0)
+        let idea = snapshot.getTopLevelScoreValue(forSummaryItem: .ideaEngagement) ?? 0
+        let conversation = snapshot.getTopLevelScoreValue(forSummaryItem: .conversationEngagement) ?? 0
+        let personal = snapshot.getTopLevelScoreValue(forSummaryItem: .personalConnection) ?? 0
+        let emotional = snapshot.getTopLevelScoreValue(forSummaryItem: .emotionalConnection) ?? 0
+        let smiling = snapshot.getTopLevelScoreValue(forSummaryItem: .smilingPercentage) ?? 0
         
         if friend != friendName {
             friendName = friend
@@ -131,65 +152,142 @@ class SnapshotSummaryTableViewCell: UITableViewCell {
     }
     
     private func configureChart() {
-        // Setup Chart
+        let mindAverage = (scoreIdea + scoreConversation) / 2.0
+        let heartAverage = (scorePersonal + scoreEmotional + scoreSmiling) / 3.0
+        
+        // Initialize Chart Options
         let options = HIOptions()
+        
+        // tooltip
+        let tooltip = HITooltip()
+        tooltip.enabled = false
+        
+        // Setup Chart
         let chart = HIChart()
-        chart.polar = true
-        viewChart.plugins = ["variable-pie"]
-        chart.type = "variable-pie"
+        chart.type = "solidgauge"
+        
+        // title
         let title = HITitle()
         title.text = ""
-        
-        // Create a legend so we can hide it
-        let legend = HILegend()
-        legend.enabled = false
-        
-        // Configure Pie Chart
-        let plotoptions = HIPlotOptions()
-        // Uncomment code to disable animations
-//        plotoptions.series = HISeries()
-//        let animation = HIAnimationOptionsObject()
-//        animation.duration = 0
-//        plotoptions.series.animation = animation
-        
-        let pie = HIVariablepie()
-        pie.dataLabels = []
-        let width: Double = 10
-        
-        pie.minPointSize = 10
-        pie.innerSize = "20%"
-        pie.zMin = 1
-        
-        pie.name = ""
-        pie.data = [
-            ["name": "Idea Engagement", "y": width, "z": scoreIdea.value(), "value": scoreIdea],
-            ["name": "Conversation Engagement", "y": width, "z": scoreConversation.value(), "value": scoreConversation],
-            ["name": "Personal Connection", "y": width, "z": scorePersonal.value(), "value": scorePersonal],
-            ["name": "Emotional Connection", "y": width, "z": scoreEmotional.value(), "value": scoreEmotional],
-            ["name": "Smiling %", "y": width, "z": scoreSmiling.value(), "value": scoreSmiling],
-        ]
         
         // hide hamburger button
         let navigation = HINavigation()
         let buttonOptions = HIButtonOptions()
         buttonOptions.enabled = false
         navigation.buttonOptions = buttonOptions
-        options.navigation = navigation
         
-        // load options and show chart
+        // pane
+        let pane = HIPane()
+        pane.startAngle = 0
+        pane.endAngle = 360
+        
+        // pane background for mind
+        let paneBackground1 = HIBackground()
+        paneBackground1.outerRadius = "100%"
+        paneBackground1.innerRadius = "70%"
+        paneBackground1.borderWidth = 0
+
+        let bgColor1 = #colorLiteral(red: 0.4862745098, green: 0.7098039216, blue: 0.9254901961, alpha: 0.35)
+        let color1 = #colorLiteral(red: 0.4862745098, green: 0.7098039216, blue: 0.9254901961, alpha: 1)
+        let bgColorString1 = getHex(for: bgColor1)
+        let backgroundColor1 = HIGradientColorObject()
+        backgroundColor1.linearGradient = HILinearGradientColorObject()
+        backgroundColor1.linearGradient.y1 = 0
+        backgroundColor1.linearGradient.y2 = 1
+        backgroundColor1.stops = [
+            [0, bgColorString1],
+            [1, bgColorString1]
+        ]
+        
+        paneBackground1.backgroundColor = backgroundColor1
+        
+        // pane background for heart
+        let paneBackground2 = HIBackground()
+        paneBackground2.outerRadius = "70%"
+        paneBackground2.innerRadius = "40%"
+        paneBackground2.borderWidth = 0
+
+        let bgColor2 = #colorLiteral(red: 0.4941176471, green: 0, blue: 0, alpha: 0.35)
+        let color2 = #colorLiteral(red: 0.4941176471, green: 0, blue: 0, alpha: 1)
+        let bgColorString2 = getHex(for: bgColor2)
+        let backgroundColor2 = HIGradientColorObject()
+        backgroundColor2.linearGradient = HILinearGradientColorObject()
+        backgroundColor2.linearGradient.y1 = 0
+        backgroundColor2.linearGradient.y2 = 1
+        backgroundColor2.stops = [
+            [0, bgColorString2],
+            [1, bgColorString2]
+        ]
+        paneBackground2.backgroundColor = backgroundColor2
+        
+        pane.background = [paneBackground1, paneBackground2]
+        
+        // y axis and title
+        let yAxis = HIYAxis()
+        let yTitle = HITitle()
+        yTitle.text = ""
+        yAxis.min = 0
+        yAxis.max = 100
+        yAxis.lineWidth = 0
+        yAxis.tickPosition = ""
+        yAxis.tickAmount = 0
+        yAxis.tickPositions = []
+        yAxis.title = yTitle
+        
+        // plot options
+        let plotOptions = HIPlotOptions()
+        plotOptions.solidgauge = HISolidgauge()
+        let labelsOptions = HIDataLabelsOptionsObject()
+        labelsOptions.enabled = false
+        plotOptions.solidgauge.dataLabels = [labelsOptions]
+        plotOptions.solidgauge.linecap = "round"
+        plotOptions.solidgauge.stickyTracking = false
+        plotOptions.solidgauge.rounded = true
+        
+        // setup data for mind
+        let gage1 = HISolidgauge()
+        gage1.name = ""
+        let data1 = HIData()
+        data1.color = HIColor(uiColor: color1)
+        data1.radius = "100%"
+        data1.innerRadius = "70%"
+        let percent1 = (mindAverage / 10 * 100)
+        data1.y = percent1 as NSNumber
+        gage1.data = [data1]
+        
+        // setup data for heart
+        let gage2 = HISolidgauge()
+        gage2.name = ""
+        let data2 = HIData()
+        data2.color = HIColor(uiColor: color2)
+        data2.radius = "70%"
+        data2.innerRadius = "40%"
+        let percent2 = (heartAverage / 10 * 100)
+        data2.y = percent2 as NSNumber
+        gage2.data = [data2]
+        
         options.chart = chart
         options.title = title
-        options.legend = legend
+        options.tooltip = tooltip
+        options.pane = pane
+        options.yAxis = [yAxis]
+        options.plotOptions = plotOptions
+        options.series = [gage1, gage2]
+        options.credits = HICredits()
         options.credits.enabled = false
-        options.tooltip = HITooltip()
-        options.tooltip.enabled = false
-        options.chart.spacing = [0, 0, 0, 0]
-        
-        options.plotOptions = plotoptions
-        options.series = NSMutableArray(objects: pie) as? [HISeries]
+        options.navigation = navigation
         
         viewChart.options = options
-        print("~>Set chart options")
+    }
+    
+    private func getHex(for color: UIColor) -> String {
+        let ciColor = CIColor(color: color)
+        let r = Int(ciColor.red * 255.0)
+        let g = Int(ciColor.green * 255.0)
+        let b = Int(ciColor.blue * 255.0)
+        let a = Int(ciColor.alpha * 255.0)
+        
+        return "#" + String(format: "%02x%02x%02x%02x", r, g, b, a)
     }
     
     private func clearCell() {

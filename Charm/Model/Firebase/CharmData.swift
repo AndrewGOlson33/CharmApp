@@ -40,9 +40,22 @@ struct Snapshot: FirebaseItem, Codable {
     var friends: [[String:String]]?
     var transcript: [Transcript]?
     
+    var friendlyDateString: String {
+        guard let date = date else { return "" }
+        
+        let dFormatter = DateFormatter()
+        dFormatter.dateStyle = .medium
+        dFormatter.timeStyle = .short
+        
+        return dFormatter.string(from: date)
+    }
+    
     var friend: String {
-        guard let friends = friends, let friend = friends.first, let name = friend.first else { return "Unknown User" }
-        return name.value
+        guard let friends = friends, let friend = friends.first(where: { (friend) -> Bool in
+            friend.keys.contains("person")
+        }) else { return "Unknown User" }
+        if let name = friend["person"] { return name }
+        return "Unknown User"
     }
     
     // coding keys
