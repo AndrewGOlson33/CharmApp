@@ -2380,14 +2380,11 @@ Cg
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="zTE-fX-c9d" customClass="HIChartView">
-                                <rect key="frame" x="0.0" y="91" width="320" height="312.5"/>
-                            </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Ws7-k3-FGa">
-                                <rect key="frame" x="0.0" y="411.5" width="320" height="107.5"/>
+                                <rect key="frame" x="0.0" y="91" width="320" height="428"/>
                                 <subviews>
                                     <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="wNT-rO-jIv">
-                                        <rect key="frame" x="8" y="8" width="304" height="99.5"/>
+                                        <rect key="frame" x="8" y="8" width="304" height="420"/>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <color key="sectionIndexBackgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <prototypes>
@@ -2455,7 +2452,7 @@ Cg
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <subviews>
                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Snapshot History" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="w4j-vw-TPG" customClass="UIPaddedLabel" customModule="Charm" customModuleProvider="target">
-                                                            <rect key="frame" x="82.5" y="11.5" width="139.5" height="21.5"/>
+                                                            <rect key="frame" x="74.5" y="3.5" width="155.5" height="37.5"/>
                                                             <color key="backgroundColor" red="0.1333333333" green="0.17254901959999999" blue="0.27058823529999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                             <fontDescription key="fontDescription" type="system" pointSize="18"/>
                                                             <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -2533,17 +2530,13 @@ Cg
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <constraints>
-                            <constraint firstItem="zTE-fX-c9d" firstAttribute="height" secondItem="8aM-v0-NAB" secondAttribute="height" multiplier="0.55" id="17D-hQ-44y"/>
-                            <constraint firstItem="zTE-fX-c9d" firstAttribute="leading" secondItem="54M-uO-rkZ" secondAttribute="leading" id="3Ui-A6-VbM"/>
                             <constraint firstAttribute="trailing" secondItem="Ws7-k3-FGa" secondAttribute="trailing" id="5r9-nz-CRq"/>
                             <constraint firstItem="ZEw-J5-KdL" firstAttribute="centerY" secondItem="54M-uO-rkZ" secondAttribute="centerY" id="FQe-Wp-Ltz"/>
                             <constraint firstItem="Ws7-k3-FGa" firstAttribute="bottom" secondItem="54M-uO-rkZ" secondAttribute="bottom" id="GrM-9Q-lPY"/>
                             <constraint firstItem="rD0-yb-LFH" firstAttribute="trailing" secondItem="54M-uO-rkZ" secondAttribute="trailing" id="LuZ-3T-phw"/>
-                            <constraint firstItem="zTE-fX-c9d" firstAttribute="trailing" secondItem="54M-uO-rkZ" secondAttribute="trailing" id="QIF-pF-qv1"/>
-                            <constraint firstItem="zTE-fX-c9d" firstAttribute="top" secondItem="54M-uO-rkZ" secondAttribute="top" id="aCZ-Z6-vqc"/>
                             <constraint firstItem="rD0-yb-LFH" firstAttribute="top" secondItem="8aM-v0-NAB" secondAttribute="top" id="bEP-nS-xqO"/>
                             <constraint firstItem="rD0-yb-LFH" firstAttribute="leading" secondItem="54M-uO-rkZ" secondAttribute="leading" id="cyZ-DF-V4E"/>
-                            <constraint firstItem="Ws7-k3-FGa" firstAttribute="top" secondItem="zTE-fX-c9d" secondAttribute="bottom" constant="8" id="gna-yb-WES"/>
+                            <constraint firstItem="Ws7-k3-FGa" firstAttribute="top" secondItem="54M-uO-rkZ" secondAttribute="top" id="df6-0q-5Jq"/>
                             <constraint firstAttribute="bottom" secondItem="rD0-yb-LFH" secondAttribute="bottom" id="l4f-Z8-4Kb"/>
                             <constraint firstItem="Ws7-k3-FGa" firstAttribute="leading" secondItem="8aM-v0-NAB" secondAttribute="leading" id="qW8-mK-RAT"/>
                             <constraint firstItem="ZEw-J5-KdL" firstAttribute="centerX" secondItem="54M-uO-rkZ" secondAttribute="centerX" id="w3D-55-bVR"/>
@@ -2553,7 +2546,6 @@ Cg
                     <tabBarItem key="tabBarItem" title="Summary" image="icn_barchart" id="YWt-en-LpN"/>
                     <connections>
                         <outlet property="activityView" destination="M1n-wT-rel" id="IfE-Id-Ier"/>
-                        <outlet property="chartView" destination="zTE-fX-c9d" id="DDx-ga-fLP"/>
                         <outlet property="tableView" destination="wNT-rO-jIv" id="Us5-p2-ZkF"/>
                         <outlet property="viewEffect" destination="rD0-yb-LFH" id="3PR-3Q-pGc"/>
                         <outlet property="viewLoading" destination="ZEw-J5-KdL" id="rmF-Le-vtR"/>
@@ -2562,7 +2554,7 @@ Cg
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="eBf-yP-uqG" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3428" y="146"/>
+            <point key="canvasLocation" x="3427.5" y="145.77464788732394"/>
         </scene>
         <!--Word Choice-->
         <scene sceneID="Xu2-pH-AwM">
