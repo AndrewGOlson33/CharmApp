@@ -90,6 +90,7 @@ class AllSnapshotsSummaryViewController: UIViewController {
         let chart = HIChart()
         chart.type = "area"
         chart.spacing = [0, 0, 0, 0]
+        chart.backgroundColor = HIColor(uiColor: .clear)
         
         // set a blank title
         let title = HITitle()

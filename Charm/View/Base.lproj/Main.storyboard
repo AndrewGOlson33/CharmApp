@@ -73,7 +73,6 @@
                             </imageView>
                             <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Name" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="ew4-uE-10B">
                                 <rect key="frame" x="20" y="136" width="280" height="36"/>
-                                <color key="backgroundColor" white="1" alpha="0.75" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="36" id="dEB-EY-ErQ"/>
                                 </constraints>
@@ -89,7 +88,6 @@
                             </view>
                             <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Email Address" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="AyJ-n1-LmZ">
                                 <rect key="frame" x="20" y="180.5" width="280" height="36"/>
-                                <color key="backgroundColor" white="1" alpha="0.75" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" keyboardType="emailAddress" returnKeyType="next" enablesReturnKeyAutomatically="YES" textContentType="username"/>
                             </textField>
@@ -102,7 +100,6 @@
                             </view>
                             <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Password" textAlignment="natural" clearsOnBeginEditing="YES" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="OTm-7G-YNu">
                                 <rect key="frame" x="20" y="225" width="280" height="36"/>
-                                <color key="backgroundColor" white="1" alpha="0.75" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" returnKeyType="next" enablesReturnKeyAutomatically="YES" secureTextEntry="YES" textContentType="password"/>
                             </textField>
@@ -130,7 +127,7 @@
                                 </constraints>
                             </view>
                         </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <constraints>
                             <constraint firstItem="OTm-7G-YNu" firstAttribute="top" secondItem="9Mx-Pa-IoK" secondAttribute="bottom" constant="8" id="0Yf-O3-fo3"/>
                             <constraint firstAttribute="trailing" secondItem="9Mx-Pa-IoK" secondAttribute="trailing" id="3Gk-Mm-axr"/>
@@ -183,7 +180,6 @@
                         <subviews>
                             <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Email Address" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="ZYO-27-Rfl">
                                 <rect key="frame" x="20" y="136" width="280" height="36"/>
-                                <color key="backgroundColor" white="1" alpha="0.75219392123287676" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstAttribute="height" priority="252" constant="36" id="ZAX-mi-CWe"/>
                                 </constraints>
@@ -199,7 +195,6 @@
                             </view>
                             <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Password" textAlignment="natural" clearsOnBeginEditing="YES" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="9Wy-TT-oCn">
                                 <rect key="frame" x="20" y="180.5" width="280" height="36"/>
-                                <color key="backgroundColor" white="1" alpha="0.75" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" returnKeyType="done" enablesReturnKeyAutomatically="YES" secureTextEntry="YES" textContentType="password"/>
                             </textField>
@@ -233,7 +228,7 @@
                                 </constraints>
                             </imageView>
                         </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <constraints>
                             <constraint firstItem="fdW-6h-q6S" firstAttribute="top" secondItem="9Wy-TT-oCn" secondAttribute="bottom" id="JVb-Bm-SfR"/>
                             <constraint firstItem="ZYO-27-Rfl" firstAttribute="height" secondItem="9Wy-TT-oCn" secondAttribute="height" id="PKb-qS-qVc"/>
@@ -601,7 +596,7 @@
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="faB-lt-5ER">
                                 <rect key="frame" x="20" y="474" width="280" height="30"/>
                                 <state key="normal" title="Terms of Use">
-                                    <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
+                                    <color key="titleColor" systemColor="labelColor" cocoaTouchSystemColor="darkTextColor"/>
                                 </state>
                                 <connections>
                                     <action selector="showTermsOfUse:" destination="gGW-oZ-Bkl" eventType="touchUpInside" id="wed-v7-WEf"/>
@@ -610,7 +605,7 @@
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8od-PW-7Rz">
                                 <rect key="frame" x="20" y="436" width="280" height="30"/>
                                 <state key="normal" title="Restore Purchases">
-                                    <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
+                                    <color key="titleColor" systemColor="labelColor" cocoaTouchSystemColor="darkTextColor"/>
                                 </state>
                                 <connections>
                                     <action selector="restorePurchasesTapped:" destination="gGW-oZ-Bkl" eventType="touchUpInside" id="fs5-2I-eyy"/>
@@ -621,7 +616,7 @@
                                 <color key="color" red="0.13234293459999999" green="0.1735357642" blue="0.26996999980000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             </activityIndicatorView>
                         </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <constraints>
                             <constraint firstItem="5gX-cN-LUi" firstAttribute="trailing" secondItem="faB-lt-5ER" secondAttribute="trailing" constant="20" id="0Ht-so-TQ3"/>
                             <constraint firstItem="iLP-uu-r2e" firstAttribute="leading" secondItem="5gX-cN-LUi" secondAttribute="leading" id="92p-PS-vd0"/>
@@ -2098,6 +2093,7 @@ Cg
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="kyM-C2-GRM" customClass="HIChartView">
                                 <rect key="frame" x="0.0" y="91" width="320" height="187.5"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="1xe-YB-7mb" userLabel="Divider">
                                 <rect key="frame" x="15" y="278.5" width="305" height="0.5"/>
@@ -2187,7 +2183,7 @@ Cg
                                 </connections>
                             </tableView>
                         </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <constraints>
                             <constraint firstItem="1xe-YB-7mb" firstAttribute="trailing" secondItem="Gry-ap-8ZR" secondAttribute="trailing" id="0Ta-nZ-DCp"/>
                             <constraint firstItem="Gry-ap-8ZR" firstAttribute="trailing" secondItem="Qbl-NM-IPA" secondAttribute="trailing" id="8ec-w4-IhC"/>
@@ -2711,7 +2707,7 @@ Cg
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="eBK-NF-iwP">
                                 <rect key="frame" x="20" y="518" width="280" height="30"/>
                                 <state key="normal" title="Terms of Use">
-                                    <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
+                                    <color key="titleColor" systemColor="labelColor" cocoaTouchSystemColor="darkTextColor"/>
                                 </state>
                                 <connections>
                                     <action selector="showTermsOfUse:" destination="e6h-Ne-FYO" eventType="touchUpInside" id="bcU-dw-Dlg"/>
@@ -2722,7 +2718,7 @@ Cg
                                 <color key="color" red="0.13234293459999999" green="0.1735357642" blue="0.26996999980000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             </activityIndicatorView>
                         </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <constraints>
                             <constraint firstItem="dkH-9Y-G9M" firstAttribute="trailing" secondItem="eBK-NF-iwP" secondAttribute="trailing" constant="20" id="71C-26-YQd"/>
                             <constraint firstItem="eBK-NF-iwP" firstAttribute="leading" secondItem="dkH-9Y-G9M" secondAttribute="leading" constant="20" id="a0N-DF-Xae"/>
@@ -2754,7 +2750,7 @@ Cg
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="static" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="WB2-0m-l31">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="427"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <sections>
                             <tableViewSection headerTitle="Update Your Membership" id="8ub-5E-ETu">
                                 <cells>
@@ -6134,7 +6130,7 @@ The best way we found is to develop this skill is by talking. The app is the bes
                                 <nil key="highlightedColor"/>
                             </label>
                         </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <constraints>
                             <constraint firstItem="Vlq-we-mlk" firstAttribute="leading" secondItem="DpW-63-j91" secondAttribute="leading" constant="40" id="6F3-QX-m3P"/>
                             <constraint firstItem="DpW-63-j91" firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="Cd6-be-pFK" secondAttribute="trailing" id="8Py-qB-Jef"/>

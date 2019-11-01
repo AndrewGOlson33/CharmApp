@@ -310,6 +310,7 @@ class ReviewSummaryViewController: UIViewController {
         // Setup Chart
         let chart = HIChart()
         chart.type = "solidgauge"
+        chart.backgroundColor = HIColor(uiColor: .clear)
         
         // title
         let title = HITitle()
@@ -410,7 +411,7 @@ class ReviewSummaryViewController: UIViewController {
     private func loadJSONSnapshotData() {
         print("load json snapshot data")
         viewEffect.isHidden = false
-        let noSnapshotsAlert = UIAlertController(title: "No Snapshots Available", message: "Here you can view your converstation metrics.\n\nYour metrics are scored by our servers, and are based on the speaking styles of the world's most charming people.\n\nYou can generate metrics by calling a friend.  It takes our servers about 15 minutes to process your metrics after your call has completed.", preferredStyle: .alert)
+        let noSnapshotsAlert = UIAlertController(title: "Explore Sample Snapshot", message: "Here you can view your conversation metrics.\n\nYour metrics are scored by our servers, and are based on the speaking styles of the world's most charming people.\n\nYou can generate metrics by calling a friend.  It takes our servers about 15 minutes to process your metrics after your call has completed.", preferredStyle: .alert)
         noSnapshotsAlert.addAction(UIAlertAction(title: "View Sample Snapshot", style: .default, handler:{ (_) in
             self.viewEffect.isHidden = true
         }))

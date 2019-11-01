@@ -408,6 +408,7 @@ class DetailChartViewController: UIViewController {
         
         let chart = HIChart()
         chart.zoomType = "x"
+        chart.backgroundColor = HIColor(uiColor: .clear)
         
         yaxis.title = HITitle()
         yaxis.title.text = ""

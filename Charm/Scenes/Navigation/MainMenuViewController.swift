@@ -225,7 +225,6 @@ class MainMenuViewController: UIViewController {
                             // there is no need to be redundant, so just return
                             return
                         }
-                        print("~>User token set to: \(String(describing: user.tokenID))")
                         Database.database().reference().child(FirebaseStructure.usersLocation).child(id).child(FirebaseStructure.CharmUser.token).setValue(user.tokenID)
                     }
                 }

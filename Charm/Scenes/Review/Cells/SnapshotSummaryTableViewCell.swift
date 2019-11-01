@@ -162,6 +162,7 @@ class SnapshotSummaryTableViewCell: UITableViewCell {
         // Setup Chart
         let chart = HIChart()
         chart.type = "solidgauge"
+        chart.backgroundColor = HIColor(uiColor: .clear)
         
         // title
         let title = HITitle()
