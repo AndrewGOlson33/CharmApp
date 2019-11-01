@@ -14,6 +14,9 @@ class FirebaseModel {
     // shared model
     static let shared = FirebaseModel()
     
+    // constants
+    var constants: FirebaseConstants!
+    
     // setup variables
     var isSetupPhaseComplete = false
     
@@ -56,6 +59,7 @@ class FirebaseModel {
         setupSnapshotObserver()
         setupTrainingModel()
         setupCallObserver()
+        setupConstants()
     }
     
     // MARK: - Connection Observer
@@ -363,6 +367,20 @@ class FirebaseModel {
         
         DispatchQueue.global(qos: .utility).async {
             Database.database().reference().child(FirebaseStructure.Training.trainingDatabase).child(FirebaseStructure.Training.unclassifiedNouns).setValue(upload)
+        }
+    }
+    
+    // MARK: - Setup Consants
+    private func setupConstants() {
+        DispatchQueue.global(qos: .utility).async {
+            Database.database().reference().child(FirebaseStructure.constants).observeSingleEvent(of: .value) { [weak self] (snapshot) in
+                guard let self = self else { return }
+                do {
+                    self.constants = try FirebaseConstants(snapshot: snapshot)
+                } catch let error {
+                    print("~>There was an error loading the app constants: \(error)")
+                }
+            }
         }
     }
 }

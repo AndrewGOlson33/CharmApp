@@ -22,10 +22,12 @@ class DetailChartViewController: UIViewController {
     // MARK: - Properties
     
     var navTitle: String = ""
+    var chartShowsText: String = ""
     
     // data chart will be built with
     var snapshot: Snapshot!
     var feedback: String? = nil
+    var feedbackTrainingText: String = ""
     
     // Data for filling tableview cells
     var transcript: [TranscriptCellInfo] = []
@@ -56,17 +58,15 @@ class DetailChartViewController: UIViewController {
     // make sure to not accidentally tap on more info button
     var isTableViewScrolling: Bool = false
     
+    // table view separator buffer
+    let tableviewSpacing: CGFloat = 6
+    
     // MARK: - View Lifecycle Functions
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
         chartView.plugins = ["annotations"]
-//        chartView.layer.masksToBounds = false
-//        chartView.layer.shadowColor = UIColor.black.cgColor
-//        chartView.layer.shadowRadius = 1
-//        chartView.layer.shadowOffset = CGSize(width: 0, height: 1)
-//        chartView.layer.shadowOpacity = 0.5
         
         if let delegate = UIApplication.shared.delegate as? AppDelegate, let window = delegate.window, let nav = window.rootViewController as? UINavigationController {
             let constant = nav.navigationBar.frame.height
@@ -147,8 +147,9 @@ class DetailChartViewController: UIViewController {
         // setup data based on type
         switch chartType! {
         case .ideaEngagement:
-            
             let ideaEngagement = snapshot.ideaEngagement
+            chartShowsText = FirebaseModel.shared.constants.metricDescWord
+            feedbackTrainingText = FirebaseModel.shared.constants.metricTrainingWord
             
             // setup chart data
             for (index, item) in ideaEngagement.enumerated() {
@@ -164,7 +165,7 @@ class DetailChartViewController: UIViewController {
             
             // setup slider bar data
             if let position = snapshot.getTopLevelRawValue(forSummaryItem: .ideaEngagement), let score = snapshot.getTopLevelScoreValue(forSummaryItem: .ideaEngagement) {
-                let cellInfo = SliderCellInfo(details: SliderDetails(type: .fillFromLeft), title: "Idea Engagement", score: score, position: CGFloat(position))
+                let cellInfo = SliderCellInfo(details: SliderDetails(type: .fillFromLeft), title: "Word Engagement", score: score, position: CGFloat(position))
                 sliderData.append(cellInfo)
             }
             
@@ -178,6 +179,8 @@ class DetailChartViewController: UIViewController {
             
         case .conversation:
             let conversation = snapshot.conversation
+            chartShowsText = FirebaseModel.shared.constants.metricDescConvo
+            feedbackTrainingText = FirebaseModel.shared.constants.metricTrainingConvo
             // setup chart data
             
             var isTranscriptLoaded: Bool = false
@@ -231,6 +234,8 @@ class DetailChartViewController: UIViewController {
             
         case .connection:
             let connection = snapshot.connection
+            chartShowsText = FirebaseModel.shared.constants.metricDescPersonal
+            feedbackTrainingText = FirebaseModel.shared.constants.metricTrainingPersonal
             // setup chart data
             for (index, item) in connection.enumerated() {
                 // add transcript data
@@ -266,6 +271,8 @@ class DetailChartViewController: UIViewController {
             feedback = snapshot.getTopLevelFeedback(forSummaryItem: .personalConnection)
         
         case .emotions:
+            chartShowsText = FirebaseModel.shared.constants.metricDescEmotions
+            feedbackTrainingText = FirebaseModel.shared.constants.metricTrainingEmotions
             posData = []
             negData = []
             let toneGraph = snapshot.graphTone
@@ -367,10 +374,6 @@ class DetailChartViewController: UIViewController {
             upperBoundValue = 0.7
         case .connection:
             colorArray = [
-//                [NSNumber(value: 0), "rgb(86, 0 ,0)"],
-//                [NSNumber(value: 0.5), "rgba(216,0,0, 0)"],
-//                [NSNumber(value: 0.7), "rgba(47,0,0,0)"],
-//                [NSNumber(value: 1), "rgb(255, 0 ,0)"]
                 [NSNumber(value: 0), "rgb(242, 0, 0, 1)"],
                 [NSNumber(value: 0.15), "rgba(242, 0, 0, 0)"],
                 [NSNumber(value: 0.85), "rgba(128, 0, 0, 0)"],
@@ -389,13 +392,6 @@ class DetailChartViewController: UIViewController {
                 [NSNumber(value: 0.2), "rgb(0, 242, 0, 0)"],
                 [NSNumber(value: 0.8), "rgb(242, 0, 0, 0)"],
                 [NSNumber(value: 1.0), "rgb(242, 0, 0, 1)"]
-                
-//                [NSNumber(value: 0), "rgb(0, 242, 0, 1)"],
-//                [NSNumber(value: 0.2), "rgba(0, 242, 0, 0)"],
-//                [NSNumber(value: 0), "rgb(242, 0, 0)"],
-//                [NSNumber(value: 0.15), "rgba(242, 0, 0, 0)"],
-//                [NSNumber(value: 0.7), "rgba(80,216,0,0)"],
-//                [NSNumber(value: 1), "rgba(80,216,0,1)"]
             ]
             yaxis.min = -0.4
             yaxis.max = 0.4
@@ -426,7 +422,6 @@ class DetailChartViewController: UIViewController {
             upperBounds.color = HIColor(hexValue: "e4e4e4")
             upperBounds.width = 2
             upperBounds.value = upperBoundValue as NSNumber
-//            upperBounds.zIndex = 5
             let upperlLabel = HILabel()
             upperlLabel.text = "Upper Boundary"
             upperlLabel.style = HICSSObject()
@@ -437,7 +432,6 @@ class DetailChartViewController: UIViewController {
             lowerBounds.color = HIColor(hexValue: "e4e4e4")
             lowerBounds.width = 2
             lowerBounds.value = lowerBoundValue as NSNumber
-//            lowerBounds.zIndex = 5
             let lowerLabel = HILabel()
             lowerLabel.text = "Lower Bondary"
             lowerLabel.style = HICSSObject()
@@ -488,6 +482,7 @@ class DetailChartViewController: UIViewController {
         
         let events = HIEvents()
         let clickClosure: HIClosure =  { (context: HIChartContext?) in
+            let section = self.feedback == nil ? 2 : 3
             if let row = context?.getProperty("this.x") as? Int {
                 var shouldScroll = false
                 var indexPath: IndexPath = IndexPath(row: 0, section: 0)
@@ -498,7 +493,7 @@ class DetailChartViewController: UIViewController {
                     var didFind = false
                     for (index, tableItem) in self.snapshot.tableViewTone.enumerated() {
                         if tableItem.word == tone.word && tone.roll3 == tableItem.roll3 && tone.rollNeg3 == tableItem.rollNeg3 && tone.rollPos3 == tableItem.rollPos3 {
-                            indexPath = IndexPath(row: index, section: 1)
+                            indexPath = IndexPath(row: index, section: section)
                             didFind = true
                             shouldScroll = true
                             break
@@ -547,11 +542,11 @@ class DetailChartViewController: UIViewController {
                         guard let position = trans.position else { continue }
                         currentPosition = position
                         if currentPosition == row {
-                            indexPath = IndexPath(row: index, section: 1)
+                            indexPath = IndexPath(row: index, section: section)
                             shouldScroll = true
                             break
                         } else if row < currentPosition {
-                            indexPath = IndexPath(row: previousIndex, section: 1)
+                            indexPath = IndexPath(row: previousIndex, section: section)
                             shouldScroll = true
                             break
                         }
@@ -560,7 +555,7 @@ class DetailChartViewController: UIViewController {
                     }
                     
                 default:
-                    indexPath = IndexPath(row: row, section: 1)
+                    indexPath = IndexPath(row: row, section: section)
                     shouldScroll = true
                 }
                 
@@ -620,25 +615,12 @@ class DetailChartViewController: UIViewController {
             posArea.fillColor = HIColor(uiColor: .clear)
             
             negArea.fillColor = HIColor(uiColor: .clear)
-            
-//            let shadow = HIShadowOptionsObject()
-//
-//            area.shadow = shadow
-//            posArea.shadow = shadow
-//            negArea.shadow = shadow
-            
+
             options.series = [area, posArea, negArea]
             legend.enabled = false
         } else {
-//            let shadow = HIShadowOptionsObject()
-//
-//            area.shadow = shadow
-            
             options.series = [area]
         }
-        
-//        chart.backgroundColor = HIColor(uiColor: .white)
-//        chart.shadow = HICSSObject()
     
         let tooltip = HITooltip()
         tooltip.enabled = false
@@ -674,17 +656,18 @@ class DetailChartViewController: UIViewController {
 extension DetailChartViewController: UITableViewDelegate, UITableViewDataSource {
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 2
+        return feedback == nil ? 3 : 4
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch section {
         case 0:
-            if let data = snapshot, let top = data.topLevelMetrics.first, top.feedback != nil {
-                return sliderData.count + 1
-            } else {
-                return sliderData.count
-            }
+            return 1
+        case 1:
+            return sliderData.count
+        case 2:
+            if feedback == nil { fallthrough }
+            return 1
         default:
             return transcript.count
         }
@@ -695,32 +678,57 @@ extension DetailChartViewController: UITableViewDelegate, UITableViewDataSource 
         infoButtonTapped()
     }
     
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        switch section {
+        case 0:
+            return "This Chart Shows You"
+        case 1:
+            return "Summary Statistics"
+        case 2:
+            return feedback == nil ? "Transcript" : "Feedback"
+        case 3:
+            return "Transcript"
+        default:
+            return ""
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let backgroundView: UITableViewHeaderFooterView
+        let header: UIView
+        if section == 0 {
+            backgroundView = UITableViewHeaderFooterView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: 24 + tableviewSpacing))
+            header = UIView(frame: CGRect(x: 0, y: tableviewSpacing, width: tableView.frame.width, height: 24 + tableviewSpacing))
+        } else {
+            backgroundView = UITableViewHeaderFooterView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: 24))
+            header = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: 24))
+        }
+        backgroundView.addSubview(header)
+        let label = UILabel(frame: .init(origin: CGPoint(x: 16, y: 6), size: CGSize(width: tableView.frame.width - 16, height: 12)))
+        label.textColor = #colorLiteral(red: 0.5465212464, green: 0.5098128915, blue: 0.9374247193, alpha: 1)
+        label.font = UIFont.systemFont(ofSize: 12, weight: .semibold)
+        label.text = self.tableView(tableView, titleForHeaderInSection: section)
+        header.addSubview(label)
+        if #available(iOS 13.0, *) {
+            header.backgroundColor = .systemBackground
+        } else {
+            header.backgroundColor = .white
+        }
+        
+        return backgroundView
+    }
+    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         switch indexPath.section {
         case 0:
-            // see if we are setting up a scalebar or feedback
-            var row = indexPath.row
-            var setupFeedback: Bool = false
-            if sliderData.count > 1 && row > 1 {
-                row -= 1
-            } else if sliderData.count > 1 && row == 1 {
-                setupFeedback = true
-            } else if row == sliderData.count {
-                setupFeedback = true
-            }
-            
-            if setupFeedback {
-                let cell = tableView.dequeueReusableCell(withIdentifier: CellID.aiFeedbback, for: indexPath) as! AIFeedbackTableViewCell
-                guard let feedback = self.feedback else { return cell }
-                cell.feedbackText = feedback
-                cell.accessoryType = .detailButton
-                return cell
-            }
-            
+            let cell = tableView.dequeueReusableCell(withIdentifier: CellID.chartTypeDetail, for: indexPath)
+            cell.textLabel?.text = chartShowsText
+            return cell
+        case 1:
             // setup scalebar
             let cell = tableView.dequeueReusableCell(withIdentifier: CellID.scaleBar, for: indexPath) as! ScaleBarTableViewCell
-            let info = sliderData[row]
+            let info = sliderData[indexPath.row]
             cell.lblDescription.text = info.title
             
             if !cell.sliderView.isSetup && viewHasAppeared {
@@ -747,10 +755,17 @@ extension DetailChartViewController: UITableViewDelegate, UITableViewDataSource 
             case .int:
                 cell.lblScore.text = "\(Int(info.score))"
             case .percent:
-//                let percentValue = Int(info.score * 100)
                 cell.lblScore.text = info.percentString
             }
+            return cell
+        case 2:
+            if feedback == nil { fallthrough }
+            let cell = tableView.dequeueReusableCell(withIdentifier: CellID.aiFeedbback, for: indexPath) as! AIFeedbackTableViewCell
+            guard let feedback = self.feedback else { return cell }
+            cell.feedbackText = feedback
+            cell.recommendedTrainingText = feedbackTrainingText
             
+            cell.accessoryType = .detailButton
             return cell
         default:
             // setup transcript
@@ -759,6 +774,7 @@ extension DetailChartViewController: UITableViewDelegate, UITableViewDataSource 
             cell.lblTranscriptText.text = info.text
             return cell
         }
+
     }
     
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
@@ -768,11 +784,12 @@ extension DetailChartViewController: UITableViewDelegate, UITableViewDataSource 
     }
     
     func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-        return 1
+        return tableviewSpacing
     }
     
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 0
+        if section == 0 { return 32 }
+        return 24
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -860,22 +877,22 @@ extension DetailChartViewController: UITableViewDelegate, UITableViewDataSource 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         switch indexPath.section {
         case 0:
-            if indexPath.row != 1 { fallthrough }
-            let font = UIFont.systemFont(ofSize: 14)
-            guard let text = feedback else { return 0 }
-            let height = heightForView(text: text, font: font, width: tableView.frame.width - 40)
-            let difference = height - 20
-            
-            return 54 + difference
+            return 24
         case 1:
+            return 64
+        case 2:
+            guard let text = feedback else { fallthrough }
+            let font = UIFont.systemFont(ofSize: 14)
+            let height = heightForView(text: text, font: font, width: tableView.frame.width - 40)
+            let difference = height
+            return 120 + difference
+        default:
             let font = UIFont.systemFont(ofSize: 14)
             guard transcript.count > indexPath.row else { return 64 }
             let text = transcript[indexPath.row].text
             let height = heightForView(text: text, font: font, width: tableView.frame.width - 40)
             let difference = height - 63.5
             return difference > 0 ? 64 + difference : 64
-        default:
-            return 64
         }
     }
     

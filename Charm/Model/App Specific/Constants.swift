@@ -61,6 +61,7 @@ enum CellID {
     static let scaleBar = "cid_scalebar"
     static let transcript = "cid_transcript"
     static let aiFeedbback = "cid_aifeedback"
+    static let chartTypeDetail = "cid_chartdetail"
     static let snapshotList = "cid_allsnapshots"
     static let subscriptionsList = "cid_subscription"
     static let logOut = "cid_logout"
@@ -87,14 +88,34 @@ enum Image {
 // MARK: - Firebase Related
 
 enum FirebaseStructure {
-    static let usersLocation = "users"
+    static let constants = "appConstants"
+    enum AppConstants {
+        static let taglineSmallerTop = "Tagline_SmallerTop"
+        static let talineLargerBottom = "Tagline_LargerBottom"
+        static let introStep01Line01 = "Intro_Step_01_Line_01"
+        static let introStep01Line02 = "Intro_Step_01_Line_02"
+        static let introStep02Line01 = "Intro_Step_02_Line_01"
+        static let introStep02Line02 = "Intro_Step_02_Line_02"
+        static let introStep03Line01 = "Intro_Step_03_Line_01"
+        static let introStep03Line02 = "Intro_Step_03_Line_02"
+        static let introStep04Line01 = "Intro_Step_04_Line_01"
+        static let introStep04Line02 = "Intro_Step_04_Line_02"
+        static let metricDescWord = "Metric_Desc_Word"
+        static let metricDescConvo = "Metric_Desc_Convo"
+        static let metricDescPersonal = "Metric_Desc_Personal"
+        static let metricDescEmotions = "Metric_Desc_Emotions"
+        static let metricTrainingWord = "Metric_Training_Word"
+        static let metricTrainingConvo = "Metric_Training_Convo"
+        static let metricTrainingPersonal = "Metric_Training_Personal"
+        static let metricTrainingEmotions = "Metric_Training_Emotions"
+    }
     
+    static let usersLocation = "users"
     enum CharmUser {
         static let id = "id"
         
         // profile
         static let profileLocation = "userProfile" // base
-        
         enum UserProfile {
             static let email = "email"
             static let firstName = "firstName"

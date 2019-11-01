@@ -14,12 +14,8 @@ class SnapshotSummaryTableViewCell: UITableViewCell {
     // MARK: - IBOutlets
     
     @IBOutlet weak var lblSummaryTitle: UILabel!
-    @IBOutlet weak var viewChart: HIChartView!
-    @IBOutlet weak var lblScoreIdea: UILabel!
-    @IBOutlet weak var lblScoreConversation: UILabel!
-    @IBOutlet weak var lblScorePersonal: UILabel!
-    @IBOutlet weak var lblScoreEmotional: UILabel!
-    @IBOutlet weak var lblScoreSmiling: UILabel!
+    @IBOutlet weak var mindChart: HIChartView!
+    @IBOutlet weak var heartChart: HIChartView!
     
     var snapshot: Snapshot! {
         didSet {
@@ -31,6 +27,7 @@ class SnapshotSummaryTableViewCell: UITableViewCell {
     private var title: String = ""
     private var friendName: String = "Unknown User"
     private var date: Date? = nil
+    
     private var scoreIdea: Double = 0 {
         didSet {
             scoreIdea = round(scoreIdea * 10) / 10
@@ -142,11 +139,6 @@ class SnapshotSummaryTableViewCell: UITableViewCell {
     
     private func configureCell() {
         lblSummaryTitle.text = title
-        lblScoreIdea.text = "\(scoreIdea)/10"
-        lblScoreConversation.text = "\(scoreConversation)/10"
-        lblScorePersonal.text = "\(scorePersonal)/10"
-        lblScoreEmotional.text = "\(scoreEmotional)/10"
-        lblScoreSmiling.text = "\(scoreSmiling)/10"
         configureChart()
         setNeedsLayout()
     }
@@ -155,6 +147,11 @@ class SnapshotSummaryTableViewCell: UITableViewCell {
         let mindAverage = (scoreIdea + scoreConversation) / 2.0
         let heartAverage = (scorePersonal + scoreEmotional + scoreSmiling) / 3.0
         
+        setup(chartView: mindChart, withScore: mindAverage, andColor: #colorLiteral(red: 0.4862745098, green: 0.7098039216, blue: 0.9254901961, alpha: 1))
+        setup(chartView: heartChart, withScore: heartAverage, andColor: #colorLiteral(red: 0.4941176471, green: 0, blue: 0, alpha: 1))
+    }
+    
+    private func setup(chartView: HIChartView, withScore score: Double, andColor color: UIColor) {
         // Initialize Chart Options
         let options = HIOptions()
         
@@ -181,51 +178,35 @@ class SnapshotSummaryTableViewCell: UITableViewCell {
         pane.startAngle = 0
         pane.endAngle = 360
         
-        // pane background for mind
-        let paneBackground1 = HIBackground()
-        paneBackground1.outerRadius = "100%"
-        paneBackground1.innerRadius = "70%"
-        paneBackground1.borderWidth = 0
-
-        let bgColor1 = #colorLiteral(red: 0.4862745098, green: 0.7098039216, blue: 0.9254901961, alpha: 0.35)
-        let color1 = #colorLiteral(red: 0.4862745098, green: 0.7098039216, blue: 0.9254901961, alpha: 1)
-        let bgColorString1 = getHex(for: bgColor1)
-        let backgroundColor1 = HIGradientColorObject()
-        backgroundColor1.linearGradient = HILinearGradientColorObject()
-        backgroundColor1.linearGradient.y1 = 0
-        backgroundColor1.linearGradient.y2 = 1
-        backgroundColor1.stops = [
-            [0, bgColorString1],
-            [1, bgColorString1]
+        // pane background
+        let paneBackground = HIBackground()
+        paneBackground.outerRadius = "100%"
+        paneBackground.innerRadius = "70%"
+        paneBackground.borderWidth = 0
+        let bgColor = color.withAlphaComponent(0.35)
+        let bgColorString = getHex(for: bgColor)
+        let backgroundColor = HIGradientColorObject()
+        backgroundColor.linearGradient = HILinearGradientColorObject()
+        backgroundColor.linearGradient.y1 = 0
+        backgroundColor.linearGradient.y2 = 1
+        backgroundColor.stops = [
+            [0, bgColorString],
+            [1, bgColorString]
         ]
+        paneBackground.backgroundColor = backgroundColor
         
-        paneBackground1.backgroundColor = backgroundColor1
+        pane.background = [paneBackground]
         
-        // pane background for heart
-        let paneBackground2 = HIBackground()
-        paneBackground2.outerRadius = "70%"
-        paneBackground2.innerRadius = "40%"
-        paneBackground2.borderWidth = 0
-
-        let bgColor2 = #colorLiteral(red: 0.4941176471, green: 0, blue: 0, alpha: 0.35)
-        let color2 = #colorLiteral(red: 0.4941176471, green: 0, blue: 0, alpha: 1)
-        let bgColorString2 = getHex(for: bgColor2)
-        let backgroundColor2 = HIGradientColorObject()
-        backgroundColor2.linearGradient = HILinearGradientColorObject()
-        backgroundColor2.linearGradient.y1 = 0
-        backgroundColor2.linearGradient.y2 = 1
-        backgroundColor2.stops = [
-            [0, bgColorString2],
-            [1, bgColorString2]
-        ]
-        paneBackground2.backgroundColor = backgroundColor2
+        // y axis
         
-        pane.background = [paneBackground1, paneBackground2]
-        
-        // y axis and title
         let yAxis = HIYAxis()
         let yTitle = HITitle()
-        yTitle.text = ""
+        yTitle.text = "\(round(score * 10) / 10)"
+        yTitle.style = HICSSObject()
+        yTitle.style.fontWeight = "bold"
+        yTitle.style.fontSize = "20"
+        let center = chartView.bounds.height / 4 - 5
+        yTitle.y = center as NSNumber
         yAxis.min = 0
         yAxis.max = 100
         yAxis.lineWidth = 0
@@ -244,27 +225,15 @@ class SnapshotSummaryTableViewCell: UITableViewCell {
         plotOptions.solidgauge.stickyTracking = false
         plotOptions.solidgauge.rounded = true
         
-        // setup data for mind
-        let gage1 = HISolidgauge()
-        gage1.name = ""
-        let data1 = HIData()
-        data1.color = HIColor(uiColor: color1)
-        data1.radius = "100%"
-        data1.innerRadius = "70%"
-        let percent1 = (mindAverage / 10 * 100)
-        data1.y = percent1 as NSNumber
-        gage1.data = [data1]
-        
-        // setup data for heart
-        let gage2 = HISolidgauge()
-        gage2.name = ""
-        let data2 = HIData()
-        data2.color = HIColor(uiColor: color2)
-        data2.radius = "70%"
-        data2.innerRadius = "40%"
-        let percent2 = (heartAverage / 10 * 100)
-        data2.y = percent2 as NSNumber
-        gage2.data = [data2]
+        let gage = HISolidgauge()
+        gage.name = ""
+        let data = HIData()
+        data.color = HIColor(uiColor: color)
+        data.radius = "100%"
+        data.innerRadius = "70%"
+        let percent = (score / 10 * 100)
+        data.y = percent as NSNumber
+        gage.data = [data]
         
         options.chart = chart
         options.title = title
@@ -272,12 +241,12 @@ class SnapshotSummaryTableViewCell: UITableViewCell {
         options.pane = pane
         options.yAxis = [yAxis]
         options.plotOptions = plotOptions
-        options.series = [gage1, gage2]
+        options.series = [gage]
         options.credits = HICredits()
         options.credits.enabled = false
         options.navigation = navigation
         
-        viewChart.options = options
+        chartView.options = options
     }
     
     private func getHex(for color: UIColor) -> String {
@@ -292,11 +261,6 @@ class SnapshotSummaryTableViewCell: UITableViewCell {
     
     private func clearCell() {
         lblSummaryTitle.text = "Loading..."
-        lblScoreIdea.text = "..."
-        lblScoreConversation.text = "..."
-        lblScorePersonal.text = "..."
-        lblScoreEmotional.text = "..."
-        lblScoreSmiling.text = "..."
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {

@@ -11,11 +11,18 @@ import UIKit
 class AIFeedbackTableViewCell: UITableViewCell {
     
     @IBOutlet weak var lblFeedback: UILabel!
+    @IBOutlet weak var lblRecommendedTraining: UILabel!
     
     var feedbackText: String = "No feedback available." {
         didSet {
             lblFeedback.text = feedbackText
             updateSize()
+        }
+    }
+    
+    var recommendedTrainingText: String = "No training recommended." {
+        didSet {
+            lblRecommendedTraining.text = recommendedTrainingText
         }
     }
 
@@ -26,10 +33,16 @@ class AIFeedbackTableViewCell: UITableViewCell {
             lblFeedback.text = feedbackText
             updateSize()
         }
+        
+        if recommendedTrainingText != "" {
+            lblRecommendedTraining.text = recommendedTrainingText
+            updateSize()
+        }
     }
     
     override func prepareForReuse() {
         lblFeedback.text = feedbackText
+        lblRecommendedTraining.text = recommendedTrainingText
         updateSize()
     }
 
@@ -43,6 +56,7 @@ class AIFeedbackTableViewCell: UITableViewCell {
     
     private func updateSize() {
         lblFeedback.sizeToFit()
+        lblRecommendedTraining.sizeToFit()
         setNeedsLayout()
     }
 
