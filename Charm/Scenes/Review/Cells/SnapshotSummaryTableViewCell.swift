@@ -181,7 +181,7 @@ class SnapshotSummaryTableViewCell: UITableViewCell {
         
         // pane background
         let paneBackground = HIBackground()
-        paneBackground.outerRadius = "100%"
+        paneBackground.outerRadius = "118%"
         paneBackground.innerRadius = "70%"
         paneBackground.borderWidth = 0
         let bgColor = color.withAlphaComponent(0.35)
@@ -205,8 +205,9 @@ class SnapshotSummaryTableViewCell: UITableViewCell {
         yTitle.text = "\(round(score * 10) / 10)"
         yTitle.style = HICSSObject()
         yTitle.style.fontWeight = "bold"
-        yTitle.style.fontSize = "20"
-        let center = chartView.bounds.height / 4 - 5
+        let fontSize = String(Int(chartView.frame.width / 4))
+        yTitle.style.fontSize = fontSize
+        let center = chartView.bounds.height / 4
         yTitle.y = center as NSNumber
         yAxis.min = 0
         yAxis.max = 100
@@ -230,7 +231,7 @@ class SnapshotSummaryTableViewCell: UITableViewCell {
         gage.name = ""
         let data = HIData()
         data.color = HIColor(uiColor: color)
-        data.radius = "100%"
+        data.radius = "118%"
         data.innerRadius = "70%"
         let percent = (score / 10 * 100)
         data.y = percent as NSNumber

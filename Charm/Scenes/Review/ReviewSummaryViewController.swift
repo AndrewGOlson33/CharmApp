@@ -26,6 +26,7 @@ class ReviewSummaryViewController: UIViewController {
     
     // title label
     @IBOutlet weak var lblSummaryTitle: UILabel!
+    @IBOutlet weak var lblSummaryTimestamp: UILabel!
     
     // score labels
     @IBOutlet weak var lblWordEngScore: UILabel!
@@ -266,8 +267,9 @@ class ReviewSummaryViewController: UIViewController {
     
     private func setupScoreUI() {
         guard let snapshot = self.snapshot else { return }
-        let dateString = snapshot.friendlyDateString.isEmpty ? "" : "\n" + snapshot.friendlyDateString
-        lblSummaryTitle.text = "Your conversation with \(snapshot.friend)\(dateString)"
+        let dateString = snapshot.friendlyDateString.isEmpty ? "" : "On " + snapshot.friendlyDateString
+        lblSummaryTitle.text = "Your conversation with \(snapshot.friend)"
+        lblSummaryTimestamp.text = dateString
         
         for info in cellInfo {
             switch info.title {
@@ -329,7 +331,7 @@ class ReviewSummaryViewController: UIViewController {
         
         // pane background
         let paneBackground = HIBackground()
-        paneBackground.outerRadius = "100%"
+        paneBackground.outerRadius = "118%"
         paneBackground.innerRadius = "70%"
         paneBackground.borderWidth = 0
         let bgColor = color.withAlphaComponent(0.35)
@@ -353,8 +355,9 @@ class ReviewSummaryViewController: UIViewController {
         yTitle.text = "\(round(score * 10) / 10)"
         yTitle.style = HICSSObject()
         yTitle.style.fontWeight = "bold"
-        yTitle.style.fontSize = "20"
-        let center = chartView.bounds.height / 4 - 5
+        let fontSize = String(Int(chartView.frame.width / 4))
+        yTitle.style.fontSize = fontSize
+        let center = chartView.bounds.height / 4
         yTitle.y = center as NSNumber
         yAxis.min = 0
         yAxis.max = 100
@@ -378,7 +381,7 @@ class ReviewSummaryViewController: UIViewController {
         gage.name = ""
         let data = HIData()
         data.color = HIColor(uiColor: color)
-        data.radius = "100%"
+        data.radius = "118%"
         data.innerRadius = "70%"
         let percent = (score / 10 * 100)
         data.y = percent as NSNumber
