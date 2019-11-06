@@ -34,6 +34,8 @@ class ContactsViewModel: NSObject {
         }
     }
     
+    var hasLoaded: Bool = false
+    
     // user object
     var user = FirebaseModel.shared.charmUser
     
@@ -237,6 +239,9 @@ class ContactsViewModel: NSObject {
     // MARK: - Private Helper Functions
     
     private func loadContacts() {
+        
+        guard !isLoading else { return }
+        isLoading = true
         
         // make sure user hasn't denied access
         let status = CNContactStore.authorizationStatus(for: .contacts)
@@ -475,6 +480,7 @@ class ContactsViewModel: NSObject {
                 self.delegate?.updateTableView()
             }
             
+            self.hasLoaded = true
             self.performFriendListMaintenence()
         }
         
@@ -497,7 +503,7 @@ class ContactsViewModel: NSObject {
         user = updatedUser
         
         // load contact list
-        isLoading = true
+        guard !isLoading, !hasLoaded else { return }
         loadContacts()
     }
 }
@@ -804,8 +810,6 @@ extension ContactsViewModel: FriendManagementDelegate {
             friend.ref = friendRef
             meAsFriend.ref = meAsFriendRef
             
-            self.isLoading = true
-            
             friend.save()
             meAsFriend.save()
             
@@ -818,6 +822,9 @@ extension ContactsViewModel: FriendManagementDelegate {
         notInContacts.removeAll()
         existingUsers.removeAll()
         usersToInvite.removeAll()
+        
+        isLoading = false
+        loadContacts()
     }
     
     func sendTextRequest(toFriend friend: Friend) {

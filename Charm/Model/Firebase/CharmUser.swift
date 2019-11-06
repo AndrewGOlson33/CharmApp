@@ -382,7 +382,7 @@ struct FriendList: FirebaseItem {
     
     func save() {
         for var friend in currentFriends ?? [] {
-            if let fID = friend.friendId, fID != friend.id {
+            if let fID = friend.friendId, !fID.isEmpty, fID != friend.id {
                 if let ref = friend.ref { ref.removeValue() }
                 let friendRef = ref?.child(FirebaseStructure.CharmUser.FriendList.currentFriends).child(fID)
                 friend.friendId = friendRef?.key
@@ -394,7 +394,7 @@ struct FriendList: FirebaseItem {
         }
         
         for var friend in pendingSentApproval ?? [] {
-            if let fID = friend.friendId, fID != friend.id  {
+            if let fID = friend.friendId, !fID.isEmpty, fID != friend.id  {
                 if let ref = friend.ref { ref.removeValue() }
                 let friendRef = ref?.child(FirebaseStructure.CharmUser.FriendList.pendingSentApproval).child(fID)
                 friend.friendId = friendRef?.key
@@ -406,7 +406,7 @@ struct FriendList: FirebaseItem {
         }
         
         for var friend in pendingReceivedApproval ?? [] {
-            if let fID = friend.friendId, fID != friend.id  {
+            if let fID = friend.friendId, !fID.isEmpty, fID != friend.id  {
                 if let ref = friend.ref { ref.removeValue() }
                 let friendRef = ref?.child(FirebaseStructure.CharmUser.FriendList.pendingReceivedApproval).child(fID)
                 friend.friendId = friendRef?.key
@@ -418,7 +418,7 @@ struct FriendList: FirebaseItem {
         }
         
         for var friend in sentText ?? [] {
-            if let fID = friend.friendId, (fID != friend.id || fID == "N/A")  {
+            if let fID = friend.friendId, !fID.isEmpty, (fID != friend.id || fID == "N/A")  {
                 if let ref = friend.ref { ref.removeValue() }
                 let friendRef = ref?.child(FirebaseStructure.CharmUser.FriendList.sentText).childByAutoId()
                 friend.friendId = friendRef?.key

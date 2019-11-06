@@ -45,7 +45,6 @@ class FlashcardsViewModel: NSObject {
             if random == 0 {
                 let randomIndex = Int(arc4random_uniform(UInt32(model.abstractNounFlashcards.count)))
                 answer = .abstract
-                print("~>Model count: \(model.abstractNounFlashcards.count) random index: \(randomIndex)")
                 answerString = model.abstractNounFlashcards[randomIndex].word
                 return answerString
             } else {

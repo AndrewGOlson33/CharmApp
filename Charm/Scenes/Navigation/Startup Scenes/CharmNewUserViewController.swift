@@ -318,6 +318,11 @@ extension CharmNewUserViewController {
         let loginError = UIAlertController(title: "Login Error", message: "Unable to login at this time.  Do you want to try again?", preferredStyle: .alert)
         loginError.addAction(UIAlertAction(title: "No", style: .cancel, handler: nil))
         loginError.addAction(UIAlertAction(title: "Yes", style: .default, handler: { (_) in
+            do {
+                try Auth.auth().signOut()
+            } catch let error {
+                print("~>There was an error signing out: \(error)")
+            }
             self.viewDidAppear(true)
         }))
         present(loginError, animated: true, completion: nil)
