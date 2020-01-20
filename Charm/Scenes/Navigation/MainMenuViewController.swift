@@ -8,6 +8,7 @@
 
 import UIKit
 import Firebase
+import FirebaseInstanceID
 import StoreKit
 
 class MainMenuViewController: UIViewController {

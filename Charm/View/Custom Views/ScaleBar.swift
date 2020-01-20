@@ -98,9 +98,25 @@ class SliderView: UIView {
         let height = frame.height * 1.5
         let startingPosition = (position * frame.width) - 2
         positionView = UIView(frame: CGRect(x: startingPosition, y: 0 - frame.height * 0.25, width: 4, height: height))
-        positionView.backgroundColor = .black
+        if #available(iOS 12.0, *) {
+            positionView.backgroundColor = traitCollection.userInterfaceStyle == .dark ? .white : .black
+        } else {
+            positionView.backgroundColor = .black
+        }
         positionView.layer.cornerRadius = 2
         addSubview(positionView)
+    }
+    
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        guard positionView != nil else { return }
+        if #available(iOS 13.0, *) {
+            if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
+                positionView.backgroundColor = traitCollection.userInterfaceStyle == .dark ? .white : .black
+                positionView.setNeedsLayout()
+            }
+        } else {
+            return
+        }
     }
     
     private func setupBackgroundBars() {
