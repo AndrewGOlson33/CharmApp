@@ -336,15 +336,8 @@ class ReviewSummaryViewController: UIViewController {
         paneBackground.innerRadius = "70%"
         paneBackground.borderWidth = 0
         let bgColor = color.withAlphaComponent(0.35)
-        let bgColorString = getHex(for: bgColor)
-        let backgroundColor = HIGradientColorObject()
-        backgroundColor.linearGradient = HILinearGradientColorObject()
-        backgroundColor.linearGradient.y1 = 0
-        backgroundColor.linearGradient.y2 = 1
-        backgroundColor.stops = [
-            [0, bgColorString],
-            [1, bgColorString]
-        ]
+        let backgroundColor = HIColor(uiColor: bgColor)
+        
         paneBackground.backgroundColor = backgroundColor
         
         pane.background = [paneBackground]
@@ -375,7 +368,7 @@ class ReviewSummaryViewController: UIViewController {
         // plot options
         let plotOptions = HIPlotOptions()
         plotOptions.solidgauge = HISolidgauge()
-        let labelsOptions = HIDataLabelsOptionsObject()
+        let labelsOptions = HIDataLabels()//HIDataLabelsOptionsObject()
         labelsOptions.enabled = false
         plotOptions.solidgauge.dataLabels = [labelsOptions]
         plotOptions.solidgauge.linecap = "round"

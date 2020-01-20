@@ -118,7 +118,7 @@ class AllSnapshotsSummaryViewController: UIViewController {
         
         plotOptions.area.marker = HIMarker()
         plotOptions.area.marker.lineWidth = 1
-        plotOptions.area.marker.lineColor = HIColor(uiColor: #colorLiteral(red: 0.4756349325, green: 0.4756467342, blue: 0.4756404161, alpha: 1))
+        plotOptions.area.marker.lineColor = "#797979"
         
         // hide hamburger button
         let navigation = HINavigation()
