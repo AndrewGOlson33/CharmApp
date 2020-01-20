@@ -39,6 +39,11 @@ struct Snapshot: FirebaseItem, Codable {
     var tableViewTone: [Sentiment]
     var friends: [[String:String]]?
     var transcript: [Transcript]?
+    var master: [Master]? {
+        didSet {
+            master?.sort { $0.index < $1.index }
+        }
+    }
     
     var friendlyDateString: String {
         guard let date = date else { return "" }
@@ -69,6 +74,7 @@ struct Snapshot: FirebaseItem, Codable {
         case tableViewTone = "Sentiment_Raw" // used to be sentimentRaw
         case friends = "friendsName"
         case transcript = "Transcript"
+        case master = "Master"
     }
     
     init(snapshot: DataSnapshot) throws {
@@ -85,6 +91,7 @@ struct Snapshot: FirebaseItem, Codable {
         graphTone = []
         tableViewTone = []
         friends = [[:]]
+        master = []
         
         // top level metrics
         let topLevelSnap = snapshot.childSnapshot(forPath: CodingKeys.topLevelMetrics.rawValue)
@@ -142,6 +149,16 @@ struct Snapshot: FirebaseItem, Codable {
             for child in tranSnap.children {
                 guard let snapshot = child as? DataSnapshot else { continue }
                 transcript?.append(try Transcript(snapshot: snapshot))
+            }
+        }
+        
+        // Master
+        let masterSnap = snapshot.childSnapshot(forPath: CodingKeys.master.rawValue)
+        if masterSnap.exists() {
+            master = []
+            for child in masterSnap.children {
+                guard let snapshot = child as? DataSnapshot else { continue }
+                master?.append(try Master(snapshot: snapshot))
             }
         }
         
@@ -430,13 +447,73 @@ struct Transcript: FirebaseItem, Codable {
     }
 }
 
+// MARK: - Transcript Master
+
+struct Master: FirebaseItem, Codable {
+    var id: String?
+    var ref: DatabaseReference?
+    
+    var index: Int
+    var person: String
+    var userId: String
+    var abstract: Bool
+    var concrete: Bool
+    var firstPerson: Bool
+    var secondPerson: Bool
+    var plural: Bool
+    var positiveWord: Bool
+    var negativeWord: Bool
+    var word: String
+    
+    enum CodingKeys: String, CodingKey {
+        case index = "index"
+        case person = "Person"
+        case userId = "UserID"
+        case abstract = "abstract"
+        case concrete = "concrete"
+        case firstPerson = "first"
+        case secondPerson = "second"
+        case plural = "plural"
+        case positiveWord = "positive"
+        case negativeWord = "negative"
+        case word = "word"
+    }
+    
+    init(snapshot: DataSnapshot) throws {
+        guard snapshot.exists() else { throw FirebaseItemError.noSnapshot }
+        guard let values = snapshot.value as? [String:Any] else { throw FirebaseItemError.invalidData }
+        id = snapshot.key
+        ref = snapshot.ref
+        
+        index = values[CodingKeys.index.rawValue] as? Int ?? -1
+        person = values[CodingKeys.person.rawValue] as? String ?? ""
+        userId = values[CodingKeys.userId.rawValue] as? String ?? ""
+        abstract = values[CodingKeys.abstract.rawValue] as? Bool ?? false
+        concrete = values[CodingKeys.concrete.rawValue] as? Bool ?? false
+        firstPerson = values[CodingKeys.firstPerson.rawValue] as? Bool ?? false
+        secondPerson = values[CodingKeys.secondPerson.rawValue] as? Bool ?? false
+        plural = values[CodingKeys.plural.rawValue] as? Bool ?? false
+        positiveWord = values[CodingKeys.positiveWord.rawValue] as? Bool ?? false
+        negativeWord = values[CodingKeys.negativeWord.rawValue] as? Bool ?? false
+        word = values[CodingKeys.word.rawValue] as? String ?? ""
+    }
+    
+    func toAny() -> [AnyHashable : Any] {
+        return [:]
+    }
+    
+    func save() {
+        return
+    }
+}
+
 // MARK: - Structs for creating table view cells from
 
 struct SummaryCellInfo {
     var title: String
     var score: Double
     var percent: Double
-    var scalebarType: BarType
+    var scalebarType: SliderType
     
     private var formatter = NumberFormatter()
     
@@ -452,7 +529,7 @@ struct SummaryCellInfo {
     }
     
     var scoreString: String {
-        return "\(score)"
+        return "\(Int(score * 100.0))%"
     }
     
     var percentString: String {
@@ -462,7 +539,7 @@ struct SummaryCellInfo {
         return "\(value)%"
     }
     
-    init(title: String, score: Double, percent: Double, barType: BarType = .Green) {
+    init(title: String, score: Double, percent: Double, barType: SliderType = .standard) {
         self.title = title
         self.score = score
         self.percent = percent
@@ -473,9 +550,14 @@ struct SummaryCellInfo {
     
 }
 
+struct SliderCellTitle {
+    var description: String
+    var hint: String
+}
+
 struct SliderCellInfo {
     var details: SliderDetails
-    var title: String
+    var title: SliderCellTitle
     var score: Double
     var position: CGFloat
     
@@ -488,7 +570,13 @@ struct SliderCellInfo {
         return "\(value)%"
     }
     
-    init(details: SliderDetails, title: String, score: Double, position: CGFloat) {
+    var positionPercent: String {
+        if position == 1.0 { return "100%" }
+        let value = Int(round(position * 100.0))
+        return "\(value)%"
+    }
+    
+    init(details: SliderDetails, title: SliderCellTitle, score: Double, position: CGFloat) {
         self.details = details
         self.title = title
         self.score = score
@@ -505,51 +593,43 @@ enum ValueType {
 struct SliderDetails {
     var type: SliderType
     var valueType: ValueType
-    var minBlue: CGFloat
-    var maxBlue: CGFloat
-    var minRed: CGFloat?
-    var maxRed: CGFloat?
+    var startValue: CGFloat
+    var endValue: CGFloat
+    var color: UIColor
     
-    var hasRed: Bool {
-        return minRed != nil && maxRed != nil
-    }
-    
-    var minRedValue: CGFloat {
-        if let value = minRed { return value }
-        
-        return -1
-    }
-    
-    var maxRedValue: CGFloat {
-        if let value = maxRed { return value }
-        
-        return -1
-    }
-    
-    init(type: SliderType, valueType: ValueType = .int, minBlue: CGFloat = 0, maxBlue: CGFloat = 1, minRed: CGFloat? = nil, maxRed: CGFloat? = nil) {
+    init(type: SliderType, valueType: ValueType = .int, start: CGFloat = 0, end: CGFloat = 0, color: UIColor) {
         self.type = type
         self.valueType = valueType
-        self.minBlue = minBlue
-        self.maxBlue = maxBlue
-        self.minRed = minRed
-        self.maxRed = maxRed
+        startValue = start
+        endValue = end
+        self.color = color
     }
 }
 
-struct TranscriptCellInfo: Codable {
+struct TranscriptCellInfo {
     
-    var text: String
+    var text: NSMutableAttributedString
     var position: Int?
+    var isUser: Bool
     
-    init(withText text: String) {
+    init(withText text: NSMutableAttributedString, isUser: Bool) {
         self.text = text
+        self.isUser = isUser
     }
     
-    init(withText text: String, at position: Int) {
+    init(withText text: NSMutableAttributedString, at position: Int, isUser: Bool) {
         self.text = text
         self.position = position
+        self.isUser = isUser
     }
     
+}
+
+// MARK: - Callout Data
+
+struct CalloutInfo {
+    var value: String
+    var transcriptIndex: Int
 }
 
 // MARK: - String Extension to Count Words

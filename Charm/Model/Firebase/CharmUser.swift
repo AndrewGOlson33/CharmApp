@@ -15,7 +15,7 @@ enum FirebaseItemError: Error {
     case invalidParameter
 }
 
-struct CharmUser: FirebaseItem {
+struct  CharmUser: FirebaseItem {
        
     var id: String? = nil
     var ref: DatabaseReference?

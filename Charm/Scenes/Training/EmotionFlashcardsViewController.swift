@@ -84,7 +84,7 @@ class EmotionFlashcardsViewController: UIViewController, FlashcardsHistoryDelega
         
         // setup streak bar
         
-        streakBar.setup(for: .fillFromLeft)
+        streakBar.setup(for: .standard, atPosition: 0.0, color: #colorLiteral(red: 0.4862745098, green: 0.7098039216, blue: 0.9254901961, alpha: 1))
         
         viewModel.getAverageEmotionsScore { (emotionsScores) in
             // make sure this is done on main thread

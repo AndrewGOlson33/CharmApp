@@ -254,15 +254,16 @@ class ReviewSummaryViewController: UIViewController {
         let smilingPercent = snapshot.getTopLevelRawValue(forSummaryItem: .smilingPercentage) ?? 0
 
         // setup cell info array
-        cellInfo.append(SummaryCellInfo(title: "Word Engagement", score: ideaEngagement, percent: ideaPercent))
-        cellInfo.append(SummaryCellInfo(title: "Conversation Engagement", score: conversationEngagement, percent: conversationPercent))
-        cellInfo.append(SummaryCellInfo(title: "Personal Connection", score: personalConnection, percent: personalConnectionPercent))
-        cellInfo.append(SummaryCellInfo(title: "Emotional Connection", score: emotionalConnection, percent: emotionalConnectionPercent))
-        cellInfo.append(SummaryCellInfo(title: "Smiling", score: smiling, percent: smilingPercent))
+        cellInfo.append(SummaryCellInfo(title: "Idea Clarity", score: ideaPercent, percent: ideaPercent))
+        cellInfo.append(SummaryCellInfo(title: "Conversation Flow", score: conversationPercent, percent: conversationPercent))
+        cellInfo.append(SummaryCellInfo(title: "Personal Bond", score: personalConnectionPercent, percent: personalConnectionPercent))
+        cellInfo.append(SummaryCellInfo(title: "Emotional Journey", score: emotionalConnectionPercent, percent: emotionalConnectionPercent))
+        cellInfo.append(SummaryCellInfo(title: "Smiling", score: smilingPercent, percent: smilingPercent))
         
         // load averages
-        mindAverage = (ideaEngagement + conversationEngagement) / 2.0
-        heartAverage = (personalConnection + emotionalConnection + smiling) / 3.0
+        mindAverage = (ideaEngagement + conversationEngagement + max(ideaEngagement, conversationEngagement)) / 3.0
+        let heartMax = max(personalConnection, emotionalConnection, smiling) * 2
+        heartAverage = (personalConnection + emotionalConnection + smiling + heartMax) / 5.0
     }
     
     private func setupScoreUI() {
@@ -273,21 +274,21 @@ class ReviewSummaryViewController: UIViewController {
         
         for info in cellInfo {
             switch info.title {
-            case "Word Engagement":
+            case "Idea Clarity":
                 lblWordEngScore.text = info.scoreString
-                wordEngSlider.setup(for: .fillFromLeft, at: CGFloat(info.percent))
-            case "Conversation Engagement":
+                wordEngSlider.setup(for: .standard, atPosition: CGFloat(info.percent), color: #colorLiteral(red: 0.4862745098, green: 0.7098039216, blue: 0.9254901961, alpha: 1))
+            case "Conversation Flow":
                 lblConvoEngScore.text = info.scoreString
-                convoEngSlider.setup(for: .fillFromLeft, at: CGFloat(info.percent))
-            case "Personal Connection":
+                convoEngSlider.setup(for: .standard, atPosition: CGFloat(info.percent), color: #colorLiteral(red: 0.4862745098, green: 0.7098039216, blue: 0.9254901961, alpha: 1))
+            case "Personal Bond":
                 lblPersonalConScore.text = info.scoreString
-                personalConSlider.setup(for: .fillFromLeft, at: CGFloat(info.percent))
-            case "Emotional Connection":
+                personalConSlider.setup(for: .standard, atPosition: CGFloat(info.percent), color: #colorLiteral(red: 0.8509803922, green: 0.3490196078, blue: 0.3490196078, alpha: 1))
+            case "Emotional Journey":
                 lblEmoConScore.text = info.scoreString
-                emoConSlider.setup(for: .fillFromLeft, at: CGFloat(info.percent))
+                emoConSlider.setup(for: .standard, atPosition: CGFloat(info.percent), color: #colorLiteral(red: 0.8509803922, green: 0.3490196078, blue: 0.3490196078, alpha: 1))
             case "Smiling":
                 lblSmilingScore.text = info.scoreString
-                smilingSlider.setup(for: .fillFromLeft, at: CGFloat(info.percent))
+                smilingSlider.setup(for: .standard, atPosition: CGFloat(info.percent), color: #colorLiteral(red: 0.8509803922, green: 0.3490196078, blue: 0.3490196078, alpha: 1))
             default:
                 return
             }
@@ -296,7 +297,7 @@ class ReviewSummaryViewController: UIViewController {
     
     private func setupCharts() {
         setup(chartView: mindChart, withScore: mindAverage, andColor: #colorLiteral(red: 0.4862745098, green: 0.7098039216, blue: 0.9254901961, alpha: 1))
-        setup(chartView: heartChart, withScore: heartAverage, andColor: #colorLiteral(red: 0.4941176471, green: 0, blue: 0, alpha: 1))
+        setup(chartView: heartChart, withScore: heartAverage, andColor: #colorLiteral(red: 0.8509803922, green: 0.3490196078, blue: 0.3490196078, alpha: 1))
     }
     
     private func setup(chartView: HIChartView, withScore score: Double, andColor color: UIColor) {
@@ -348,16 +349,20 @@ class ReviewSummaryViewController: UIViewController {
         
         pane.background = [paneBackground]
         
+        // score as percent
+        let percent = (score / 10 * 100)
+        
         // y axis
         
         let yAxis = HIYAxis()
         let yTitle = HITitle()
-        yTitle.text = "\(round(score * 10) / 10)"
-        yTitle.style = HICSSObject()
-        yTitle.style.fontWeight = "bold"
-        let fontSize = String(Int(chartView.frame.width / 4))
-        yTitle.style.fontSize = fontSize
-        let center = chartView.bounds.height / 4
+        yTitle.text = "<center><p><strong style=\"font-size:160%;\">\(Int(percent))</strong><br><small>Percent</small></p></center>"
+        yTitle.useHTML = true
+//        yTitle.style = HICSSObject()
+//        yTitle.style.fontWeight = "bold"
+//        let fontSize = String(Int(chartView.frame.width / 4))
+//        yTitle.style.fontSize = fontSize
+        let center = 0 //chartView.bounds.height / 8
         yTitle.y = center as NSNumber
         yAxis.min = 0
         yAxis.max = 100
@@ -383,7 +388,6 @@ class ReviewSummaryViewController: UIViewController {
         data.color = HIColor(uiColor: color)
         data.radius = "118%"
         data.innerRadius = "70%"
-        let percent = (score / 10 * 100)
         data.y = percent as NSNumber
         gage.data = [data]
         

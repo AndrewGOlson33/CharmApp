@@ -13,7 +13,7 @@ class WordChoiceViewController: UIViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         guard segue.identifier == SegueID.detailChart, let chartVC = segue.destination as? DetailChartViewController else { return }
         chartVC.chartType = .ideaEngagement
-        chartVC.navTitle = "Idea Engagement"
+        chartVC.navTitle = "Word Clarity"
     }
 
 }

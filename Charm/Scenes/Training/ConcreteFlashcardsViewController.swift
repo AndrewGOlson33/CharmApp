@@ -90,7 +90,7 @@ class ConcreteFlashcardsViewController: UIViewController, FlashcardsHistoryDeleg
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
     
-        streakView.setup(for: .fillFromLeft)
+        streakView.setup(for: .standard, atPosition: 0.0, color: #colorLiteral(red: 0.4862745098, green: 0.7098039216, blue: 0.9254901961, alpha: 1))
         
         viewModel.getAverageConcreteScore { (concreteScores) in
             self.lblCurrentStreak.text = concreteScores.currentStreakDetail
@@ -134,11 +134,11 @@ class ConcreteFlashcardsViewController: UIViewController, FlashcardsHistoryDeleg
     }
     
     // Get calculated x coord for scalebar
-    private func getX(for bar: ScaleBar) -> CGFloat {
-        let value = CGFloat(bar.calculatedValue)
-        print("~>Value: \(value) point: \(bar.bounds.width * value + bar.frame.origin.x) midX: \(bar.frame.midX)")
-        return bar.bounds.width * value
-    }
+//    private func getX(for bar: ScaleBar) -> CGFloat {
+//        let value = CGFloat(bar.calculatedValue)
+//        print("~>Value: \(value) point: \(bar.bounds.width * value + bar.frame.origin.x) midX: \(bar.frame.midX)")
+//        return bar.bounds.width * value
+//    }
     
     // Setup UI once the firebase model is loaded
     @objc private func firebaseModelLoaded() {

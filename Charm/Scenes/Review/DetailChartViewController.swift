@@ -33,6 +33,8 @@ class DetailChartViewController: UIViewController {
     var transcript: [TranscriptCellInfo] = []
     var sliderData: [SliderCellInfo] = []
     var calloutData: [String] = []
+    var calloutInfo: [CalloutInfo] = []
+    var calloutWord: String? = nil
     
     // date formatter for setting chart title
     let dFormatter = DateFormatter()
@@ -59,7 +61,7 @@ class DetailChartViewController: UIViewController {
     var isTableViewScrolling: Bool = false
     
     // table view separator buffer
-    let tableviewSpacing: CGFloat = 6
+    let tableviewSpacing: CGFloat = 2
     
     // MARK: - View Lifecycle Functions
 
@@ -137,12 +139,11 @@ class DetailChartViewController: UIViewController {
     }
     
     private func loadData() {
-        let isSample = FirebaseModel.shared.isSnapshotSample
-        
         // clear any old values
         chartData = []
         sliderData = []
         transcript = []
+        calloutInfo = []
         
         // setup data based on type
         switch chartType! {
@@ -151,176 +152,321 @@ class DetailChartViewController: UIViewController {
             chartShowsText = FirebaseModel.shared.constants.metricDescWord
             feedbackTrainingText = FirebaseModel.shared.constants.metricTrainingWord
             
-            // setup chart data
-            for (index, item) in ideaEngagement.enumerated() {
-                let point = HIPoint()
-                point.x = index as NSNumber
-                point.y = item.score as NSNumber
-                let calloutWord = isSample ? "N/A" : item.word
-                calloutData.append(calloutWord)
-                chartData.append(point)
-                let tag = item.isConcrete ? "Concrete" : "Abstract"
-                transcript.append(TranscriptCellInfo(withText: "[\(index)]: \(item.word) (\(tag))"))
-            }
-            
             // setup slider bar data
-            if let position = snapshot.getTopLevelRawValue(forSummaryItem: .ideaEngagement), let score = snapshot.getTopLevelScoreValue(forSummaryItem: .ideaEngagement) {
-                let cellInfo = SliderCellInfo(details: SliderDetails(type: .fillFromLeft), title: "Word Engagement", score: score, position: CGFloat(position))
+            if let position = snapshot.getTopLevelRawValue(forSummaryItem: .concrete), let score = snapshot.getTopLevelRankValue(forSummaryItem: .concrete) {
+                let cellInfo = SliderCellInfo(details: SliderDetails(type: .fixed, valueType: .percent, start: 0.55, end: 0.75, color: #colorLiteral(red: 0.4862745098, green: 0.7098039216, blue: 0.9254901961, alpha: 1)), title: SliderCellTitle(description: "How Clearly You Are Understood", hint: "Recommended Range: 55% to 75%"), score: score, position: CGFloat(position))
+                    
                 sliderData.append(cellInfo)
             }
             
-            if let position = snapshot.getTopLevelRawValue(forSummaryItem: .concrete), let score = snapshot.getTopLevelRankValue(forSummaryItem: .concrete) {
-                let cellInfo = SliderCellInfo(details: SliderDetails(type: .fixed, valueType: .percent, minBlue: 0.33, maxBlue: 0.67), title: "Concrete Details(%)", score: score, position: CGFloat(position))
+            if let position = snapshot.getTopLevelRawValue(forSummaryItem: .ideaEngagement), let score = snapshot.getTopLevelScoreValue(forSummaryItem: .ideaEngagement) {
+                let cellInfo = SliderCellInfo(details: SliderDetails(type: .standard, color: #colorLiteral(red: 0.4862745098, green: 0.7098039216, blue: 0.9254901961, alpha: 1)), title: SliderCellTitle(description: "Engagement", hint: "Compared With the World’s Most Beloved Comedians"), score: score, position: CGFloat(position))
+                
                 sliderData.append(cellInfo)
             }
             
             // get feedback text
             feedback = snapshot.getTopLevelFeedback(forSummaryItem: .ideaEngagement)
             
+            // setup transcript, chart data, and callout info
+            guard ideaEngagement.count > 0 else { return }
+            
+            let maxIndex = ideaEngagement.count - 1
+            var currentIndex = 0
+            var currentItem = ideaEngagement[currentIndex]
+            var shouldCheckWord = true
+            
+            // setup the transcript
+            guard let trans = snapshot.transcript, let master = snapshot.master else { return }
+            
+            var position = 0
+            for (tIndex, phrase) in trans.enumerated() {
+                let isUser = phrase.person != snapshot.friend
+                let start = position
+                var current = start
+                position += phrase.words.numberOfWords
+                let phraseString: NSMutableAttributedString = NSMutableAttributedString()
+                let components: [String] = phrase.words.components(separatedBy: " ")
+                
+                for word in components {
+                    // check to see if this word is in the idea engagement array
+                    if shouldCheckWord, isUser, word.contains(currentItem.word) {
+                        let point = HIPoint()
+                        point.x = currentIndex as NSNumber
+                        point.y = currentItem.score as NSNumber
+                        chartData.append(point)
+                        calloutInfo.append(CalloutInfo(value: currentItem.word, transcriptIndex: tIndex))
+                        
+                        // update the current word
+                        currentIndex += 1
+                        if currentIndex > maxIndex { shouldCheckWord = false } else { currentItem = ideaEngagement[currentIndex] }
+                    }
+                    
+                    let currentMaster = master[current]
+                    current += 1
+                    let attributes: [NSAttributedString.Key : Any]
+                    if currentMaster.concrete {
+                        attributes = [
+                            .foregroundColor : UIColor.white,
+                            .backgroundColor : #colorLiteral(red: 0.6784313725, green: 0.5803921569, blue: 0, alpha: 1)
+                        ]
+                    } else if currentMaster.abstract {
+                        attributes = [
+                            .foregroundColor : UIColor.white,
+                            .backgroundColor : #colorLiteral(red: 0.6000000238, green: 0.6000000238, blue: 0.6000000238, alpha: 1)
+                        ]
+                    } else {
+                        attributes = [.foregroundColor : UIColor.white]
+                    }
+                    
+                    let currentWord = NSAttributedString(string: word, attributes: attributes)
+                    phraseString.append(currentWord)
+                    if current != position { phraseString.append(NSAttributedString(string: " ")) }
+                }
+                
+                transcript.append(TranscriptCellInfo(withText: phraseString, isUser: isUser))
+            }
         case .conversation:
-            let conversation = snapshot.conversation
+            // setup label data
             chartShowsText = FirebaseModel.shared.constants.metricDescConvo
             feedbackTrainingText = FirebaseModel.shared.constants.metricTrainingConvo
-            // setup chart data
-            
-            var isTranscriptLoaded: Bool = false
-            if let trans = snapshot.transcript {
-                var position = 0
-                for phrase in trans {
-                    let person: String = phrase.person
-                    
-                    transcript.append(TranscriptCellInfo(withText: "[\(person)]: \(phrase.words)", at: position))
-                    position += phrase.words.numberOfWords
-                }
-                isTranscriptLoaded = true
-            }
-            
-            
-            for (index, item) in conversation.enumerated() {
-                let point = HIPoint()
-                point.x = index as NSNumber
-                
-                if let value = item.adjustedAvg {
-                    point.y = value as NSNumber
-                } else {
-                    point.y = 0
-                }
-            
-                let text = "[\(String(describing: item.person))]: \(item.word)"
-                
-                let calloutWord = isSample ? "N/A" : item.word
-                calloutData.append(calloutWord)
-                chartData.append(point)
-                
-                // no need to do this if the transcript is aleady loaded
-                if isTranscriptLoaded { continue }
-                transcript.append(TranscriptCellInfo(withText: text))
-                
-            }
             
             // setup slider bar data
-            if let position = snapshot.getTopLevelRawValue(forSummaryItem: .conversationEngagement), let score = snapshot.getTopLevelScoreValue(forSummaryItem: .conversationEngagement) {
-                let cellInfo = SliderCellInfo(details: SliderDetails(type: .fillFromLeft), title: "Conversation Engagement", score: score, position: CGFloat(position))
+            if let position = snapshot.getTopLevelRawValue(forSummaryItem: .talkingPercentage), let score = snapshot.getTopLevelRankValue(forSummaryItem: .talkingPercentage) {
+                let cellInfo = SliderCellInfo(details: SliderDetails(type: .fixed, valueType: .percent, start: 0.42, end: 58, color: #colorLiteral(red: 0.4862745098, green: 0.7098039216, blue: 0.9254901961, alpha: 1)), title: SliderCellTitle(description: "How Much You Spoke", hint: "Recommended Range: 42% to 58%"), score: score, position: CGFloat(position))
                 sliderData.append(cellInfo)
             }
             
-            if let position = snapshot.getTopLevelRawValue(forSummaryItem: .talkingPercentage), let score = snapshot.getTopLevelRankValue(forSummaryItem: .talkingPercentage) {
-                let cellInfo = SliderCellInfo(details: SliderDetails(type: .fixed, valueType: .percent, minBlue: 0.33, maxBlue: 0.67), title: "Talking(%)", score: score, position: CGFloat(position))
+            if let position = snapshot.getTopLevelRawValue(forSummaryItem: .conversationEngagement), let score = snapshot.getTopLevelScoreValue(forSummaryItem: .conversationEngagement) {
+                let cellInfo = SliderCellInfo(details: SliderDetails(type: .standard, color: #colorLiteral(red: 0.4862745098, green: 0.7098039216, blue: 0.9254901961, alpha: 1)), title: SliderCellTitle(description: "Engagement", hint: "Compared With World's Most Beloved Television Shows"), score: score, position: CGFloat(position))
                 sliderData.append(cellInfo)
             }
             
             // get feedback text
             feedback = snapshot.getTopLevelFeedback(forSummaryItem: .conversationEngagement)
             
-        case .connection:
-            let connection = snapshot.connection
-            chartShowsText = FirebaseModel.shared.constants.metricDescPersonal
-            feedbackTrainingText = FirebaseModel.shared.constants.metricTrainingPersonal
-            // setup chart data
-            for (index, item) in connection.enumerated() {
-                // add transcript data
-                let pronoun = Pronoun.init(rawValue: item.classification) ?? .firstPerson
-                let text = "[\(index)]: \(item.word) (\(pronoun.description))"
-                transcript.append(TranscriptCellInfo(withText: text))
+            // setup transcript and chart data
+            let conversation = snapshot.conversation
+            guard conversation.count > 0 else { return }
+            var position = 0
+            let maxIndex = conversation.count - 1
+            var currentIndex = 0
+            var currentItem = conversation[currentIndex]
+            guard let trans = snapshot.transcript else { return } // let master = snapshot.master
+            
+            for (tIndex, phrase) in trans.enumerated() {
+                let isUser = phrase.person != snapshot.friend
+                let start = position
+                var current = start
+                position += phrase.words.numberOfWords
+                let phraseString: NSMutableAttributedString = NSMutableAttributedString()
+                let components: [String] = phrase.words.components(separatedBy: " ")
                 
-                let point = HIPoint()
-                point.x = index as NSNumber
-                if let value = item.adjustedAverage {
-                    point.y = value as NSNumber
-                } else {
-                    point.y = 0
+                for word in components {
+                    let point = HIPoint()
+                    point.x = currentIndex as NSNumber
+    
+                    if let value = currentItem.adjustedAvg {
+                        point.y = value as NSNumber
+                    } else {
+                        point.y = 0
+                    }
+                    
+                    chartData.append(point)
+                    calloutInfo.append(CalloutInfo(value: currentItem.word, transcriptIndex: tIndex))
+                    
+                    currentIndex += 1
+                    if currentIndex <= maxIndex { currentItem = conversation[currentIndex] }
+                    
+                    // Uncomment if color coding
+//                    let currentMaster = master[current]
+                    current += 1
+                    let attributes: [NSAttributedString.Key : Any]
+                    
+                    attributes = [.foregroundColor : UIColor.white]
+                    
+                    let currentWord = NSAttributedString(string: word, attributes: attributes)
+                    phraseString.append(currentWord)
+                    if current != position { phraseString.append(NSAttributedString(string: " ")) }
                 }
                 
-                let calloutWord = isSample ? "N/A" : item.word
-                calloutData.append(calloutWord)
-                chartData.append(point)
+                transcript.append(TranscriptCellInfo(withText: phraseString, isUser: isUser))
             }
             
+        case .connection:
             // setup slider bar data
-            if let position = snapshot.getTopLevelRawValue(forSummaryItem: .personalConnection), let score = snapshot.getTopLevelScoreValue(forSummaryItem: .personalConnection) {
-                let cellInfo = SliderCellInfo(details: SliderDetails(type: .fillFromLeft), title: "Personal Engagement", score: score, position: CGFloat(position))
+            if let position = snapshot.getTopLevelRawValue(forSummaryItem: .firstPerson), let score = snapshot.getTopLevelRankValue(forSummaryItem: .firstPerson) {
+                let cellInfo = SliderCellInfo(details: SliderDetails(type: .fixed, valueType: .percent, start: 0.41, end: 0.59, color: #colorLiteral(red: 0.4862745098, green: 0.7098039216, blue: 0.9254901961, alpha: 1)), title: SliderCellTitle(description: "Who You Focused the Conversation On", hint: "Recommended Range: 41% to 59%"), score: score, position: CGFloat(position))
                 sliderData.append(cellInfo)
             }
             
-            if let position = snapshot.getTopLevelRawValue(forSummaryItem: .firstPerson), let score = snapshot.getTopLevelRankValue(forSummaryItem: .firstPerson) {
-                let cellInfo = SliderCellInfo(details: SliderDetails(type: .fixed, valueType: .percent, minBlue: 0.375, maxBlue: 0.625), title: "First Person(%)", score: score, position: CGFloat(position))
+            if let position = snapshot.getTopLevelRawValue(forSummaryItem: .personalConnection), let score = snapshot.getTopLevelScoreValue(forSummaryItem: .personalConnection) {
+                let cellInfo = SliderCellInfo(details: SliderDetails(type: .standard, color: #colorLiteral(red: 0.8509803922, green: 0.3490196078, blue: 0.3490196078, alpha: 1)), title: SliderCellTitle(description: "Connection", hint: "Compared With World’s Most Beloved Movie Scenes"), score: score, position: CGFloat(position))
                 sliderData.append(cellInfo)
             }
             
             // get feedback text
             feedback = snapshot.getTopLevelFeedback(forSummaryItem: .personalConnection)
-        
+            
+            // setup transcript and chart data
+            let connection = snapshot.connection
+            chartShowsText = FirebaseModel.shared.constants.metricDescPersonal
+            feedbackTrainingText = FirebaseModel.shared.constants.metricTrainingPersonal
+            
+            guard connection.count > 0 else  { return }
+            let maxIndex = connection.count - 1
+            var currentIndex = 0
+            var currentItem = connection[currentIndex]
+            var shouldCheckWord = true
+            
+            guard let trans = snapshot.transcript, let master = snapshot.master else { return }
+            var position = 0
+            
+            for (tIndex, phrase) in trans.enumerated() {
+                let isUser = phrase.person != snapshot.friend
+                let start = position
+                var current = start
+                position += phrase.words.numberOfWords
+                let phraseString: NSMutableAttributedString = NSMutableAttributedString()
+                let components: [String] = phrase.words.components(separatedBy: " ")
+                
+                for word in components {
+                    // check to see if this word is in the idea engagement array
+                    if shouldCheckWord, isUser, word.contains(currentItem.word) {
+                        let point = HIPoint()
+                        point.x = currentIndex as NSNumber
+                        point.y = currentItem.adjustedAverage as NSNumber? ?? 0
+                        chartData.append(point)
+                        calloutInfo.append(CalloutInfo(value: currentItem.word, transcriptIndex: tIndex))
+                        
+                        // update the current word
+                        currentIndex += 1
+                        if currentIndex > maxIndex { shouldCheckWord = false } else { currentItem = connection[currentIndex] }
+                    }
+                    
+                    let currentMaster = master[current]
+                    current += 1
+                    let attributes: [NSAttributedString.Key : Any]
+                    
+                    if currentMaster.firstPerson {
+                        attributes = [
+                            .foregroundColor : UIColor.white,
+                            .backgroundColor : #colorLiteral(red: 0.1490196078, green: 0.5254901961, blue: 0.4862745098, alpha: 1)
+                        ]
+                    } else if currentMaster.secondPerson {
+                        attributes = [
+                            .foregroundColor : UIColor.white,
+                            .backgroundColor : #colorLiteral(red: 0.4756349325, green: 0.4756467342, blue: 0.4756404161, alpha: 1)
+                        ]
+                    } else {
+                        attributes = [.foregroundColor : UIColor.white]
+                    }
+                    
+                    let currentWord = NSAttributedString(string: word, attributes: attributes)
+                    phraseString.append(currentWord)
+                    if current != position { phraseString.append(NSAttributedString(string: " ")) }
+                }
+                
+                transcript.append(TranscriptCellInfo(withText: phraseString, isUser: isUser))
+            }
         case .emotions:
             chartShowsText = FirebaseModel.shared.constants.metricDescEmotions
             feedbackTrainingText = FirebaseModel.shared.constants.metricTrainingEmotions
             posData = []
             negData = []
             let toneGraph = snapshot.graphTone
-            let toneTable = snapshot.tableViewTone
-            // setup chart data
-            for (index, item) in toneGraph.enumerated() {
-                
-                let dataPoint = HIPoint()
-                let posPoint = HIPoint()
-                let negPoint = HIPoint()
-                
-                dataPoint.x = index as NSNumber
-                posPoint.x = index as NSNumber
-                negPoint.x = index as NSNumber
-                
-                dataPoint.y = item.roll3 as NSNumber
-                posPoint.y = item.rollPos3 as NSNumber
-                negPoint.y = item.rollNeg3 as NSNumber
-                
-                chartData.append(dataPoint)
-                posData?.append(posPoint)
-                negData?.append(negPoint)
-            }
             
             // setup scale bar data
-            if let position = snapshot.getTopLevelRawValue(forSummaryItem: .emotionalConnection), let score = snapshot.getTopLevelScoreValue(forSummaryItem: .emotionalConnection) {
-                let cellInfo = SliderCellInfo(details: SliderDetails(type: .fillFromLeft), title: "Emotional Connection", score: score, position: CGFloat(position))
-                sliderData.append(cellInfo)
-            }
-            
             if let position = snapshot.getTopLevelRawValue(forSummaryItem: .positiveWords), let score = snapshot.getTopLevelRankValue(forSummaryItem: .positiveWords) {
-                let cellInfo = SliderCellInfo(details: SliderDetails(type: .fixed, valueType: .percent, minBlue: 0.67, maxBlue: 1.0), title: "Positive Word(%)", score: score, position: CGFloat(position))
+                let cellInfo = SliderCellInfo(details: SliderDetails(type: .fixed, valueType: .percent, start: 0.60, end: 1.0, color: #colorLiteral(red: 0.4862745098, green: 0.7098039216, blue: 0.9254901961, alpha: 1)), title: SliderCellTitle(description: "Positivity", hint: "Recommended Range: Greater Than 60%"), score: score, position: CGFloat(position))
                 sliderData.append(cellInfo)
             }
             
             if let position = snapshot.getTopLevelRawValue(forSummaryItem: .negativeWords), let score = snapshot.getTopLevelRankValue(forSummaryItem: .negativeWords) {
-                let cellInfo = SliderCellInfo(details: SliderDetails(type: .fixed, valueType: .percent, minBlue: 0.0, maxBlue: 0.0, minRed: 0.9, maxRed: 1.0), title: "Negative Word(%)", score: score, position: CGFloat(position))
+                let cellInfo = SliderCellInfo(details: SliderDetails(type: .fixed, valueType: .percent, start: 0.9, end: 1.0, color: #colorLiteral(red: 0.8509803922, green: 0.3490196078, blue: 0.3490196078, alpha: 1)), title: SliderCellTitle(description: "Negativity", hint: "Recommended Range: Balance Out Positivity"), score: score, position: CGFloat(position))
                 sliderData.append(cellInfo)
             }
             
-            // setup transcript data
-            for (index, item) in toneTable.enumerated() {
-                let text = "[\(index)]: \(item.word) (Score: \(item.score))"
-                transcript.append(TranscriptCellInfo(withText: text))
+            if let position = snapshot.getTopLevelRawValue(forSummaryItem: .emotionalConnection), let score = snapshot.getTopLevelScoreValue(forSummaryItem: .emotionalConnection) {
+                let cellInfo = SliderCellInfo(details: SliderDetails(type: .standard, color: #colorLiteral(red: 0.8509803922, green: 0.3490196078, blue: 0.3490196078, alpha: 1)), title: SliderCellTitle(description: "Connection", hint: "Compared With World’s Most Beloved Politicians"), score: score, position: CGFloat(position))
+                sliderData.append(cellInfo)
             }
             
             // get feedback text
             feedback = snapshot.getTopLevelFeedback(forSummaryItem: .emotionalConnection)
+            
+            // setup transcript, callout and chart data
+            guard toneGraph.count > 0 else { return }
+            
+            var currentIndex = 0
+            var currentItem = toneGraph[currentIndex]
+           
+            // setup the transcript
+            guard let trans = snapshot.transcript, let master = snapshot.master else { return }
+
+            var position = 0
+            for (tIndex, phrase) in trans.enumerated() {
+                let isUser = phrase.person != snapshot.friend
+                let start = position
+                var current = start
+                position += phrase.words.numberOfWords
+                let phraseString: NSMutableAttributedString = NSMutableAttributedString()
+                let components: [String] = phrase.words.components(separatedBy: " ")
+
+                for word in components {
+                    
+                    // load chart data
+                    if isUser {
+                        let dataPoint = HIPoint()
+                        let posPoint = HIPoint()
+                        let negPoint = HIPoint()
+
+                        dataPoint.x = currentIndex as NSNumber
+                        posPoint.x = currentIndex as NSNumber
+                        negPoint.x = currentIndex as NSNumber
+
+                        dataPoint.y = currentItem.roll3 as NSNumber
+                        posPoint.y = currentItem.rollPos3 as NSNumber
+                        negPoint.y = currentItem.rollNeg3 as NSNumber
+
+                        chartData.append(dataPoint)
+                        posData?.append(posPoint)
+                        negData?.append(negPoint)
+
+                        calloutInfo.append(CalloutInfo(value: currentItem.word, transcriptIndex: tIndex))
+
+                        // update the current word
+                        currentIndex += 1
+                        if currentIndex < toneGraph.count { currentItem = toneGraph[currentIndex] }
+                    }
+                    
+                    // setup transcript
+                    let currentMaster = master[current]
+                    current += 1
+                    
+                    let attributes: [NSAttributedString.Key : Any]
+                    
+                    if currentMaster.positiveWord {
+                        attributes = [
+                            .foregroundColor : UIColor.white,
+                            .backgroundColor : #colorLiteral(red: 0, green: 0.7043033838, blue: 0.4950237274, alpha: 1)
+                        ]
+                    } else if currentMaster.negativeWord {
+                        attributes = [
+                            .foregroundColor : UIColor.white,
+                            .backgroundColor : #colorLiteral(red: 0.8509803922, green: 0.3490196078, blue: 0.3490196078, alpha: 1)
+                        ]
+                    } else {
+                        attributes = [.foregroundColor : UIColor.white]
+                    }
+                    
+                    let currentWord = NSAttributedString(string: word, attributes: attributes)
+                    phraseString.append(currentWord)
+                    if current != position { phraseString.append(NSAttributedString(string: " ")) }
+                }
+                
+                transcript.append(TranscriptCellInfo(withText: phraseString, isUser: isUser))
+            }
         }
         
         tableView.reloadData()
@@ -343,14 +489,16 @@ class DetailChartViewController: UIViewController {
         
         var lowerBoundValue: Double
         var upperBoundValue: Double
+        var upperBoundLabel: String = "\"Upper Bound\""
+        var lowerBoundLabel: String = "\"Lower Bound\""
         
         switch chartType! {
         case .ideaEngagement:
             colorArray = [
-                [NSNumber(value: 0), "rgb(242, 0, 0, 1)"],
-                [NSNumber(value: 0.2), "rgba(242, 0, 0, 0)"],
-                [NSNumber(value: 0.85), "rgba(128, 0, 0, 0)"],
-                [NSNumber(value: 1), "rgb(86, 0 , 0, 1)"]
+//                [NSNumber(value: 0), "rgb(242, 0, 0, 1)"],
+//                [NSNumber(value: 0.2), "rgba(242, 0, 0, 0)"],
+//                [NSNumber(value: 0.85), "rgba(128, 0, 0, 0)"],
+//                [NSNumber(value: 1), "rgb(86, 0 , 0, 1)"]
             ]
             
             yaxis.min = -1.0
@@ -359,6 +507,8 @@ class DetailChartViewController: UIViewController {
             
             lowerBoundValue = -0.5
             upperBoundValue = 0.5
+            upperBoundLabel = "\"Specific\""
+            lowerBoundLabel = "\"Vague\""
         case .conversation:
             colorArray = [
                 [NSNumber(value: 0), "rgb(242, 0, 0, 1)"],
@@ -372,12 +522,14 @@ class DetailChartViewController: UIViewController {
             
             lowerBoundValue = -0.7
             upperBoundValue = 0.7
+            upperBoundLabel = "\"Rambling\""
+            lowerBoundLabel = "\"Quiet\""
         case .connection:
             colorArray = [
-                [NSNumber(value: 0), "rgb(242, 0, 0, 1)"],
-                [NSNumber(value: 0.15), "rgba(242, 0, 0, 0)"],
-                [NSNumber(value: 0.85), "rgba(128, 0, 0, 0)"],
-                [NSNumber(value: 1), "rgb(86, 0 , 0, 1)"]
+//                [NSNumber(value: 0), "rgb(242, 0, 0, 1)"],
+//                [NSNumber(value: 0.15), "rgba(242, 0, 0, 0)"],
+//                [NSNumber(value: 0.85), "rgba(128, 0, 0, 0)"],
+//                [NSNumber(value: 1), "rgb(86, 0 , 0, 1)"]
             ]
             
             yaxis.min = -1.05
@@ -386,6 +538,8 @@ class DetailChartViewController: UIViewController {
             
             lowerBoundValue = -0.5
             upperBoundValue = 0.5
+            upperBoundLabel = "\"You\""
+            lowerBoundLabel = "\"Me\""
         case .emotions:
             colorArray = [
                 [NSNumber(value: 0.0), "rgb(0, 242, 0, 1)"],
@@ -397,8 +551,10 @@ class DetailChartViewController: UIViewController {
             yaxis.max = 0.4
             yaxis.tickInterval = 0.08
             
-            lowerBoundValue = 0.45
-            upperBoundValue = 0.8
+            lowerBoundValue = -0.3
+            upperBoundValue = 0.3
+            upperBoundLabel = "\"Good Things\""
+            lowerBoundLabel = "\"Bad Things\""
         }
         
         let options = HIOptions()
@@ -418,43 +574,50 @@ class DetailChartViewController: UIViewController {
         yaxis.labels.enabled = false
         yaxis.visible = true
         
-        if chartType != .emotions {
-            let upperBounds = HIPlotLines()
-            upperBounds.color = HIColor(hexValue: "e4e4e4")
-            upperBounds.width = 2
-            upperBounds.value = upperBoundValue as NSNumber
-            let upperlLabel = HILabel()
-            upperlLabel.text = "Upper Boundary"
-            upperlLabel.style = HICSSObject()
-            upperlLabel.style.color = "#e4e4e4"
-            upperBounds.label = upperlLabel
-            
-            let lowerBounds = HIPlotLines()
-            lowerBounds.color = HIColor(hexValue: "e4e4e4")
-            lowerBounds.width = 2
-            lowerBounds.value = lowerBoundValue as NSNumber
-            let lowerLabel = HILabel()
-            lowerLabel.text = "Lower Bondary"
-            lowerLabel.style = HICSSObject()
-            lowerLabel.style.color = "#e4e4e4"
-            lowerLabel.y = 12
-            lowerBounds.label = lowerLabel
-            
-            let centerLine = HIPlotLines()
-            centerLine.color = HIColor(hexValue: "e4e4e4")
-            centerLine.width = 2
-            centerLine.value = 0
-            
-            yaxis.plotLines = [upperBounds, centerLine, lowerBounds]
+        let boundColor: HIColor
+        let boundColorString: String
+        if #available(iOS 12.0, *) {
+            if traitCollection.userInterfaceStyle == .light {
+                boundColorString = "#797979"
+                boundColor = HIColor(uiColor: #colorLiteral(red: 0.4745098039, green: 0.4745098039, blue: 0.4745098039, alpha: 1))
+            } else {
+                boundColorString = "#e4e4e4"
+                boundColor = HIColor(uiColor: #colorLiteral(red: 0.8941176471, green: 0.8941176471, blue: 0.8941176471, alpha: 1))
+            }
         } else {
-            let centerLine = HIPlotLines()
-            centerLine.color = HIColor(hexValue: "e4e4e4")
-            centerLine.width = 2
-            centerLine.value = 0
-            yaxis.plotLines = [centerLine]
+            boundColorString = "#797979"
+            boundColor = HIColor(uiColor: #colorLiteral(red: 0.4745098039, green: 0.4745098039, blue: 0.4745098039, alpha: 1))
         }
         
+        let upperBounds = HIPlotLines()
+        upperBounds.color = boundColor
+        upperBounds.dashStyle = "Dash"
+        upperBounds.width = 2
+        upperBounds.value = upperBoundValue as NSNumber
+        let upperlLabel = HILabel()
+        upperlLabel.text = upperBoundLabel
+        upperlLabel.style = HICSSObject()
+        upperlLabel.style.color = boundColorString
+        upperBounds.label = upperlLabel
         
+        let lowerBounds = HIPlotLines()
+        lowerBounds.color = boundColor
+        lowerBounds.dashStyle = "Dash"
+        lowerBounds.width = 2
+        lowerBounds.value = lowerBoundValue as NSNumber
+        let lowerLabel = HILabel()
+        lowerLabel.text = lowerBoundLabel
+        lowerLabel.style = HICSSObject()
+        lowerLabel.style.color = boundColorString
+        lowerLabel.y = 12
+        lowerBounds.label = lowerLabel
+        
+        let centerLine = HIPlotLines()
+        centerLine.color = boundColor
+        centerLine.width = 2
+        centerLine.value = 0
+        
+        yaxis.plotLines = [upperBounds, centerLine, lowerBounds]
         
         let legend = HILegend()
         legend.enabled = false
@@ -482,89 +645,23 @@ class DetailChartViewController: UIViewController {
         area.data = chartData
         
         let events = HIEvents()
-        let clickClosure: HIClosure =  { (context: HIChartContext?) in
+        let clickClosure: HIClosure =  { [weak self] (context: HIChartContext?) in
+            guard let self = self else { return }
             let section = self.feedback == nil ? 2 : 3
             if let row = context?.getProperty("this.x") as? Int {
                 var shouldScroll = false
                 var indexPath: IndexPath = IndexPath(row: 0, section: 0)
-                switch self.chartType! {
-                case .emotions:
-                    let tone = self.snapshot.graphTone[row]
-                    print("~>Word is: \(tone.word)")
-                    var didFind = false
-                    for (index, tableItem) in self.snapshot.tableViewTone.enumerated() {
-                        if tableItem.word == tone.word && tone.roll3 == tableItem.roll3 && tone.rollNeg3 == tableItem.rollNeg3 && tone.rollPos3 == tableItem.rollPos3 {
-                            indexPath = IndexPath(row: index, section: section)
-                            didFind = true
-                            shouldScroll = true
-                            break
-                        }
-                    }
-                    
-                    if !didFind {
-                        // create our own annotation
-                        
-                        // remove any old annotations
-                        self.chartView.removeAnnotation(byId: "annotation")
-                        
-                        // create new one
-                        let annotations = HIAnnotations()
-                        annotations.labels = [HILabels]()
-                        let label = HILabels()
-                        label.align = "top"
-                        label.point = HIPoint()
-                        label.point.xAxis = 0
-                        label.point.yAxis = 0
-                        label.point.x = row as NSNumber
-                        
-                        if let yValue = context?.getProperty("this.y") as? NSNumber {
-                            label.point.y = yValue
-                        } else {
-                            label.point.y = tone.roll3 as NSNumber
-                        }
-                        
-                        label.text = tone.word
-                        annotations.labels.append(label)
-                        annotations.id = "annotation"
-                        
-                        self.chartView.addAnnotation(annotations, redraw: true)
-                        
-                        if self.timer.isValid { self.timer.invalidate() }
-                        
-                        self.timer = Timer.scheduledTimer(withTimeInterval: 2.5, repeats: false, block: { (_) in
-                            self.chartView.removeAnnotation(byId: "annotation")
-                        })
-                    }
-                case .conversation:
-                    guard let first = self.transcript.first, first.position != nil else { fallthrough }
-                    var currentPosition: Int = 0
-                    var previousIndex: Int = 0
-                    for (index, trans) in self.transcript.enumerated() {
-                        guard let position = trans.position else { continue }
-                        currentPosition = position
-                        if currentPosition == row {
-                            indexPath = IndexPath(row: index, section: section)
-                            shouldScroll = true
-                            break
-                        } else if row < currentPosition {
-                            indexPath = IndexPath(row: previousIndex, section: section)
-                            shouldScroll = true
-                            break
-                        }
-                        
-                        previousIndex = index
-                    }
-                    
-                default:
-                    indexPath = IndexPath(row: row, section: section)
-                    shouldScroll = true
-                }
+                
+                guard self.calloutInfo.count > row else { return }
+                let tRow = self.calloutInfo[row].transcriptIndex
+                self.calloutWord = self.calloutInfo[row].value
+                indexPath = IndexPath(row: tRow, section: section)
+                shouldScroll = true
                 
                 if shouldScroll {
                     self.tableView.selectRow(at: indexPath, animated: false, scrollPosition: .top)
                     self.tableView(self.tableView, didSelectRowAt: indexPath)
                 }
-                
                 
                 let point = self.chartView.options.series[0].data[row] as! HIPoint
                 point.select(false)
@@ -674,71 +771,22 @@ extension DetailChartViewController: UITableViewDelegate, UITableViewDataSource 
         }
     }
     
-    func tableView(_ tableView: UITableView, accessoryButtonTappedForRowWith indexPath: IndexPath) {
-        guard let _ = tableView.cellForRow(at: indexPath) as? AIFeedbackTableViewCell else { return }
-        infoButtonTapped()
-    }
-    
-    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        switch section {
-        case 0:
-            return "This Chart Shows You"
-        case 1:
-            return "Summary Statistics"
-        case 2:
-            return feedback == nil ? "Transcript" : "Feedback"
-        case 3:
-            return "Transcript"
-        default:
-            return ""
-        }
-    }
-    
-    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        let backgroundView: UITableViewHeaderFooterView
-        let header: UIView
-        if section == 0 {
-            backgroundView = UITableViewHeaderFooterView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: 24 + tableviewSpacing))
-            header = UIView(frame: CGRect(x: 0, y: tableviewSpacing, width: tableView.frame.width, height: 24 + tableviewSpacing))
-        } else {
-            backgroundView = UITableViewHeaderFooterView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: 24))
-            header = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: 24))
-        }
-        backgroundView.addSubview(header)
-        let label = UILabel(frame: .init(origin: CGPoint(x: 16, y: 6), size: CGSize(width: tableView.frame.width - 16, height: 12)))
-        label.textColor = #colorLiteral(red: 0.5465212464, green: 0.5098128915, blue: 0.9374247193, alpha: 1)
-        label.font = UIFont.systemFont(ofSize: 12, weight: .semibold)
-        label.text = self.tableView(tableView, titleForHeaderInSection: section)
-        header.addSubview(label)
-        if #available(iOS 13.0, *) {
-            header.backgroundColor = .systemBackground
-        } else {
-            header.backgroundColor = .white
-        }
-        
-        return backgroundView
-    }
-    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         switch indexPath.section {
         case 0:
             let cell = tableView.dequeueReusableCell(withIdentifier: CellID.chartTypeDetail, for: indexPath)
-            cell.textLabel?.text = chartShowsText
+            cell.detailTextLabel?.text = chartShowsText
             return cell
         case 1:
             // setup scalebar
             let cell = tableView.dequeueReusableCell(withIdentifier: CellID.scaleBar, for: indexPath) as! ScaleBarTableViewCell
             let info = sliderData[indexPath.row]
-            cell.lblDescription.text = info.title
+            cell.lblDescription.text = info.title.description
+            cell.lblHint.text = info.title.hint
             
             if !cell.sliderView.isSetup && viewHasAppeared {
-                if info.details.hasRed {
-                    cell.sliderView.setup(for: info.details.type, at: info.position, minBlue: info.details.minBlue, maxBlue: info.details.maxBlue, minRed: info.details.minRedValue, maxRed: info.details.maxRedValue)
-                } else {
-                    cell.sliderView.setup(for: info.details.type, at: info.position, minBlue: info.details.minBlue, maxBlue: info.details.maxBlue)
-                }
-                
+                cell.sliderView.setup(for: info.details.type, atPosition: info.position, barStart: info.details.startValue, end: info.details.endValue, color: info.details.color)
                 cell.sliderView.setNeedsLayout()
                 
                 UIView.animate(withDuration: 0.5) {
@@ -748,16 +796,16 @@ extension DetailChartViewController: UITableViewDelegate, UITableViewDataSource 
                 cell.sliderView.alpha = 0.0
             }
             
+            cell.lblScore.text = info.positionPercent
             
-            
-            switch info.details.valueType {
-            case .double:
-                cell.lblScore.text = "\(info.score)"
-            case .int:
-                cell.lblScore.text = "\(Int(info.score))"
-            case .percent:
-                cell.lblScore.text = info.percentString
+            // if this is the last cell, just return it
+            if indexPath.row == (sliderData.count - 1) {
+                cell.separatorView.isHidden = true
+            } else {
+                cell.separatorView.isHidden = false
             }
+            
+            
             return cell
         case 2:
             if feedback == nil { fallthrough }
@@ -765,32 +813,36 @@ extension DetailChartViewController: UITableViewDelegate, UITableViewDataSource 
             guard let feedback = self.feedback else { return cell }
             cell.feedbackText = feedback
             cell.recommendedTrainingText = feedbackTrainingText
-            
-            cell.accessoryType = .detailButton
             return cell
         default:
             // setup transcript
             let cell = tableView.dequeueReusableCell(withIdentifier: CellID.transcript, for: indexPath) as! TranscriptTableViewCell
             let info = transcript[indexPath.row]
-            cell.lblTranscriptText.text = info.text
+            cell.setup(with: info)
             return cell
         }
 
     }
     
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
-        let view = UIView(frame: CGRect(origin: .zero, size: CGSize(width: tableView.frame.width, height: 1)))
-        view.backgroundColor = .clear
+        let view = UIView(frame: CGRect(origin: .zero, size: CGSize(width: tableView.frame.width, height: 2)))
+        let color: UIColor
+        if #available(iOS 13.0, *) {
+            color = .systemBackground
+        } else {
+            color = .white
+        }
+        
+        view.backgroundColor = color
+        let barView = UIView(frame: CGRect(x: 16, y: 0, width: view.frame.width - 32, height: view.frame.height))
+        barView.backgroundColor = #colorLiteral(red: 0.7959883809, green: 0.7961289883, blue: 0.7959899306, alpha: 1)
+        barView.layer.cornerRadius = 1
+        view.addSubview(barView)
         return view
     }
     
     func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
         return tableviewSpacing
-    }
-    
-    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        if section == 0 { return 32 }
-        return 24
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -803,40 +855,28 @@ extension DetailChartViewController: UITableViewDelegate, UITableViewDataSource 
         if let _ = tableView.cellForRow(at: indexPath) as? TranscriptTableViewCell {
             // remove any old annotations
             chartView.removeAnnotation(byId: "annotation")
-            guard chartView.options.series[0].data.count > indexPath.row else { return }
             
             var item: HIPoint = HIPoint()
             var word: String = ""
             
-            if chartType! == .emotions {
-                // find the correct data point
-                let toneGraph = snapshot.graphTone
-                let rawItem = snapshot.tableViewTone[indexPath.row]
-                for (index, toneItem) in toneGraph.enumerated() {
-                    if toneItem.word == rawItem.word && toneItem.roll3 == rawItem.roll3
-                        && toneItem.rollNeg3 == rawItem.rollNeg3 && toneItem.rollPos3 == rawItem.rollPos3 {
-                        // item was found, link them and be done
-                        item = chartView.options.series[0].data[index] as! HIPoint
-                        word = toneItem.word
-                    }
-                }
-            } else if chartType! == .conversation, let first = transcript.first, first.position != nil {
-                let transcriptItem = transcript[indexPath.row]
-                guard let position = transcriptItem.position else { return }
-                if chartView.options.series[0].data.count < position && calloutData.count < position {
-                    if let itm = chartView.options.series[0].data.last as? HIPoint, let co = calloutData.last {
-                        item = itm
-                        word = co
-                    } else {
-                        return
-                    }
-                }
-                item = chartView.options.series[0].data[position] as! HIPoint
-                word = calloutData[position]
+            var idx: Int?
+            if let cWord = calloutWord {
+                idx = calloutInfo.firstIndex { $0.transcriptIndex == indexPath.row && $0.value == cWord }
+                calloutWord = nil
             } else {
-                item = chartView.options.series[0].data[indexPath.row] as! HIPoint
+                idx = calloutInfo.firstIndex { $0.transcriptIndex == indexPath.row }
             }
-
+            
+            if idx == nil {
+                let nIndex = calloutInfo.firstIndex { $0.transcriptIndex > indexPath.row }
+                if let nextIndex = nIndex { idx = nextIndex - 1 }
+            }
+            
+            guard let index = idx, index >= 0, chartData.count > index, calloutInfo.count > index else { return }
+            
+            item = chartData[index]
+            word = calloutInfo[index].value
+            
             let annotations = HIAnnotations()
             annotations.labels = [HILabels]()
             let label = HILabels()
@@ -849,7 +889,6 @@ extension DetailChartViewController: UITableViewDelegate, UITableViewDataSource 
             let offset = 0.075
             
             if let chart = chartView, let options = chart.options, let yaxisarray = options.yAxis, let yaxis = yaxisarray.first, let max = yaxis.max, let itemYValue = item.y, Double(truncating: itemYValue) > Double(truncating: max) - offset {
-                print("~>Making it smaller.")
                 label.point.y = NSNumber(value: Double(truncating: item.y) - offset)
             } else {
                 label.point.y = item.y
@@ -878,21 +917,24 @@ extension DetailChartViewController: UITableViewDelegate, UITableViewDataSource 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         switch indexPath.section {
         case 0:
-            return 24
+            return 50
         case 1:
-            return 64
+            return indexPath.row == sliderData.count - 1 ? 80 : 82
         case 2:
             guard let text = feedback else { fallthrough }
             let font = UIFont.systemFont(ofSize: 14)
-            let height = heightForView(text: text, font: font, width: tableView.frame.width - 40)
-            let difference = height
-            return 120 + difference
+            let width = tableView.frame.width - 16
+            let heightOne = heightForView(text: text, font: font, width: width)
+            let heightTwo = heightForView(text: feedbackTrainingText, font: font, width: width)
+            let height = heightOne + heightTwo
+            let difference = height - 34
+            return 100 + difference
         default:
             let font = UIFont.systemFont(ofSize: 14)
             guard transcript.count > indexPath.row else { return 64 }
             let text = transcript[indexPath.row].text
-            let height = heightForView(text: text, font: font, width: tableView.frame.width - 40)
-            let difference = height - 63.5
+            let height = heightForView(text: text.mutableString as String, font: font, width: tableView.frame.width - 16)
+            let difference = height - 17 + 16
             return difference > 0 ? 64 + difference : 64
         }
     }

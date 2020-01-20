@@ -148,7 +148,7 @@ class SnapshotSummaryTableViewCell: UITableViewCell {
         let heartAverage = (scorePersonal + scoreEmotional + scoreSmiling) / 3.0
         
         setup(chartView: mindChart, withScore: mindAverage, andColor: #colorLiteral(red: 0.4862745098, green: 0.7098039216, blue: 0.9254901961, alpha: 1))
-        setup(chartView: heartChart, withScore: heartAverage, andColor: #colorLiteral(red: 0.4941176471, green: 0, blue: 0, alpha: 1))
+        setup(chartView: heartChart, withScore: heartAverage, andColor: #colorLiteral(red: 0.8509803922, green: 0.3490196078, blue: 0.3490196078, alpha: 1))
     }
     
     private func setup(chartView: HIChartView, withScore score: Double, andColor color: UIColor) {
