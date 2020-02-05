@@ -11,6 +11,7 @@ import Speech
 
 protocol SpeechRecognitionDelegate {
     func speechRecognizerGotText(text: String)
+    func speechRecognizerFinished(successfully: Bool)
 }
 
 class SpeechRecognitionModel: NSObject {
@@ -112,12 +113,16 @@ class SpeechRecognitionModel: NSObject {
 
 extension SpeechRecognitionModel: SFSpeechRecognitionTaskDelegate {
     
-    func speechRecognitionDidDetectSpeech(_ task: SFSpeechRecognitionTask) {
-        print("~>Detected speech.")
-    }
+//    func speechRecognitionDidDetectSpeech(_ task: SFSpeechRecognitionTask) {
+//        print("~>Detected speech.")
+//    }
     
     func speechRecognitionTask(_ task: SFSpeechRecognitionTask, didHypothesizeTranscription transcription: SFTranscription) {
         delegate?.speechRecognizerGotText(text: transcription.formattedString)
+    }
+    
+    func speechRecognitionTask(_ task: SFSpeechRecognitionTask, didFinishSuccessfully successfully: Bool) {
+        delegate?.speechRecognizerFinished(successfully: successfully)
     }
     
 }

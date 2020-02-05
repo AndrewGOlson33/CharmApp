@@ -201,6 +201,7 @@ enum FirebaseStructure {
     
     enum Training {
         static let trainingDatabase = "trainingData"
+        static let conversationLevel = "conversationLevel"
         static let concreteHistory = "concreteAverage"
         static let emotionHistory = "emotionsAverage"
         static let unclassifiedNouns = "unclassifiedNouns"
@@ -209,6 +210,11 @@ enum FirebaseStructure {
             static let correctRecord = "correctRecord"
             static let numCorrect = "numCorrect"
             static let numQuestions = "numQuestions"
+        }
+        
+        enum Level {
+            static let experience = "experience"
+            static let lastTrainedDate = "lastTrainedDate"
         }
     }
     

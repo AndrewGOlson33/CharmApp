@@ -487,11 +487,13 @@ struct TrainingHistory: FirebaseItem {
     
     var id: String?
     var ref: DatabaseReference?
+    var conversationLevel: TrainingLevel
     var concreteAverage: TrainingStatistics
     var emotionsAverage: TrainingStatistics
     
     init() throws {
         guard let uid = FirebaseModel.shared.charmUser.id else { throw FirebaseItemError.invalidParameter }
+        conversationLevel = TrainingLevel()
         concreteAverage = TrainingStatistics()
         emotionsAverage = TrainingStatistics()
         
@@ -504,10 +506,19 @@ struct TrainingHistory: FirebaseItem {
         id = snapshot.key
         ref = snapshot.ref
         
+        let conversationSnap = snapshot.childSnapshot(forPath: FirebaseStructure.Training.conversationLevel)
         let concreteSnap = snapshot.childSnapshot(forPath: FirebaseStructure.Training.concreteHistory)
         let emotionsSnap = snapshot.childSnapshot(forPath: FirebaseStructure.Training.emotionHistory)
         
         var shouldSave: Bool = false
+        
+        if conversationSnap.exists() {
+            do {
+                conversationLevel = try TrainingLevel(snapshot: conversationSnap)
+            } catch {
+                conversationLevel = TrainingLevel()
+            }
+        } else { conversationLevel = TrainingLevel(); shouldSave = true }
         
         if concreteSnap.exists() {
             do {
@@ -532,11 +543,92 @@ struct TrainingHistory: FirebaseItem {
     
     func toAny() -> [AnyHashable : Any] {
         return [
+            FirebaseStructure.Training.conversationLevel : conversationLevel.toAny(),
             FirebaseStructure.Training.concreteHistory : concreteAverage.toAny(),
             FirebaseStructure.Training.emotionHistory : emotionsAverage.toAny()
         ]
     }
     
+}
+
+struct TrainingLevel: FirebaseItem {
+    var id: String?
+    var ref: DatabaseReference?
+    
+    var experience: Int {
+        didSet {
+            if experience >= nextLevelXP { currentLevel += 1 }
+            date = Date().timeIntervalSince1970
+            save()
+        }
+    }
+    
+    private var date: Double
+    
+    var lastTrained: Date {
+        return Date(timeIntervalSince1970: date)
+    }
+    
+    var currentLevel: Int = 1
+    var levelDetail: String {
+        switch currentLevel {
+        case 1...6:
+            return "Level \(currentLevel): Novice"
+        case 7...16:
+            return "Level \(currentLevel): Beginner"
+        case 17...22:
+            return "Level \(currentLevel): Advanced"
+        case 23...30:
+            return "Level \(currentLevel): Ninja"
+        default:
+            return "Level \(currentLevel): Ninja Master"
+        }
+    }
+    
+    
+    var nextLevelXP: Int {
+        return calculateExperience(forLevel: currentLevel)
+    }
+    
+    var progress: Double {
+        let thisLevel: Int = currentLevel == 1 ? 0 : calculateExperience(forLevel: currentLevel - 1)
+        let nextLevel: Int = calculateExperience(forLevel: currentLevel)
+        let difference: Double = Double(nextLevel - thisLevel)
+        let progress: Double = Double(experience - thisLevel)
+        
+        return progress / difference
+    }
+    
+    init(snapshot: DataSnapshot) throws {
+        guard let values = snapshot.value as? [String:Any] else { throw FirebaseItemError.invalidData }
+        id = snapshot.key
+        ref = snapshot.ref
+        
+        experience = values[FirebaseStructure.Training.Level.experience] as? Int ?? 0
+        date = values[FirebaseStructure.Training.Level.lastTrainedDate] as? Double ?? Date().timeIntervalSince1970
+    }
+    
+    init() {
+        experience = 0
+        date = Date().timeIntervalSince1970
+    }
+    
+    mutating func add(experience: Int) {
+        self.experience += experience
+    }
+    
+    fileprivate func calculateExperience(forLevel level: Int) -> Int {
+        let lvl = Double(level) + 0.75
+        return Int((log(lvl * lvl) * log(lvl * lvl)) * 25)
+    }
+    
+    func toAny() -> [AnyHashable : Any] {
+        return [
+            FirebaseStructure.Training.Level.experience : experience,
+            FirebaseStructure.Training.Level.lastTrainedDate : lastTrained.timeIntervalSince1970
+        ]
+    }
+
 }
 
 struct TrainingStatistics: FirebaseItem {

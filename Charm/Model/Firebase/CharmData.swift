@@ -560,6 +560,7 @@ struct SliderCellInfo {
     var title: SliderCellTitle
     var score: Double
     var position: CGFloat
+    let backgroundImage: UIImage
     
     private var formatter = NumberFormatter()
     
@@ -576,11 +577,12 @@ struct SliderCellInfo {
         return "\(value)%"
     }
     
-    init(details: SliderDetails, title: SliderCellTitle, score: Double, position: CGFloat) {
+    init(details: SliderDetails, title: SliderCellTitle, score: Double, position: CGFloat, backgroundImage: UIImage) {
         self.details = details
         self.title = title
         self.score = score
         self.position = position
+        self.backgroundImage = backgroundImage
         
         formatter.maximumSignificantDigits = 3
     }

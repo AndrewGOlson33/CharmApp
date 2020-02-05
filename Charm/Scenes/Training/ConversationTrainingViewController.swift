@@ -435,6 +435,10 @@ extension ConversationTrainingViewController: UITableViewDelegate, UITableViewDa
 
 extension ConversationTrainingViewController: SpeechRecognitionDelegate {
     
+    func speechRecognizerFinished(successfully: Bool) {
+        if !successfully { print("~>Not a success") }
+    }
+    
     func speechRecognizerGotText(text: String) {
         txtReply.textColor = .black
         txtReply.text = text

@@ -17,6 +17,7 @@ class ScaleBarTableViewCell: UITableViewCell {
     @IBOutlet weak var lblHint: UILabel!
     @IBOutlet weak var lblScore: UILabel!
     @IBOutlet weak var separatorView: UIView!
+    @IBOutlet weak var backgroundImageView: UIImageView!
     
     override func awakeFromNib() {
         super.awakeFromNib()

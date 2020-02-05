@@ -92,7 +92,6 @@ class DetailChartViewController: UIViewController {
             self.chartDidLoad = true
             self.tableView.reloadData()
         }
-
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -154,13 +153,13 @@ class DetailChartViewController: UIViewController {
             
             // setup slider bar data
             if let position = snapshot.getTopLevelRawValue(forSummaryItem: .concrete), let score = snapshot.getTopLevelRankValue(forSummaryItem: .concrete) {
-                let cellInfo = SliderCellInfo(details: SliderDetails(type: .fixed, valueType: .percent, start: 0.55, end: 0.75, color: #colorLiteral(red: 0.4862745098, green: 0.7098039216, blue: 0.9254901961, alpha: 1)), title: SliderCellTitle(description: "How Clearly You Are Understood", hint: "Recommended Range: 55% to 75%"), score: score, position: CGFloat(position))
+                let cellInfo = SliderCellInfo(details: SliderDetails(type: .fixed, valueType: .percent, start: 0.55, end: 0.75, color: #colorLiteral(red: 0.4862745098, green: 0.7098039216, blue: 0.9254901961, alpha: 1)), title: SliderCellTitle(description: "How Clearly You Are Understood", hint: "Recommended Range: 55% to 75%"), score: score, position: CGFloat(position), backgroundImage: UIImage(named: "detail_concrete")!)
                     
                 sliderData.append(cellInfo)
             }
             
             if let position = snapshot.getTopLevelRawValue(forSummaryItem: .ideaEngagement), let score = snapshot.getTopLevelScoreValue(forSummaryItem: .ideaEngagement) {
-                let cellInfo = SliderCellInfo(details: SliderDetails(type: .standard, color: #colorLiteral(red: 0.4862745098, green: 0.7098039216, blue: 0.9254901961, alpha: 1)), title: SliderCellTitle(description: "Engagement", hint: "Compared With the World’s Most Beloved Comedians"), score: score, position: CGFloat(position))
+                let cellInfo = SliderCellInfo(details: SliderDetails(type: .standard, color: #colorLiteral(red: 0.4862745098, green: 0.7098039216, blue: 0.9254901961, alpha: 1)), title: SliderCellTitle(description: "Engagement", hint: "Compared With the World’s Most Beloved Comedians"), score: score, position: CGFloat(position), backgroundImage: UIImage(named: "detail_word_clarity")!)
                 
                 sliderData.append(cellInfo)
             }
@@ -205,12 +204,12 @@ class DetailChartViewController: UIViewController {
                     let currentMaster = master[current]
                     current += 1
                     let attributes: [NSAttributedString.Key : Any]
-                    if currentMaster.concrete {
+                    if currentMaster.concrete && isUser {
                         attributes = [
                             .foregroundColor : UIColor.white,
                             .backgroundColor : #colorLiteral(red: 0.6784313725, green: 0.5803921569, blue: 0, alpha: 1)
                         ]
-                    } else if currentMaster.abstract {
+                    } else if currentMaster.abstract && isUser {
                         attributes = [
                             .foregroundColor : UIColor.white,
                             .backgroundColor : #colorLiteral(red: 0.6000000238, green: 0.6000000238, blue: 0.6000000238, alpha: 1)
@@ -233,12 +232,12 @@ class DetailChartViewController: UIViewController {
             
             // setup slider bar data
             if let position = snapshot.getTopLevelRawValue(forSummaryItem: .talkingPercentage), let score = snapshot.getTopLevelRankValue(forSummaryItem: .talkingPercentage) {
-                let cellInfo = SliderCellInfo(details: SliderDetails(type: .fixed, valueType: .percent, start: 0.42, end: 58, color: #colorLiteral(red: 0.4862745098, green: 0.7098039216, blue: 0.9254901961, alpha: 1)), title: SliderCellTitle(description: "How Much You Spoke", hint: "Recommended Range: 42% to 58%"), score: score, position: CGFloat(position))
+                let cellInfo = SliderCellInfo(details: SliderDetails(type: .fixed, valueType: .percent, start: 0.42, end: 58, color: #colorLiteral(red: 0.4862745098, green: 0.7098039216, blue: 0.9254901961, alpha: 1)), title: SliderCellTitle(description: "How Much You Spoke", hint: "Recommended Range: 42% to 58%"), score: score, position: CGFloat(position), backgroundImage: UIImage(named: "detail_talking_percentage")!)
                 sliderData.append(cellInfo)
             }
             
             if let position = snapshot.getTopLevelRawValue(forSummaryItem: .conversationEngagement), let score = snapshot.getTopLevelScoreValue(forSummaryItem: .conversationEngagement) {
-                let cellInfo = SliderCellInfo(details: SliderDetails(type: .standard, color: #colorLiteral(red: 0.4862745098, green: 0.7098039216, blue: 0.9254901961, alpha: 1)), title: SliderCellTitle(description: "Engagement", hint: "Compared With World's Most Beloved Television Shows"), score: score, position: CGFloat(position))
+                let cellInfo = SliderCellInfo(details: SliderDetails(type: .standard, color: #colorLiteral(red: 0.4862745098, green: 0.7098039216, blue: 0.9254901961, alpha: 1)), title: SliderCellTitle(description: "Engagement", hint: "Compared With World's Most Beloved Television Shows"), score: score, position: CGFloat(position), backgroundImage: UIImage(named: "detail_conversation_flow")!)
                 sliderData.append(cellInfo)
             }
             
@@ -296,12 +295,12 @@ class DetailChartViewController: UIViewController {
         case .connection:
             // setup slider bar data
             if let position = snapshot.getTopLevelRawValue(forSummaryItem: .firstPerson), let score = snapshot.getTopLevelRankValue(forSummaryItem: .firstPerson) {
-                let cellInfo = SliderCellInfo(details: SliderDetails(type: .fixed, valueType: .percent, start: 0.41, end: 0.59, color: #colorLiteral(red: 0.4862745098, green: 0.7098039216, blue: 0.9254901961, alpha: 1)), title: SliderCellTitle(description: "Who You Focused the Conversation On", hint: "Recommended Range: 41% to 59%"), score: score, position: CGFloat(position))
+                let cellInfo = SliderCellInfo(details: SliderDetails(type: .fixed, valueType: .percent, start: 0.41, end: 0.59, color: #colorLiteral(red: 0.4862745098, green: 0.7098039216, blue: 0.9254901961, alpha: 1)), title: SliderCellTitle(description: "Who You Focused the Conversation On", hint: "Recommended Range: 41% to 59%"), score: score, position: CGFloat(position), backgroundImage: UIImage(named: "detail_first_percentage")!)
                 sliderData.append(cellInfo)
             }
             
             if let position = snapshot.getTopLevelRawValue(forSummaryItem: .personalConnection), let score = snapshot.getTopLevelScoreValue(forSummaryItem: .personalConnection) {
-                let cellInfo = SliderCellInfo(details: SliderDetails(type: .standard, color: #colorLiteral(red: 0.8509803922, green: 0.3490196078, blue: 0.3490196078, alpha: 1)), title: SliderCellTitle(description: "Connection", hint: "Compared With World’s Most Beloved Movie Scenes"), score: score, position: CGFloat(position))
+                let cellInfo = SliderCellInfo(details: SliderDetails(type: .standard, color: #colorLiteral(red: 0.8509803922, green: 0.3490196078, blue: 0.3490196078, alpha: 1)), title: SliderCellTitle(description: "Connection", hint: "Compared With World’s Most Beloved Movie Scenes"), score: score, position: CGFloat(position), backgroundImage: UIImage(named: "detail_personal_bond")!)
                 sliderData.append(cellInfo)
             }
             
@@ -348,12 +347,12 @@ class DetailChartViewController: UIViewController {
                     current += 1
                     let attributes: [NSAttributedString.Key : Any]
                     
-                    if currentMaster.firstPerson {
+                    if currentMaster.firstPerson && isUser {
                         attributes = [
                             .foregroundColor : UIColor.white,
                             .backgroundColor : #colorLiteral(red: 0.1490196078, green: 0.5254901961, blue: 0.4862745098, alpha: 1)
                         ]
-                    } else if currentMaster.secondPerson {
+                    } else if currentMaster.secondPerson && isUser {
                         attributes = [
                             .foregroundColor : UIColor.white,
                             .backgroundColor : #colorLiteral(red: 0.4756349325, green: 0.4756467342, blue: 0.4756404161, alpha: 1)
@@ -378,17 +377,17 @@ class DetailChartViewController: UIViewController {
             
             // setup scale bar data
             if let position = snapshot.getTopLevelRawValue(forSummaryItem: .positiveWords), let score = snapshot.getTopLevelRankValue(forSummaryItem: .positiveWords) {
-                let cellInfo = SliderCellInfo(details: SliderDetails(type: .fixed, valueType: .percent, start: 0.60, end: 1.0, color: #colorLiteral(red: 0.4862745098, green: 0.7098039216, blue: 0.9254901961, alpha: 1)), title: SliderCellTitle(description: "Positivity", hint: "Recommended Range: Greater Than 60%"), score: score, position: CGFloat(position))
+                let cellInfo = SliderCellInfo(details: SliderDetails(type: .fixed, valueType: .percent, start: 0.60, end: 1.0, color: #colorLiteral(red: 0.4862745098, green: 0.7098039216, blue: 0.9254901961, alpha: 1)), title: SliderCellTitle(description: "Positivity", hint: "Recommended Range: Greater Than 60%"), score: score, position: CGFloat(position), backgroundImage: UIImage(named: "detail_positive")!)
                 sliderData.append(cellInfo)
             }
             
             if let position = snapshot.getTopLevelRawValue(forSummaryItem: .negativeWords), let score = snapshot.getTopLevelRankValue(forSummaryItem: .negativeWords) {
-                let cellInfo = SliderCellInfo(details: SliderDetails(type: .fixed, valueType: .percent, start: 0.9, end: 1.0, color: #colorLiteral(red: 0.8509803922, green: 0.3490196078, blue: 0.3490196078, alpha: 1)), title: SliderCellTitle(description: "Negativity", hint: "Recommended Range: Balance Out Positivity"), score: score, position: CGFloat(position))
+                let cellInfo = SliderCellInfo(details: SliderDetails(type: .fixed, valueType: .percent, start: 0.9, end: 1.0, color: #colorLiteral(red: 0.8509803922, green: 0.3490196078, blue: 0.3490196078, alpha: 1)), title: SliderCellTitle(description: "Negativity", hint: "Recommended Range: Balance Out Positivity"), score: score, position: CGFloat(position), backgroundImage: UIImage(named: "detail_negative")!)
                 sliderData.append(cellInfo)
             }
             
             if let position = snapshot.getTopLevelRawValue(forSummaryItem: .emotionalConnection), let score = snapshot.getTopLevelScoreValue(forSummaryItem: .emotionalConnection) {
-                let cellInfo = SliderCellInfo(details: SliderDetails(type: .standard, color: #colorLiteral(red: 0.8509803922, green: 0.3490196078, blue: 0.3490196078, alpha: 1)), title: SliderCellTitle(description: "Connection", hint: "Compared With World’s Most Beloved Politicians"), score: score, position: CGFloat(position))
+                let cellInfo = SliderCellInfo(details: SliderDetails(type: .standard, color: #colorLiteral(red: 0.8509803922, green: 0.3490196078, blue: 0.3490196078, alpha: 1)), title: SliderCellTitle(description: "Connection", hint: "Compared With World’s Most Beloved Politicians"), score: score, position: CGFloat(position), backgroundImage: UIImage(named: "detail_emotional_journey")!)
                 sliderData.append(cellInfo)
             }
             
@@ -446,12 +445,12 @@ class DetailChartViewController: UIViewController {
                     
                     let attributes: [NSAttributedString.Key : Any]
                     
-                    if currentMaster.positiveWord {
+                    if currentMaster.positiveWord && isUser {
                         attributes = [
                             .foregroundColor : UIColor.white,
                             .backgroundColor : #colorLiteral(red: 0, green: 0.7043033838, blue: 0.4950237274, alpha: 1)
                         ]
-                    } else if currentMaster.negativeWord {
+                    } else if currentMaster.negativeWord && isUser {
                         attributes = [
                             .foregroundColor : UIColor.white,
                             .backgroundColor : #colorLiteral(red: 0.8509803922, green: 0.3490196078, blue: 0.3490196078, alpha: 1)
@@ -754,18 +753,26 @@ class DetailChartViewController: UIViewController {
 extension DetailChartViewController: UITableViewDelegate, UITableViewDataSource {
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return feedback == nil ? 3 : 4
+        return 2
+//        return feedback == nil ? 3 : 4
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+//        switch section {
+//        case 0:
+//            return 1
+//        case 1:
+//            return sliderData.count
+//        case 2:
+//            if feedback == nil { fallthrough }
+//            return 1
+//        default:
+//            return transcript.count
+//        }
+        
         switch section {
         case 0:
-            return 1
-        case 1:
             return sliderData.count
-        case 2:
-            if feedback == nil { fallthrough }
-            return 1
         default:
             return transcript.count
         }
@@ -775,10 +782,6 @@ extension DetailChartViewController: UITableViewDelegate, UITableViewDataSource 
         
         switch indexPath.section {
         case 0:
-            let cell = tableView.dequeueReusableCell(withIdentifier: CellID.chartTypeDetail, for: indexPath)
-            cell.detailTextLabel?.text = chartShowsText
-            return cell
-        case 1:
             // setup scalebar
             let cell = tableView.dequeueReusableCell(withIdentifier: CellID.scaleBar, for: indexPath) as! ScaleBarTableViewCell
             let info = sliderData[indexPath.row]
@@ -787,6 +790,7 @@ extension DetailChartViewController: UITableViewDelegate, UITableViewDataSource 
             
             if !cell.sliderView.isSetup && viewHasAppeared {
                 cell.sliderView.setup(for: info.details.type, atPosition: info.position, barStart: info.details.startValue, end: info.details.endValue, color: info.details.color)
+        
                 cell.sliderView.setNeedsLayout()
                 
                 UIView.animate(withDuration: 0.5) {
@@ -796,7 +800,17 @@ extension DetailChartViewController: UITableViewDelegate, UITableViewDataSource 
                 cell.sliderView.alpha = 0.0
             }
             
+            // setup score label
             cell.lblScore.text = info.positionPercent
+            
+            // setup background image
+            cell.backgroundImageView?.image = info.backgroundImage.withRenderingMode(.alwaysTemplate)
+            
+            if #available(iOS 13.0, *) {
+                cell.backgroundImageView?.tintColor = .label
+            } else {
+                cell.backgroundImageView?.tintColor = .black
+            }
             
             // if this is the last cell, just return it
             if indexPath.row == (sliderData.count - 1) {
@@ -805,14 +819,6 @@ extension DetailChartViewController: UITableViewDelegate, UITableViewDataSource 
                 cell.separatorView.isHidden = false
             }
             
-            
-            return cell
-        case 2:
-            if feedback == nil { fallthrough }
-            let cell = tableView.dequeueReusableCell(withIdentifier: CellID.aiFeedbback, for: indexPath) as! AIFeedbackTableViewCell
-            guard let feedback = self.feedback else { return cell }
-            cell.feedbackText = feedback
-            cell.recommendedTrainingText = feedbackTrainingText
             return cell
         default:
             // setup transcript
@@ -821,6 +827,55 @@ extension DetailChartViewController: UITableViewDelegate, UITableViewDataSource 
             cell.setup(with: info)
             return cell
         }
+        
+//        switch indexPath.section {
+//        case 0:
+//            let cell = tableView.dequeueReusableCell(withIdentifier: CellID.chartTypeDetail, for: indexPath)
+//            cell.detailTextLabel?.text = chartShowsText
+//            return cell
+//        case 1:
+//            // setup scalebar
+//            let cell = tableView.dequeueReusableCell(withIdentifier: CellID.scaleBar, for: indexPath) as! ScaleBarTableViewCell
+//            let info = sliderData[indexPath.row]
+//            cell.lblDescription.text = info.title.description
+//            cell.lblHint.text = info.title.hint
+//
+//            if !cell.sliderView.isSetup && viewHasAppeared {
+//                cell.sliderView.setup(for: info.details.type, atPosition: info.position, barStart: info.details.startValue, end: info.details.endValue, color: info.details.color)
+//                cell.sliderView.setNeedsLayout()
+//
+//                UIView.animate(withDuration: 0.5) {
+//                    cell.sliderView.alpha = 1.0
+//                }
+//            } else if !viewHasAppeared {
+//                cell.sliderView.alpha = 0.0
+//            }
+//
+//            cell.lblScore.text = info.positionPercent
+//
+//            // if this is the last cell, just return it
+//            if indexPath.row == (sliderData.count - 1) {
+//                cell.separatorView.isHidden = true
+//            } else {
+//                cell.separatorView.isHidden = false
+//            }
+//
+//
+//            return cell
+//        case 2:
+//            if feedback == nil { fallthrough }
+//            let cell = tableView.dequeueReusableCell(withIdentifier: CellID.aiFeedbback, for: indexPath) as! AIFeedbackTableViewCell
+//            guard let feedback = self.feedback else { return cell }
+//            cell.feedbackText = feedback
+//            cell.recommendedTrainingText = feedbackTrainingText
+//            return cell
+//        default:
+//            // setup transcript
+//            let cell = tableView.dequeueReusableCell(withIdentifier: CellID.transcript, for: indexPath) as! TranscriptTableViewCell
+//            let info = transcript[indexPath.row]
+//            cell.setup(with: info)
+//            return cell
+//        }
 
     }
     
@@ -917,26 +972,38 @@ extension DetailChartViewController: UITableViewDelegate, UITableViewDataSource 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         switch indexPath.section {
         case 0:
-            return 50
-        case 1:
             return indexPath.row == sliderData.count - 1 ? 80 : 82
-        case 2:
-            guard let text = feedback else { fallthrough }
-            let font = UIFont.systemFont(ofSize: 14)
-            let width = tableView.frame.width - 16
-            let heightOne = heightForView(text: text, font: font, width: width)
-            let heightTwo = heightForView(text: feedbackTrainingText, font: font, width: width)
-            let height = heightOne + heightTwo
-            let difference = height - 34
-            return 100 + difference
         default:
             let font = UIFont.systemFont(ofSize: 14)
             guard transcript.count > indexPath.row else { return 64 }
             let text = transcript[indexPath.row].text
-            let height = heightForView(text: text.mutableString as String, font: font, width: tableView.frame.width - 16)
-            let difference = height - 17 + 16
+            let height = heightForView(text: text.mutableString as String, font: font, width: tableView.frame.width * 0.75)
+            let difference = height - 17
             return difference > 0 ? 64 + difference : 64
         }
+        
+//        switch indexPath.section {
+//        case 0:
+//            return 50
+//        case 1:
+//            return indexPath.row == sliderData.count - 1 ? 80 : 82
+//        case 2:
+//            guard let text = feedback else { fallthrough }
+//            let font = UIFont.systemFont(ofSize: 14)
+//            let width = tableView.frame.width - 16
+//            let heightOne = heightForView(text: text, font: font, width: width)
+//            let heightTwo = heightForView(text: feedbackTrainingText, font: font, width: width)
+//            let height = heightOne + heightTwo
+//            let difference = height - 34
+//            return 100 + difference
+//        default:
+//            let font = UIFont.systemFont(ofSize: 14)
+//            guard transcript.count > indexPath.row else { return 64 }
+//            let text = transcript[indexPath.row].text
+//            let height = heightForView(text: text.mutableString as String, font: font, width: tableView.frame.width - 16)
+//            let difference = height - 17 + 16
+//            return difference > 0 ? 64 + difference : 64
+//        }
     }
     
     func heightForView(text:String, font:UIFont, width:CGFloat) -> CGFloat{

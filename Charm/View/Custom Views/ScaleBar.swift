@@ -169,6 +169,7 @@ class SliderView: UIView {
     // MARK: - Functions to update and animate view
     
     func updatePosition(to: CGFloat) {
+        guard positionView != nil else { return }
         position = to
         let moveToX = (position * frame.width) - (positionView.frame.width / 2)
         

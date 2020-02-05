@@ -52,6 +52,10 @@ class ReviewSummaryViewController: UIViewController {
     // buttons
     @IBOutlet weak var btnHistory: UIButton!
     
+    // image views
+    
+    @IBOutlet weak var imgHeart: UIImageView!
+    @IBOutlet weak var imgMind: UIImageView!
     
     // MARK: - Properties
     
@@ -77,6 +81,18 @@ class ReviewSummaryViewController: UIViewController {
         viewLoading.layer.shadowRadius = 8
         viewLoading.layer.shadowOpacity = 0.6
         viewLoading.layer.shadowOffset = CGSize(width: 2, height: 2)
+        
+        // set image tint
+        imgHeart.image = imgHeart.image?.withRenderingMode(.alwaysTemplate)
+        imgMind.image = imgMind.image?.withRenderingMode(.alwaysTemplate)
+        if #available(iOS 13.0, *) {
+            imgMind.tintColor = .label
+            imgHeart.tintColor = .label
+        } else {
+            imgMind.tintColor = .black
+            imgHeart.tintColor = .black
+        }
+
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -130,6 +146,18 @@ class ReviewSummaryViewController: UIViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         removeSnapshotObserver()
+    }
+    
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        if #available(iOS 12.0, *) {
+            if traitCollection.userInterfaceStyle == .dark {
+                mindChart.options.yAxis.first?.title.style.color = "#FFFFFF"
+                heartChart.options.yAxis.first?.title.style.color = "#FFFFFF"
+            } else {
+                mindChart.options.yAxis.first?.title.style.color = "#000000"
+                heartChart.options.yAxis.first?.title.style.color = "#000000"
+            }
+        }
     }
     
     // MARK: - Private Helper Functions
@@ -240,30 +268,28 @@ class ReviewSummaryViewController: UIViewController {
     
     private func loadScoreData() {
         // get values for line chart
-        let ideaEngagement = snapshot.getTopLevelScoreValue(forSummaryItem: .ideaEngagement) ?? 0
-        let conversationEngagement = snapshot.getTopLevelScoreValue(forSummaryItem: .conversationEngagement) ?? 0
-        let personalConnection = snapshot.getTopLevelScoreValue(forSummaryItem: .personalConnection) ?? 0
-        let emotionalConnection = snapshot.getTopLevelScoreValue(forSummaryItem: .emotionalConnection) ?? 0
-        let smiling = snapshot.getTopLevelScoreValue(forSummaryItem: .smilingPercentage) ?? 0
         
-        // get scores for cell info
-        let ideaPercent = snapshot.getTopLevelRawValue(forSummaryItem: .ideaEngagement) ?? 0
-        let conversationPercent = snapshot.getTopLevelRawValue(forSummaryItem: .conversationEngagement) ?? 0
-        let personalConnectionPercent = snapshot.getTopLevelRawValue(forSummaryItem: .personalConnection) ?? 0
-        let emotionalConnectionPercent = snapshot.getTopLevelRawValue(forSummaryItem: .emotionalConnection) ?? 0
-        let smilingPercent = snapshot.getTopLevelRawValue(forSummaryItem: .smilingPercentage) ?? 0
-
+        let ideaEngagement = getSummaryValues(from: snapshot.getTopLevelScoreValue(forSummaryItem: .ideaEngagement) ?? 0)
+        let conversationEngagement = getSummaryValues(from: snapshot.getTopLevelScoreValue(forSummaryItem: .conversationEngagement) ?? 0)
+        let personalConnection = getSummaryValues(from: snapshot.getTopLevelScoreValue(forSummaryItem: .personalConnection) ?? 0)
+        let emotionalConnection = getSummaryValues(from: snapshot.getTopLevelScoreValue(forSummaryItem: .emotionalConnection) ?? 0)
+        let smiling = getSummaryValues(from: snapshot.getTopLevelScoreValue(forSummaryItem: .smilingPercentage) ?? 0)
+        
         // setup cell info array
-        cellInfo.append(SummaryCellInfo(title: "Idea Clarity", score: ideaPercent, percent: ideaPercent))
-        cellInfo.append(SummaryCellInfo(title: "Conversation Flow", score: conversationPercent, percent: conversationPercent))
-        cellInfo.append(SummaryCellInfo(title: "Personal Bond", score: personalConnectionPercent, percent: personalConnectionPercent))
-        cellInfo.append(SummaryCellInfo(title: "Emotional Journey", score: emotionalConnectionPercent, percent: emotionalConnectionPercent))
-        cellInfo.append(SummaryCellInfo(title: "Smiling", score: smilingPercent, percent: smilingPercent))
+        cellInfo.append(SummaryCellInfo(title: "Idea Clarity", score: ideaEngagement.score, percent: ideaEngagement.percent))
+        cellInfo.append(SummaryCellInfo(title: "Conversation Flow", score: conversationEngagement.score, percent: conversationEngagement.percent))
+        cellInfo.append(SummaryCellInfo(title: "Personal Bond", score: personalConnection.score, percent: personalConnection.percent))
+        cellInfo.append(SummaryCellInfo(title: "Emotional Journey", score: emotionalConnection.score, percent: emotionalConnection.percent))
+        cellInfo.append(SummaryCellInfo(title: "Smiling", score: smiling.score, percent: smiling.percent))
         
         // load averages
-        mindAverage = (ideaEngagement + conversationEngagement + max(ideaEngagement, conversationEngagement)) / 3.0
-        let heartMax = max(personalConnection, emotionalConnection, smiling) * 2
-        heartAverage = (personalConnection + emotionalConnection + smiling + heartMax) / 5.0
+        mindAverage = (ideaEngagement.rawValue + conversationEngagement.rawValue + max(ideaEngagement.rawValue, conversationEngagement.rawValue)) / 3.0
+        let heartMax = max(personalConnection.rawValue, emotionalConnection.rawValue, smiling.rawValue) * 2
+        heartAverage = (personalConnection.rawValue + emotionalConnection.rawValue + smiling.rawValue + heartMax) / 5.0
+    }
+    
+    fileprivate func getSummaryValues(from value: Double) -> (score: Double, percent: Double, rawValue: Double) {
+        return (score: value / 10, percent: value / 10, rawValue: value)
     }
     
     private func setupScoreUI() {
@@ -333,7 +359,7 @@ class ReviewSummaryViewController: UIViewController {
         // pane background
         let paneBackground = HIBackground()
         paneBackground.outerRadius = "118%"
-        paneBackground.innerRadius = "70%"
+        paneBackground.innerRadius = "88%"
         paneBackground.borderWidth = 0
         let bgColor = color.withAlphaComponent(0.35)
         let backgroundColor = HIColor(uiColor: bgColor)
@@ -349,13 +375,22 @@ class ReviewSummaryViewController: UIViewController {
         
         let yAxis = HIYAxis()
         let yTitle = HITitle()
-        yTitle.text = "<center><p><strong style=\"font-size:160%;\">\(Int(percent))</strong><br><small>Percent</small></p></center>"
+        yTitle.text = "<center><p><strong style=\"font-size:300%;\">\(Int(percent))</strong><br><small>PERCENT</small></p></center>"
         yTitle.useHTML = true
-//        yTitle.style = HICSSObject()
-//        yTitle.style.fontWeight = "bold"
-//        let fontSize = String(Int(chartView.frame.width / 4))
-//        yTitle.style.fontSize = fontSize
-        let center = 0 //chartView.bounds.height / 8
+        yTitle.style = HICSSObject()
+        yTitle.style.fontFamily = "Helvetica; sans-serif"
+        
+        if #available(iOS 12.0, *) {
+            if traitCollection.userInterfaceStyle == .dark {
+                yTitle.style.color = "#FFFFFF"
+            } else {
+                yTitle.style.color = "#000000"
+            }
+        } else {
+            yTitle.style.color = "#000000"
+        }
+
+        let center = -(chartView.bounds.height / 16)
         yTitle.y = center as NSNumber
         yAxis.min = 0
         yAxis.max = 100
@@ -380,7 +415,7 @@ class ReviewSummaryViewController: UIViewController {
         let data = HIData()
         data.color = HIColor(uiColor: color)
         data.radius = "118%"
-        data.innerRadius = "70%"
+        data.innerRadius = "88%"
         data.y = percent as NSNumber
         gage.data = [data]
         
@@ -453,22 +488,5 @@ class ReviewSummaryViewController: UIViewController {
     
     @IBAction func showHistoryProgress(_ sender: Any) {
         performSegue(withIdentifier: SegueID.snapshotsList, sender: self)
-    }
-}
-
-// MARK: - Extension to double to enable squaring
-
-extension Double {
-    
-    func value() -> Double {
-        return pow(2.71828, self)
-    }
-    
-}
-
-extension Int {
-    func value() -> Int {
-        let value = pow(2.71828, Double(self))
-        return Int(value.rounded())
     }
 }

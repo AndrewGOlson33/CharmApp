@@ -36,6 +36,10 @@ struct TrainingData: FirebaseItem {
     var conversationPrompts: [ConversationPrompt] = []
     var unclassifiedNouns: [String]? = []
     
+    // conversation phrases
+    var conversationPhrases: ConversationPhrases?
+    var phrasesLoaded: Bool = false
+    
     init(snapshot: DataSnapshot) throws {
         guard snapshot.exists() else { throw FirebaseItemError.noSnapshot }
         id = snapshot.key
@@ -59,26 +63,26 @@ struct TrainingData: FirebaseItem {
             neutralWords.append(try NounFlashcard(snapshot: snapshot))
         }
         
-        let concreteFlashSnap = snapshot.childSnapshot(forPath: "concreteNounFlashcards")
-        for child in concreteFlashSnap.children {
-            guard let snapshot = child as? DataSnapshot else { continue }
-            concreteNounFlashcards.append(try NounFlashcard(snapshot: snapshot))
-        }
+//        let concreteFlashSnap = snapshot.childSnapshot(forPath: "concreteNounFlashcards")
+//        for child in concreteFlashSnap.children {
+//            guard let snapshot = child as? DataSnapshot else { continue }
+//            concreteNounFlashcards.append(try NounFlashcard(snapshot: snapshot))
+//        }
+//
+//        let abstractFlashSnap = snapshot.childSnapshot(forPath: "abstractNounConcreteFlashcards")
+//        for child in abstractFlashSnap.children {
+//            guard let snapshot = child as? DataSnapshot else { continue }
+//            abstractNounFlashcards.append(try NounFlashcard(snapshot: snapshot))
+//        }
         
-        let abstractFlashSnap = snapshot.childSnapshot(forPath: "abstractNounConcreteFlashcards")
-        for child in abstractFlashSnap.children {
-            guard let snapshot = child as? DataSnapshot else { continue }
-            abstractNounFlashcards.append(try NounFlashcard(snapshot: snapshot))
-        }
-        
-        if let firstPersonValues = snapshot.childSnapshot(forPath: "firstPerson").value as? [String:String] {
-            for word in firstPersonValues.values {
+        if let firstPersonValues = snapshot.childSnapshot(forPath: "firstPerson").value as? [String] {
+            for word in firstPersonValues {
                 firstPerson.append(word)
             }
         }
         
-        if let secondPersonValues = snapshot.childSnapshot(forPath: "secondPerson").value as? [String:String] {
-            for word in secondPersonValues.values {
+        if let secondPersonValues = snapshot.childSnapshot(forPath: "secondPerson").value as? [String] {
+            for word in secondPersonValues {
                 secondPerson.append(word)
             }
         }
@@ -95,10 +99,20 @@ struct TrainingData: FirebaseItem {
             negativeWords.append(try ScoredWord(snapshot: snapshot))
         }
         
-        let promptSnap = snapshot.childSnapshot(forPath: "conversationPrompts")
-        for child in promptSnap.children {
-            guard let snapshot = child as? DataSnapshot else { continue }
-            conversationPrompts.append(try ConversationPrompt(snapshot: snapshot))
+//        let promptSnap = snapshot.childSnapshot(forPath: "conversationPrompts")
+//        for child in promptSnap.children {
+//            guard let snapshot = child as? DataSnapshot else { continue }
+//            conversationPrompts.append(try ConversationPrompt(snapshot: snapshot))
+//        }
+        
+        let phrasesSnap = snapshot.childSnapshot(forPath: "conversationPhrases")
+        do {
+            conversationPhrases = try ConversationPhrases(snapshot: phrasesSnap)
+            phrasesLoaded = true
+        } catch let error {
+            print("~>Got an error loading conversation phrases: \(error)")
+            conversationPhrases = nil
+            phrasesLoaded = true
         }
         
         if let unclassifiedValues = snapshot.childSnapshot(forPath: "unclassifiedNouns").value as? [String:String] {
@@ -173,6 +187,76 @@ struct NounWord: FirebaseItem, Codable {
         return
     }
     
+}
+
+struct ConversationPhrases: FirebaseItem {
+    var id: String?
+    var ref: DatabaseReference?
+    var specific: [ConversationPhrase] = []
+    var connection: [ConversationPhrase] = []
+    var positive: [ConversationPhrase] = []
+    var negative: [ConversationPhrase] = []
+    
+    init(snapshot: DataSnapshot) throws {
+        guard snapshot.exists() else { throw FirebaseItemError.noSnapshot }
+        let specificSnap = snapshot.childSnapshot(forPath: "specific")
+        let connectionSnap = snapshot.childSnapshot(forPath: "connection")
+        let posSnap = snapshot.childSnapshot(forPath: "positive")
+        let negSnap = snapshot.childSnapshot(forPath: "negative")
+        
+        do {
+            specific = try getObjects(from: specificSnap)
+            connection = try getObjects(from: connectionSnap)
+            positive = try getObjects(from: posSnap)
+            negative = try getObjects(from: negSnap)
+        } catch let error {
+            if let error = error as? FirebaseItemError { throw error } else { throw FirebaseItemError.invalidData }
+        }
+        
+        
+        id = snapshot.key
+        ref = snapshot.ref
+        
+    }
+    
+    fileprivate func getObjects(from snapshot: DataSnapshot) throws -> [ConversationPhrase] {
+        guard let values = snapshot.children.allObjects as? [DataSnapshot] else  { throw FirebaseItemError.invalidData }
+        var phrases: [ConversationPhrase] = []
+        
+        for snap in values {
+            do {
+                let phrase = try ConversationPhrase(snapshot: snap)
+                phrases.append(phrase)
+            } catch let error {
+                print("~>Specific value error: \(error)")
+            }
+        }
+        
+        return phrases
+    }
+    
+    func toAny() -> [AnyHashable : Any] {
+        return [:]
+    }
+}
+
+struct ConversationPhrase: FirebaseItem {
+    var id: String?
+    var ref: DatabaseReference?
+    var phrase: String
+    
+    init(snapshot: DataSnapshot) throws {
+        guard snapshot.exists() else { throw FirebaseItemError.noSnapshot }
+        guard let value = snapshot.value as? String else { throw FirebaseItemError.invalidData }
+        
+        id = snapshot.key
+        ref = snapshot.ref
+        phrase = value
+    }
+    
+    func toAny() -> [AnyHashable : Any] {
+        return [:]
+    }
 }
 
 struct ConversationPrompt: FirebaseItem, Codable {
