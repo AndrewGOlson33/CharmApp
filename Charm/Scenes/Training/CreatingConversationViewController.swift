@@ -82,6 +82,19 @@ class CreatingConversationViewController: UIViewController {
         loadModel()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        NotificationCenter.default.addObserver(self,
+                                               selector : #selector(keyboardWillAppear(notification:)),
+                                               name     : UIResponder.keyboardWillShowNotification,
+                                               object   : nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector : #selector(keyboardWillDisappear(notification:)),
+                                               name     : UIResponder.keyboardWillHideNotification,
+                                               object   : nil)
+    }
+    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
@@ -95,6 +108,17 @@ class CreatingConversationViewController: UIViewController {
             guard let self = self else { return }
             self.progressSlider.alpha = 1.0
         }
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        NotificationCenter.default.removeObserver(self,
+                                                  name   : UIResponder.keyboardWillShowNotification,
+                                                  object : nil)
+        NotificationCenter.default.removeObserver(self,
+                                                  name   : UIResponder.keyboardWillHideNotification,
+                                                  object : nil)
     }
     
     // MARK: - Private Setup Helper
@@ -139,6 +163,28 @@ class CreatingConversationViewController: UIViewController {
     }
     
     // MARK: - UI Update Functions
+    
+    @objc
+    func keyboardWillAppear(notification: NSNotification?) {
+
+        guard let keyboardFrame = notification?.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue else {
+            return
+        }
+
+        let keyboardHeight: CGFloat
+        if #available(iOS 11.0, *) {
+            keyboardHeight = keyboardFrame.cgRectValue.height - self.view.safeAreaInsets.bottom
+        } else {
+            keyboardHeight = keyboardFrame.cgRectValue.height
+        }
+
+        view.frame.origin.y -= keyboardHeight
+    }
+
+    @objc
+    func keyboardWillDisappear(notification: NSNotification?) {
+        view.frame.origin.y = 0
+    }
     
     fileprivate func updatePhrase() {
         prompt = viewModel.getPrompt()
@@ -269,7 +315,6 @@ class CreatingConversationViewController: UIViewController {
         disableButtonPressedUI()
     }
     
-    
     @IBAction func buttonTouchUpInside(_ sender: Any) {
         disableButtonPressedUI()
         
@@ -295,6 +340,7 @@ class CreatingConversationViewController: UIViewController {
     }
     
     // MARK: - Score Helper
+    
     fileprivate func handle(score: PhraseScore) {
         buttonActivityView.stopAnimating()
         update(label: lblDetailResponse, withText: score.feedback, usingFont: UIFont.systemFont(ofSize: 16))
@@ -319,21 +365,19 @@ class CreatingConversationViewController: UIViewController {
     fileprivate func disableButtonPressedUI() {
         buttonView.alpha = 1.0
     }
-    
 }
 
 extension CreatingConversationViewController: LevelUpDelegate {
     
     func updated(progress: Double) {
         lblProgress.text = viewModel.progressText
-        self.progressSlider.updatePosition(to: CGFloat(progress))
+        progressSlider.updatePosition(to: CGFloat(progress))
     }
     
     func updated(level: Int, detail: String) {
         print("~>This happened.")
         update(label: lblLevelInfo, withText: detail)
     }
-    
 }
 
 extension CreatingConversationViewController: SpeechRecognitionDelegate {
@@ -347,17 +391,14 @@ extension CreatingConversationViewController: SpeechRecognitionDelegate {
         currentPhrase.isEmpty ? showEmptyAlert() : showUserReply(); phase = .pendingSubmit
         if !successfully { print("~>Not a success") }
     }
-    
 }
 
 extension CreatingConversationViewController: UITextViewDelegate {
     
     func textViewDidBeginEditing(_ textView: UITextView) {
-        view.frame.origin.y -= view.frame.height / 3
     }
     
     func textViewDidEndEditing(_ textView: UITextView) {
-        view.frame.origin.y = 0
         currentPhrase = textView.text
     }
     

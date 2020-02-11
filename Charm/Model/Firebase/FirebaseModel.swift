@@ -74,7 +74,6 @@ class FirebaseModel {
                 }
             })
         }
-        
     }
     
     // MARK: - User Observer
@@ -166,7 +165,6 @@ class FirebaseModel {
                 }
             }
         }
-        
     }
     
     private func handle(call: Call) {

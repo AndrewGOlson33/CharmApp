@@ -15,7 +15,7 @@ enum FirebaseItemError: Error {
     case invalidParameter
 }
 
-struct  CharmUser: FirebaseItem {
+struct CharmUser: FirebaseItem {
        
     var id: String? = nil
     var ref: DatabaseReference?
@@ -24,11 +24,11 @@ struct  CharmUser: FirebaseItem {
     var trainingData: TrainingHistory
     var tokenID: [String : Bool]? = nil
     
-    // Init to create a new user
-    init(name: String, email: String) {
+    // Init to create a new user with uid
+    init(name: String, email: String, uid: String) {
         userProfile = UserProfile(name: name, email: email)
         friendList = FriendList()
-        trainingData = try! TrainingHistory()
+        trainingData = TrainingHistory(uid: uid)
     }
     
     init(snapshot: DataSnapshot) throws {
@@ -63,9 +63,7 @@ struct  CharmUser: FirebaseItem {
         friendList?.save()
         trainingData.save()
     }
-    
 }
-
 
 // User Profile
 
@@ -147,8 +145,6 @@ struct UserProfile: FirebaseItem {
                 Database.database().reference().child(FirebaseStructure.usersLocation).child(Auth.auth().currentUser!.uid).child(FirebaseStructure.CharmUser.profileLocation).setValue(data)
             }
         }
-        
-        
     }
     
     private static func getFirstLast(from name: String) -> (first: String, last: String) {
@@ -173,7 +169,6 @@ struct UserProfile: FirebaseItem {
             FirebaseStructure.CharmUser.UserProfile.membershipStatus : membershipStatus.rawValue as NSNumber
         ]
     }
-
 }
 
 // Call
@@ -491,8 +486,7 @@ struct TrainingHistory: FirebaseItem {
     var concreteAverage: TrainingStatistics
     var emotionsAverage: TrainingStatistics
     
-    init() throws {
-        guard let uid = FirebaseModel.shared.charmUser.id else { throw FirebaseItemError.invalidParameter }
+    init(uid: String) {
         conversationLevel = TrainingLevel()
         concreteAverage = TrainingStatistics()
         emotionsAverage = TrainingStatistics()

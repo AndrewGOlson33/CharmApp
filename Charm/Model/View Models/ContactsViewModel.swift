@@ -155,7 +155,6 @@ class ContactsViewModel: NSObject {
                     } catch let error {
                         print("~>There was an error trying to load a user from the child snapshot: \(error)")
                     }
-                    
                 }
                 
                 print("~>Loaded user list.")
@@ -472,7 +471,6 @@ class ContactsViewModel: NSObject {
                 }
             }
             
-            
             DispatchQueue.main.async { [weak self] in
                 guard let self = self else { return }
                 self.isLoading = false
@@ -483,8 +481,6 @@ class ContactsViewModel: NSObject {
             self.hasLoaded = true
             self.performFriendListMaintenence()
         }
-        
-        
     }
     
     // MARK: - Notifications
@@ -609,8 +605,6 @@ extension ContactsViewModel: FriendManagementDelegate {
             return
         }
         
-        
-        
         DispatchQueue.global(qos: .background).async { [weak self] in
             guard let self = self else { return }
             
@@ -618,61 +612,60 @@ extension ContactsViewModel: FriendManagementDelegate {
             
             var changesToSelf = false
                    
-                   for currentFriend in friendList.currentFriends ?? [] {
-                       if friendList.pendingReceivedApproval?.contains(where: { (received) -> Bool in
+            for currentFriend in friendList.currentFriends ?? [] {
+                if friendList.pendingReceivedApproval?.contains(where: { (received) -> Bool in
+                       return received.id == currentFriend.id
+                   }) ?? false {
+                       changesToSelf = true
+                       friendList.pendingReceivedApproval?.removeAll(where: { (received) -> Bool in
                            return received.id == currentFriend.id
-                       }) ?? false {
-                           changesToSelf = true
-                           friendList.pendingReceivedApproval?.removeAll(where: { (received) -> Bool in
-                               return received.id == currentFriend.id
-                           })
-                       }
-                       
-                       if friendList.pendingSentApproval?.contains(where: { (sent) -> Bool in
+                       })
+                   }
+                   
+                   if friendList.pendingSentApproval?.contains(where: { (sent) -> Bool in
+                       return sent.id == currentFriend.id
+                   }) ?? false {
+                       changesToSelf = true
+                       friendList.pendingSentApproval?.removeAll(where: { (sent) -> Bool in
                            return sent.id == currentFriend.id
-                       }) ?? false {
-                           changesToSelf = true
-                           friendList.pendingSentApproval?.removeAll(where: { (sent) -> Bool in
-                               return sent.id == currentFriend.id
-                           })
-                       }
-                       
-                       guard let id = currentFriend.id else { continue }
-                    self.checkFriendList(for: id, atLocation: .Current)
+                       })
                    }
                    
-                   for receivedFriend in friendList.pendingReceivedApproval ?? [] {
-            
-                       if friendList.pendingSentApproval?.contains(where: { (sent) -> Bool in
-                           return sent.id == receivedFriend.id
-                       }) ?? false {
-                           changesToSelf = true
-                           friendList.pendingSentApproval?.removeAll(where: { (sent) -> Bool in
-                               return sent.id == receivedFriend.id
-                           })
-                       }
-                       
-                       guard let id = receivedFriend.id else { continue }
-                    self.checkFriendList(for: id, atLocation: .PendingReceived)
-                   }
-                   
-                   for sentFriend in friendList.pendingSentApproval ?? [] {
-                       // all lists have been cleared at this point so just check the friend list
-                       guard let id = sentFriend.id else { continue }
-                    self.checkFriendList(for: id, atLocation: .PendingSent)
-                   }
-                   
-                   if changesToSelf {
-                       friendList.save()
-                   }
-                   
-                   // Do it all over again every thirty minutes in the background
-                   
-                   DispatchQueue.global(qos: .background).asyncAfter(deadline: .now() + 1800) {
-                       self.performFriendListMaintenence()
-                   }
-        }
+                guard let id = currentFriend.id else { continue }
+                self.checkFriendList(for: id, atLocation: .Current)
+            }
+               
+               for receivedFriend in friendList.pendingReceivedApproval ?? [] {
         
+                   if friendList.pendingSentApproval?.contains(where: { (sent) -> Bool in
+                       return sent.id == receivedFriend.id
+                   }) ?? false {
+                       changesToSelf = true
+                       friendList.pendingSentApproval?.removeAll(where: { (sent) -> Bool in
+                           return sent.id == receivedFriend.id
+                       })
+                   }
+                   
+                   guard let id = receivedFriend.id else { continue }
+                self.checkFriendList(for: id, atLocation: .PendingReceived)
+               }
+               
+               for sentFriend in friendList.pendingSentApproval ?? [] {
+                   // all lists have been cleared at this point so just check the friend list
+                   guard let id = sentFriend.id else { continue }
+                self.checkFriendList(for: id, atLocation: .PendingSent)
+               }
+               
+               if changesToSelf {
+                   friendList.save()
+               }
+               
+               // Do it all over again every thirty minutes in the background
+               
+               DispatchQueue.global(qos: .background).asyncAfter(deadline: .now() + 1800) {
+                   self.performFriendListMaintenence()
+            }
+        }
     }
     
     private func checkFriendList(for id: String, atLocation location: ContactType) {
@@ -771,7 +764,6 @@ extension ContactsViewModel: FriendManagementDelegate {
                 }
             }
         }
-        
     }
     
     // MARK: - Private Helper Functions that do the heavy lifting for friend adding
@@ -942,7 +934,6 @@ extension ContactsViewModel: FriendManagementDelegate {
             navVC.present(alert, animated: true, completion: nil)
         }
     }
-    
 }
 
 extension ContactsViewModel: MFMessageComposeViewControllerDelegate {
@@ -953,7 +944,5 @@ extension ContactsViewModel: MFMessageComposeViewControllerDelegate {
         DispatchQueue.main.async {
             controller.dismiss(animated: true, completion: nil)
         }
-        
     }
-    
 }

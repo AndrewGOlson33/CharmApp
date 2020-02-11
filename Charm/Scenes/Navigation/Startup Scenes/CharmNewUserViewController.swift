@@ -283,22 +283,20 @@ extension CharmNewUserViewController {
                         return
                     }
                 }
-                
             } else {
                 // create a new user
                 print("~>Creating a new user")
                 DispatchQueue.global(qos: .utility).async {
                     let info = self.getUserInfo()
                     print("~>User info: \(info)")
-                    var user = CharmUser(name: info.name, email: info.email)
-                    user.id = uid
+                    
+                    let user = CharmUser(name: info.name, email: info.email, uid: uid)
                     
                     Database.database().reference().child(FirebaseStructure.usersLocation).child(uid).setValue(user.toAny())
                     FirebaseModel.shared.charmUser = user
                     DispatchQueue.main.async {
                         self.showSubscriptionSelection()
                     }
-                    
                 }
             }
         }

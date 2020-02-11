@@ -163,12 +163,16 @@ class CreatingConversationViewModel: NSObject {
         let random = Int.random(in: 1...100)
         switch random {
         case 1...10:
+            // Reply with Something Negative (10%)
             return .negative
-        case 11...40:
+        case 11...35:
+            // Reply with Something Positive (25%)
             return .positive
-        case 41...65:
+        case 36...65:
+            // Reply Implying a Connection (30%)
             return .connection
         default:
+            // Reply with Something Specific (35%)
             return .specific
         }
     }

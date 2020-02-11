@@ -86,14 +86,11 @@ class SubscriptionService: NSObject {
     }
     
     private func saveUserProfileToFirebase() {
-        
-        if FirebaseModel.shared.charmUser.userProfile.membershipStatus != .currentSubscriber { FirebaseModel.shared.charmUser.userProfile.membershipStatus = .currentSubscriber }
+        if FirebaseModel.shared.charmUser.userProfile.membershipStatus != .currentSubscriber { FirebaseModel.shared.charmUser.userProfile.membershipStatus = .currentSubscriber
+        }
         
         let profile = FirebaseModel.shared.charmUser.userProfile
-        
-        Database.database().reference().child(FirebaseStructure.usersLocation).child(FirebaseModel.shared.charmUser.id!).child(FirebaseStructure.CharmUser.profileLocation).setValue(profile.toAny())
-        
-        
+    Database.database().reference().child(FirebaseStructure.usersLocation).child(FirebaseModel.shared.charmUser.id!).child(FirebaseStructure.CharmUser.profileLocation).setValue(profile.toAny())
     }
     
     private func numberOfCredits() -> Int {
@@ -164,7 +161,6 @@ class SubscriptionService: NSObject {
             return nil
         }
     }
-    
 }
 
 // MARK: - SKProductsRequestDelegate

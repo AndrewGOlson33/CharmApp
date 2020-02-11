@@ -158,6 +158,13 @@ class SliderView: UIView {
         } else {
             barView.frame = barFrame
         }
+        
+        
+        
+        print("\n\n\n barView.frame : ", barView.frame)
+        
+        
+        
     }
     
     private func setupFixed() {
@@ -169,9 +176,22 @@ class SliderView: UIView {
     // MARK: - Functions to update and animate view
     
     func updatePosition(to: CGFloat) {
-        guard positionView != nil else { return }
+        guard positionView != nil else {
+            
+            
+            print("\n\n\n positionView is nil")
+            
+            
+            return
+        }
         position = to
         let moveToX = (position * frame.width) - (positionView.frame.width / 2)
+        
+        
+        
+        print("\n\n\n type : ", type)
+        
+        
         
         switch type {
         case .standard:
@@ -180,7 +200,6 @@ class SliderView: UIView {
             // no animation is needed for the navy view so just break out of switch
             break
         }
-        
         
         UIView.animate(withDuration: animationDuration, delay: 0.0, usingSpringWithDamping: 0.6, initialSpringVelocity: 0.0, options: [.curveEaseOut], animations: {
             self.positionView.frame.origin.x = moveToX

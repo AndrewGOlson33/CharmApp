@@ -300,19 +300,18 @@ class CharmSignInViewController: UIViewController {
                 }
                 
             } else {
-                // create a new user
+                // Create a new user
                 print("~>Creating a new user")
                 DispatchQueue.main.async {
                     let info = self.getUserInfo()
                     print("~>User info: \(info)")
-                    var user = CharmUser(name: info.name, email: info.email)
-                    user.id = uid
+                    
+                    let user = CharmUser(name: info.name, email: info.email, uid: uid)
                     
                     let data = user.toAny()
                     DispatchQueue.global(qos: .utility).async {
                         Database.database().reference().child(FirebaseStructure.usersLocation).child(uid).setValue(data)
                     }
-                    
                 }
             }
         }
