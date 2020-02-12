@@ -8,6 +8,7 @@
 
 import UIKit
 import AVKit
+import PXSiriWave
 
 class CreatingConversationViewController: UIViewController {
     
@@ -31,11 +32,14 @@ class CreatingConversationViewController: UIViewController {
     @IBOutlet weak var buttonActivityView: UIActivityIndicatorView!
     @IBOutlet weak var buttonImage: UIImageView!
     @IBOutlet weak var loadingActivityView: UIActivityIndicatorView!
-    
+    @IBOutlet weak var siriWave: PXSiriWave!
+
     // MARK: - Properties
     
     fileprivate let viewModel: CreatingConversationViewModel = CreatingConversationViewModel()
     fileprivate let speechModel: SpeechRecognitionModel = SpeechRecognitionModel()
+    
+    private var timer: Timer?
     
     // for tracking current question
     var prompt: PhraseInfo!
@@ -98,11 +102,15 @@ class CreatingConversationViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
+        print("~>Firebase user uid: ", FirebaseModel.shared.charmUser.id ?? "Undefined")
+        
         print("~>Progress: \(viewModel.progress)")
         progressSlider.setup(for: .standard, atPosition: CGFloat(viewModel.progress), color: #colorLiteral(red: 0.4862745098, green: 0.7098039216, blue: 0.9254901961, alpha: 1))
         
         update(label: lblProgress, withText: viewModel.progressText)
-        update(label: lblLevelInfo, withText: viewModel.level.levelDetail)
+        if let levelDetail = viewModel.levelDetail {
+            update(label: lblLevelInfo, withText: levelDetail)
+        }
         
         UIView.animate(withDuration: 0.5) { [weak self] in
             guard let self = self else { return }
@@ -134,6 +142,15 @@ class CreatingConversationViewController: UIViewController {
         
         replyBubble.layer.cornerRadius = 16
         replyBubble.layer.maskedCorners = [.layerMaxXMinYCorner, .layerMinXMaxYCorner, .layerMinXMinYCorner]
+        
+        // Stup SiriWave
+        siriWave.isHidden = true
+        
+        siriWave.frequency = 1.5
+        siriWave.amplitude = 0.01
+        siriWave.intensity = 0.3
+        siriWave.colors = [UIColor.red, UIColor.blue, UIColor.green]
+        siriWave.configure()
     }
     
     fileprivate func loadModel() {
@@ -331,7 +348,8 @@ class CreatingConversationViewController: UIViewController {
                         
                         strongSelf.currentPhrase = ""
                         strongSelf.speechModel.startRecording()
-                        strongSelf.loadingActivityView.startAnimating()
+                        strongSelf.startTimer()
+//                        strongSelf.loadingActivityView.startAnimating()
                         strongSelf.phase = .recording
                     } else {
                         let alert = UIAlertController(title: "Not Available", message: "Speech recognition is currently unavailable or access is restricted. Please check your Internet connection, Speech Recognition permissions in the Settings and try again.", preferredStyle: .alert)
@@ -352,6 +370,7 @@ class CreatingConversationViewController: UIViewController {
                 }
             }
         case .recording:
+            stopTimer()
             speechModel.stopRecording()
         case .pendingSubmit:
             self.view.endEditing(true)
@@ -367,6 +386,28 @@ class CreatingConversationViewController: UIViewController {
             phase = .start
             updatePhrase()
         }
+    }
+    
+    // MARK: Siri Wave
+    
+    private func startTimer() {
+        siriWave.isHidden = false
+        
+        timer = Timer.scheduledTimer(withTimeInterval: 0.10, repeats: true) { [weak self] (Timer) in
+            guard let strongSelf = self else {
+                return
+            }
+            strongSelf.siriWave.update(withLevel: strongSelf.speechModel.normalizedPowerLevelFromDecibels)
+        }
+    }
+    
+    private func stopTimer() {
+        siriWave.isHidden = true
+        
+        if timer != nil {
+            timer?.invalidate()
+        }
+        timer = nil
     }
     
     // MARK: - Score Helper
@@ -404,9 +445,11 @@ extension CreatingConversationViewController: LevelUpDelegate {
         progressSlider.updatePosition(to: CGFloat(progress))
     }
     
-    func updated(level: Int, detail: String) {
+    func updated(level: Int, detail: String, progress: Double) {
         print("~>This happened.")
         update(label: lblLevelInfo, withText: detail)
+        lblProgress.text = viewModel.progressText
+        progressSlider.updatePosition(to: CGFloat(progress))
     }
 }
 
@@ -417,7 +460,7 @@ extension CreatingConversationViewController: SpeechRecognitionDelegate {
     }
     
     func speechRecognizerFinished(successfully: Bool) {
-        loadingActivityView.stopAnimating()
+//        loadingActivityView.stopAnimating()
         currentPhrase.isEmpty ? showEmptyAlert() : showUserReply(); phase = .pendingSubmit
         if !successfully { print("~>Not a success") }
     }

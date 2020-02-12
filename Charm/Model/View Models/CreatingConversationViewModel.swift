@@ -11,7 +11,7 @@ import UIKit
 
 protocol LevelUpDelegate {
     func updated(progress: Double)
-    func updated(level: Int, detail: String)
+    func updated(level: Int, detail: String, progress: Double)
 }
 
 enum LoadStatus {
@@ -40,8 +40,17 @@ struct PhraseScore {
 class CreatingConversationViewModel: NSObject {
     
     // Model Objects
-    let phrases = FirebaseModel.shared.trainingModel.conversationPhrases
-    var level = FirebaseModel.shared.charmUser.trainingData.conversationLevel
+    var phrases: ConversationPhrases? {
+        return FirebaseModel.shared.trainingModel.conversationPhrases
+    }
+    
+    var level: Int? {
+        return FirebaseModel.shared.charmUser.trainingData.conversationLevel.currentLevel
+    }
+    
+    var levelDetail: String? {
+        return FirebaseModel.shared.charmUser.trainingData.conversationLevel.levelDetail
+    }
     
     // Important Model Variables
     var loadStatus: LoadStatus {
@@ -52,7 +61,9 @@ class CreatingConversationViewModel: NSObject {
     
     var currentLevel: Int {
         didSet {
-            delegate?.updated(level: currentLevel, detail: level.levelDetail)
+            delegate?.updated(level: currentLevel,
+                              detail: FirebaseModel.shared.charmUser.trainingData.conversationLevel.levelDetail,
+                              progress: progress)
         }
     }
     
@@ -84,9 +95,11 @@ class CreatingConversationViewModel: NSObject {
     fileprivate let negativeWords: [ScoredWord] = FirebaseModel.shared.trainingModel.negativeWords
     
     override init() {
-        currentLevel = level.currentLevel
-        progress = level.progress
+        currentLevel = FirebaseModel.shared.charmUser.trainingData.conversationLevel.currentLevel
+        progress = FirebaseModel.shared.charmUser.trainingData.conversationLevel.progress
+        
         super.init()
+        
         loadPhrases()
     }
     
@@ -195,8 +208,8 @@ class CreatingConversationViewModel: NSObject {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) { [weak self] in
             guard let self = self else { return }
             completion(score)
-            if self.currentLevel != self.level.currentLevel { self.currentLevel = self.level.currentLevel }
-            self.progress = self.level.progress
+            if self.currentLevel != FirebaseModel.shared.charmUser.trainingData.conversationLevel.currentLevel { self.currentLevel = FirebaseModel.shared.charmUser.trainingData.conversationLevel.currentLevel }
+            self.progress = FirebaseModel.shared.charmUser.trainingData.conversationLevel.progress
         }
     }
     
@@ -376,11 +389,10 @@ class CreatingConversationViewModel: NSObject {
             
             return PhraseScore(feedback: feedback, formattedText: highlightedPhrase, status: .complete)
         }
-
     }
     
     func add(experience: Int) {
-        level.add(experience: experience)
+        FirebaseModel.shared.charmUser.trainingData.conversationLevel.add(experience: experience)
     }
     
 }

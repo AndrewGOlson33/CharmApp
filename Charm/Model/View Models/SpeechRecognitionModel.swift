@@ -6,6 +6,7 @@
 //  Copyright © 2019 Charm, LLC. All rights reserved.
 //
 
+import Accelerate
 import Foundation
 import Speech
 
@@ -23,6 +24,25 @@ class SpeechRecognitionModel: NSObject {
     private var recognitionRequest: SFSpeechAudioBufferRecognitionRequest?
     private var recognitionTask: SFSpeechRecognitionTask?
     private let audioEngine = AVAudioEngine()
+    
+    private let LEVEL_LOWPASS_TRIG : Float32 = 0.30
+    
+    private var averagePowerForChannel0 : Float = 0 {
+        didSet {
+//            print("~>averagePowerForChannel0: ", averagePowerForChannel0)
+        }
+    }
+    private var averagePowerForChannel1 : Float = 0 {
+        didSet {
+//            print("~>averagePowerForChannel1: ", averagePowerForChannel1)
+        }
+    }
+    var normalizedPowerLevelFromDecibels: CGFloat {
+        if (averagePowerForChannel0 < -60.0 || averagePowerForChannel0 == 0.0) {
+            return 0.0
+        }
+        return CGFloat(powf((powf(10.0, 0.05 * averagePowerForChannel0) - powf(10.0, 0.05 * -60.0)) * (1.0 / (1.0 - powf(10.0, 0.05 * -60.0))), 1.0 / 2.0))
+    }
     
     // delegate to return recognized speech text
     var delegate: SpeechRecognitionDelegate? = nil
@@ -88,6 +108,7 @@ class SpeechRecognitionModel: NSObject {
         let recordingFormat = inputNode.outputFormat(forBus: 0)
         inputNode.installTap(onBus: 0, bufferSize: 1024, format: recordingFormat) { (buffer, when) in
             self.recognitionRequest?.append(buffer)
+            self.audioMetering(buffer: buffer)
         }
         
         audioEngine.prepare()
@@ -98,7 +119,6 @@ class SpeechRecognitionModel: NSObject {
         } catch {
             print("audioEngine couldn't start because of an error.")
         }
-        
     }
     
     func stopRecording() {
@@ -106,6 +126,35 @@ class SpeechRecognitionModel: NSObject {
         recognitionRequest?.endAudio()
         AudioServicesPlaySystemSound(1114)
         return
+    }
+    
+    // MARK: Private methods
+    
+    private func audioMetering(buffer:AVAudioPCMBuffer) {
+        buffer.frameLength = 1024
+        let inNumberFrames:UInt = UInt(buffer.frameLength)
+        if buffer.format.channelCount > 0 {
+            let samples = (buffer.floatChannelData![0])
+            var avgValue:Float32 = 0
+            vDSP_meamgv(samples,1 , &avgValue, inNumberFrames)
+            var v:Float = -100
+            if avgValue != 0 {
+                v = 20.0 * log10f(avgValue)
+            }
+            self.averagePowerForChannel0 = (self.LEVEL_LOWPASS_TRIG*v) + ((1-self.LEVEL_LOWPASS_TRIG)*self.averagePowerForChannel0)
+            self.averagePowerForChannel1 = self.averagePowerForChannel0
+        }
+
+        if buffer.format.channelCount > 1 {
+            let samples = buffer.floatChannelData![1]
+            var avgValue:Float32 = 0
+            vDSP_meamgv(samples, 1, &avgValue, inNumberFrames)
+            var v:Float = -100
+            if avgValue != 0 {
+                v = 20.0 * log10f(avgValue)
+            }
+            self.averagePowerForChannel1 = (self.LEVEL_LOWPASS_TRIG*v) + ((1-self.LEVEL_LOWPASS_TRIG)*self.averagePowerForChannel1)
+        }
     }
 }
 
@@ -124,5 +173,4 @@ extension SpeechRecognitionModel: SFSpeechRecognitionTaskDelegate {
     func speechRecognitionTask(_ task: SFSpeechRecognitionTask, didFinishSuccessfully successfully: Bool) {
         delegate?.speechRecognizerFinished(successfully: successfully)
     }
-    
 }

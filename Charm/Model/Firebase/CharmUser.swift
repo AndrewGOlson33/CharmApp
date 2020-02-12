@@ -563,7 +563,12 @@ struct TrainingLevel: FirebaseItem {
         return Date(timeIntervalSince1970: date)
     }
     
-    var currentLevel: Int = 1
+    var currentLevel: Int = 1 {
+        didSet {
+            print("~>currentLevel: ", currentLevel)
+        }
+    }
+    
     var levelDetail: String {
         switch currentLevel {
         case 1...6:
@@ -600,6 +605,16 @@ struct TrainingLevel: FirebaseItem {
         
         experience = values[FirebaseStructure.Training.Level.experience] as? Int ?? 0
         date = values[FirebaseStructure.Training.Level.lastTrainedDate] as? Double ?? Date().timeIntervalSince1970
+        
+        // Correct current level
+        if experience >= nextLevelXP {
+            var __experience = experience
+            while __experience >= nextLevelXP {
+                
+                currentLevel += 1
+                __experience -= nextLevelXP
+            }
+        }
     }
     
     init() {
@@ -622,7 +637,6 @@ struct TrainingLevel: FirebaseItem {
             FirebaseStructure.Training.Level.lastTrainedDate : lastTrained.timeIntervalSince1970
         ]
     }
-
 }
 
 struct TrainingStatistics: FirebaseItem {

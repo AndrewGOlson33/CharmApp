@@ -17,5 +17,5 @@ target 'Charm' do
   pod 'FirebaseUI/Email'
   pod 'Firebase/DynamicLinks'
   pod 'Firebase/Messaging'
-
+  pod 'PXSiriWave'
 end

@@ -173,8 +173,7 @@ class SliderView: UIView {
         
         switch type {
         case .standard:
-            if position > 0.0,
-                position > barEndPosition {
+            if position > 0.0 {
                 barEndPosition = position
             }
             setupStandard(animated: true)
