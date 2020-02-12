@@ -141,17 +141,17 @@ class CreatingConversationViewModel: NSObject {
         switch type {
         case .specific:
             if specific.count < 1 { loadSpecific() }
-            phrase = specific.remove(at: Int.random(in: 0...specific.count)).phrase
+            phrase = specific.remove(at: Int.random(in: 0..<specific.count)).phrase
         case .connection:
             if connection.count < 1 { loadConnection() }
-            phrase = connection.remove(at: Int.random(in: 0...connection.count)).phrase
+            phrase = connection.remove(at: Int.random(in: 0..<connection.count)).phrase
         case .positive:
             if positive.count < 1 { loadPositive() }
             // why is positive not working?
-            phrase = positive.remove(at: Int.random(in: 0...positive.count)).phrase
+            phrase = positive.remove(at: Int.random(in: 0..<positive.count)).phrase
         case .negative:
             if negative.count < 1 { loadNegative() }
-            phrase = negative.remove(at: Int.random(in: 0...negative.count)).phrase
+            phrase = negative.remove(at: Int.random(in: 0..<negative.count)).phrase
         }
         
         return PhraseInfo(phrase: phrase, type: type)

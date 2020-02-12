@@ -321,13 +321,43 @@ class CreatingConversationViewController: UIViewController {
         // handle button action
         switch phase {
         case .start:
-            currentPhrase = ""
-            speechModel.startRecording()
-            loadingActivityView.startAnimating()
-            phase = .recording
+            speechModel.checkAuthorization { (authorized) in
+                DispatchQueue.main.async { [weak self] in
+                    guard let strongSelf = self else {
+                        return
+                    }
+                    
+                    if authorized && strongSelf.speechModel.isAvailable() {
+                        
+                        strongSelf.currentPhrase = ""
+                        strongSelf.speechModel.startRecording()
+                        strongSelf.loadingActivityView.startAnimating()
+                        strongSelf.phase = .recording
+                    } else {
+                        let alert = UIAlertController(title: "Not Available", message: "Speech recognition is currently unavailable or access is restricted. Please check your Internet connection, Speech Recognition permissions in the Settings and try again.", preferredStyle: .alert)
+                        alert.addAction(UIAlertAction(title: "Settings", style: .default, handler: { (UIAlertAction) in
+                            guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else {
+                                return
+                            }
+                            
+                            if UIApplication.shared.canOpenURL(settingsUrl) {
+                                UIApplication.shared.open(settingsUrl, completionHandler: { (success) in
+                                    print("~> Settings opened: \(success)")
+                                })
+                            }
+                        }))
+                        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                        strongSelf.present(alert, animated: true, completion: nil)
+                    }
+                }
+            }
         case .recording:
             speechModel.stopRecording()
         case .pendingSubmit:
+            self.view.endEditing(true)
+            
+            self.txtUserResponse.isHidden = true
+            
             self.buttonActivityView.startAnimating()
             viewModel.getScore(for: PhraseInfo(phrase: currentPhrase, type: prompt.type)) { [weak self] (score) in
                 guard let self = self else { return }
@@ -400,6 +430,7 @@ extension CreatingConversationViewController: UITextViewDelegate {
     
     func textViewDidEndEditing(_ textView: UITextView) {
         currentPhrase = textView.text
+        showUserReply()
     }
     
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
