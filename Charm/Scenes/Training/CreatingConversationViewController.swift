@@ -224,7 +224,6 @@ class CreatingConversationViewController: UIViewController {
         
         if promptBubble.isHidden { show(view: promptBubble) }
         if !replyBubble.isHidden { hide(view: replyBubble) }
-        
     }
     
     fileprivate func showUserReply() {

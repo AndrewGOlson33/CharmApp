@@ -646,7 +646,7 @@ class DetailChartViewController: UIViewController {
         let events = HIEvents()
         let clickClosure: HIClosure =  { [weak self] (context: HIChartContext?) in
             guard let self = self else { return }
-            let section = self.feedback == nil ? 2 : 3
+            let section = 1//self.feedback == nil ? 2 : 3
             if let row = context?.getProperty("this.x") as? Int {
                 var shouldScroll = false
                 var indexPath: IndexPath = IndexPath(row: 0, section: 0)
