@@ -56,7 +56,6 @@ class FriendListTableViewCell: UITableViewCell {
         case .Phone:
             delegate?.sendTextRequest(toFriend: friend)
         }
-        
     }
     
     override func prepareForReuse() {
@@ -65,5 +64,4 @@ class FriendListTableViewCell: UITableViewCell {
         // make sure profile image doesn't get confused with other cells
         imgProfile.image = nil
     }
-    
 }

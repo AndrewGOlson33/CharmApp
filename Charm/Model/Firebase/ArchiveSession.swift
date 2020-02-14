@@ -80,5 +80,4 @@ struct SessionArchive: FirebaseItem {
         
         return true
     }
-    
 }

@@ -139,8 +139,6 @@ class SandboxViewController: UIViewController {
 //                self.shouldReset = true
 //                self.animate(button: self.btnScoreReset, toImage: self.reset)
 //            }
-//            
-//            
 //        } else {
 //            
 //            DispatchQueue.main.async {
@@ -148,9 +146,7 @@ class SandboxViewController: UIViewController {
 //                self.animate(button: self.btnScoreReset, toImage: self.chart)
 //                self.txtReply.text = "tap microphone and start speaking"
 //            }
-//            
 //        }
-//        
 //    }
 //    
 //    // MARK: - Score Update Functions
@@ -229,7 +225,6 @@ class SandboxViewController: UIViewController {
 //            let percent = CGFloat(score) / 2.0
 //            return percent > 1 ? 1 : percent
 //        }
-//        
 //    }
 //    
 //    // MARK: - Private Helper Functions
@@ -248,7 +243,6 @@ class SandboxViewController: UIViewController {
 //            }
 //        }
 //    }
-//    
 //}
 //
 //// MARK: - Table View Extension
@@ -328,7 +322,6 @@ class SandboxViewController: UIViewController {
 //        
 //        return cell
 //    }
-//
 //}
 //
 //// MARK: - Speech Delegate
@@ -338,7 +331,6 @@ class SandboxViewController: UIViewController {
 //    func speechRecognizerGotText(text: String) {
 //        txtReply.text = text
 //    }
-//    
 //}
 //
 //// MARK: - TextView Delegate
@@ -372,5 +364,4 @@ class SandboxViewController: UIViewController {
 //            return true
 //        }
 //    }
-    
 }

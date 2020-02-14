@@ -58,7 +58,6 @@ struct VideoSection: FirebaseItem {
     func toAny() -> [AnyHashable : Any] {
         return [:]
     }
-    
 }
 
 class LearningVideo: FirebaseItem {
@@ -120,5 +119,4 @@ class LearningVideo: FirebaseItem {
             })
         }
     }
-    
 }

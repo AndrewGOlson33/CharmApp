@@ -747,7 +747,6 @@ class DetailChartViewController: UIViewController {
         chartView.options = options
         tableView.reloadData()
     }
-
 }
 
 extension DetailChartViewController: UITableViewDelegate, UITableViewDataSource {

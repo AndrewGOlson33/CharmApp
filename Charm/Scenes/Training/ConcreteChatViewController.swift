@@ -149,7 +149,6 @@ class ConcreteChatViewController: UIViewController {
         }
     }
     
-    
     // MARK: - Button Handling
     
     @IBAction func speakTextTapped(_ sender: Any) {
@@ -209,7 +208,6 @@ class ConcreteChatViewController: UIViewController {
             shouldReset = false
             animate(button: btnScoreReset, toImage: chart)
         }
-        
     }
     
     // MARK: - Private Helper Functions
@@ -254,7 +252,6 @@ class ConcreteChatViewController: UIViewController {
             }
         }
     }
-    
 }
 
 // MARK: - Table View Delegate Functions
@@ -369,7 +366,6 @@ extension ConcreteChatViewController: SpeechRecognitionDelegate {
         txtReply.textColor = .black
         txtReply.text = text
     }
-    
 }
 
 // MARK: - TextView Delegate
@@ -403,5 +399,4 @@ extension ConcreteChatViewController: UITextViewDelegate {
             return true
         }
     }
-    
 }

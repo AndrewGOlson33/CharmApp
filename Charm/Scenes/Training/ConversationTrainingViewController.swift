@@ -124,7 +124,6 @@ class ConversationTrainingViewController: UIViewController {
         
         // Load initial prompts
         updatePrompts()
-
     }
     
     // load navigation bar items
@@ -186,7 +185,6 @@ class ConversationTrainingViewController: UIViewController {
         }
     }
     
-
     // MARK: - Button Handling
     
     @IBAction func speakTextTapped(_ sender: Any) {
@@ -257,7 +255,6 @@ class ConversationTrainingViewController: UIViewController {
             shouldReset = false
             animate(button: btnScoreReset, toImage: chart)
         }
-        
     }
     
     // MARK: - Private Helper Functions
@@ -327,7 +324,6 @@ class ConversationTrainingViewController: UIViewController {
             }
         }
     }
-    
 }
 
 // MARK: - Table View Delegate Functions
@@ -428,7 +424,6 @@ extension ConversationTrainingViewController: UITableViewDelegate, UITableViewDa
         
         return cell
     }
-
 }
 
 // MARK: - Speech Task Delegate
@@ -443,7 +438,6 @@ extension ConversationTrainingViewController: SpeechRecognitionDelegate {
         txtReply.textColor = .black
         txtReply.text = text
     }
-    
 }
 
 // MARK: - TextView Delegate
@@ -477,5 +471,4 @@ extension ConversationTrainingViewController: UITextViewDelegate {
             return true
         }
     }
-    
 }

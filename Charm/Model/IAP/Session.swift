@@ -40,7 +40,6 @@ public struct Session {
             paidSubscriptions = []
         }
     }
-    
 }
 
 // MARK: - Equatable

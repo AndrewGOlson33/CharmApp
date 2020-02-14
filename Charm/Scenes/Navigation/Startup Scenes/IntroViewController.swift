@@ -31,5 +31,4 @@ class IntroViewController: UIViewController {
         
         navigationController?.setNavigationBarHidden(false, animated: true)
     }
-
 }

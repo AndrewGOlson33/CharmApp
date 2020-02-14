@@ -17,5 +17,4 @@ class BackAndForthViewController: UIViewController {
         chartVC.chartType = .conversation
         chartVC.navTitle = "Conversation Flow"
     }
-
 }

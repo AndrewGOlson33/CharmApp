@@ -29,5 +29,4 @@ class LabelBubbleViewController: UIViewController {
         
         preferredContentSize = CGSize(width: 56, height: 32)
     }
-
 }

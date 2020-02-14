@@ -95,7 +95,5 @@ class LearningVideoViewModel: NSObject {
             alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
             nav.present(alert, animated: true, completion: nil)
         }
-        
     }
-    
 }

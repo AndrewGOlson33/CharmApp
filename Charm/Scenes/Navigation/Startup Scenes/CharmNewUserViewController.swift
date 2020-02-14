@@ -111,7 +111,6 @@ class CharmNewUserViewController: UIViewController {
         txtName.inputAccessoryView = nameToolbar
         txtEmail.inputAccessoryView = emailToolbar
         txtPassword.inputAccessoryView = passwordToolbar
-
     }
     
     @objc private func highlightEmail() {
@@ -184,7 +183,6 @@ class CharmNewUserViewController: UIViewController {
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
         self.present(alert, animated: true)
     }
-    
 }
 
 extension CharmNewUserViewController: UITextFieldDelegate {
@@ -203,7 +201,6 @@ extension CharmNewUserViewController: UITextFieldDelegate {
         
         return true
     }
-    
 }
 
 // MARK: - Account Creation
@@ -263,7 +260,6 @@ extension CharmNewUserViewController {
                     self.loadUser(withUID: uid)
                 }
             })
-            
         }
     }
     
@@ -329,5 +325,4 @@ extension CharmNewUserViewController {
     private func showSubscriptionSelection() {
         performSegue(withIdentifier: SegueID.subscriptions, sender: nil)
     }
-    
 }

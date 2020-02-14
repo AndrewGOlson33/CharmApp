@@ -75,5 +75,4 @@ extension InfoModuleViewController: UIGestureRecognizerDelegate {
         let hit = self.view.hitTest(touch.location(in: view), with: nil)
         return hit == self.view
     }
-    
 }

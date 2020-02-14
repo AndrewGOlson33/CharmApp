@@ -328,7 +328,6 @@ class ContactsViewModel: NSObject {
         }) {
             notInContacts.append(contact)
         }
-        
     }
     
     fileprivate func getPhoto(forFriend friend: Friend) -> UIImage? {

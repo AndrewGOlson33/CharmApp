@@ -77,8 +77,6 @@ class FriendListTableViewController: UITableViewController {
             activityView.color = .black
         }
         
-        
-        
         activityView.hidesWhenStopped = true
         view.addSubview(activityView)
         
@@ -111,7 +109,6 @@ class FriendListTableViewController: UITableViewController {
         tableView.reloadData()
     }
     
-
     // MARK: - Table view data source
 
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
@@ -151,7 +148,6 @@ class FriendListTableViewController: UITableViewController {
             return isFiltering() ? viewModel.filteredUsersToInvite.count : viewModel.usersToInvite.count
         }
     }
-
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if isContactsViewShowing && viewModel.currentFriends.count == 0 {
@@ -222,7 +218,6 @@ class FriendListTableViewController: UITableViewController {
             present(deleteAlert, animated: true, completion: nil)
         }
     }
-
 }
 
 // MARK: - Search Delegate Functions
@@ -246,7 +241,6 @@ extension FriendListTableViewController: UISearchResultsUpdating, UISearchBarDel
         // Returns true if the text is empty or nil
         return searchController.searchBar.text?.isEmpty ?? true
     }
-    
 }
 
 extension FriendListTableViewController: TableViewRefreshDelegate {
@@ -266,7 +260,5 @@ extension FriendListTableViewController: TableViewRefreshDelegate {
                 self.view.isUserInteractionEnabled = true
             }
         }
-        
     }
-    
 }

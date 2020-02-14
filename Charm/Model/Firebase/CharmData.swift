@@ -161,7 +161,6 @@ struct Snapshot: FirebaseItem, Codable {
                 master?.append(try Master(snapshot: snapshot))
             }
         }
-        
     }
     
     // snapshots cannot be saved
@@ -205,7 +204,6 @@ struct Snapshot: FirebaseItem, Codable {
         
         return summaryItem.feedback
     }
-    
 }
 
 // MARK: - Top Level Data
@@ -330,7 +328,6 @@ struct Conversation: FirebaseItem, Codable {
     func save() {
         return
     }
-    
 }
 
 // MARK: - Personal Pronouns (Connection)
@@ -547,7 +544,6 @@ struct SummaryCellInfo {
         
         formatter.maximumSignificantDigits = 3
     }
-    
 }
 
 struct SliderCellTitle {
@@ -624,7 +620,6 @@ struct TranscriptCellInfo {
         self.position = position
         self.isUser = isUser
     }
-    
 }
 
 // MARK: - Callout Data

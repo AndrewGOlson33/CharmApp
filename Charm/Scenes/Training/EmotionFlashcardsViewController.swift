@@ -32,7 +32,6 @@ class EmotionFlashcardsViewController: UIViewController, FlashcardsHistoryDelega
     @IBOutlet weak var lblPositive: UILabel!
     @IBOutlet weak var lblNegative: UILabel!
     
-    
     // MARK: - Properties
     
     // View Model
@@ -97,9 +96,7 @@ class EmotionFlashcardsViewController: UIViewController, FlashcardsHistoryDelega
                     self.streakBar.alpha = 1.0
                 })
             }
-            
         }
-        
         
         // set the original frames to use for animations
         positiveFrame = btnPositive.frame
@@ -121,7 +118,6 @@ class EmotionFlashcardsViewController: UIViewController, FlashcardsHistoryDelega
             history.save()
             history.ref?.keepSynced(true)
         }
-            
     }
     
     // MARK: - Private Helper Functions
@@ -149,7 +145,6 @@ class EmotionFlashcardsViewController: UIViewController, FlashcardsHistoryDelega
             self.activityIndicator.stopAnimating()
             self.viewLoading.isHidden = true
         }
-        
     }
     
     // Updates UI When Training Data Updates
@@ -168,7 +163,6 @@ class EmotionFlashcardsViewController: UIViewController, FlashcardsHistoryDelega
                 self.streakBar.updatePosition(to: CGFloat(newHistory.percentOfRecord))
             }
         }
-        
     }
     
     // Hande Updates After Answer is Submitted
@@ -181,7 +175,6 @@ class EmotionFlashcardsViewController: UIViewController, FlashcardsHistoryDelega
     // Updates Score
     private func updateScore(withCorrectAnswer correct: Bool) {
         viewModel.calculateAverageScore(addingCorrect: correct, toType: .emotions)
-        
     }
     
     // Animation Helper Function For Response
@@ -235,7 +228,6 @@ class EmotionFlashcardsViewController: UIViewController, FlashcardsHistoryDelega
     @IBAction func resetButtonTapped(_ sender: Any) {
         viewModel.resetRecord(forType: .emotions)
     }
-    
 }
 
 extension EmotionFlashcardsViewController: UIGestureRecognizerDelegate {
@@ -250,7 +242,6 @@ extension EmotionFlashcardsViewController: UIGestureRecognizerDelegate {
                 animate(view: btnNegative, withLabel: lblNegative, withColor: .gray, toFrame: CGRect(x: negativeFrame.minX + 4, y: negativeFrame.minY + 4, width: negativeFrame.width, height: negativeFrame.height))
                 lastTouchedButton = btnNegative
             }
-            
         }
     }
     
@@ -322,5 +313,4 @@ extension EmotionFlashcardsViewController: UIGestureRecognizerDelegate {
             lastTouchedButton = nil
         }
     }
-    
 }

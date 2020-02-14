@@ -294,7 +294,6 @@ class VideoCallViewController: UIViewController {
                 print("~>There was an error decoding json object: \(error)")
                 return
             }
-            
         }
         dataTask.resume()
         session.finishTasksAndInvalidate()
@@ -327,7 +326,6 @@ class VideoCallViewController: UIViewController {
             usersRef.child(self.friend.id!).child(FirebaseStructure.CharmUser.currentCallLocation).setValue(friendCallData)
             usersRef.child(self.myUser.id!).child(FirebaseStructure.CharmUser.currentCallLocation).setValue(myCallData)
         }
-        
     }
     
     /**
@@ -446,7 +444,6 @@ class VideoCallViewController: UIViewController {
                     } else {
                         print("~>No need to upload to pending twice.")
                     }
-                    
                 }
             }
             
@@ -455,7 +452,6 @@ class VideoCallViewController: UIViewController {
         }
     }
 
-    
     func stopArchive() {
         
         guard !archiveHasBeenStopped else { return }
@@ -681,7 +677,6 @@ extension VideoCallViewController: OTSubscriberDelegate {
             let timeString = "\(minString):\(secString)"
             self.lblCallTimer.text = timeString
         })
-
     }
     
     func subscriber(_ subscriber: OTSubscriberKit, didFailWithError error: OTError) {

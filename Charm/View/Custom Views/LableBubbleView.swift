@@ -81,5 +81,4 @@ class LabelBubbleView: UIView {
         view.layer.addSublayer(triangle)
         return view
     }
-    
 }

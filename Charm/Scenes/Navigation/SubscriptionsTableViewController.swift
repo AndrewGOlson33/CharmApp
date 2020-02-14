@@ -169,7 +169,6 @@ class SubscriptionsTableViewController: UITableViewController {
         default:
             createAlert(withTitle: "Unknown Error", andMessage: "An unknown error has occured, please check that you are logged into the iTunes store and that you have an internet connection.", andDoneButton: "OK")
         }
-        
     }
     
     private func createAlert(withTitle title: String, andMessage message: String, andDoneButton done: String, purchased: Bool = false) {
@@ -201,7 +200,6 @@ class SubscriptionsTableViewController: UITableViewController {
             }))
             self.present(successAlert, animated: true, completion: nil)
         }
-        
     }
     
     // Update status of user
@@ -274,5 +272,4 @@ class SubscriptionsTableViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
         return 1
     }
-
 }

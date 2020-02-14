@@ -90,7 +90,6 @@ class SliderView: UIView {
             NSLayoutConstraint(item: backgroundView!, attribute: .width, relatedBy: .equal, toItem: self, attribute: .width, multiplier: 1.0, constant: 0),
             NSLayoutConstraint(item: backgroundView!, attribute: .height, relatedBy: .equal, toItem: self, attribute: .height, multiplier: 1.0, constant: 0)
         ])
-        
     }
     
     private func setupPositionIndicator() {

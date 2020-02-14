@@ -78,5 +78,4 @@ class ChatTrainingViewModel: NSObject {
     func score(response text: String) {
         scoreModel.calculateScore(fromPhrase: text)
     }
-    
 }

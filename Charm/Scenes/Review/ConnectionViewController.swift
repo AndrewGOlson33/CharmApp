@@ -17,5 +17,4 @@ class ConnectionViewController: UIViewController {
         chartVC.chartType = .connection
         chartVC.navTitle = "Personal Bond"
     }
-
 }

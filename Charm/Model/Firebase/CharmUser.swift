@@ -271,7 +271,6 @@ struct FriendList: FirebaseItem {
                     } catch let error {
                         print("~>Got an error trying to convert: \(error)")
                     }
-                   
                 }
             }
         }
@@ -289,7 +288,6 @@ struct FriendList: FirebaseItem {
                     } catch let error {
                         print("~>Got an error trying to convert: \(error)")
                     }
-                   
                 }
             }
         }
@@ -307,7 +305,6 @@ struct FriendList: FirebaseItem {
                     } catch let error {
                         print("~>Got an error trying to convert: \(error)")
                     }
-                   
                 }
             }
         }
@@ -325,7 +322,6 @@ struct FriendList: FirebaseItem {
                     } catch let error {
                         print("~>Got an error trying to convert: \(error)")
                     }
-                   
                 }
             }
         }
@@ -473,7 +469,6 @@ struct Friend: FirebaseItem {
             FirebaseStructure.Friend.id : id as NSString
         ]
     }
-
 }
 
 // Training History
@@ -542,7 +537,6 @@ struct TrainingHistory: FirebaseItem {
             FirebaseStructure.Training.emotionHistory : emotionsAverage.toAny()
         ]
     }
-    
 }
 
 struct TrainingLevel: FirebaseItem {
@@ -583,7 +577,6 @@ struct TrainingLevel: FirebaseItem {
             return "Level \(currentLevel): Ninja Master"
         }
     }
-    
     
     var nextLevelXP: Int {
         return calculateExperience(forLevel: currentLevel)

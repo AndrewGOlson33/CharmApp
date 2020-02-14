@@ -394,5 +394,4 @@ class CreatingConversationViewModel: NSObject {
     func add(experience: Int) {
         FirebaseModel.shared.charmUser.trainingData.conversationLevel.add(experience: experience)
     }
-    
 }

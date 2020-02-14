@@ -70,8 +70,6 @@ class FlashcardsViewModel: NSObject {
                 fatalError("~>Reached case in switch that should be impossible.")
             }
         }
-        
-        
     }
     
     func getResponse(answeredWith answer: Answer, forFlashcardType type: FlashCardType = .concrete) -> (response: String, correct: Bool) {
@@ -175,5 +173,4 @@ class FlashcardsViewModel: NSObject {
             history.save()
         }
     }
-    
 }

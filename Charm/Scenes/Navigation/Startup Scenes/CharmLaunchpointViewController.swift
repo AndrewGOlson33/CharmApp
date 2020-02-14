@@ -71,11 +71,7 @@ class CharmLaunchpointViewController: UIViewController {
                     }
                 }
             })
-
         }
-        
-        
-        
     }
     
     // MARK: - Activity Helper Functions
@@ -156,5 +152,4 @@ class CharmLaunchpointViewController: UIViewController {
         }))
         self.present(alert, animated: true)
     }
-
 }

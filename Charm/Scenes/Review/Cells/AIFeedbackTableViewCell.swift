@@ -52,12 +52,9 @@ class AIFeedbackTableViewCell: UITableViewCell {
         // Configure the view for the selected state
     }
     
-    
-    
     private func updateSize() {
         lblFeedback.sizeToFit()
         lblRecommendedTraining.sizeToFit()
         setNeedsLayout()
     }
-
 }

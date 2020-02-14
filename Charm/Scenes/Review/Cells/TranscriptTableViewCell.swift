@@ -52,5 +52,4 @@ class TranscriptTableViewCell: UITableViewCell {
             NSLayoutConstraint.deactivate(self.isUserConstraints)
         }
     }
-    
 }

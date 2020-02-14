@@ -158,7 +158,6 @@ enum FirebaseStructure {
         
         // token id
         static let token = "tokenID"
-        
     }
     
     enum Friend {
@@ -234,7 +233,6 @@ enum FirebaseStructure {
         static let email = "email"
         static let dateString = "dateString"
     }
-    
 }
 
 // MARK: - Notifications

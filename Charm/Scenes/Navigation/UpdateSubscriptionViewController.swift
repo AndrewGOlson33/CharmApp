@@ -19,7 +19,6 @@ class UpdateSubscriptionViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
     }
     
     @IBAction func showTermsOfUse(_ sender: Any) {
@@ -39,5 +38,4 @@ class UpdateSubscriptionViewController: UIViewController {
             infoVC.documentType = type
         }
     }
-
 }

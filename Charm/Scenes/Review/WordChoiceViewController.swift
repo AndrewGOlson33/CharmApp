@@ -15,5 +15,4 @@ class WordChoiceViewController: UIViewController {
         chartVC.chartType = .ideaEngagement
         chartVC.navTitle = "Word Clarity"
     }
-
 }

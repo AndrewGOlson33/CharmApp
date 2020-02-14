@@ -55,6 +55,4 @@ class StartupSubscriptionsViewController: UIViewController {
             appDelegate.window?.makeKeyAndVisible()
         }
     }
- 
-
 }

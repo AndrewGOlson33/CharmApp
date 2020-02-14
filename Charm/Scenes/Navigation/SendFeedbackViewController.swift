@@ -98,7 +98,6 @@ class SendFeedbackViewController: UIViewController {
         existingReports.addReport(withText: text, fromUser: email)
         dismiss(animated: true, completion: nil)
     }
-    
 }
 
 extension SendFeedbackViewController: UITextViewDelegate {
@@ -116,5 +115,4 @@ extension SendFeedbackViewController: UITextViewDelegate {
         }
         
     }
-    
 }

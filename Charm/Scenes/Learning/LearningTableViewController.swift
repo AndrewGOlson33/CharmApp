@@ -32,8 +32,6 @@ class LearningTableViewController: UITableViewController {
             activityView.color = .black
         }
         
-        
-        
         activityView.hidesWhenStopped = true
         view.addSubview(activityView)
         
@@ -91,7 +89,6 @@ class LearningTableViewController: UITableViewController {
                 print("~>An unknown error has occured.")
             }
         }
-        
     }
     
     // prevent extra table view lines
@@ -104,7 +101,6 @@ class LearningTableViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
         return 1
     }
-
 }
 
 extension LearningTableViewController: TableViewRefreshDelegate {
@@ -114,7 +110,5 @@ extension LearningTableViewController: TableViewRefreshDelegate {
     }
     
     func showActivity(_ animating: Bool) {
-        
     }
-    
 }

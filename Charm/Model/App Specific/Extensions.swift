@@ -22,7 +22,6 @@ extension String {
         
         return result
     }
-    
 }
 
 extension Double {
@@ -63,5 +62,4 @@ extension UIView {
         
         self.layer.insertSublayer(gradientLayer, at: 0)
     }
-    
 }

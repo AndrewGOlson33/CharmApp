@@ -484,5 +484,4 @@ extension CreatingConversationViewController: UITextViewDelegate {
             return true
         }
     }
-    
 }

@@ -83,9 +83,7 @@ class CharmSignInViewController: UIViewController {
         
         txtEmail.inputAccessoryView = emailToolbar
         txtPassword.inputAccessoryView = passwordToolbar
-        
     }
-    
     
     @objc private func tapOutside() {
         view.endEditing(true)
@@ -208,7 +206,6 @@ class CharmSignInViewController: UIViewController {
             
             self.loadUser(withUID: uid)
         }
-        
     }
     
     @IBAction func forgotPasswordButtonTapped(_ sender: Any) {
@@ -326,7 +323,6 @@ class CharmSignInViewController: UIViewController {
         
         return (fullName, email)
     }
-
 }
 
 // MARK: - TextField Delegate
@@ -376,5 +372,4 @@ extension CharmSignInViewController: UITextFieldDelegate {
         }
         return true
     }
-    
 }

@@ -16,7 +16,7 @@ class SummaryMetricTableViewCell: UITableViewCell {
     
     // Popover view
 //    var popoverView: LabelBubbleView!
-    //    @IBOutlet weak var lblMetricDetail: UILabel!
+//    @IBOutlet weak var lblMetricDetail: UILabel!
 //    @IBOutlet weak var lblScore: UILabel!
 //    @IBOutlet weak var lblScoreDetail: UILabel!
     

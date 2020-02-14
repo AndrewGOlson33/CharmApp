@@ -136,8 +136,6 @@ class MainMenuViewController: UIViewController {
                 firebaseModel.charmUser.userProfile.membershipStatus = .notSubscribed
             }
         }
-        
-        
     }
     
     // UI Related
@@ -165,11 +163,9 @@ class MainMenuViewController: UIViewController {
                 tap = UITapGestureRecognizer(target: self, action: #selector(metricsButtonTapped(_:)))
             default:
                 tap = UITapGestureRecognizer(target: self, action: #selector(learnButtonTapped(_:)))
-                
             }
             
             button.addGestureRecognizer(tap)
-            
         }
     }
     
@@ -231,9 +227,7 @@ class MainMenuViewController: UIViewController {
                 }
             }
         }
-        
     }
-    
     
     // MARK: - Button Handling
     
@@ -340,7 +334,6 @@ class MainMenuViewController: UIViewController {
             }
         }
     }
-
 }
 
 extension MainMenuViewController: SKProductsRequestDelegate {
@@ -362,6 +355,5 @@ extension MainMenuViewController: SKProductsRequestDelegate {
         for invalidIdentifier in response.invalidProductIdentifiers {
             print("~>Invalid ID: \(invalidIdentifier)")
         }
-        
     }
 }

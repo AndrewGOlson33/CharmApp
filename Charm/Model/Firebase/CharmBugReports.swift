@@ -19,7 +19,6 @@ struct BugReports {
             let _ = BugReport(report: text, email: email)
         }
     }
-    
 }
 
 struct BugReport: FirebaseItem {

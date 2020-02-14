@@ -141,7 +141,6 @@ class FirebaseModel {
                 NotificationCenter.default.post(name: FirebaseNotification.trainingHistoryUpdated, object: nil)
             }
         }
-        
     }
     
     // MARK: - Call handler

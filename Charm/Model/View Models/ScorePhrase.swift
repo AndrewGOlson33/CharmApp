@@ -198,7 +198,6 @@ class ScorePhraseModel: NSObject {
         score += pos + neg <= -3 ? -6 : 0
         
         return score >= 5 ? score : 5
-        
     }
     
     // Creates a new object that is accessed externally
@@ -222,8 +221,5 @@ class ScorePhraseModel: NSObject {
             let percent = Double(score) / 2.0
             return percent > 1 ? 1 : percent
         }
-        
     }
-    
-    
 }

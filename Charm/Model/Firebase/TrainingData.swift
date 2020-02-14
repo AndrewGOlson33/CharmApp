@@ -186,7 +186,6 @@ struct NounWord: FirebaseItem, Codable {
     func save() {
         return
     }
-    
 }
 
 struct ConversationPhrases: FirebaseItem {
@@ -213,10 +212,8 @@ struct ConversationPhrases: FirebaseItem {
             if let error = error as? FirebaseItemError { throw error } else { throw FirebaseItemError.invalidData }
         }
         
-        
         id = snapshot.key
         ref = snapshot.ref
-        
     }
     
     fileprivate func getObjects(from snapshot: DataSnapshot) throws -> [ConversationPhrase] {
@@ -325,5 +322,4 @@ struct ChatScore {
         self.score = score
         self.position = position
     }
-    
 }

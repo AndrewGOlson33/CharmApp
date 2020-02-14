@@ -36,7 +36,6 @@ class ConcreteFlashcardsViewController: UIViewController, FlashcardsHistoryDeleg
     @IBOutlet weak var lblConcrete: UILabel!
     @IBOutlet weak var lblAbstract: UILabel!
     
-    
     // MARK: - Properties
     
     // View Model
@@ -74,7 +73,6 @@ class ConcreteFlashcardsViewController: UIViewController, FlashcardsHistoryDeleg
         } else {
             firebaseModelLoaded()
         }
-        
     }
     
     // load navigation bar items
@@ -157,7 +155,6 @@ class ConcreteFlashcardsViewController: UIViewController, FlashcardsHistoryDeleg
             self.activityIndicator.stopAnimating()
             self.viewLoading.isHidden = true
         }
-
     }
     
     // Updates UI When Training Data Updates
@@ -240,7 +237,6 @@ class ConcreteFlashcardsViewController: UIViewController, FlashcardsHistoryDeleg
     @IBAction func resetButtonTapped(_ sender: Any) {
         viewModel.resetRecord(forType: .concrete)
     }
-    
 }
 
 extension ConcreteFlashcardsViewController: UIGestureRecognizerDelegate {
@@ -255,7 +251,6 @@ extension ConcreteFlashcardsViewController: UIGestureRecognizerDelegate {
                 animate(view: btnAbstract, withLabel: lblAbstract, withColor: .gray, toFrame: CGRect(x: abstractFrame.minX + 4, y: abstractFrame.minY + 4, width: abstractFrame.width, height: abstractFrame.height))
                 lastTouchedButton = btnAbstract
             }
-            
         }
     }
     
@@ -325,5 +320,4 @@ extension ConcreteFlashcardsViewController: UIGestureRecognizerDelegate {
             lastTouchedButton = nil
         }
     }
-    
 }

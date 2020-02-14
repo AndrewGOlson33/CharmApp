@@ -168,7 +168,6 @@ class SettingsTableViewController: UITableViewController {
             infoVC.documentType = type
         }
     }
-
 }
 
 extension SettingsTableViewController: UITextFieldDelegate {
@@ -247,5 +246,4 @@ extension SettingsTableViewController: UITextFieldDelegate {
             Database.database().reference().child(FirebaseStructure.usersLocation).child(uid).child(FirebaseStructure.CharmUser.profileLocation).setValue(self.user.userProfile.toAny())
         }
     }
-    
 }

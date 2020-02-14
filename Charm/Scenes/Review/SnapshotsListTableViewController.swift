@@ -19,14 +19,12 @@ class SnapshotsListTableViewController: UITableViewController {
     }
 
     // MARK: - Table view data source
-
-
+    
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
         return snapshots.count
     }
-
- 
+    
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: CellID.snapshotList, for: indexPath)
 
@@ -98,5 +96,4 @@ class SnapshotsListTableViewController: UITableViewController {
         // Pass the selected object to the new view controller.
     }
     */
-
 }

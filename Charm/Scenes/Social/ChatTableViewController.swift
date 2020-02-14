@@ -110,7 +110,6 @@ class ChatTableViewController: UITableViewController {
                 hasCompleted = true
             }
         }
-        
     }
 
     // MARK: - Table view data source
@@ -179,7 +178,6 @@ class ChatTableViewController: UITableViewController {
             }
             self.call(friend)
         }
-        
     }
     
     private func call(_ friend: Friend) {
@@ -226,7 +224,6 @@ class ChatTableViewController: UITableViewController {
             friendVC.showContacts = false
         }
     }
-
 }
 
 extension ChatTableViewController: UISearchResultsUpdating, UISearchBarDelegate {
@@ -248,7 +245,6 @@ extension ChatTableViewController: UISearchResultsUpdating, UISearchBarDelegate 
         // Returns true if the text is empty or nil
         return searchController.searchBar.text?.isEmpty ?? true
     }
-    
 }
 
 extension ChatTableViewController: TableViewRefreshDelegate {
@@ -266,5 +262,4 @@ extension ChatTableViewController: TableViewRefreshDelegate {
             view.isUserInteractionEnabled = true
         }
     }
-    
 }

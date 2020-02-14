@@ -27,7 +27,6 @@ class AppStatus {
     }
     
     static var shared = AppStatus()
-    
 }
 
 @UIApplicationMain
@@ -183,7 +182,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             print("~>Calling Remove active calls.")
             removeActiveCalls()
         }
-    
     }
     
     // MARK: - Helper Functions
@@ -257,7 +255,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         return false
     }
-
 }
 
 // MARK: - Notification Delegates
@@ -402,7 +399,6 @@ extension AppDelegate: SKPaymentTransactionObserver {
                     NotificationCenter.default.post(name: SubscriptionService.userCancelledNotification, object: nil)
                 }
             }
-            
         }
     }
     
@@ -416,7 +412,6 @@ extension AppDelegate: SKPaymentTransactionObserver {
                 } else {
                     NotificationCenter.default.post(name: SubscriptionService.userCancelledNotification, object: nil)
                 }
-                
             }
         }
     }
@@ -467,7 +462,6 @@ extension AppDelegate: SKPaymentTransactionObserver {
         }
         
         queue.finishTransaction(transaction)
-        
     }
     
     func handleDeferredState(for transaction: SKPaymentTransaction, in queue: SKPaymentQueue) {

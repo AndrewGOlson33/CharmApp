@@ -31,5 +31,4 @@ class VideoTableViewCell: UITableViewCell {
         imgThumbnail.image = thumbnailImage ?? UIImage(named: Image.placeholder) ?? nil
         lblTitle.text = ""
     }
-
 }

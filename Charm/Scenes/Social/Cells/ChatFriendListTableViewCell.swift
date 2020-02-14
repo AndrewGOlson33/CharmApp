@@ -23,11 +23,9 @@ class ChatFriendListTableViewCell: UITableViewCell {
             imgProfile.layer.cornerRadius = imgProfile.frame.height / 2
             imgProfile.clipsToBounds = true
         }
-        
     }
 
     override func prepareForReuse() {
         if imgProfile != nil { imgProfile.image = nil }
     }
-
 }

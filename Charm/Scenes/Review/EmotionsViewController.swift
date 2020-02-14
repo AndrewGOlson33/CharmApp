@@ -15,5 +15,4 @@ class EmotionsViewController: UIViewController {
         chartVC.chartType = .emotions
         chartVC.navTitle = "Emotional Journey"
     }
-
 }

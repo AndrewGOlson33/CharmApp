@@ -142,5 +142,4 @@ extension InfoDetailViewController: WKNavigationDelegate {
             }
         }
     }
-    
 }

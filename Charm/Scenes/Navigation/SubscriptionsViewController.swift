@@ -229,5 +229,4 @@ extension SubscriptionsViewController: UITableViewDelegate, UITableViewDataSourc
         
         SubscriptionService.shared.purchase(subscription: subscription)
     }
-
 }
