@@ -18,7 +18,6 @@ class TranscriptTableViewCell: UITableViewCell {
     @IBOutlet var isUserConstraints: [NSLayoutConstraint]!
     @IBOutlet var isFriendConstraints: [NSLayoutConstraint]!
     
-    
     func setup(with info: TranscriptCellInfo) {
         // setup things in the ui that will be the same
         lblTranscriptText.attributedText = info.text

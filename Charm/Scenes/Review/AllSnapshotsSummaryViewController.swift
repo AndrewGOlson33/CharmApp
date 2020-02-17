@@ -82,7 +82,6 @@ class AllSnapshotsSummaryViewController: UIViewController {
                 smilingData.add(score: Int(snapshot.getTopLevelScoreValue(forSummaryItem: .smilingPercentage) ?? 0))
             }
         }
-        
     }
     
     private func setupLineChart() {
@@ -157,9 +156,7 @@ class AllSnapshotsSummaryViewController: UIViewController {
         options.credits.enabled = false
         
         chartView.options = options
-        
     }
-
 }
 
 // MARK: - Table View Extension

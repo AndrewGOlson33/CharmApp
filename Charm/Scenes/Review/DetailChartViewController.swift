@@ -54,7 +54,6 @@ class DetailChartViewController: UIViewController {
     var scrollCounter = 0
     
     // Helps deal with layout glitches caused by highcharts
-    var chartDidLoad: Bool = false
     var viewHasAppeared: Bool = false
     
     // make sure to not accidentally tap on more info button
@@ -70,15 +69,26 @@ class DetailChartViewController: UIViewController {
         
         chartView.plugins = ["annotations"]
         
-        if let delegate = UIApplication.shared.delegate as? AppDelegate, let window = delegate.window, let nav = window.rootViewController as? UINavigationController {
-            let constant = nav.navigationBar.frame.height
-            chartViewHeight.constant = constant
-            view.setNeedsLayout()
-            view.layoutIfNeeded()
-        }
-
         // setup date formatter
         dFormatter.dateStyle = .medium
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        tabBarController?.navigationItem.title = navTitle
+        tabBarController?.navigationItem.rightBarButtonItem = nil
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+//        if let delegate = UIApplication.shared.delegate as? AppDelegate, let window = delegate.window, let nav = window.rootViewController as? UINavigationController {
+//            let constant = nav.navigationBar.frame.height
+//            chartViewHeight.constant = constant
+//            view.setNeedsLayout()
+//            view.layoutIfNeeded()
+//        }
         
         // load summary data
         if let data = FirebaseModel.shared.selectedSnapshot {
@@ -87,35 +97,15 @@ class DetailChartViewController: UIViewController {
             snapshot = data
         }
         
-        // Resolve layout issues caused by highcharts
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
-            self.chartDidLoad = true
-            self.tableView.reloadData()
-        }
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        tabBarController?.navigationItem.title = navTitle
-        tabBarController?.navigationItem.rightBarButtonItem = nil
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        
-        // load a new snapshot if needed
-        if let newSnapshot = FirebaseModel.shared.selectedSnapshot {
-            snapshot = newSnapshot
-        }
-        
         guard snapshot != nil else { return }
         loadData()
-        setupChart()
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            self.viewHasAppeared = true
-            self.tableView.reloadData()
-        }
+//        setupChart()
+//
+//        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+//            self.viewHasAppeared = true
+//            self.tableView.reloadData()
+//        }
     }
     
     @objc private func infoButtonTapped() {
@@ -468,7 +458,7 @@ class DetailChartViewController: UIViewController {
             }
         }
         
-        tableView.reloadData()
+        self.setupChart()
     }
     
     private func setupChart() {
@@ -745,6 +735,9 @@ class DetailChartViewController: UIViewController {
         options.navigation = navigation
         
         chartView.options = options
+        
+        viewHasAppeared = true
+        
         tableView.reloadData()
     }
 }
@@ -974,11 +967,11 @@ extension DetailChartViewController: UITableViewDelegate, UITableViewDataSource 
             return indexPath.row == sliderData.count - 1 ? 80 : 82
         default:
             let font = UIFont.systemFont(ofSize: 14)
-            guard transcript.count > indexPath.row else { return 64 }
+            guard transcript.count > indexPath.row else { return 44 }
             let text = transcript[indexPath.row].text
             let height = heightForView(text: text.mutableString as String, font: font, width: tableView.frame.width * 0.75)
             let difference = height - 17
-            return difference > 0 ? 64 + difference : 64
+            return difference > 0 ? 44 + difference : 44
         }
         
 //        switch indexPath.section {
