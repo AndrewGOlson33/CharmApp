@@ -48,8 +48,6 @@ class ChatTableViewController: UITableViewController {
             activityView.color = .black
         }
         
-        
-        
         activityView.hidesWhenStopped = true
         view.addSubview(activityView)
         

@@ -79,6 +79,8 @@ class MainMenuViewController: UIViewController {
         
         checkCredits()
         checkStatus()
+        
+        print("~>Firebase user uid: ", FirebaseModel.shared.charmUser.id ?? "Undefined")
     }
     
     // MARK: - Private Setup Functions

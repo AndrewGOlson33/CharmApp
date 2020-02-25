@@ -113,6 +113,7 @@ PODS:
   - GTMSessionFetcher/Core (1.3.1)
   - Highcharts (8.0.0)
   - leveldb-library (1.22)
+  - MBProgressHUD (1.2.0)
   - nanopb (0.3.9011):
     - nanopb/decode (= 0.3.9011)
     - nanopb/encode (= 0.3.9011)
@@ -120,7 +121,7 @@ PODS:
   - nanopb/encode (0.3.9011)
   - OpenTok (2.16.4)
   - PromisesObjC (1.2.8)
-  - Protobuf (3.11.3)
+  - Protobuf (3.11.4)
   - PXSiriWave (0.0.2)
 
 DEPENDENCIES:
@@ -132,6 +133,7 @@ DEPENDENCIES:
   - FirebaseUI/Auth
   - FirebaseUI/Email
   - Highcharts
+  - MBProgressHUD
   - OpenTok
   - PXSiriWave
 
@@ -159,6 +161,7 @@ SPEC REPOS:
     - GTMSessionFetcher
     - Highcharts
     - leveldb-library
+    - MBProgressHUD
     - nanopb
     - OpenTok
     - PromisesObjC
@@ -188,12 +191,13 @@ SPEC CHECKSUMS:
   GTMSessionFetcher: cea130bbfe5a7edc8d06d3f0d17288c32ffe9925
   Highcharts: 48edc2bdca242be51dd18b0b4be9fcb052fa660e
   leveldb-library: 55d93ee664b4007aac644a782d11da33fba316f7
+  MBProgressHUD: 3ee5efcc380f6a79a7cc9b363dd669c5e1ae7406
   nanopb: 18003b5e52dab79db540fe93fe9579f399bd1ccd
   OpenTok: 0f9a23c50524a53c612b5b70ef6ec49155928e82
   PromisesObjC: c119f3cd559f50b7ae681fa59dc1acd19173b7e6
-  Protobuf: 0e94afe3b47cb11876eb6aee296638711a24bf75
+  Protobuf: 176220c526ad8bd09ab1fb40a978eac3fef665f7
   PXSiriWave: a65c60234d03316f052209becb54a8d77883c182
 
-PODFILE CHECKSUM: 6132229c0e82436576f6af297b06b267b76192bc
+PODFILE CHECKSUM: 18eafbc30058a2544116ed8f633d8893bb080867
 
 COCOAPODS: 1.8.1

@@ -808,7 +808,7 @@ extension ContactsViewModel: FriendManagementDelegate {
         }
     }
     
-    fileprivate func resetFriendLists() {
+    func resetFriendLists() {
         contacts.removeAll()
         notInContacts.removeAll()
         existingUsers.removeAll()

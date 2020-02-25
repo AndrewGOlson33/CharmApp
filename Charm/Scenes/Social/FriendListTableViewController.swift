@@ -89,6 +89,13 @@ class FriendListTableViewController: UITableViewController {
         showActivity(viewModel.isLoading)
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        // Reset friend list
+        viewModel.resetFriendLists()
+    }
+    
     // MARK: - Button Handling
     
     @IBAction func contactsButtonTapped(_ sender: Any) {

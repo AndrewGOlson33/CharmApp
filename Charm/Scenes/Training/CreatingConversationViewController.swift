@@ -102,8 +102,6 @@ class CreatingConversationViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        print("~>Firebase user uid: ", FirebaseModel.shared.charmUser.id ?? "Undefined")
-        
         print("~>Progress: \(viewModel.progress)")
         progressSlider.setup(for: .standard, atPosition: CGFloat(viewModel.progress), color: #colorLiteral(red: 0.4862745098, green: 0.7098039216, blue: 0.9254901961, alpha: 1))
         

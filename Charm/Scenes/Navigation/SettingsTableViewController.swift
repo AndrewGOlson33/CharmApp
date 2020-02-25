@@ -14,7 +14,7 @@ enum DocumentType {
     case TermsOfUse
 }
 
-class SettingsTableViewController: UITableViewController {
+class SettingsTableViewController: TableViewController {
     
     // IBOutlets
     
@@ -27,7 +27,6 @@ class SettingsTableViewController: UITableViewController {
     @IBOutlet weak var lblSubscription: UILabel!
     
     var appDelegate: AppDelegate!
-    var user: CharmUser!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -65,6 +64,10 @@ class SettingsTableViewController: UITableViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        
+        // Update labels
+        updateLabels()
+        
         NotificationCenter.default.addObserver(self, selector: #selector(updateLabels), name: FirebaseNotification.CharmUserDidUpdate, object: nil)
     }
     
@@ -74,28 +77,26 @@ class SettingsTableViewController: UITableViewController {
     }
     
     @objc private func updateLabels() {
-        user = FirebaseModel.shared.charmUser
-        
         // setup labels
-        lblEmail.text = user.userProfile.email
-        lblCredits.text = user.userProfile.credits
-        txtName.text = user.userProfile.firstName + " " + user.userProfile.lastName
+        lblEmail.text = FirebaseModel.shared.charmUser.userProfile.email
+        lblCredits.text = FirebaseModel.shared.charmUser.userProfile.credits
+        txtName.text = FirebaseModel.shared.charmUser.userProfile.firstName + " " + FirebaseModel.shared.charmUser.userProfile.lastName
         
         // setup subscription labels and add credits if needed
         if let current = SubscriptionService.shared.currentSubscription, current.isActive {
             lblSubscription.text = current.level.rawValue
-            lblRenewDate.text = user.userProfile.renewDateString
+            lblRenewDate.text = FirebaseModel.shared.charmUser.userProfile.renewDateString
         } else {
             lblSubscription.text = "Not Subscribed"
             lblRenewDate.text = "N/A"
         }
         
         // setup phone number toggle
-        tglPhoneNumber.isOn = user.userProfile.phone != ""
+        tglPhoneNumber.isOn = FirebaseModel.shared.charmUser.userProfile.phone != ""
         txtPhone.isEnabled = tglPhoneNumber.isOn
         
-        if !self.user.userProfile.phone.isEmpty {
-            self.txtPhone.text = self.user.userProfile.phone
+        if !FirebaseModel.shared.charmUser.userProfile.phone.isEmpty {
+            self.txtPhone.text = FirebaseModel.shared.charmUser.userProfile.phone
         }
     }
     
@@ -184,13 +185,18 @@ extension SettingsTableViewController: UITextFieldDelegate {
         // make sure we have a number
         guard let phone = txtPhone.text else { return }
         
+        showActivityIndicator()
+        
         // save number to firebase
         let ref = Database.database().reference().child(FirebaseStructure.usersLocation)
         let phoneQuery = ref.queryOrdered(byChild: "userProfile/phone").queryEqual(toValue: phone).queryLimited(toFirst: 1)
-        phoneQuery.observeSingleEvent(of: .value) { (snapshot) in
+        phoneQuery.observeSingleEvent(of: .value) { [weak self] (snapshot) in
+            guard let strongSelf = self else { return }
+            
+            strongSelf.hideActivityIndicator()
             
             if !snapshot.exists() {
-                self.handleNotFound()
+                strongSelf.handleNotFound()
             }
             
             if let first = snapshot.children.first(where: { (_) -> Bool in
@@ -198,11 +204,10 @@ extension SettingsTableViewController: UITextFieldDelegate {
             }) as? DataSnapshot {
                 do {
                     let charmUser = try CharmUser(snapshot: first)
-                    self.handleFound(charmUser)
+                    strongSelf.handleFound(charmUser)
                 } catch let error {
                     print("~>There was an error: \(error)")
                 }
-                
             }
         }
     }
@@ -215,13 +220,13 @@ extension SettingsTableViewController: UITextFieldDelegate {
         
         textField.resignFirstResponder()
         
-        user.userProfile.updateUser(name: text)
+        FirebaseModel.shared.charmUser.userProfile.updateUser(name: text)
         
         return false
     }
     
     fileprivate func handleFound(_ user: CharmUser) {
-        if user.id == self.user.id { return }
+        if user.id == FirebaseModel.shared.charmUser.id { return }
         
         // let the user know that someone is already using this number
         let alert = UIAlertController(title: "Phone Number in Use", message: "This phone number is already associated with another user's account.", preferredStyle: .alert)
@@ -230,7 +235,7 @@ extension SettingsTableViewController: UITextFieldDelegate {
     }
     
     fileprivate func handleNotFound() {
-        guard let phone = txtPhone.text, let uid = user.id else { return }
+        guard let phone = txtPhone.text, let uid = FirebaseModel.shared.charmUser.id else { return }
         
         guard phone.isPhoneNumber else {
             let alert = UIAlertController(title: "Invalid", message: "Please enter a valid phone number.", preferredStyle: .alert)
@@ -239,11 +244,19 @@ extension SettingsTableViewController: UITextFieldDelegate {
             return
         }
         
-        user.userProfile.phone = phone
+        showActivityIndicator()
         
-        DispatchQueue.global(qos: .utility).async { [weak self] in
-            guard let self = self else { return }
-            Database.database().reference().child(FirebaseStructure.usersLocation).child(uid).child(FirebaseStructure.CharmUser.profileLocation).setValue(self.user.userProfile.toAny())
+        FirebaseModel.shared.charmUser.userProfile.phone = phone
+        
+        DispatchQueue.global(qos: .userInitiated).async { Database.database().reference().child(FirebaseStructure.usersLocation).child(uid).child(FirebaseStructure.CharmUser.profileLocation).setValue(FirebaseModel.shared.charmUser.userProfile.toAny())
+            
+            DispatchQueue.main.async { [weak self] in
+                guard let strongSelf = self else { return }
+                
+                strongSelf.updateLabels()
+                
+                strongSelf.hideActivityIndicator()
+            }
         }
     }
 }

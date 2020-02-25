@@ -18,4 +18,5 @@ target 'Charm' do
   pod 'Firebase/DynamicLinks'
   pod 'Firebase/Messaging'
   pod 'PXSiriWave'
+  pod 'MBProgressHUD'
 end
