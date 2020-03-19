@@ -146,24 +146,22 @@ class FirebaseModel {
     // MARK: - Call handler
     
     private func setupCallObserver() {
-        DispatchQueue.global(qos: .utility).async { [weak self] in
+        guard let authUser = Auth.auth().currentUser else { return }
+        Database.database().reference().child(FirebaseStructure.usersLocation).child(authUser.uid).child(FirebaseStructure.CharmUser.currentCallLocation).observe(.value) { [weak self] (snapshot) in
             guard let self = self else { return }
-            guard let authUser = Auth.auth().currentUser else { return }
-            Database.database().reference().child(FirebaseStructure.usersLocation).child(authUser.uid).child(FirebaseStructure.CharmUser.currentCallLocation).observe(.value) { [weak self] (snapshot) in
-                guard let self = self else { return }
-                guard snapshot.exists() else {
-                    if !self.isSetupPhaseComplete { self.isSetupPhaseComplete = true }
-                    return
-                }
-                do {
-                    let call = try Call(snapshot: snapshot)
-                    self.handle(call: call)
-                    if !self.isSetupPhaseComplete { self.isSetupPhaseComplete = true }
-                } catch let error {
-                    print("~>There was an error trying to capture the call: \(error)")
-                }
+            guard snapshot.exists() else {
+                if !self.isSetupPhaseComplete { self.isSetupPhaseComplete = true }
+                return
+            }
+            do {
+                let call = try Call(snapshot: snapshot)
+                self.handle(call: call)
+                if !self.isSetupPhaseComplete { self.isSetupPhaseComplete = true }
+            } catch let error {
+                print("~>There was an error trying to capture the call: \(error)")
             }
         }
+        
     }
     
     private func handle(call: Call) {

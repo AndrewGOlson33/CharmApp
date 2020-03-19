@@ -30,7 +30,9 @@ class VideoCallViewController: UIViewController {
     @IBOutlet weak var viewConnecting: UIView!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     @IBOutlet weak var btnEndCall: UIButton!
-    @IBOutlet weak var lblCallTimer: UILabel!
+    @IBOutlet weak var callProgressBar: UIProgressView!
+    @IBOutlet weak var callProgressLabel: UILabel!
+    @IBOutlet weak var recordingLabel: UILabel!
     
     // MARK: - Properties
     
@@ -63,6 +65,7 @@ class VideoCallViewController: UIViewController {
     var shouldShowCallTimer: Bool = false
     var callTime: Int = 0
     var callTimer: Timer = Timer()
+    var requiredCallTime: Int = 480 // 8 mins
     
     // OpenTok API key
     var kApiKey = ""
@@ -124,7 +127,9 @@ class VideoCallViewController: UIViewController {
         hideButton()
         
         // timer alpha should be 0 at the start
-        lblCallTimer.alpha = 0.0
+        callProgressLabel.alpha = 0.0
+        callProgressBar.alpha = 0.0
+        recordingLabel.alpha = 0.0
         
         // setup tap gesture
         tap = UITapGestureRecognizer(target: self, action: #selector(handleScreenTap(_:)))
@@ -171,13 +176,17 @@ class VideoCallViewController: UIViewController {
     
     @objc private func handleScreenTap(_ notification: UITapGestureRecognizer) {
         if shouldShowCallTimer {
-            lblCallTimer.isHidden = false
+            callProgressLabel.isHidden = false
+            callProgressBar.isHidden = false
+            recordingLabel.isHidden = false
         }
         
         if self.btnEndCall.alpha == 0 {
             UIView.animate(withDuration: 0.25, delay: 0.0, options: [.curveEaseIn, .allowUserInteraction], animations: {
                 self.btnEndCall.alpha = 1.0
-                self.lblCallTimer.alpha = 1.0
+                self.callProgressLabel.alpha = 1.0
+                self.callProgressBar.alpha = 1.0
+                self.recordingLabel.alpha = 1.0
             }) { (_) in
                 self.hideButton()
             }
@@ -188,7 +197,9 @@ class VideoCallViewController: UIViewController {
         DispatchQueue.main.asyncAfter(deadline: .now() + 5.0) {
             UIView.animate(withDuration: 0.8, delay: 0.0, options: [.curveEaseIn, .allowUserInteraction], animations: {
                 self.btnEndCall.alpha = 0.0
-                self.lblCallTimer.alpha = 0.0
+                self.callProgressLabel.alpha = 0.0
+                self.callProgressBar.alpha = 0.0
+                self.recordingLabel.alpha = 0.0
             })
         }
     }
@@ -317,15 +328,14 @@ class VideoCallViewController: UIViewController {
             friendCall = Call(sessionID: id, status: .connected, from: myUser.id!, in: room)
         }
         
-        // Write call objects to Firebase
-        DispatchQueue.global(qos: .utility).async {
-            // encode data
-            let myCallData = myCall.toAny()
-            let friendCallData = friendCall.toAny()
-            // upload to firebase
-            usersRef.child(self.friend.id!).child(FirebaseStructure.CharmUser.currentCallLocation).setValue(friendCallData)
-            usersRef.child(self.myUser.id!).child(FirebaseStructure.CharmUser.currentCallLocation).setValue(myCallData)
-        }
+        
+        // encode data
+        let myCallData = myCall.toAny()
+        let friendCallData = friendCall.toAny()
+        // upload to firebase
+        usersRef.child(self.friend.id!).child(FirebaseStructure.CharmUser.currentCallLocation).setValue(friendCallData)
+        usersRef.child(self.myUser.id!).child(FirebaseStructure.CharmUser.currentCallLocation).setValue(myCallData)
+        
     }
     
     /**
@@ -657,7 +667,7 @@ extension VideoCallViewController: OTSubscriberDelegate {
             self.useTokenTimer.invalidate()
         })
         
-        endArchiveTimer = Timer.scheduledTimer(withTimeInterval: 720.0, repeats: false, block: { (_) in
+        endArchiveTimer = Timer.scheduledTimer(withTimeInterval: TimeInterval(requiredCallTime), repeats: false, block: { (_) in
             self.stopArchive()
             self.archiveHasBeenStopped = true
             self.endArchiveTimer.invalidate()
@@ -668,14 +678,22 @@ extension VideoCallViewController: OTSubscriberDelegate {
         
         callTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true, block: { (_) in
             self.callTime += 1
-            let minutes = self.callTime / 60
-            let seconds = self.callTime % 60
             
-            let minString = String(format: "%02d", minutes)
-            let secString = String(format: "%02d", seconds)
+            let progress = Float(self.callTime) / Float(self.requiredCallTime)
             
-            let timeString = "\(minString):\(secString)"
-            self.lblCallTimer.text = timeString
+            self.callProgressBar.progress = progress
+            self.callProgressLabel.text = String(format:"%.0f", (progress * 100)) + "%"
+            
+            
+//            let minutes = self.callTime / 60
+//            let seconds = self.callTime % 60
+//
+//            let minString = String(format: "%02d", minutes)
+//            let secString = String(format: "%02d", seconds)
+//
+//            let timeString = "\(minString):\(secString)"
+            
+           // self.lblCallTimer.text = timeString
         })
     }
     

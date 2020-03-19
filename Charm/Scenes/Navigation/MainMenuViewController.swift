@@ -50,6 +50,8 @@ class MainMenuViewController: UIViewController {
         
         validateProductIdentifiers()
         setupMetricsObserver()
+        
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -81,7 +83,11 @@ class MainMenuViewController: UIViewController {
         checkStatus()
         
         print("~>Firebase user uid: ", FirebaseModel.shared.charmUser.id ?? "Undefined")
+        
+        
     }
+    
+    
     
     // MARK: - Private Setup Functions
     
@@ -273,67 +279,73 @@ class MainMenuViewController: UIViewController {
     }
     
     fileprivate func addFriend(withID id: String) {
-        DispatchQueue.global(qos: .utility).async {
-            // first move friend from received to current friends
-            guard var user = self.firebaseModel.charmUser else { return }
+        
+        // first move friend from received to current friends
+        guard var user = self.firebaseModel.charmUser else { return }
+        
+        if user.friendList?.currentFriends == nil { user.friendList?.currentFriends = [] }
+        
+        if user.friendList?.currentFriends?.contains(where: { (friend) -> Bool in
+            return friend.id == id
+        }) ?? false {
+            // friend already exists in list
+            let alert = UIAlertController(title: "Already Friends", message: "You are trying to add a friend that already exists in your contact list.", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+            self.navigationController?.present(alert, animated: true, completion: nil)
+            return
+        } else if user.friendList?.pendingSentApproval?.contains(where: { (friend) -> Bool in
+            return friend.id == id
+        }) ?? false {
+            // friend already exists in list
+            let alert = UIAlertController(title: "Already Have Pending Request", message: "You have already sent this user a friend request.", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+            self.navigationController?.present(alert, animated: true, completion: nil)
+            return
+        } else if user.friendList?.pendingReceivedApproval?.contains(where: { (friend) -> Bool in
+            return friend.id == id
+        }) ?? false {
+            // friend already exists in list
+            let alert = UIAlertController(title: "Already Have Pending Request", message: "You already have a pending friend request from this user.  Please approve the request on your contacts list.", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
             
-            if user.friendList?.currentFriends == nil { user.friendList?.currentFriends = [] }
-            
-            if user.friendList?.currentFriends?.contains(where: { (friend) -> Bool in
-                return friend.id == id
-            }) ?? false {
-                // friend already exists in list
-                let alert = UIAlertController(title: "Already Friends", message: "You are trying to add a friend that already exists in your contact list.", preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+            DispatchQueue.main.async {
                 self.navigationController?.present(alert, animated: true, completion: nil)
-                return
-            } else if user.friendList?.pendingSentApproval?.contains(where: { (friend) -> Bool in
-                return friend.id == id
-            }) ?? false {
-                // friend already exists in list
-                let alert = UIAlertController(title: "Already Have Pending Request", message: "You have already sent this user a friend request.", preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-                self.navigationController?.present(alert, animated: true, completion: nil)
-                return
-            } else if user.friendList?.pendingReceivedApproval?.contains(where: { (friend) -> Bool in
-                return friend.id == id
-            }) ?? false {
-                // friend already exists in list
-                let alert = UIAlertController(title: "Already Have Pending Request", message: "You already have a pending friend request from this user.  Please approve the request on your contacts list.", preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-                
-                DispatchQueue.main.async {
-                    self.navigationController?.present(alert, animated: true, completion: nil)
-                }
-                
-                return
             }
             
-            // write data to firebase
+            return
+        }
+        
+        // write data to firebase
+        
+        // finally move user from sent to current friends on friend's friend list'
+        guard let myID = user.id else { return }
+    
+        Database.database().reference().child(FirebaseStructure.usersLocation).child(id).observeSingleEvent(of: .value) { (snapshot) in
             
-            // finally move user from sent to current friends on friend's friend list'
-            guard let myID = user.id else { return }
+            // get the user object
+            var friendUser = try! CharmUser(snapshot: snapshot)
+            if friendUser.friendList?.currentFriends == nil { friendUser.friendList?.currentFriends = [] }
+            let friendObject = Friend(id: id, first: friendUser.userProfile.firstName, last: friendUser.userProfile.lastName, email: friendUser.userProfile.email)
+            let meAsFriend = Friend(id: myID, first: user.userProfile.firstName, last: user.userProfile.lastName, email: user.userProfile.email)
             
-            Database.database().reference().child(FirebaseStructure.usersLocation).child(id).observeSingleEvent(of: .value) { (snapshot) in
-                // get the user object
-                var friendUser = try! CharmUser(snapshot: snapshot)
-                if friendUser.friendList?.currentFriends == nil { friendUser.friendList?.currentFriends = [] }
-                let friendObject = Friend(id: id, first: friendUser.userProfile.firstName, last: friendUser.userProfile.lastName, email: friendUser.userProfile.email)
-                let meAsFriend = Friend(id: myID, first: user.userProfile.firstName, last: user.userProfile.lastName, email: user.userProfile.email)
-                
-                friendUser.friendList?.currentFriends?.append(meAsFriend)
-                user.friendList?.currentFriends?.append(friendObject)
-                
-                // write changes to firebase
-                let friendCurrent = friendUser.friendList!.toAny()
-                let myCurrent = user.friendList!.toAny()
-                Database.database().reference().child(FirebaseStructure.usersLocation).child(id).child(FirebaseStructure.CharmUser.friendListLocation).child(FirebaseStructure.CharmUser.FriendList.currentFriends).setValue(friendCurrent)
-                
-                Database.database().reference().child(FirebaseStructure.usersLocation).child(myID).child(FirebaseStructure.CharmUser.friendListLocation).child(FirebaseStructure.CharmUser.FriendList.currentFriends).setValue(myCurrent)
-                
-                self.loadingFriendFromNotification = false
-                (UIApplication.shared.delegate as! AppDelegate).friendID = ""
+            friendUser.friendList?.currentFriends?.append(meAsFriend)
+            FirebaseModel.shared.charmUser.friendList?.currentFriends?.append(friendObject)
+            
+            // write changes to firebase
+            let friendCurrent = friendUser.friendList!.toAny()
+            let myCurrent = FirebaseModel.shared.charmUser.friendList!.toAny()
+            
+            
+            Database.database().reference().child(FirebaseStructure.usersLocation).child(id).child(FirebaseStructure.CharmUser.friendListLocation).setValue(friendCurrent)  { (error, _) in
+                print(error ?? "Success added")
             }
+            
+            Database.database().reference().child(FirebaseStructure.usersLocation).child(myID).child(FirebaseStructure.CharmUser.friendListLocation).setValue(myCurrent) { (error, _) in
+                print(error ?? "Success added")
+            }
+            
+            self.loadingFriendFromNotification = false
+            (UIApplication.shared.delegate as! AppDelegate).friendID = ""
         }
     }
 }

@@ -17,7 +17,7 @@ enum FirebaseItemError: Error {
 
 struct CharmUser: FirebaseItem {
        
-    var id: String? = nil
+    var id: String? = Auth.auth().currentUser?.uid
     var ref: DatabaseReference?
     var userProfile: UserProfile
     var friendList: FriendList?
@@ -366,9 +366,38 @@ struct FriendList: FirebaseItem {
     }
     
     func toAny() -> [AnyHashable : Any] {
-
-        // save via save function, not toAny
-        return [:]
+        var current: [Any] = []
+        var pendingSent: [Any] = []
+        var pendingReceived: [Any] = []
+        var sentTextNSArray: [Any] = []
+        
+        if let currentArray = currentFriends {
+            for element in currentArray {
+                current.append(element.toAny())
+            }
+        }
+        if let pendingSentArray = pendingSentApproval {
+            for element in pendingSentArray {
+                pendingSent.append(element.toAny())
+            }
+        }
+        if let pendingReceivedArray = pendingReceivedApproval {
+            for element in pendingReceivedArray {
+                pendingReceived.append(element.toAny())
+            }
+        }
+        if let sentTextArray = sentText {
+            for element in sentTextArray {
+                sentTextNSArray.append(element.toAny())
+            }
+        }
+        
+        return [
+            FirebaseStructure.CharmUser.FriendList.currentFriends : current,
+            FirebaseStructure.CharmUser.FriendList.pendingSentApproval : pendingSent,
+            FirebaseStructure.CharmUser.FriendList.pendingReceivedApproval : pendingReceived,
+            FirebaseStructure.CharmUser.FriendList.sentText : sentTextNSArray,
+        ]
     }
     
     func save() {
@@ -447,8 +476,8 @@ struct Friend: FirebaseItem {
         guard let values = snapshot.value as? [String : Any] else {
             throw FirebaseItemError.invalidData
         }
-        
-        id = snapshot.key
+        // FIXME: What is friend id and just id??
+        id = values[FirebaseStructure.Friend.id] as? String ?? ""
         ref = snapshot.ref
         
         firstName = values[FirebaseStructure.Friend.firstName] as? String ?? ""

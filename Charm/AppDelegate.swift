@@ -188,7 +188,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func removeActiveCalls() {
         guard let user = FirebaseModel.shared.charmUser else { return }
-        let myCallsRef = Database.database().reference().child(FirebaseStructure.usersLocation).child(user.id!).child(FirebaseStructure.CharmUser.currentCallLocation)
+        guard let id = user.id else { return }
+        let myCallsRef = Database.database().reference().child(FirebaseStructure.usersLocation).child(id).child(FirebaseStructure.CharmUser.currentCallLocation)
         myCallsRef.removeValue()
         print("~>Did remove active calls.")
     }

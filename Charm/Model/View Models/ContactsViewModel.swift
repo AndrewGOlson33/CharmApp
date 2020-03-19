@@ -36,30 +36,27 @@ class ContactsViewModel: NSObject {
     
     var hasLoaded: Bool = false
     
-    // user object
-    var user = FirebaseModel.shared.charmUser
-    
     // all users
     var allUsers: [CharmUser] = []
     
     // compute friends list properties
     var currentFriends: [Friend] {
-        guard let thisUser = user, let friendsList = thisUser.friendList, let currentFriends = friendsList.currentFriends else { return [] }
+        guard let thisUser = FirebaseModel.shared.charmUser, let friendsList = thisUser.friendList, let currentFriends = friendsList.currentFriends else { return [] }
         return currentFriends
     }
     
     var pendingReceived: [Friend] {
-        guard let thisUser = user, let friendsList = thisUser.friendList, let pending = friendsList.pendingReceivedApproval else { return [] }
+        guard let thisUser = FirebaseModel.shared.charmUser, let friendsList = thisUser.friendList, let pending = friendsList.pendingReceivedApproval else { return [] }
         return pending
     }
     
     var pendingSent: [Friend] {
-        guard let thisUser = user, let friendsList = thisUser.friendList, let pending = friendsList.pendingSentApproval else { return [] }
+        guard let thisUser = FirebaseModel.shared.charmUser, let friendsList = thisUser.friendList, let pending = friendsList.pendingSentApproval else { return [] }
         return pending
     }
     
     var sentText: [Friend] {
-        guard let thisUser = user, let friendsList = thisUser.friendList, let sent = friendsList.sentText else { return [] }
+        guard let thisUser = FirebaseModel.shared.charmUser, let friendsList = thisUser.friendList, let sent = friendsList.sentText else { return [] }
         return sent
     }
     
@@ -128,7 +125,7 @@ class ContactsViewModel: NSObject {
         super.init()
         NotificationCenter.default.addObserver(self, selector: #selector(updatedUser), name: FirebaseNotification.CharmUserDidUpdate, object: nil)
         
-        guard let user = user else { return }
+        guard let user = FirebaseModel.shared.charmUser else { return }
         if !UserDefaults.standard.bool(forKey: Defaults.hasMigrated) {
             user.friendList?.save()
             
@@ -140,27 +137,24 @@ class ContactsViewModel: NSObject {
     }
     
     private func loadUserList() {
-        DispatchQueue.global(qos: .utility).async { [weak self] in
-            guard self != nil else { return }
-            
-            Database.database().reference().child(FirebaseStructure.usersLocation).observe(.value) { [weak self] (snapshot) in
-                guard let self = self else { return }
-                self.allUsers = []
-                for child in snapshot.children {
-                    do {
-                        guard let userSnap = child as? DataSnapshot else { continue }
-                        if !self.allUsers.contains(where: { (user) -> Bool in
-                            user.ref == userSnap.ref
-                        }) { self.allUsers.append(try CharmUser(snapshot: userSnap)) }
-                    } catch let error {
-                        print("~>There was an error trying to load a user from the child snapshot: \(error)")
-                    }
+        Database.database().reference().child(FirebaseStructure.usersLocation).observe(.value) { [weak self] (snapshot) in
+            guard let self = self else { return }
+            self.allUsers = []
+            for child in snapshot.children {
+                do {
+                    guard let userSnap = child as? DataSnapshot else { continue }
+                    if !self.allUsers.contains(where: { (user) -> Bool in
+                        user.ref == userSnap.ref
+                    }) { self.allUsers.append(try CharmUser(snapshot: userSnap)) }
+                } catch let error {
+                    print("~>There was an error trying to load a user from the child snapshot: \(error)")
                 }
-                
-                print("~>Loaded user list.")
-                self.setupAddFriendsArrays()
             }
+            
+            print("~>Loaded user list.")
+            self.setupAddFriendsArrays()
         }
+        
     }
     
     // MARK: - Data Access
@@ -318,7 +312,7 @@ class ContactsViewModel: NSObject {
             phoneNumbers.append(phone.value.stringValue.filter("0123456789".contains))
         }
         
-        guard let contacts = user?.friendList?.currentFriends else {
+        guard let contacts = FirebaseModel.shared.charmUser?.friendList?.currentFriends else {
             notInContacts.append(contact)
             return
         }
@@ -419,7 +413,7 @@ class ContactsViewModel: NSObject {
                 }) {
                     guard let friendUser = friendUser, let id = friendUser.id else { continue }
                     let friend = Friend(id: id, first: friendUser.userProfile.firstName, last: friendUser.userProfile.lastName, email: friendUser.userProfile.email)
-                    if !(friend.id == self.user?.id) && !self.existingUsers.contains(where: { (existing) -> Bool in
+                    if !(friend.id == FirebaseModel.shared.charmUser.id) && !self.existingUsers.contains(where: { (existing) -> Bool in
                         return existing.email == friend.email
                     }) && !self.pendingReceived.contains(where: { (existing) -> Bool in
                         return existing.email == friend.email
@@ -495,7 +489,7 @@ class ContactsViewModel: NSObject {
     // updates should be live
     @objc private func updatedUser(_ sender: Notification) {
         guard let updatedUser = sender.object as? CharmUser else { return }
-        user = updatedUser
+        FirebaseModel.shared.charmUser = updatedUser
         
         // load contact list
         guard !isLoading, !hasLoaded else { return }
@@ -509,7 +503,7 @@ extension ContactsViewModel: FriendManagementDelegate {
     
     func delete(friend: Friend, fromTableView tableView: UITableView, atIndexPath indexPath: IndexPath, ofType type: ContactType) {
         
-        guard let user = self.user, let myId = user.id else { return }
+        guard let user = FirebaseModel.shared.charmUser, let myId = user.id else { return }
         
         DispatchQueue.global(qos: .utility).async { [weak self] in
             guard let self = self else { return }
@@ -540,7 +534,7 @@ extension ContactsViewModel: FriendManagementDelegate {
     
     func approveFriendRequest(withId id: String) {
         // first move friend from received to current friends
-        guard let user = user, let myID = user.id, allUsers.count > 0 else {
+        guard let user = FirebaseModel.shared.charmUser, let myID = user.id, allUsers.count > 0 else {
             DispatchQueue.global(qos: .utility).asyncAfter(deadline: .now() + 0.5) { [weak self] in
             guard let self = self else { return }
                 self.approveFriendRequest(withId: id)
@@ -595,7 +589,7 @@ extension ContactsViewModel: FriendManagementDelegate {
     // MARK: - Private Helper Function to Perform Maintenence
     
     func performFriendListMaintenence() {
-        guard let user = user else {
+        guard let user = FirebaseModel.shared.charmUser else {
             DispatchQueue.global(qos: .background).asyncAfter(deadline: .now() + 1.0) { [weak self] in
                 guard let self = self else { return }
                 self.performFriendListMaintenence()
@@ -676,13 +670,13 @@ extension ContactsViewModel: FriendManagementDelegate {
 
                 do {
                     var list = try FriendList(snapshot: snapshot)
-                    let meAsFriend = Friend(id: self.user!.id!, first: self.user!.userProfile.firstName, last: self.user!.userProfile.lastName, email: self.user!.userProfile.email)
+                    let meAsFriend = Friend(id: FirebaseModel.shared.charmUser.id!, first: FirebaseModel.shared.charmUser.userProfile.firstName, last: FirebaseModel.shared.charmUser.userProfile.lastName, email: FirebaseModel.shared.charmUser.userProfile.email)
                     
                     switch location {
                     case .Current:
                         var listHasChanges: Bool = false
                         if var current = list.currentFriends, !current.contains(where: { (friend) -> Bool in
-                            return friend.id == self.user?.id
+                            return friend.id == FirebaseModel.shared.charmUser.id
                         }) {
                             current.append(meAsFriend)
                             list.currentFriends = current
@@ -694,11 +688,11 @@ extension ContactsViewModel: FriendManagementDelegate {
                         
                         if listHasChanges {
                             list.pendingSentApproval?.removeAll(where: { (friend) -> Bool in
-                                friend.id == self.user?.id
+                                friend.id == FirebaseModel.shared.charmUser.id
                             })
                             
                             list.pendingReceivedApproval?.removeAll(where: { (friend) -> Bool in
-                                friend.id == self.user?.id
+                                friend.id == FirebaseModel.shared.charmUser.id
                             })
                             
                             list.save()
@@ -707,7 +701,7 @@ extension ContactsViewModel: FriendManagementDelegate {
                     case .PendingReceived:
                         var listHasChanges: Bool = false
                         if var sent = list.pendingSentApproval, !sent.contains(where: { (friend) -> Bool in
-                            return friend.id == self.user?.id
+                            return friend.id == FirebaseModel.shared.charmUser.id
                         }) {
                             sent.append(meAsFriend)
                             list.pendingSentApproval = sent
@@ -719,11 +713,11 @@ extension ContactsViewModel: FriendManagementDelegate {
                         
                         if listHasChanges {
                             list.currentFriends?.removeAll(where: { (friend) -> Bool in
-                                friend.id == self.user?.id
+                                friend.id == FirebaseModel.shared.charmUser.id
                             })
                             
                             list.pendingReceivedApproval?.removeAll(where: { (friend) -> Bool in
-                                friend.id == self.user?.id
+                                friend.id == FirebaseModel.shared.charmUser.id
                             })
                             
                             list.save()
@@ -732,7 +726,7 @@ extension ContactsViewModel: FriendManagementDelegate {
                     case .PendingSent:
                         var listHasChanges: Bool = false
                         if var received = list.pendingReceivedApproval, !received.contains(where: { (friend) -> Bool in
-                            return friend.id == self.user?.id
+                            return friend.id == FirebaseModel.shared.charmUser.id
                         }) {
                             received.append(meAsFriend)
                             list.pendingReceivedApproval = received
@@ -744,11 +738,11 @@ extension ContactsViewModel: FriendManagementDelegate {
                         
                         if listHasChanges {
                             list.currentFriends?.removeAll(where: { (friend) -> Bool in
-                                friend.id == self.user?.id
+                                friend.id == FirebaseModel.shared.charmUser.id
                             })
                             
                             list.pendingSentApproval?.removeAll(where: { (friend) -> Bool in
-                                friend.id == self.user?.id
+                                friend.id == FirebaseModel.shared.charmUser.id
                             })
                             
                             list.save()
@@ -769,7 +763,7 @@ extension ContactsViewModel: FriendManagementDelegate {
     
     func sendEmailRequest(toFriend friend: Friend) {
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
-            guard let self = self, let user = self.user, let friendId = friend.id, let myId = user.id else { return }
+            guard let self = self, let user = FirebaseModel.shared.charmUser, let friendId = friend.id, let myId = user.id else { return }
             guard var meAsFriend = FirebaseModel.shared.meAsFriend else { return }
             var friend = friend
             // get the friend user
@@ -821,11 +815,12 @@ extension ContactsViewModel: FriendManagementDelegate {
     func sendTextRequest(toFriend friend: Friend) {
         
         // setup deep link
-        guard let id = user?.id, let me = user?.userProfile, let url = URL(string: "https://blaumagier.com/friendinvite?id=\(id)") else { return }
+        guard let id = FirebaseModel.shared.charmUser.id, let url = URL(string: "https://blaumagier.com/friendinvite?id=\(id)") else { return }
         guard let deepComponents = DynamicLinkComponents(link: url, domainURIPrefix: FirebaseStructure.DeepLinks.prefixURL) else {
             print("~>Unable to create deep components.")
             return }
         
+        let me = FirebaseModel.shared.charmUser.userProfile
         // start activity
         
         let window = UIApplication.shared.keyWindow!
@@ -892,7 +887,7 @@ extension ContactsViewModel: FriendManagementDelegate {
             // Configure the fields of the interface.
             composeVC.recipients = [phone]
             var userName = ""
-            if let user = self.user, let uid = user.id {
+            if let user = FirebaseModel.shared.charmUser, let uid = user.id {
                 userName = " \(user.userProfile.firstName)"
                 if var friendList = user.friendList, let _ = friendList.sentText {
                     friendList.sentText!.append(friend)

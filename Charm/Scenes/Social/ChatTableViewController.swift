@@ -138,7 +138,7 @@ class ChatTableViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         
-        guard viewModel.user?.userProfile.numCredits ?? 0 > 0 else {
+        guard FirebaseModel.shared.charmUser.userProfile.numCredits ?? 0 > 0 else {
             print("~>Not enough credits to make a call.")
             let creditsAlert = UIAlertController(title: "Insufficient Credits", message: "You are out of credits. Please choose a subscription plan if you wish to continue making video calls.", preferredStyle: .alert)
             creditsAlert.addAction(UIAlertAction(title: "Subscribe", style: .default, handler: { (_) in
@@ -149,32 +149,35 @@ class ChatTableViewController: UITableViewController {
             return
         }
         
-        let friend = isFiltering() ? viewModel.filteredFriends[indexPath.row] : viewModel.currentFriends[indexPath.row]
-        
-        let window = UIApplication.shared.keyWindow!
-        let viewActivity = UIActivityIndicatorView(style: .whiteLarge)
-        viewActivity.center = window.center
-        viewActivity.color = #colorLiteral(red: 0.2799556553, green: 0.2767689228, blue: 0.3593277335, alpha: 1)
-        viewActivity.hidesWhenStopped = true
-        
-        window.addSubview(viewActivity)
-        window.bringSubviewToFront(viewActivity)
-        
-        viewActivity.startAnimating()
-        
-        check(isFriendBusy: friend, showBusyAlert: false) { (busy) in
-            viewActivity.stopAnimating()
-            guard !busy else {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: { [weak self] in
-                    guard let self = self else { return }
-                    self.check(isFriendBusy: friend, showBusyAlert: true, completion: { (busy) in
-                        guard !busy else { return }
-                        self.call(friend)
+        if viewModel.currentFriends.count > 0 {
+            
+            let friend = isFiltering() ? viewModel.filteredFriends[indexPath.row] : viewModel.currentFriends[indexPath.row]
+            
+            let window = UIApplication.shared.keyWindow!
+            let viewActivity = UIActivityIndicatorView(style: .whiteLarge)
+            viewActivity.center = window.center
+            viewActivity.color = #colorLiteral(red: 0.2799556553, green: 0.2767689228, blue: 0.3593277335, alpha: 1)
+            viewActivity.hidesWhenStopped = true
+            
+            window.addSubview(viewActivity)
+            window.bringSubviewToFront(viewActivity)
+            
+            viewActivity.startAnimating()
+            
+            check(isFriendBusy: friend, showBusyAlert: false) { (busy) in
+                viewActivity.stopAnimating()
+                guard !busy else {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: { [weak self] in
+                        guard let self = self else { return }
+                        self.check(isFriendBusy: friend, showBusyAlert: true, completion: { (busy) in
+                            guard !busy else { return }
+                            self.call(friend)
+                        })
                     })
-                })
-                return
+                    return
+                }
+                self.call(friend)
             }
-            self.call(friend)
         }
     }
     
@@ -197,7 +200,7 @@ class ChatTableViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        guard let user = viewModel.user else {
+        guard let user = FirebaseModel.shared.charmUser else {
             return "No credits available"
         }
         
@@ -217,7 +220,7 @@ class ChatTableViewController: UITableViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == SegueID.videoCall, let videoVC = segue.destination as? VideoCallViewController, let friend = sender as? Friend {
             videoVC.friend = friend
-            videoVC.myUser = viewModel.user!
+            videoVC.myUser = FirebaseModel.shared.charmUser
         } else if segue.identifier == SegueID.friendList, let friendVC = segue.destination as? FriendListTableViewController {
             friendVC.showContacts = false
         }
