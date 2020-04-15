@@ -11,24 +11,30 @@ import UIKit
 class IntroViewController: UIViewController {
 
     @IBOutlet weak var btnCreateAccount: UIButton!
+    @IBOutlet weak var signInButton: UIButton!
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        btnCreateAccount.layer.cornerRadius = btnCreateAccount.bounds.height / 2
+        signInButton.layer.borderColor = UIColor(white: 1.0, alpha: 0.5).cgColor
+        signInButton.layer.borderWidth = 2.0
+        
+        btnCreateAccount.layer.borderColor = UIColor(white: 1.0, alpha: 0.5).cgColor
+        btnCreateAccount.layer.borderWidth = 2.0
+        
         
         navigationController?.setNavigationBarHidden(true, animated: false)
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        navigationController?.setNavigationBarHidden(true, animated: true)
+
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
-        navigationController?.setNavigationBarHidden(false, animated: true)
     }
 }

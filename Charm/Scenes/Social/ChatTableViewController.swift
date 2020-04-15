@@ -138,7 +138,7 @@ class ChatTableViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         
-        guard FirebaseModel.shared.charmUser.userProfile.numCredits ?? 0 > 0 else {
+        guard FirebaseModel.shared.charmUser.userProfile.numCredits > 0 else {
             print("~>Not enough credits to make a call.")
             let creditsAlert = UIAlertController(title: "Insufficient Credits", message: "You are out of credits. Please choose a subscription plan if you wish to continue making video calls.", preferredStyle: .alert)
             creditsAlert.addAction(UIAlertAction(title: "Subscribe", style: .default, handler: { (_) in

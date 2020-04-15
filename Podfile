@@ -19,4 +19,7 @@ target 'Charm' do
   pod 'Firebase/Messaging'
   pod 'PXSiriWave'
   pod 'MBProgressHUD'
+  
+  # UI, CollectionView
+  pod "UPCarouselFlowLayout"
 end

@@ -20,8 +20,13 @@ class CharmSignInViewController: UIViewController {
     @IBOutlet weak var txtPassword: UITextField!
     @IBOutlet weak var viewActivity: UIActivityIndicatorView!
     @IBOutlet weak var viewActivityContainer: UIView!
+    @IBOutlet weak var heightConstraint: NSLayoutConstraint!
     
     // MARK: - Properties
+    
+    private var heightConstraintDefault: CGFloat = 80
+    
+    var isFromSignUp: Bool = false
     
 //    var biometricAutofillTime: Date? = nil
     
@@ -43,20 +48,47 @@ class CharmSignInViewController: UIViewController {
         setupToolbars()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIWindow.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillHide), name: UIWindow.keyboardWillHideNotification, object: nil)
+    }
+    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        NotificationCenter.default.removeObserver(self)
+    }
+
+    // MARK: - Methods
+    
+    @objc private func keyboardWillShow(notification: NSNotification) {
+        heightConstraint.constant = 8.0
+        UIView.animate(withDuration: 0.25) {
+            self.view.layoutIfNeeded()
+        }
+    }
+
+    @objc private func keyboardWillHide(notification: NSNotification){
+               heightConstraint.constant = heightConstraintDefault
+         UIView.animate(withDuration: 0.25) {
+             self.view.layoutIfNeeded()
+         }
     }
     
     private func setupToolbars() {
         let btnForgotPassword = UIBarButtonItem(title: "Forgot password?", style: .plain, target: self, action: #selector(forgotPasswordButtonTapped(_:)))
         let btnNext = UIButton(type: .custom)
         btnNext.setTitle("   Next   ", for: .normal)
-        btnNext.layer.backgroundColor = #colorLiteral(red: 0.1140055135, green: 0.630348742, blue: 0.9489882588, alpha: 1)
+        btnNext.layer.backgroundColor = UIColor(hex: "3B76BA").cgColor
         btnNext.addTarget(self, action: #selector(highlightPassword), for: .touchUpInside)
         let nextButton = UIBarButtonItem(customView: btnNext)
         let btnLogin = UIButton(type: .custom)
         btnLogin.setTitle("   Login   ", for: .normal)
-        btnLogin.layer.backgroundColor = #colorLiteral(red: 0.1140055135, green: 0.630348742, blue: 0.9489882588, alpha: 1)
+        btnLogin.layer.backgroundColor = UIColor(hex: "3B76BA").cgColor
         btnLogin.addTarget(self, action: #selector(loginButtonTapped(_:)), for: .touchUpInside)
         let loginButton = UIBarButtonItem(customView: btnLogin)
         
@@ -207,6 +239,13 @@ class CharmSignInViewController: UIViewController {
             self.loadUser(withUID: uid)
         }
     }
+    @IBAction func showSignUp(_ sender: UIButton) {
+        if isFromSignUp {
+            navigationController?.popViewController(animated: true)
+        } else {
+            performSegue(withIdentifier: "showSignUp", sender: self)
+        }
+    }
     
     @IBAction func forgotPasswordButtonTapped(_ sender: Any) {
         guard let email = txtEmail.text, !email.isEmpty else {
@@ -248,11 +287,6 @@ class CharmSignInViewController: UIViewController {
         present(resetPasswordAlert, animated: true, completion: nil)
     }
     
-    @IBAction func createNewAccountTapped(_ sender: Any) {
-        view.endEditing(true)
-        performSegue(withIdentifier: SegueID.newUser, sender: self)
-    }
-    
     @IBAction func productDemoButtonTapped(_ sender: Any) {
         let avPlayerVC = AVPlayerViewController()
         avPlayerVC.entersFullScreenWhenPlaybackBegins = true
@@ -273,6 +307,14 @@ class CharmSignInViewController: UIViewController {
             } else {
                 // this should never happen
                 print("~>An unknown error has occured.")
+            }
+        }
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "showSignUp" {
+            if let vc = segue.destination as? CharmNewUserViewController {
+                vc.isFromIntro = false
             }
         }
     }

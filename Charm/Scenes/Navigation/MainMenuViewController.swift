@@ -34,9 +34,16 @@ class MainMenuViewController: UIViewController {
         super.viewDidLoad()
         
         if #available(iOS 13.0, *) {
-            let app = UINavigationBarAppearance()
-            app.backgroundColor = #colorLiteral(red: 0, green: 0.1725181639, blue: 0.3249038756, alpha: 1)
-            self.navigationController?.navigationBar.scrollEdgeAppearance = app
+                let navBarAppearance = UINavigationBarAppearance()
+                navBarAppearance.configureWithOpaqueBackground()
+                navBarAppearance.accessibilityTextualContext = .sourceCode
+                navBarAppearance.titleTextAttributes = [.foregroundColor: UIColor.white]
+                navBarAppearance.largeTitleTextAttributes = [.foregroundColor: UIColor.white]
+                navBarAppearance.backgroundColor = #colorLiteral(red: 0, green: 0.1725181639, blue: 0.3249038756, alpha: 1)
+
+                self.navigationController?.navigationBar.standardAppearance = navBarAppearance
+                self.navigationController?.navigationBar.compactAppearance = navBarAppearance
+                self.navigationController?.navigationBar.scrollEdgeAppearance = navBarAppearance
         }
         
         // Setup buttons

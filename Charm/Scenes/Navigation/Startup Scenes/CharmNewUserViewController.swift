@@ -16,12 +16,14 @@ class CharmNewUserViewController: UIViewController {
     
     @IBOutlet weak var txtEmail: UITextField!
     @IBOutlet weak var txtPassword: UITextField!
+    @IBOutlet weak var txtConfirmPassword: UITextField!
     @IBOutlet weak var txtName: UITextField!
     
     // MARK: - Properties
     
     var existingEmail: String = ""
     var existingPassword: String = ""
+    var isFromIntro: Bool = true
     
     // Activity View
     @IBOutlet weak var viewActivityContainer: UIView!
@@ -47,8 +49,15 @@ class CharmNewUserViewController: UIViewController {
         txtEmail.delegate = self
         txtPassword.delegate = self
         txtName.delegate = self
+        txtConfirmPassword.delegate = self
         
-        setupToolbars()
+      //  setupToolbars()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIWindow.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillHide), name: UIWindow.keyboardWillHideNotification, object: nil)
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -63,19 +72,25 @@ class CharmNewUserViewController: UIViewController {
     private func setupToolbars() {
         let btnToEmail = UIButton(type: .custom)
         btnToEmail.setTitle("   Next   ", for: .normal)
-        btnToEmail.layer.backgroundColor = #colorLiteral(red: 0.1140055135, green: 0.630348742, blue: 0.9489882588, alpha: 1)
+        btnToEmail.layer.backgroundColor = UIColor(hex: "3B76BA").cgColor
         btnToEmail.addTarget(self, action: #selector(highlightEmail), for: .touchUpInside)
         let emailButton = UIBarButtonItem(customView: btnToEmail)
         
         let btnToPassword = UIButton(type: .custom)
         btnToPassword.setTitle("   Next   ", for: .normal)
-        btnToPassword.layer.backgroundColor = #colorLiteral(red: 0.1140055135, green: 0.630348742, blue: 0.9489882588, alpha: 1)
+        btnToPassword.layer.backgroundColor = UIColor(hex: "3B76BA").cgColor
         btnToPassword.addTarget(self, action: #selector(highlightPassword), for: .touchUpInside)
         let passwordButton = UIBarButtonItem(customView: btnToPassword)
         
+        let btnToConfirmPassword = UIButton(type: .custom)
+        btnToConfirmPassword.setTitle("   Next   ", for: .normal)
+        btnToConfirmPassword.layer.backgroundColor = UIColor(hex: "3B76BA").cgColor
+        btnToConfirmPassword.addTarget(self, action: #selector(highlightConfirmPassword), for: .touchUpInside)
+        let confirmPasswordButton = UIBarButtonItem(customView: btnToConfirmPassword)
+        
         let btnCreate = UIButton(type: .custom)
         btnCreate.setTitle("   Create Account   ", for: .normal)
-        btnCreate.layer.backgroundColor = #colorLiteral(red: 0.1140055135, green: 0.630348742, blue: 0.9489882588, alpha: 1)
+        btnCreate.layer.backgroundColor = UIColor(hex: "3B76BA").cgColor
         btnCreate.addTarget(self, action: #selector(createAccountTapped(_:)), for: .touchUpInside)
         let createButton = UIBarButtonItem(customView: btnCreate)
         
@@ -97,20 +112,30 @@ class CharmNewUserViewController: UIViewController {
         passwordToolbar.barStyle = .default
         passwordToolbar.items = [
             UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil),
+            confirmPasswordButton
+        ]
+        
+        let confirmPasswordToolbar = UIToolbar(frame:CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 50))
+        confirmPasswordToolbar.barStyle = .default
+        confirmPasswordToolbar.items = [
+            UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil),
             createButton
         ]
         
         nameToolbar.sizeToFit()
         emailToolbar.sizeToFit()
         passwordToolbar.sizeToFit()
+        confirmPasswordToolbar.sizeToFit()
         
         btnToEmail.layer.cornerRadius = nameToolbar.frame.height * 0.4
         btnToPassword.layer.cornerRadius = emailToolbar.frame.height * 0.4
         btnCreate.layer.cornerRadius = passwordToolbar.frame.height * 0.4
+        btnToConfirmPassword.layer.cornerRadius = passwordToolbar.frame.height * 0.4
         
         txtName.inputAccessoryView = nameToolbar
         txtEmail.inputAccessoryView = emailToolbar
         txtPassword.inputAccessoryView = passwordToolbar
+        txtConfirmPassword.inputAccessoryView = confirmPasswordToolbar
     }
     
     @objc private func highlightEmail() {
@@ -119,6 +144,24 @@ class CharmNewUserViewController: UIViewController {
     
     @objc private func highlightPassword() {
         txtPassword.becomeFirstResponder()
+    }
+    
+    @objc private func highlightConfirmPassword() {
+        txtConfirmPassword.becomeFirstResponder()
+    }
+    
+    @objc private func keyboardWillShow(notification: NSNotification) {
+    //    heightConstraint.constant = 8.0
+        UIView.animate(withDuration: 0.25) {
+      //      self.view.layoutIfNeeded()
+        }
+    }
+
+    @objc private func keyboardWillHide(notification: NSNotification){
+     //          heightConstraint.constant = heightConstraintDefault
+         UIView.animate(withDuration: 0.25) {
+       //      self.view.layoutIfNeeded()
+         }
     }
     
     // MARK: - Activity Helpers
@@ -159,6 +202,11 @@ class CharmNewUserViewController: UIViewController {
             return
         }
         
+        guard let confirmPassword = txtConfirmPassword.text, password == confirmPassword else {
+            self.showAlert(withTitle: "Passwords are not same", andMessage: "Please enter same password in both fields.")
+            return
+        }
+        
         guard let name = txtName.text, !name.isEmpty else {
             self.showAlert(withTitle: "Name Missing", andMessage: "Please enter your first name and try again.")
             return
@@ -174,6 +222,23 @@ class CharmNewUserViewController: UIViewController {
     
     @objc private func tapOutside() {
         view.endEditing(true)
+    }
+    
+    
+    @IBAction func showSignUp(_ sender: UIButton) {
+        if isFromIntro {
+            self.performSegue(withIdentifier: "showSignIn", sender: self)
+        } else {
+            navigationController?.popViewController(animated: true)
+        }
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "showSignUp" {
+            if let vc = segue.destination as? CharmSignInViewController {
+                vc.isFromSignUp = true
+            }
+        }
     }
     
     // MARK: - Private Helper Functions
@@ -193,10 +258,12 @@ extension CharmNewUserViewController: UITextFieldDelegate {
         } else if textField == txtEmail {
             txtPassword.becomeFirstResponder()
         } else if textField == txtPassword {
+            txtConfirmPassword.becomeFirstResponder()
+        } else if textField == txtConfirmPassword {
             textField.resignFirstResponder()
             createAccountTapped(self)
         } else {
-            textField.resignFirstResponder()
+             textField.resignFirstResponder()
         }
         
         return true
@@ -272,7 +339,7 @@ extension CharmNewUserViewController {
                     do {
                         let user = try CharmUser(snapshot: snapshot)
                         FirebaseModel.shared.charmUser = user
-                        self.showSubscriptionSelection()
+                        self.showOnboarding()
                     } catch let error {
                         print("~>There was an error creating object: \(error)")
                         self.showLoginError()
@@ -291,7 +358,7 @@ extension CharmNewUserViewController {
                     Database.database().reference().child(FirebaseStructure.usersLocation).child(uid).setValue(user.toAny())
                     FirebaseModel.shared.charmUser = user
                     DispatchQueue.main.async {
-                        self.showSubscriptionSelection()
+                        self.showOnboarding()
                     }
                 }
             }
@@ -322,7 +389,7 @@ extension CharmNewUserViewController {
         present(loginError, animated: true, completion: nil)
     }
     
-    private func showSubscriptionSelection() {
-        performSegue(withIdentifier: SegueID.subscriptions, sender: nil)
+    private func showOnboarding() {
+        performSegue(withIdentifier: "showOnboarding", sender: nil)
     }
 }

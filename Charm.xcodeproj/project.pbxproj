@@ -83,6 +83,12 @@
 		65F5A027222FF8A8001262FB /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 65F5A025222FF8A8001262FB /* Main.storyboard */; };
 		65F5A029222FF8A9001262FB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 65F5A028222FF8A9001262FB /* Assets.xcassets */; };
 		65F5A02C222FF8A9001262FB /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 65F5A02A222FF8A9001262FB /* LaunchScreen.storyboard */; };
+		7823B1342447972400D2FD75 /* OnboardingVideoLayerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7823B1332447972400D2FD75 /* OnboardingVideoLayerViewController.swift */; };
+		78C4F3912447827C00D47CCF /* OnboardingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78C4F3902447827C00D47CCF /* OnboardingViewController.swift */; };
+		78C4F3942447865E00D47CCF /* OnboardingCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78C4F3932447865E00D47CCF /* OnboardingCell.swift */; };
+		78D8DD4E244787A100DD66CF /* OnboardinItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78D8DD4D244787A100DD66CF /* OnboardinItem.swift */; };
+		78D8DD50244788C700DD66CF /* ViewEmbbeder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78D8DD4F244788C700DD66CF /* ViewEmbbeder.swift */; };
+		78F5C13C24474D2500421C7B /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78F5C13B24474D2500421C7B /* SceneDelegate.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -166,6 +172,12 @@
 		65F5A028222FF8A9001262FB /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		65F5A02B222FF8A9001262FB /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		65F5A02D222FF8A9001262FB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		7823B1332447972400D2FD75 /* OnboardingVideoLayerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingVideoLayerViewController.swift; sourceTree = "<group>"; };
+		78C4F3902447827C00D47CCF /* OnboardingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingViewController.swift; sourceTree = "<group>"; };
+		78C4F3932447865E00D47CCF /* OnboardingCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingCell.swift; sourceTree = "<group>"; };
+		78D8DD4D244787A100DD66CF /* OnboardinItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardinItem.swift; sourceTree = "<group>"; };
+		78D8DD4F244788C700DD66CF /* ViewEmbbeder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewEmbbeder.swift; sourceTree = "<group>"; };
+		78F5C13B24474D2500421C7B /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		8377468A8AA94E55700BA449 /* Pods-Charm.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Charm.debug.xcconfig"; path = "Target Support Files/Pods-Charm/Pods-Charm.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -203,6 +215,7 @@
 		65057C2422CD3A4400495E7C /* Startup Scenes */ = {
 			isa = PBXGroup;
 			children = (
+				78C4F3922447864800D47CCF /* Onboarding */,
 				65EADDD622303A1C00593F9D /* CharmSignInViewController.swift */,
 				65C43798226F6F0B00977C4E /* CharmNewUserViewController.swift */,
 				65C4379A226F92EF00977C4E /* CharmLaunchpointViewController.swift */,
@@ -318,6 +331,7 @@
 				657264252230081B008D9ED4 /* Constants.swift */,
 				65EADDD422302FE900593F9D /* Protocols.swift */,
 				65030B7922494C1900079AFC /* Extensions.swift */,
+				78D8DD4F244788C700DD66CF /* ViewEmbbeder.swift */,
 			);
 			path = "App Specific";
 			sourceTree = "<group>";
@@ -429,11 +443,23 @@
 				6572641F2230061D008D9ED4 /* Scenes */,
 				6572641E223004DD008D9ED4 /* View */,
 				65F5A021222FF8A8001262FB /* AppDelegate.swift */,
+				78F5C13B24474D2500421C7B /* SceneDelegate.swift */,
 				65F5A02D222FF8A9001262FB /* Info.plist */,
 				6534C2C82269F7520051F6D1 /* GoogleService-Info.plist */,
 				6582DACB231417DE001F223E /* snapshotData.json */,
 			);
 			path = Charm;
+			sourceTree = "<group>";
+		};
+		78C4F3922447864800D47CCF /* Onboarding */ = {
+			isa = PBXGroup;
+			children = (
+				78C4F3902447827C00D47CCF /* OnboardingViewController.swift */,
+				78C4F3932447865E00D47CCF /* OnboardingCell.swift */,
+				78D8DD4D244787A100DD66CF /* OnboardinItem.swift */,
+				7823B1332447972400D2FD75 /* OnboardingVideoLayerViewController.swift */,
+			);
+			path = Onboarding;
 			sourceTree = "<group>";
 		};
 		CF38F698B10C8A0F6ACAB617 /* Pods */ = {
@@ -597,6 +623,7 @@
 				65C55C2122318BE300336243 /* VideoCallViewController.swift in Sources */,
 				65F1C1972260BB3B00F0BD69 /* InfoModuleViewController.swift in Sources */,
 				657330CE22411A2D0066624B /* LabelBubbleViewController.swift in Sources */,
+				7823B1342447972400D2FD75 /* OnboardingVideoLayerViewController.swift in Sources */,
 				65172714230B006800028E87 /* UIPaddedLabel.swift in Sources */,
 				65172716230B2AA300028E87 /* AIFeedbackTableViewCell.swift in Sources */,
 				65F1C19B2260C38C00F0BD69 /* CharmBugReports.swift in Sources */,
@@ -607,6 +634,7 @@
 				6578BB6722578B90000439C3 /* VideoTableViewCell.swift in Sources */,
 				65A1968C230AD883006CDC4E /* SnapshotSummaryTableViewCell.swift in Sources */,
 				654B5D142241754900C34352 /* EmotionsViewController.swift in Sources */,
+				78F5C13C24474D2500421C7B /* SceneDelegate.swift in Sources */,
 				65057C2A22D37F7100495E7C /* InfoDetailViewController.swift in Sources */,
 				657330D2224120A30066624B /* ScaleBar.swift in Sources */,
 				65030B7E224951A600079AFC /* SpeechRecognitionModel.swift in Sources */,
@@ -640,8 +668,12 @@
 				657264262230081B008D9ED4 /* Constants.swift in Sources */,
 				0792039624056603005FBF5B /* TableViewController.swift in Sources */,
 				657330D622414A0E0066624B /* DetailChartViewController.swift in Sources */,
+				78D8DD4E244787A100DD66CF /* OnboardinItem.swift in Sources */,
+				78C4F3912447827C00D47CCF /* OnboardingViewController.swift in Sources */,
+				78C4F3942447865E00D47CCF /* OnboardingCell.swift in Sources */,
 				65B872A822302BE0001705B3 /* CharmUser.swift in Sources */,
 				6543FF13223A8D02003FC625 /* LearningVideoViewModel.swift in Sources */,
+				78D8DD50244788C700DD66CF /* ViewEmbbeder.swift in Sources */,
 				6534C2D8226A50290051F6D1 /* SubscriptionsViewController.swift in Sources */,
 				65CE0DBF236C93B7006377EB /* FirebaseConstant.swift in Sources */,
 				6561E82C23E89B0B001466DC /* CreatingConversationViewController.swift in Sources */,

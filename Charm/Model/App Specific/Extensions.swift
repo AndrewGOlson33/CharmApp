@@ -63,3 +63,42 @@ extension UIView {
         self.layer.insertSublayer(gradientLayer, at: 0)
     }
 }
+
+
+extension UIColor {
+
+  convenience init(hex: String, alpha: CGFloat = 1.0) {
+    var cString:String = hex.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
+
+    if (cString.hasPrefix("#")) { cString.removeFirst() }
+
+    if ((cString.count) != 6) {
+      self.init(hex: "ff0000") // return red color for wrong hex input
+      return
+    }
+
+    var rgbValue: UInt64 = 0
+    Scanner(string: cString).scanHexInt64(&rgbValue)
+
+    self.init(red: CGFloat((rgbValue & 0xFF0000) >> 16) / 255.0,
+              green: CGFloat((rgbValue & 0x00FF00) >> 8) / 255.0,
+              blue: CGFloat(rgbValue & 0x0000FF) / 255.0,
+              alpha: alpha)
+  }
+
+}
+
+
+extension UIView {
+    func shake(for duration: TimeInterval = 0.5, withTranslation translation: CGFloat = 10) {
+        let propertyAnimator = UIViewPropertyAnimator(duration: duration, dampingRatio: 0.3) {
+            self.transform = CGAffineTransform(translationX: translation, y: 0)
+        }
+
+        propertyAnimator.addAnimations({
+            self.transform = CGAffineTransform(translationX: 0, y: 0)
+        }, delayFactor: 0.2)
+
+        propertyAnimator.startAnimation()
+    }
+}
