@@ -12,7 +12,6 @@
 		54FBFBEEED71C64E2D0F4136 /* Pods_Charm.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 551F07646EE3BF85158543B3 /* Pods_Charm.framework */; };
 		65030B78224948FE00079AFC /* ConcreteChatViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65030B77224948FE00079AFC /* ConcreteChatViewController.swift */; };
 		65030B7A22494C1900079AFC /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65030B7922494C1900079AFC /* Extensions.swift */; };
-		65030B7C2249508C00079AFC /* SandboxViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65030B7B2249508C00079AFC /* SandboxViewController.swift */; };
 		65030B7E224951A600079AFC /* SpeechRecognitionModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65030B7D224951A600079AFC /* SpeechRecognitionModel.swift */; };
 		65057C2122CD138200495E7C /* SubscriptionsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65057C2022CD138200495E7C /* SubscriptionsTableViewController.swift */; };
 		65057C2322CD185F00495E7C /* UpdateSubscriptionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65057C2222CD185F00495E7C /* UpdateSubscriptionViewController.swift */; };
@@ -35,11 +34,11 @@
 		6534C2D4226A15E00051F6D1 /* PaidSubscription.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6534C2CF226A15E00051F6D1 /* PaidSubscription.swift */; };
 		6534C2D6226A16170051F6D1 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6534C2D5226A16170051F6D1 /* StoreKit.framework */; };
 		6534C2D8226A50290051F6D1 /* SubscriptionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6534C2D7226A50290051F6D1 /* SubscriptionsViewController.swift */; };
-		653CE6ED23E8ACC900D3CDA0 /* CreatingConversationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 653CE6EC23E8ACC900D3CDA0 /* CreatingConversationViewModel.swift */; };
+		653CE6ED23E8ACC900D3CDA0 /* ConversationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 653CE6EC23E8ACC900D3CDA0 /* ConversationManager.swift */; };
 		654382FE224A8D860020336A /* SnapshotsListTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 654382FD224A8D860020336A /* SnapshotsListTableViewController.swift */; };
 		6543FF0F223A8462003FC625 /* LearningTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6543FF0E223A8462003FC625 /* LearningTableViewController.swift */; };
 		6543FF11223A8AAB003FC625 /* LearningVideo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6543FF10223A8AAB003FC625 /* LearningVideo.swift */; };
-		6543FF13223A8D02003FC625 /* LearningVideoViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6543FF12223A8D02003FC625 /* LearningVideoViewModel.swift */; };
+		6543FF13223A8D02003FC625 /* TutorialManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6543FF12223A8D02003FC625 /* TutorialManager.swift */; };
 		654B5D142241754900C34352 /* EmotionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 654B5D132241754900C34352 /* EmotionsViewController.swift */; };
 		654B5D1622417A8E00C34352 /* WordChoiceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 654B5D1522417A8E00C34352 /* WordChoiceViewController.swift */; };
 		6561E82C23E89B0B001466DC /* CreatingConversationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6561E82B23E89B0B001466DC /* CreatingConversationViewController.swift */; };
@@ -84,6 +83,11 @@
 		65F5A029222FF8A9001262FB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 65F5A028222FF8A9001262FB /* Assets.xcassets */; };
 		65F5A02C222FF8A9001262FB /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 65F5A02A222FF8A9001262FB /* LaunchScreen.storyboard */; };
 		7823B1342447972400D2FD75 /* OnboardingVideoLayerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7823B1332447972400D2FD75 /* OnboardingVideoLayerViewController.swift */; };
+		7851C0F72463316C00D17458 /* SiriWaveLine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7851C0F52463316C00D17458 /* SiriWaveLine.swift */; };
+		7851C0F82463316C00D17458 /* SiriWaveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7851C0F62463316C00D17458 /* SiriWaveView.swift */; };
+		7851C0FD246340CE00D17458 /* MainTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7851C0FC246340CE00D17458 /* MainTabBarController.swift */; };
+		7851C0FF2463629600D17458 /* OldScreens.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7851C0FE2463629600D17458 /* OldScreens.storyboard */; };
+		78BE1F492465E03B004588F4 /* TutorialCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78BE1F482465E03B004588F4 /* TutorialCell.swift */; };
 		78C4F3912447827C00D47CCF /* OnboardingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78C4F3902447827C00D47CCF /* OnboardingViewController.swift */; };
 		78C4F3942447865E00D47CCF /* OnboardingCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78C4F3932447865E00D47CCF /* OnboardingCell.swift */; };
 		78D8DD4E244787A100DD66CF /* OnboardinItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78D8DD4D244787A100DD66CF /* OnboardinItem.swift */; };
@@ -98,7 +102,6 @@
 		5DFCBBC61F54781F2832B92F /* Pods-Charm.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Charm.release.xcconfig"; path = "Target Support Files/Pods-Charm/Pods-Charm.release.xcconfig"; sourceTree = "<group>"; };
 		65030B77224948FE00079AFC /* ConcreteChatViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConcreteChatViewController.swift; sourceTree = "<group>"; };
 		65030B7922494C1900079AFC /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
-		65030B7B2249508C00079AFC /* SandboxViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SandboxViewController.swift; sourceTree = "<group>"; };
 		65030B7D224951A600079AFC /* SpeechRecognitionModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechRecognitionModel.swift; sourceTree = "<group>"; };
 		65057C2022CD138200495E7C /* SubscriptionsTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionsTableViewController.swift; sourceTree = "<group>"; };
 		65057C2222CD185F00495E7C /* UpdateSubscriptionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateSubscriptionViewController.swift; sourceTree = "<group>"; };
@@ -121,11 +124,11 @@
 		6534C2CF226A15E00051F6D1 /* PaidSubscription.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaidSubscription.swift; sourceTree = "<group>"; };
 		6534C2D5226A16170051F6D1 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		6534C2D7226A50290051F6D1 /* SubscriptionsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionsViewController.swift; sourceTree = "<group>"; };
-		653CE6EC23E8ACC900D3CDA0 /* CreatingConversationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreatingConversationViewModel.swift; sourceTree = "<group>"; };
+		653CE6EC23E8ACC900D3CDA0 /* ConversationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationManager.swift; sourceTree = "<group>"; };
 		654382FD224A8D860020336A /* SnapshotsListTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnapshotsListTableViewController.swift; sourceTree = "<group>"; };
 		6543FF0E223A8462003FC625 /* LearningTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LearningTableViewController.swift; sourceTree = "<group>"; };
 		6543FF10223A8AAB003FC625 /* LearningVideo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LearningVideo.swift; sourceTree = "<group>"; };
-		6543FF12223A8D02003FC625 /* LearningVideoViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LearningVideoViewModel.swift; sourceTree = "<group>"; };
+		6543FF12223A8D02003FC625 /* TutorialManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TutorialManager.swift; sourceTree = "<group>"; };
 		654B5D132241754900C34352 /* EmotionsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmotionsViewController.swift; sourceTree = "<group>"; };
 		654B5D1522417A8E00C34352 /* WordChoiceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordChoiceViewController.swift; sourceTree = "<group>"; };
 		6561E82B23E89B0B001466DC /* CreatingConversationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreatingConversationViewController.swift; sourceTree = "<group>"; };
@@ -173,6 +176,11 @@
 		65F5A02B222FF8A9001262FB /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		65F5A02D222FF8A9001262FB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		7823B1332447972400D2FD75 /* OnboardingVideoLayerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingVideoLayerViewController.swift; sourceTree = "<group>"; };
+		7851C0F52463316C00D17458 /* SiriWaveLine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SiriWaveLine.swift; sourceTree = "<group>"; };
+		7851C0F62463316C00D17458 /* SiriWaveView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SiriWaveView.swift; sourceTree = "<group>"; };
+		7851C0FC246340CE00D17458 /* MainTabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabBarController.swift; sourceTree = "<group>"; };
+		7851C0FE2463629600D17458 /* OldScreens.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = OldScreens.storyboard; sourceTree = "<group>"; };
+		78BE1F482465E03B004588F4 /* TutorialCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TutorialCell.swift; sourceTree = "<group>"; };
 		78C4F3902447827C00D47CCF /* OnboardingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingViewController.swift; sourceTree = "<group>"; };
 		78C4F3932447865E00D47CCF /* OnboardingCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingCell.swift; sourceTree = "<group>"; };
 		78D8DD4D244787A100DD66CF /* OnboardinItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardinItem.swift; sourceTree = "<group>"; };
@@ -279,6 +287,7 @@
 			children = (
 				657330CC2241151A0066624B /* Custom Views */,
 				65F5A025222FF8A8001262FB /* Main.storyboard */,
+				7851C0FE2463629600D17458 /* OldScreens.storyboard */,
 				65F5A02A222FF8A9001262FB /* LaunchScreen.storyboard */,
 				65F5A028222FF8A9001262FB /* Assets.xcassets */,
 			);
@@ -300,6 +309,7 @@
 		6572642022300622008D9ED4 /* Navigation */ = {
 			isa = PBXGroup;
 			children = (
+				7851C0F924633E4E00D17458 /* TabBar */,
 				079203922405657C005FBF5B /* Base */,
 				65057C2422CD3A4400495E7C /* Startup Scenes */,
 				6572642122300640008D9ED4 /* MainMenuViewController.swift */,
@@ -339,6 +349,7 @@
 		657330CC2241151A0066624B /* Custom Views */ = {
 			isa = PBXGroup;
 			children = (
+				7851C0F42463315600D17458 /* SiriWave */,
 				657330CD22411A2D0066624B /* LabelBubbleViewController.swift */,
 				657330D1224120A30066624B /* ScaleBar.swift */,
 				6590F59A225B931F00CF4854 /* LableBubbleView.swift */,
@@ -351,6 +362,7 @@
 			isa = PBXGroup;
 			children = (
 				6578BB6622578B90000439C3 /* VideoTableViewCell.swift */,
+				78BE1F482465E03B004588F4 /* TutorialCell.swift */,
 			);
 			path = Cells;
 			sourceTree = "<group>";
@@ -362,7 +374,6 @@
 				657E72012243DF50001EE828 /* ConcreteFlashcardsViewController.swift */,
 				650E9F522245443A000EADEE /* ConversationTrainingViewController.swift */,
 				65030B77224948FE00079AFC /* ConcreteChatViewController.swift */,
-				65030B7B2249508C00079AFC /* SandboxViewController.swift */,
 				6528D85122565F540058D0DC /* EmotionFlashcardsViewController.swift */,
 			);
 			path = Training;
@@ -392,12 +403,12 @@
 			isa = PBXGroup;
 			children = (
 				65DDF9862236E25300554D39 /* ContactsViewModel.swift */,
-				6543FF12223A8D02003FC625 /* LearningVideoViewModel.swift */,
+				6543FF12223A8D02003FC625 /* TutorialManager.swift */,
 				657E72052243F41B001EE828 /* FlashcardsViewModel.swift */,
 				650E9F54224550AA000EADEE /* ChatTrainingViewModel.swift */,
 				650E9F5622455885000EADEE /* ScorePhrase.swift */,
 				65030B7D224951A600079AFC /* SpeechRecognitionModel.swift */,
-				653CE6EC23E8ACC900D3CDA0 /* CreatingConversationViewModel.swift */,
+				653CE6EC23E8ACC900D3CDA0 /* ConversationManager.swift */,
 			);
 			path = "View Models";
 			sourceTree = "<group>";
@@ -449,6 +460,23 @@
 				6582DACB231417DE001F223E /* snapshotData.json */,
 			);
 			path = Charm;
+			sourceTree = "<group>";
+		};
+		7851C0F42463315600D17458 /* SiriWave */ = {
+			isa = PBXGroup;
+			children = (
+				7851C0F52463316C00D17458 /* SiriWaveLine.swift */,
+				7851C0F62463316C00D17458 /* SiriWaveView.swift */,
+			);
+			path = SiriWave;
+			sourceTree = "<group>";
+		};
+		7851C0F924633E4E00D17458 /* TabBar */ = {
+			isa = PBXGroup;
+			children = (
+				7851C0FC246340CE00D17458 /* MainTabBarController.swift */,
+			);
+			path = TabBar;
 			sourceTree = "<group>";
 		};
 		78C4F3922447864800D47CCF /* Onboarding */ = {
@@ -544,6 +572,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7851C0FF2463629600D17458 /* OldScreens.storyboard in Resources */,
 				65F5A02C222FF8A9001262FB /* LaunchScreen.storyboard in Resources */,
 				6534C2C92269F7520051F6D1 /* GoogleService-Info.plist in Resources */,
 				65F5A029222FF8A9001262FB /* Assets.xcassets in Resources */,
@@ -625,6 +654,7 @@
 				657330CE22411A2D0066624B /* LabelBubbleViewController.swift in Sources */,
 				7823B1342447972400D2FD75 /* OnboardingVideoLayerViewController.swift in Sources */,
 				65172714230B006800028E87 /* UIPaddedLabel.swift in Sources */,
+				7851C0F72463316C00D17458 /* SiriWaveLine.swift in Sources */,
 				65172716230B2AA300028E87 /* AIFeedbackTableViewCell.swift in Sources */,
 				65F1C19B2260C38C00F0BD69 /* CharmBugReports.swift in Sources */,
 				65C7FB1B22383D7500A150BF /* ChatFriendListTableViewCell.swift in Sources */,
@@ -636,13 +666,14 @@
 				654B5D142241754900C34352 /* EmotionsViewController.swift in Sources */,
 				78F5C13C24474D2500421C7B /* SceneDelegate.swift in Sources */,
 				65057C2A22D37F7100495E7C /* InfoDetailViewController.swift in Sources */,
+				78BE1F492465E03B004588F4 /* TutorialCell.swift in Sources */,
 				657330D2224120A30066624B /* ScaleBar.swift in Sources */,
+				7851C0FD246340CE00D17458 /* MainTabBarController.swift in Sources */,
 				65030B7E224951A600079AFC /* SpeechRecognitionModel.swift in Sources */,
 				654B5D1622417A8E00C34352 /* WordChoiceViewController.swift in Sources */,
 				6534C2D4226A15E00051F6D1 /* PaidSubscription.swift in Sources */,
 				65EADDD722303A1C00593F9D /* CharmSignInViewController.swift in Sources */,
 				657E72022243DF50001EE828 /* ConcreteFlashcardsViewController.swift in Sources */,
-				65030B7C2249508C00079AFC /* SandboxViewController.swift in Sources */,
 				65057C2622CD3A6500495E7C /* IntroViewController.swift in Sources */,
 				657330D822414C9C0066624B /* ScaleBarTableViewCell.swift in Sources */,
 				65C1705C223FCD030081B55F /* CharmData.swift in Sources */,
@@ -660,6 +691,7 @@
 				6534C2D3226A15E00051F6D1 /* Subscription.swift in Sources */,
 				65030B78224948FE00079AFC /* ConcreteChatViewController.swift in Sources */,
 				6572642222300640008D9ED4 /* MainMenuViewController.swift in Sources */,
+				7851C0F82463316C00D17458 /* SiriWaveView.swift in Sources */,
 				6534C2D2226A15E00051F6D1 /* CharmLicenseService.swift in Sources */,
 				6534C2D1226A15E00051F6D1 /* SubscriptionService.swift in Sources */,
 				657E72082243F4A7001EE828 /* TrainingData.swift in Sources */,
@@ -672,7 +704,7 @@
 				78C4F3912447827C00D47CCF /* OnboardingViewController.swift in Sources */,
 				78C4F3942447865E00D47CCF /* OnboardingCell.swift in Sources */,
 				65B872A822302BE0001705B3 /* CharmUser.swift in Sources */,
-				6543FF13223A8D02003FC625 /* LearningVideoViewModel.swift in Sources */,
+				6543FF13223A8D02003FC625 /* TutorialManager.swift in Sources */,
 				78D8DD50244788C700DD66CF /* ViewEmbbeder.swift in Sources */,
 				6534C2D8226A50290051F6D1 /* SubscriptionsViewController.swift in Sources */,
 				65CE0DBF236C93B7006377EB /* FirebaseConstant.swift in Sources */,
@@ -686,7 +718,7 @@
 				650E9F5722455885000EADEE /* ScorePhrase.swift in Sources */,
 				65C55C1F22315FCF00336243 /* FriendListTableViewCell.swift in Sources */,
 				65C55C1A22314C7A00336243 /* ChatTableViewController.swift in Sources */,
-				653CE6ED23E8ACC900D3CDA0 /* CreatingConversationViewModel.swift in Sources */,
+				653CE6ED23E8ACC900D3CDA0 /* ConversationManager.swift in Sources */,
 				6543FF0F223A8462003FC625 /* LearningTableViewController.swift in Sources */,
 				6534C2D0226A15E00051F6D1 /* Session.swift in Sources */,
 				65C43799226F6F0B00977C4E /* CharmNewUserViewController.swift in Sources */,

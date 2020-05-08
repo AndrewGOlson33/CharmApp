@@ -241,6 +241,7 @@ enum FirebaseNotification {
     static let CharmUserDidUpdate = Notification.Name("notificationCharmUserDidUpdate")
     static let CharmUserHasCall = Notification.Name("notificationCharmUserHasCall")
     static let trainingModelLoaded = Notification.Name("notificationFlashcardsModelHasLoaded")
+        static let trainingModelFailedToLoad = Notification.Name("trainingModelFailedToLoad")
     static let trainingHistoryUpdated = Notification.Name("notificationTrainingHistoryHasUpdates")
     static let GotFriendFromLink = Notification.Name("notificationGotFriendFromLink")
     static let SnapshotLoaded = Notification.Name("notificationSnapshotDataLoaded")

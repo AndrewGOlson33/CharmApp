@@ -65,6 +65,8 @@ class SettingsTableViewController: TableViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
+        navigationItem.title = "SETTINGS"
+        
         // Update labels
         updateLabels()
         

@@ -145,7 +145,7 @@ class CharmSignInViewController: UIViewController {
                 print("~>There was an error signing out: \(error)")
             }
             
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
+            DispatchQueue.main.asyncAfter(deadline: .now()) { [weak self] in
                 guard let self = self else { return }
                 self.loginButtonTapped(self)
             }
@@ -371,18 +371,6 @@ class CharmSignInViewController: UIViewController {
 
 extension CharmSignInViewController: UITextFieldDelegate {
     
-//    func textFieldDidBeginEditing(_ textField: UITextField) {
-//        if let time = biometricAutofillTime, Date().timeIntervalSince(time) < 0.5 {
-//            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak self] in
-//                guard let self = self else { return }
-//                self.loginButtonTapped(self)
-//                return
-//            }
-//        }
-//
-//        biometricAutofillTime = Date()
-//    }
-    
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         if textField == txtEmail {
             txtPassword.becomeFirstResponder()
@@ -402,7 +390,7 @@ extension CharmSignInViewController: UITextFieldDelegate {
             textField.resignFirstResponder()
             
             if let email = txtEmail.text, let pw = txtPassword.text, !email.isEmpty, !pw.isEmpty {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak self] in
+                DispatchQueue.main.asyncAfter(deadline: .now()) { [weak self] in
                     guard let self = self else { return }
                     if self.txtEmail.isFirstResponder { self.txtEmail.resignFirstResponder() }
                     if self.txtPassword.isFirstResponder { self.txtPassword.resignFirstResponder() }

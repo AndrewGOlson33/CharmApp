@@ -49,11 +49,11 @@ class FriendListTableViewController: UITableViewController {
             btnAddContact.tintColor = .clear
             btnContacts.isEnabled = false
             btnAddContact.isEnabled = false
-            title = "Add Friends"
+            title = "ADD FRIEND"
         } else {
             // disable contacts button on launch
             btnContacts.isEnabled = false
-            title = "Contacts"
+            title = "CONTACTS"
         }
         
         // allow view model to refresh tableview
@@ -103,7 +103,7 @@ class FriendListTableViewController: UITableViewController {
         btnContacts.isEnabled = false
         btnAddContact.isEnabled = true
         isContactsViewShowing = true
-        title = "Contacts"
+        title = "CONTACTS"
         tableView.reloadData()
     }
     
@@ -112,7 +112,7 @@ class FriendListTableViewController: UITableViewController {
         btnContacts.isEnabled = true
         btnAddContact.isEnabled = false
         isContactsViewShowing = false
-        title = "Add Friends"
+        title = "ADD FRIEND"
         tableView.reloadData()
     }
     

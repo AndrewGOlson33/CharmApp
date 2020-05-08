@@ -8,7 +8,6 @@
 
 import UIKit
 import AVKit
-import PXSiriWave
 
 class CreatingConversationViewController: UIViewController {
     
@@ -32,11 +31,11 @@ class CreatingConversationViewController: UIViewController {
     @IBOutlet weak var buttonActivityView: UIActivityIndicatorView!
     @IBOutlet weak var buttonImage: UIImageView!
     @IBOutlet weak var loadingActivityView: UIActivityIndicatorView!
-    @IBOutlet weak var siriWave: PXSiriWave!
+    @IBOutlet weak var siriWave: SiriWaveView!
 
     // MARK: - Properties
     
-    fileprivate let viewModel: CreatingConversationViewModel = CreatingConversationViewModel()
+    fileprivate let viewModel: ConversationManager = ConversationManager.shared
     fileprivate let speechModel: SpeechRecognitionModel = SpeechRecognitionModel()
     
     private var timer: Timer?
@@ -83,11 +82,12 @@ class CreatingConversationViewController: UIViewController {
         speechModel.delegate = self
         txtUserResponse.delegate = self
         setupUI()
-        loadModel()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        
+        navigationController?.navigationItem.title = "SELECT YOUR PARTNER"
         
         NotificationCenter.default.addObserver(self,
                                                selector : #selector(keyboardWillAppear(notification:)),
@@ -97,6 +97,7 @@ class CreatingConversationViewController: UIViewController {
                                                selector : #selector(keyboardWillDisappear(notification:)),
                                                name     : UIResponder.keyboardWillHideNotification,
                                                object   : nil)
+       // loadModel()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -118,13 +119,7 @@ class CreatingConversationViewController: UIViewController {
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        
-        NotificationCenter.default.removeObserver(self,
-                                                  name   : UIResponder.keyboardWillShowNotification,
-                                                  object : nil)
-        NotificationCenter.default.removeObserver(self,
-                                                  name   : UIResponder.keyboardWillHideNotification,
-                                                  object : nil)
+        NotificationCenter.default.removeObserver(self)
     }
     
     // MARK: - Private Setup Helper
@@ -143,26 +138,23 @@ class CreatingConversationViewController: UIViewController {
         
         // Stup SiriWave
         siriWave.isHidden = true
-        
-        siriWave.frequency = 1.5
-        siriWave.amplitude = 0.01
-        siriWave.intensity = 0.3
-        siriWave.colors = [UIColor.red, UIColor.blue, UIColor.green]
-        siriWave.configure()
     }
     
     fileprivate func loadModel() {
         switch viewModel.loadStatus {
         case .loaded:
-            if loadingActivityView.isAnimating { loadingActivityView.stopAnimating() }
+            view.isUserInteractionEnabled = true
+            loadingActivityView.stopAnimating()
             updatePhrase()
         case .loading:
-            if !loadingActivityView.isAnimating { loadingActivityView.startAnimating() }
+            view.isUserInteractionEnabled = false
+            loadingActivityView.startAnimating()
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) { [weak self] in
                 guard let self = self else { return }
                 self.loadModel()
             }
         case .failed:
+            view.isUserInteractionEnabled = false
             showFailedLoadAlert()
         }
     }
@@ -387,6 +379,12 @@ class CreatingConversationViewController: UIViewController {
     
     // MARK: Siri Wave
     
+    @objc func updateMeters() {
+        var normalizedValue: Float
+        normalizedValue = Float(speechModel.normalizedPowerLevelFromDecibels)
+        self.siriWave.update(CGFloat(normalizedValue) * 100)
+    }
+    
     private func startTimer() {
         siriWave.isHidden = false
         
@@ -394,7 +392,7 @@ class CreatingConversationViewController: UIViewController {
             guard let strongSelf = self else {
                 return
             }
-            strongSelf.siriWave.update(withLevel: strongSelf.speechModel.normalizedPowerLevelFromDecibels)
+            strongSelf.updateMeters()
         }
     }
     

@@ -60,6 +60,11 @@ class ChatTableViewController: UITableViewController {
         showActivity(viewModel.isLoading)
     }
     
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+    }
     // MARK: - Private Helper Functions
     
     fileprivate func check(isFriendBusy friend: Friend, showBusyAlert: Bool, completion: @escaping(_ isBusy: Bool) -> Void) {
@@ -249,16 +254,15 @@ extension ChatTableViewController: UISearchResultsUpdating, UISearchBarDelegate 
 }
 
 extension ChatTableViewController: TableViewRefreshDelegate {
-    
     func updateTableView() {
         tableView.reloadData()
     }
     
     func showActivity(_ animating: Bool) {
-        if animating && !activityView.isAnimating {
+        if animating {
             activityView.startAnimating()
             view.isUserInteractionEnabled = false
-        } else if !animating && activityView.isAnimating {
+        } else  {
             activityView.stopAnimating()
             view.isUserInteractionEnabled = true
         }

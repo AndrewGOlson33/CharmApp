@@ -43,7 +43,7 @@ class ConversationManager: NSObject {
     
     // Model Objects
     var phrases: ConversationPhrases? {
-        return FirebaseModel.shared.trainingModel.conversationPhrases
+        return FirebaseModel.shared.trainingModel?.conversationPhrases
     }
     
     var level: Int? {
@@ -55,11 +55,7 @@ class ConversationManager: NSObject {
     }
     
     // Important Model Variables
-    var loadStatus: LoadStatus {
-        if FirebaseModel.shared.trainingModel.phrasesLoaded && phrases != nil { return .loaded }
-        else if FirebaseModel.shared.trainingModel.phrasesLoaded && phrases == nil { return .loading }
-        else { return .failed }
-    }
+    var loadStatus: LoadStatus = .loading
     
     var currentLevel: Int {
         didSet {
@@ -90,11 +86,21 @@ class ConversationManager: NSObject {
     fileprivate var negative: [ConversationPhrase] = []
     
     // Model for scoring
-    fileprivate let concreteWords: [NounWord] = FirebaseModel.shared.trainingModel.concreteNouns
-    fileprivate let firstPersonWords: [String] = FirebaseModel.shared.trainingModel.firstPerson
-    fileprivate let secondPersonWords: [String] = FirebaseModel.shared.trainingModel.secondPerson
-    fileprivate let positiveWords: [ScoredWord] = FirebaseModel.shared.trainingModel.positiveWords
-    fileprivate let negativeWords: [ScoredWord] = FirebaseModel.shared.trainingModel.negativeWords
+    fileprivate var concreteWords: [NounWord] {
+        return FirebaseModel.shared.trainingModel?.concreteNouns ?? []
+    }
+    fileprivate var firstPersonWords: [String] {
+        return FirebaseModel.shared.trainingModel?.firstPerson ?? []
+    }
+    fileprivate var secondPersonWords: [String] {
+        return FirebaseModel.shared.trainingModel?.secondPerson ?? []
+    }
+    fileprivate var positiveWords: [ScoredWord] {
+        return FirebaseModel.shared.trainingModel?.positiveWords ?? []
+    }
+    fileprivate var negativeWords: [ScoredWord] {
+        return FirebaseModel.shared.trainingModel?.negativeWords ?? []
+    }
     
     override init() {
         currentLevel = FirebaseModel.shared.charmUser.trainingData.conversationLevel.currentLevel
@@ -102,29 +108,31 @@ class ConversationManager: NSObject {
         
         super.init()
         
+        NotificationCenter.default.addObserver(self, selector: #selector(dataDidLoaded), name: FirebaseNotification.trainingModelLoaded, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(dataDidFailedToLoad), name: FirebaseNotification.trainingModelFailedToLoad, object: nil)
+    }
+    
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+    
+    @objc private func dataDidLoaded() {
+        loadStatus = .loaded
         loadPhrases()
+    }
+    
+    @objc private func dataDidFailedToLoad() {
+        loadStatus = .failed
     }
     
     // MARK: - Setup Functions
     
     fileprivate func loadPhrases() {
-        switch loadStatus {
-        case .loaded:
-            loadSpecific()
-            loadConnection()
-            loadPositive()
-            loadNegative()
-        case .loading:
-            DispatchQueue.global(qos: .utility).asyncAfter(deadline: .now() + 0.5) { [weak self] in
-                guard let self = self else { return }
-                self.loadPhrases()
-                return
-            }
-            return
-        case .failed:
-            print("~>Failed to load")
-            return
-        }
+        loadSpecific()
+        loadConnection()
+        loadPositive()
+        loadNegative()
     }
     
     fileprivate func loadSpecific() {

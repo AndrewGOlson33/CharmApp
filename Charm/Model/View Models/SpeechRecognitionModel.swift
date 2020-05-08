@@ -25,23 +25,28 @@ class SpeechRecognitionModel: NSObject {
     private var recognitionTask: SFSpeechRecognitionTask?
     private let audioEngine = AVAudioEngine()
     
-    private let LEVEL_LOWPASS_TRIG : Float32 = 0.30
+    private let LEVEL_LOWPASS_TRIG : Float32 = 0.3
     
-    private var averagePowerForChannel0 : Float = 0 {
+    private var averagePowerForChannel0 : Float = 0.0 {
         didSet {
 //            print("~>averagePowerForChannel0: ", averagePowerForChannel0)
         }
     }
-    private var averagePowerForChannel1 : Float = 0 {
+    private var averagePowerForChannel1 : Float = 0.0 {
         didSet {
 //            print("~>averagePowerForChannel1: ", averagePowerForChannel1)
         }
     }
     var normalizedPowerLevelFromDecibels: CGFloat {
-        if (averagePowerForChannel0 < -60.0 || averagePowerForChannel0 == 0.0) {
-            return 0.0
+        let minDecibels: Float = -80.0
+        if (averagePowerForChannel0 < minDecibels || averagePowerForChannel0.isZero) {
+            return .zero
         }
-        return CGFloat(powf((powf(10.0, 0.05 * averagePowerForChannel0) - powf(10.0, 0.05 * -60.0)) * (1.0 / (1.0 - powf(10.0, 0.05 * -60.0))), 1.0 / 2.0))
+        
+        let powDecibels = pow(10.0, 0.05 * averagePowerForChannel0)
+        let powMinDecibels = pow(10.0, 0.05 * minDecibels)
+        let value = pow((powDecibels - powMinDecibels) * (1.0 / (1.0 - powMinDecibels)), 1.0 / 2.0)
+        return CGFloat(value)
     }
     
     // delegate to return recognized speech text

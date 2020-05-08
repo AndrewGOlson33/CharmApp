@@ -21,7 +21,11 @@ class FirebaseModel {
     var isSetupPhaseComplete = false
     
     // training model
-    var trainingModel: TrainingData!
+    var trainingModel: TrainingData? {
+        didSet {
+            
+        }
+    }
     var isTrainingModelLoaded: Bool {
         guard let trainingModel = trainingModel else { return false }
         return trainingModel.abstractNounFlashcards.count > 0 && trainingModel.concreteNounFlashcards.count > 0 && trainingModel.conversationPrompts.count > 0 && trainingModel.negativeWords.count > 0 && trainingModel.positiveWords.count > 0
@@ -57,7 +61,7 @@ class FirebaseModel {
         setupUserObserver()
         setupTrainingHistoryObserver()
         setupSnapshotObserver()
-        setupTrainingModel()
+   //     setupTrainingModel()
         setupCallObserver()
         setupConstants()
     }
@@ -66,35 +70,32 @@ class FirebaseModel {
     
     private func setupConnectionObserver() {
         let connectedRef = Database.database().reference(withPath: ".info/connected")
-        DispatchQueue.global(qos: .utility).async { [weak self] in
-            connectedRef.observe(.value, with: { [weak self] connected in
-                guard let self = self else { return }
-                if self.isSetupPhaseComplete, let status = connected.value as? Bool {
-                    NotificationCenter.default.post(name: FirebaseNotification.connectionStatusChanged, object: status)
-                }
-            })
-        }
+        connectedRef.observe(.value, with: { [weak self] connected in
+            guard let self = self else { return }
+            if self.isSetupPhaseComplete, let status = connected.value as? Bool {
+                NotificationCenter.default.post(name: FirebaseNotification.connectionStatusChanged, object: status)
+            }
+        })
+        
     }
     
     // MARK: - User Observer
     
     private func setupUserObserver() {
         guard let authUser = Auth.auth().currentUser else { return }
-        DispatchQueue.global(qos: .utility).async { [weak self] in
+        
+        Database.database().reference().child(FirebaseStructure.usersLocation).child(authUser.uid).observe(.value) { [weak self] (snapshot) in
             guard let self = self else { return }
-            
-            Database.database().reference().child(FirebaseStructure.usersLocation).child(authUser.uid).observe(.value) { [weak self] (snapshot) in
-                guard let self = self else { return }
-                do {
-                    // set the user and notify listeners that user has updated
-                    self.charmUser = try CharmUser(snapshot: snapshot)
-                    NotificationCenter.default.post(name: FirebaseNotification.CharmUserDidUpdate, object: self.charmUser)
-                } catch let error {
-                    print("~>There was an error: \(error)")
-                    return
-                }
+            do {
+                // set the user and notify listeners that user has updated
+                self.charmUser = try CharmUser(snapshot: snapshot)
+                NotificationCenter.default.post(name: FirebaseNotification.CharmUserDidUpdate, object: self.charmUser)
+            } catch let error {
+                print("~>There was an error: \(error)")
+                return
             }
         }
+        
     }
     
     // MARK: - Snapshots Observer
@@ -132,15 +133,12 @@ class FirebaseModel {
     
     private func setupTrainingHistoryObserver() {
         guard let authUser = Auth.auth().currentUser else { return }
-        
-        DispatchQueue.global(qos: .utility).async { [weak self] in
-            guard let self = self else { return }
-            Database.database().reference().child(FirebaseStructure.usersLocation).child(authUser.uid).child(FirebaseStructure.Training.trainingDatabase).observe(.childChanged) { [weak self] (_) in
-                guard self != nil else { return }
-                print("~>Training history updated")
-                NotificationCenter.default.post(name: FirebaseNotification.trainingHistoryUpdated, object: nil)
-            }
+        Database.database().reference().child(FirebaseStructure.usersLocation).child(authUser.uid).child(FirebaseStructure.Training.trainingDatabase).observe(.childChanged) { [weak self] (_) in
+            guard self != nil else { return }
+            print("~>Training history updated")
+            NotificationCenter.default.post(name: FirebaseNotification.trainingHistoryUpdated, object: nil)
         }
+        
     }
     
     // MARK: - Call handler
@@ -285,32 +283,32 @@ class FirebaseModel {
     // MARK: - Training Model
     
     private func setupTrainingModel() {
-        DispatchQueue.global(qos: .utility).async { [weak self] in
-            guard let self = self else { return }
-            Database.database().reference().child(FirebaseStructure.Training.trainingDatabase).observe(.value) { [weak self] (snapshot) in
+            Database.database().reference().child(FirebaseStructure.Training.trainingDatabase).observeSingleEvent(of: .value) { [weak self] (snapshot) in
                 guard let self = self else { return }
                 do {
-                    self.trainingModel = try TrainingData(snapshot: snapshot)
-                    NotificationCenter.default.post(name: FirebaseNotification.trainingModelLoaded, object: nil)
-                } catch let error {
-                    print("~>There was an error: \(error)")
-                    return
-                }
+                    
+                // FIXME: Fix this
+         //       self.trainingModel = try TrainingData(snapshot: snapshot)
+           //     NotificationCenter.default.post(name: FirebaseNotification.trainingModelLoaded, object: nil)
+            } catch let error {
+                NotificationCenter.default.post(name: FirebaseNotification.trainingModelFailedToLoad, object: nil)
+                print("~>There was an error: \(error)")
+                return
             }
         }
     }
     
     func checkType(of word: String) -> WordType {
         
-        if trainingModel.abstractNouns.contains(where: { (abstract) -> Bool in
+        if trainingModel?.abstractNouns.contains(where: { (abstract) -> Bool in
             return abstract.word.lowercased() == word.lowercased()
-        }) {
+        }) ?? false {
             return .abstract
         }
         
-        if trainingModel.concreteNouns.contains(where: { (concrete) -> Bool in
+        if trainingModel?.concreteNouns.contains(where: { (concrete) -> Bool in
             return concrete.word.lowercased() == word.lowercased()
-        }) {
+        }) ?? false {
             return .concrete
         }
         
@@ -325,14 +323,14 @@ class FirebaseModel {
         var types: [WordType] = []
         
         for word in wordChoices {
-            if trainingModel.abstractNouns.contains(where: { (abstract) -> Bool in
+            if trainingModel?.abstractNouns.contains(where: { (abstract) -> Bool in
                 return abstract.word.lowercased() == word.word.lowercased()
-            }) {
+            }) ?? false {
                 types.append(.abstract)
                 continue
-            } else if trainingModel.concreteNouns.contains(where: { (concrete) -> Bool in
+            } else if trainingModel?.concreteNouns.contains(where: { (concrete) -> Bool in
                 return concrete.word.lowercased() == word.word.lowercased()
-            }) {
+            }) ?? false {
                 types.append(.concrete)
             } else {
                 types.append(.concrete)
@@ -351,7 +349,7 @@ class FirebaseModel {
     
     private func uploadUnclassified(nouns: [String]) {
         var upload: [String] = []
-        if let existing = trainingModel.unclassifiedNouns {
+        if let existing = trainingModel?.unclassifiedNouns {
             upload = existing
             for word in nouns {
                 if !existing.contains(word.lowercased()) { upload.append(word.lowercased()) }
@@ -360,21 +358,18 @@ class FirebaseModel {
             upload = nouns.map { $0.lowercased() }
         }
         
-        DispatchQueue.global(qos: .utility).async {
-            Database.database().reference().child(FirebaseStructure.Training.trainingDatabase).child(FirebaseStructure.Training.unclassifiedNouns).setValue(upload)
-        }
+        Database.database().reference().child(FirebaseStructure.Training.trainingDatabase).child(FirebaseStructure.Training.unclassifiedNouns).setValue(upload)
+        
     }
     
     // MARK: - Setup Consants
     private func setupConstants() {
-        DispatchQueue.global(qos: .utility).async {
-            Database.database().reference().child(FirebaseStructure.constants).observeSingleEvent(of: .value) { [weak self] (snapshot) in
-                guard let self = self else { return }
-                do {
-                    self.constants = try FirebaseConstants(snapshot: snapshot)
-                } catch let error {
-                    print("~>There was an error loading the app constants: \(error)")
-                }
+        Database.database().reference().child(FirebaseStructure.constants).observeSingleEvent(of: .value) { [weak self] (snapshot) in
+            guard let self = self else { return }
+            do {
+                self.constants = try FirebaseConstants(snapshot: snapshot)
+            } catch let error {
+                print("~>There was an error loading the app constants: \(error)")
             }
         }
     }

@@ -267,7 +267,8 @@ class ContactsViewModel: NSObject {
             // do request
             do {
                 try store.enumerateContacts(with: request, usingBlock: { (contact, stop) in
-                    if !self.contacts.contains(contact) { self.contacts.append(contact) }
+                    if !self.contacts.contains(contact) { self.contacts.append(contact)
+                    }
                     self.checkFriendList(for: contact)
                 })
             } catch let error {
@@ -325,7 +326,6 @@ class ContactsViewModel: NSObject {
     }
     
     fileprivate func getPhoto(forFriend friend: Friend) -> UIImage? {
-        
         for contact in contacts {
             var emailAddresses: [String] = []
             
@@ -392,7 +392,7 @@ class ContactsViewModel: NSObject {
     // setup the arrays for adding contacts
     fileprivate func setupAddFriendsArrays() {
         
-        DispatchQueue.global(qos: .utility).async { [weak self] in
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
             guard let self = self else { return }
             
             // only loop through contacts we know are not in the user's friend list
@@ -435,7 +435,7 @@ class ContactsViewModel: NSObject {
                     
                     for number in contact.phoneNumbers {
                         guard let label = number.label else { continue }
-                        if label.lowercased().contains("iphone") || label.lowercased().contains("mobile") || label.lowercased().contains("iphone") || label.lowercased().contains("main") {
+                        if label.lowercased().contains("iphone") || label.lowercased().contains("mobile") ||  label.lowercased().contains("main") {
                             phone = number.value.stringValue
                             break
                         }
@@ -469,6 +469,7 @@ class ContactsViewModel: NSObject {
                 self.isLoading = false
                 self.checkForShowContactListNotification()
                 self.delegate?.updateTableView()
+                self.delegate?.showActivity(self.isLoading)
             }
             
             self.hasLoaded = true

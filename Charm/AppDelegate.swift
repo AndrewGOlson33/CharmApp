@@ -97,10 +97,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     private func saveTraining() {
         // Save history when leaving screen
         let history = FirebaseModel.shared.charmUser.trainingData
+        history.save()
         
-        DispatchQueue.global(qos: .utility).async {
-            history.save()
-        }
     }
     
     func applicationDidEnterBackground(_ application: UIApplication) {

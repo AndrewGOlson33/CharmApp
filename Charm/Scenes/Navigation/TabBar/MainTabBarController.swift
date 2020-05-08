@@ -1,9 +1,9 @@
 //
-//  MainMenuViewController.swift
+//  MainTabBarController.swift
 //  Charm
 //
-//  Created by Daniel Pratt on 3/6/19.
-//  Copyright © 2019 Charm, LLC. All rights reserved.
+//  Created by Игорь on 06.0520..
+//  Copyright © 2020 Charm, LLC. All rights reserved.
 //
 
 import UIKit
@@ -11,17 +11,13 @@ import Firebase
 import FirebaseInstanceID
 import StoreKit
 
-class MainMenuViewController: UIViewController {
-    
-    // MARK: - IBOutlets
-    
-    @IBOutlet var buttonViewGroup: [UIView]!
-    @IBOutlet var cornersButtonGroup: [UIView]!
+
+class MainTabBarController: UITabBarController {
     
     // MARK: - Properties
     
     var firebaseModel = FirebaseModel.shared
-
+    
     var firstSetup: Bool = true
     var loadingFriendFromNotification: Bool = false
     var checkedCredits: Bool = false
@@ -29,25 +25,34 @@ class MainMenuViewController: UIViewController {
     // temp values
     var requestProd = SKProductsRequest()
     var products = [SKProduct]()
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
-
+        self.delegate = self
         
-        // Setup buttons
-        setupButtons()
-        
-        // Upload Device Token
-        uploadDeviceToken()
-        
-        // Start loading contacts list
-        let _ = ContactsViewModel.shared.contacts
-        
-        validateProductIdentifiers()
-        setupMetricsObserver()
-        
-        
+        if #available(iOS 13.0, *) {
+            
+            let navBarAppearance = UINavigationBarAppearance()
+            navBarAppearance.configureWithOpaqueBackground()
+            navBarAppearance.accessibilityTextualContext = .sourceCode
+            navBarAppearance.titleTextAttributes = [.foregroundColor: UIColor.white, .font : UIFont.boldSystemFont(ofSize: 19)]
+            navBarAppearance.backgroundImage = UIImage(named: "header")
+            
+            
+            self.navigationController?.navigationBar.standardAppearance = navBarAppearance
+            self.navigationController?.navigationBar.compactAppearance = navBarAppearance
+            self.navigationController?.navigationBar.scrollEdgeAppearance = navBarAppearance
+        }
+          
+          // Upload Device Token
+          uploadDeviceToken()
+          
+          // Start loading contacts list
+          let _ = ContactsViewModel.shared.contacts
+          
+          validateProductIdentifiers()
+          setupMetricsObserver()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -62,14 +67,6 @@ class MainMenuViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        guard firebaseModel.charmUser != nil else {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                self.viewDidAppear(animated)
-                return
-            }
-            return
-        }
-        
         if !self.loadingFriendFromNotification && !(UIApplication.shared.delegate as! AppDelegate).friendID.isEmpty {
             print("~>Going to add friend using id.")
             self.addFriend(withID: (UIApplication.shared.delegate as! AppDelegate).friendID)
@@ -79,11 +76,7 @@ class MainMenuViewController: UIViewController {
         checkStatus()
         
         print("~>Firebase user uid: ", FirebaseModel.shared.charmUser.id ?? "Undefined")
-        
-        
     }
-    
-    
     
     // MARK: - Private Setup Functions
     
@@ -139,37 +132,6 @@ class MainMenuViewController: UIViewController {
             if firebaseModel.charmUser.userProfile.membershipStatus != .notSubscribed {
                 firebaseModel.charmUser.userProfile.membershipStatus = .notSubscribed
             }
-        }
-    }
-    
-    // UI Related
-    
-    fileprivate func setupButtons() {
-        
-        for button in cornersButtonGroup {
-            button.layer.cornerRadius = 4
-        }
-        
-        for (index, button) in buttonViewGroup.enumerated() {
-            button.layer.shadowColor = UIColor.black.cgColor
-            button.layer.shadowRadius = 10
-            button.layer.shadowOpacity = 0.2
-            button.layer.shadowOffset = CGSize(width: 2, height: 2)
-                        
-            var tap: UITapGestureRecognizer!
-            
-            switch index {
-            case 0:
-                tap = UITapGestureRecognizer(target: self, action: #selector(chatButtonTapped(_:)))
-            case 1:
-                tap = UITapGestureRecognizer(target: self, action: #selector(trainButtonTapped(_:)))    
-            case 2:
-                tap = UITapGestureRecognizer(target: self, action: #selector(metricsButtonTapped(_:)))
-            default:
-                tap = UITapGestureRecognizer(target: self, action: #selector(learnButtonTapped(_:)))
-            }
-            
-            button.addGestureRecognizer(tap)
         }
     }
     
@@ -315,7 +277,7 @@ class MainMenuViewController: UIViewController {
         
         // finally move user from sent to current friends on friend's friend list'
         guard let myID = user.id else { return }
-    
+        
         Database.database().reference().child(FirebaseStructure.usersLocation).child(id).observeSingleEvent(of: .value) { (snapshot) in
             
             // get the user object
@@ -346,7 +308,8 @@ class MainMenuViewController: UIViewController {
     }
 }
 
-extension MainMenuViewController: SKProductsRequestDelegate {
+
+extension MainTabBarController: SKProductsRequestDelegate {
     
     func validateProductIdentifiers() {
         let productsRequest = SKProductsRequest(productIdentifiers: Set(["com.charismaanalytics.Charm.sub.fiveTokens.monthly", "com.charismaanalytics.Charm.sub.threetokens.monthly"]))
@@ -366,4 +329,25 @@ extension MainMenuViewController: SKProductsRequestDelegate {
             print("~>Invalid ID: \(invalidIdentifier)")
         }
     }
+}
+
+
+extension MainTabBarController: UITabBarControllerDelegate {
+    func tabBarController(_ tabBarController: UITabBarController, didSelect viewController: UIViewController) {
+        let tabBarIndex = tabBarController.selectedIndex
+        switch tabBarIndex {
+        case 0:
+            navigationItem.title = "SELECT YOUR PARTNER"
+        case 1:
+             navigationItem.title = "YOUR CALLS"
+        case 2:
+             navigationItem.title = "SELECT A TUTORIAL"
+        case 3:
+             navigationItem.title = "SELECT YOUR PARTNER"
+        case 4:
+             navigationItem.title = "SETTINGS"
+        default:
+            break
+        }
+     }
 }

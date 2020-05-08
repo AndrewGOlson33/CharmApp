@@ -9,7 +9,7 @@
 import UIKit
 import Firebase
 
-class LearningVideoViewModel: NSObject {
+class TutorialManager: NSObject {
     
     // delegate for updating table view
     var delegate: TableViewRefreshDelegate? = nil
@@ -26,7 +26,7 @@ class LearningVideoViewModel: NSObject {
         }
     }
     
-    static var shared = LearningVideoViewModel()
+    static var shared = TutorialManager()
     
     // MARK: - Class Init
     
@@ -41,24 +41,24 @@ class LearningVideoViewModel: NSObject {
         return sections.sections[section].videos.count
     }
     
-    func configure(cell: VideoTableViewCell, forIndexPath indexPath: IndexPath) -> VideoTableViewCell {
+    func configure(cell: TutorialCell, forIndexPath indexPath: IndexPath) -> TutorialCell {
         let video: LearningVideo = sections.sections[indexPath.section].videos[indexPath.row]
         
         let lessonNumber = indexPath.row + 1
         let lesson = "Lesson \(lessonNumber)"
-        cell.lblTitle?.text = "\(lesson) - \(video.title)"
+        cell.lessonNumberLabel.text = lesson
+        cell.lessonTitleLabel.text = video.title
         
-        if cell.thumbnailImage == nil {
+        if cell.thumbnailImageView.image == nil {
             if let image = video.thumbnailImage {
                 print("~>There is already an image.")
-                cell.thumbnailImage = image
+                cell.thumbnailImageView.image = image
             } else {
                 video.getThumbnailImage { (image) in
-                    cell.thumbnailImage = image
+                    cell.thumbnailImageView.image = image
                 }
             }
         }
-        
         return cell
     }
     

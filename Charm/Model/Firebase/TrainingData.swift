@@ -104,7 +104,7 @@ struct TrainingData: FirebaseItem {
 //            guard let snapshot = child as? DataSnapshot else { continue }
 //            conversationPrompts.append(try ConversationPrompt(snapshot: snapshot))
 //        }
-        
+        // FIXME: REMOVE THIS
         let phrasesSnap = snapshot.childSnapshot(forPath: "conversationPhrases")
         do {
             conversationPhrases = try ConversationPhrases(snapshot: phrasesSnap)

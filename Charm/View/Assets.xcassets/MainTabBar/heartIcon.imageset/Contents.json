@@ -1,21 +1,26 @@
 {
   "images" : [
     {
+      "filename" : "path.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
+      "filename" : "path@2x.png",
       "idiom" : "universal",
-      "filename" : "icn_settings@2x.pdf",
       "scale" : "2x"
     },
     {
+      "filename" : "path@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }
   ],
   "info" : {
-    "version" : 1,
-    "author" : "xcode"
+    "author" : "xcode",
+    "version" : 1
+  },
+  "properties" : {
+    "template-rendering-intent" : "template"
   }
 }

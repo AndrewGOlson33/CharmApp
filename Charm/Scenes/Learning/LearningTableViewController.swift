@@ -10,9 +10,13 @@ import UIKit
 import AVKit
 import Firebase
 
-class LearningTableViewController: UITableViewController {
+class LearningTableViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
-    let viewModel = LearningVideoViewModel.shared
+    @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var progressBar: UIProgressView!
+    @IBOutlet weak var charmLevelLabel: UILabel!
+    
+    let viewModel = TutorialManager.shared
     
     let activityView = UIActivityIndicatorView()
 
@@ -22,14 +26,14 @@ class LearningTableViewController: UITableViewController {
         // enable view model to reload table view data
         viewModel.delegate = self
         
+        tableView.tableFooterView = UIView()
+        
         // setup activity view
         
         if #available(iOS 13.0, *) {
             activityView.style = .large
-            activityView.color = .label
         } else {
             activityView.style = .whiteLarge
-            activityView.color = .black
         }
         
         activityView.hidesWhenStopped = true
@@ -44,33 +48,33 @@ class LearningTableViewController: UITableViewController {
         showActivity(viewModel.isLoading)
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        charmLevelLabel.text = "Charm \(ConversationManager.shared.levelDetail ?? "Error :(")"
+        progressBar.progress = Float(ConversationManager.shared.progress)
+    }
+    
     // MARK: - Table view data source
 
-    override func numberOfSections(in tableView: UITableView) -> Int {
+    func numberOfSections(in tableView: UITableView) -> Int {
         return viewModel.numSections
     }
 
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return viewModel.rows(inSection: section)
     }
 
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: CellID.videoList, for: indexPath) as! VideoTableViewCell
-        
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "TutorialCell", for: indexPath) as! TutorialCell
         return viewModel.configure(cell: cell, forIndexPath: indexPath)
     }
     
-    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return viewModel.sections.sections[section].sectionTitle
-    }
-    
-    override func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
-        guard let header = view as? UITableViewHeaderFooterView else  { return }
-        header.textLabel?.font = UIFont.boldSystemFont(ofSize: 24)
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 156.0
     }
     
     // play video
-    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let urlString = viewModel.sections.sections[indexPath.section].videos[indexPath.row].url
         let avPlayerVC = AVPlayerViewController()
         let videoStorage = Storage.storage()
@@ -90,25 +94,19 @@ class LearningTableViewController: UITableViewController {
             }
         }
     }
-    
-    // prevent extra table view lines
-    override func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
-        let view = UIView(frame: CGRect(origin: .zero, size: CGSize(width: tableView.frame.width, height: 1)))
-        view.backgroundColor = .clear
-        return view
-    }
-    
-    override func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-        return 1
-    }
 }
 
 extension LearningTableViewController: TableViewRefreshDelegate {
-    
     func updateTableView() {
         tableView.reloadData()
+        tableView.layoutSubviews()
     }
     
     func showActivity(_ animating: Bool) {
+        if animating {
+            activityView.startAnimating()
+        } else {
+            activityView.stopAnimating()
+        }
     }
 }
