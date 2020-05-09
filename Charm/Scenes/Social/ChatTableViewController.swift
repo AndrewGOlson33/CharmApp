@@ -9,7 +9,13 @@
 import UIKit
 import Firebase
 
-class ChatTableViewController: UITableViewController {
+class ChatTableViewController: UIViewController {
+    
+    // MARK: - IBOutlets
+    
+    @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var progressBar: UIProgressView!
+    @IBOutlet weak var charmLevelLabel: UILabel!
     
     // MARK: - Properties
 
@@ -117,16 +123,16 @@ class ChatTableViewController: UITableViewController {
 
     // MARK: - Table view data source
 
-    override func numberOfSections(in tableView: UITableView) -> Int {
+    func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
 
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         searchController.searchBar.isHidden = viewModel.currentFriends.count == 0
         return isFiltering() ? viewModel.filteredFriends.count : viewModel.currentFriends.count > 0 ? viewModel.currentFriends.count : 1
     }
 
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         // if a user has no friends, return the empty chat list cell
         if viewModel.currentFriends.count == 0 {
@@ -140,7 +146,7 @@ class ChatTableViewController: UITableViewController {
         return cell
     }
     
-    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         
         guard FirebaseModel.shared.charmUser.userProfile.numCredits > 0 else {
@@ -198,13 +204,13 @@ class ChatTableViewController: UITableViewController {
     }
     
     // prevent extra table view lines
-    override func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+    func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
         let view = UIView(frame: CGRect(origin: .zero, size: CGSize(width: tableView.frame.width, height: 1)))
         view.backgroundColor = .clear
         return view
     }
     
-    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         guard let user = FirebaseModel.shared.charmUser else {
             return "No credits available"
         }
@@ -212,11 +218,11 @@ class ChatTableViewController: UITableViewController {
         return user.userProfile.numCredits == 0 ? "No credits available" : "Credits Available: " + user.userProfile.credits
     }
     
-    override func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+    func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
         return 1
     }
     
-    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 60
     }
     

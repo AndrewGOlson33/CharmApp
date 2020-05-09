@@ -169,8 +169,6 @@ class ContactsViewModel: NSObject {
         
         if let image = getPhoto(forFriend: friend) {
             cell.imgProfile.image = image
-        } else {
-            cell.imgProfile.image = UIImage(named: "icnTempProfile")
         }
         
         return cell
@@ -337,12 +335,27 @@ class ContactsViewModel: NSObject {
                 if contact.imageDataAvailable, let data = contact.thumbnailImageData, let image = UIImage(data: data) {
                     return image
                 } else {
-                    return nil
+                    return generateImageWithInitials(for: friend)
                 }
             }
         }
+        return generateImageWithInitials(for: friend)
+    }
+    
+    private func generateImageWithInitials(for contact: Friend) -> UIImage? {
+        let label = UILabel()
+        label.frame.size = CGSize(width: 60.0, height: 60.0)
+        label.textColor = UIColor.white
+        label.text = String(contact.firstName.first ?? "?") + String(contact.lastName.first ?? "?")
+        label.textAlignment = NSTextAlignment.center
+        label.backgroundColor = UIColor.black
+        label.layer.cornerRadius = 5
         
-        return nil
+        UIGraphicsBeginImageContext(label.frame.size)
+        label.layer.render(in: UIGraphicsGetCurrentContext()!)
+        let image = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        return image
     }
     
     // MARK: - Search Filtering
@@ -544,7 +557,7 @@ extension ContactsViewModel: FriendManagementDelegate {
             return
         }
         
-        DispatchQueue.global(qos: .utility).async { [weak self] in
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
             guard let self = self else { return }
             
             guard let friendUser: CharmUser = self.allUsers.first(where: { (charmUser) -> Bool in
@@ -665,7 +678,7 @@ extension ContactsViewModel: FriendManagementDelegate {
     private func checkFriendList(for id: String, atLocation location: ContactType) {
         let ref = Database.database().reference().child(FirebaseStructure.usersLocation).child(id).child(FirebaseStructure.CharmUser.friendListLocation)
         
-        DispatchQueue.global(qos: .utility).async {
+        DispatchQueue.global(qos: .userInitiated).async {
             ref.observeSingleEvent(of: .value) { (snapshot) in
                 if !snapshot.exists() { return }
 
@@ -913,7 +926,7 @@ extension ContactsViewModel: FriendManagementDelegate {
     }
     
     fileprivate func updateSentText(with friendList: FriendList, forUid uid: String) {
-        DispatchQueue.global(qos: .utility).async {
+        DispatchQueue.global(qos: .userInitiated).async {
             friendList.save()
         }
     }
