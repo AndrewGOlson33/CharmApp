@@ -18,10 +18,8 @@ class TutorialCell: UITableViewCell {
     @IBOutlet weak var progressBar: UIProgressView!
     @IBOutlet weak var lessonTitleLabel: UILabel!
     
-    
     var gradientAdded: Bool = false
     let gradient: CAGradientLayer = CAGradientLayer()
-    
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -38,8 +36,8 @@ class TutorialCell: UITableViewCell {
         layer.masksToBounds = false
         layer.shadowColor = UIColor.black.cgColor
         layer.shadowOpacity = 0.5
-        layer.shadowOffset = CGSize(width: 1.0, height: 1.0)
-        layer.shadowRadius = 5
+        layer.shadowOffset = CGSize(width: 0.0, height: 0.0)
+        layer.shadowRadius = 3.0
         layer.shouldRasterize = true
         layer.rasterizationScale = UIScreen.main.scale
         layer.cornerRadius = 5.0

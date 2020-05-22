@@ -10,7 +10,7 @@ import Accelerate
 import Foundation
 import Speech
 
-protocol SpeechRecognitionDelegate {
+protocol SpeechRecognitionDelegate: class {
     func speechRecognizerGotText(text: String)
     func speechRecognizerFinished(successfully: Bool)
 }
@@ -50,7 +50,7 @@ class SpeechRecognitionModel: NSObject {
     }
     
     // delegate to return recognized speech text
-    var delegate: SpeechRecognitionDelegate? = nil
+    weak var delegate: SpeechRecognitionDelegate? = nil
     
     // MARK: - Model Functions
     
@@ -120,16 +120,22 @@ class SpeechRecognitionModel: NSObject {
         
         do {
             try audioEngine.start()
-            AudioServicesPlaySystemSound(1113)
         } catch {
             print("audioEngine couldn't start because of an error.")
         }
     }
     
     func stopRecording() {
+        let audioSession = AVAudioSession.sharedInstance()
+        do {
+            try audioSession.setCategory(AVAudioSession.Category.playback)
+            try audioSession.setMode(.moviePlayback)
+            try audioSession.setActive(true, options: .notifyOthersOnDeactivation)
+        } catch {
+            // handle errors
+        }
         audioEngine.stop()
         recognitionRequest?.endAudio()
-        AudioServicesPlaySystemSound(1114)
         return
     }
     
@@ -166,11 +172,6 @@ class SpeechRecognitionModel: NSObject {
 // MARK: - Speech Task Delegate
 
 extension SpeechRecognitionModel: SFSpeechRecognitionTaskDelegate {
-    
-//    func speechRecognitionDidDetectSpeech(_ task: SFSpeechRecognitionTask) {
-//        print("~>Detected speech.")
-//    }
-    
     func speechRecognitionTask(_ task: SFSpeechRecognitionTask, didHypothesizeTranscription transcription: SFTranscription) {
         delegate?.speechRecognizerGotText(text: transcription.formattedString)
     }

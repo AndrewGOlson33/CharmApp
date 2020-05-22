@@ -9,7 +9,7 @@
 import Foundation
 import UIKit
 
-protocol LevelUpDelegate {
+protocol LevelUpDelegate: class {
     func updated(progress: Double)
     func updated(level: Int, detail: String, progress: Double)
 }
@@ -76,7 +76,7 @@ class ConversationManager: NSObject {
     }
     
     // Delegate
-    var delegate: LevelUpDelegate?
+    weak var delegate: LevelUpDelegate?
     
     // Available Phrases
     
@@ -119,7 +119,7 @@ class ConversationManager: NSObject {
     
     @objc private func dataDidLoaded() {
         loadStatus = .loaded
-        loadPhrases()
+    //   loadPhrases()
     }
     
     @objc private func dataDidFailedToLoad() {
@@ -128,7 +128,7 @@ class ConversationManager: NSObject {
     
     // MARK: - Setup Functions
     
-    fileprivate func loadPhrases() {
+    public func loadPhrases() {
         loadSpecific()
         loadConnection()
         loadPositive()
@@ -178,6 +178,23 @@ class ConversationManager: NSObject {
         }
         
         return PhraseInfo(phrase: phrase, type: type)
+    }
+    
+    func getType(video type: PracticeVideo.PracticeVideoType) -> PhraseType {
+        switch type {
+        case .answer:
+            return .specific
+        case .question:
+            if Bool.random() {
+                return .connection
+            } else {
+                if Bool.random() {
+                    return .negative
+                } else {
+                    return .positive
+                }
+            }
+        }
     }
     
     // MARK: - Priavte Phrase Setup Methods
@@ -248,7 +265,7 @@ class ConversationManager: NSObject {
         case 0:
             return PhraseScore(feedback: "We're sorry, we were unable to detect a specific concrete word. Try again.\n(Examples: duck, train, David)", formattedText: highlightedPhrase, status: .incomplete)
         case 1:
-            return PhraseScore(feedback: "Great Job! \(words[0]) is a specific word!", formattedText: highlightedPhrase, status: .complete)
+            return PhraseScore(feedback: "Great Job!\n \(words[0]) is a specific word!", formattedText: highlightedPhrase, status: .complete)
         default:
             var feedback: String = "Great Job! "
             let lastIndex = words.count - 1
@@ -299,7 +316,7 @@ class ConversationManager: NSObject {
         case (0, 1):
             return PhraseScore(feedback: "\(secondWords[0]) is a second person word, but you also need to include at least one first person word.\n(Example: Me)", formattedText: highlightedPhrase, status: .incomplete)
         case (1, 1):
-            return PhraseScore(feedback: "Great Job! \(firstWords[0]) is a first person word, and using \(secondWords[0]) implies a connection!", formattedText: highlightedPhrase, status: .complete)
+            return PhraseScore(feedback: "Great Job!\n \(firstWords[0]) is a first person word, and using \(secondWords[0]) implies a connection!", formattedText: highlightedPhrase, status: .complete)
         default:
             var feedback: String = "Great Job! "
             let lastIndexOfFirst = firstWords.count - 1
@@ -346,7 +363,7 @@ class ConversationManager: NSObject {
         case 0:
             return PhraseScore(feedback: "We're sorry, we were unable to detect any positive words. Try again.\n(Examples: love, hope, excited)", formattedText: highlightedPhrase, status: .incomplete)
         case 1:
-            return PhraseScore(feedback: "Great Job! \(words[0]) signals positivity!", formattedText: highlightedPhrase, status: .complete)
+            return PhraseScore(feedback: "Great Job! \n \(words[0]) signals positivity!", formattedText: highlightedPhrase, status: .complete)
         default:
             var feedback: String = "Great Job! "
             let lastIndex = words.count - 1

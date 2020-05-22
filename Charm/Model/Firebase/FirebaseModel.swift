@@ -40,8 +40,6 @@ class FirebaseModel {
             snapshots.sort { (lhs, rhs) -> Bool in
                 lhs.date ?? Date.distantPast > rhs.date ?? Date.distantPast
             }
-            
-            NotificationCenter.default.post(name: FirebaseNotification.SnapshotLoaded, object: nil)
         }
     }
     var selectedSnapshot: Snapshot? = nil
@@ -61,7 +59,7 @@ class FirebaseModel {
         setupUserObserver()
         setupTrainingHistoryObserver()
         setupSnapshotObserver()
-   //     setupTrainingModel()
+        setupTrainingModel()
         setupCallObserver()
         setupConstants()
     }
@@ -104,28 +102,48 @@ class FirebaseModel {
         guard let authUser = Auth.auth().currentUser else { return }
         SnapshotsLoading.shared.isLoading = true
         
-        DispatchQueue.global(qos: .utility).async { [weak self] in
-            Database.database().reference().child(FirebaseStructure.usersLocation).child(authUser.uid).child(FirebaseStructure.CharmUser.snapshotLocation).observe(.value) { [weak self] (snapshot) in
-                guard let self = self else { return }
-                guard snapshot.exists() else { print("~>No snapshots, perhaps no data exists"); return }
-                do {
-                    for child in snapshot.children {
-                        guard let snapshot = child as? DataSnapshot else { continue }
-                        guard !self.snapshots.contains(where: { (existing) -> Bool in
-                            existing.id == snapshot.key
-                        }) else { continue }
-                        self.snapshots.append(try Snapshot(snapshot: snapshot))
-                    }
-                    
-                    SnapshotsLoading.shared.isLoading = false
-                    if let first = self.snapshots.first { self.selectedSnapshot = first }
-                    NotificationCenter.default.post(name: FirebaseNotification.SnapshotLoaded, object: nil)
-                } catch let error {
-                    print("~>There was an error: \(error)")
-                    SnapshotsLoading.shared.isLoading = false
-                    return
+        Database.database().reference().child(FirebaseStructure.usersLocation).child(authUser.uid).child(FirebaseStructure.CharmUser.snapshotLocation).observe(.value) { [weak self] (snapshot) in
+            guard let self = self else { return }
+            guard snapshot.exists() else { print("~>No snapshots, perhaps no data exists"); return }
+            do {
+                var result: [Snapshot] = []
+                for child in snapshot.children {
+                    guard let snapshot = child as? DataSnapshot else { continue }
+                    guard !self.snapshots.contains(where: { (existing) -> Bool in
+                        existing.id == snapshot.key
+                    }) else { continue }
+                    result.append(try Snapshot(snapshot: snapshot))
                 }
+                self.snapshots = result
+                
+                SnapshotsLoading.shared.isLoading = false
+                if let first = self.snapshots.first { self.selectedSnapshot = first }
+                if !didShowSampleAlert || result.isEmpty {
+                    self.loadSampleSnapshot()
+                }
+                
+                NotificationCenter.default.post(name: FirebaseNotification.SnapshotLoaded, object: nil)
+            } catch let error {
+                print("~>There was an error: \(error)")
+                
+                self.loadSampleSnapshot()
+                
+                NotificationCenter.default.post(name: FirebaseNotification.SnapshotLoadFailed, object: nil)
+                SnapshotsLoading.shared.isLoading = false
+                return
             }
+        }
+        
+    }
+    
+    private func loadSampleSnapshot() {
+        guard let path = Bundle.main.path(forResource: "snapshotData", ofType: "json") else { fatalError("~>Unable to find default JSON file.") }
+        do {
+            let data = try Data(contentsOf: URL(fileURLWithPath: path), options: .mappedIfSafe)
+            let snapshotData = try JSONDecoder().decode(Snapshot.self, from: data)
+            FirebaseModel.shared.snapshots.append(snapshotData)
+        } catch let error {
+            fatalError("~>Got an error decoding JSON: \(error)")
         }
     }
     
@@ -133,9 +151,10 @@ class FirebaseModel {
     
     private func setupTrainingHistoryObserver() {
         guard let authUser = Auth.auth().currentUser else { return }
-        Database.database().reference().child(FirebaseStructure.usersLocation).child(authUser.uid).child(FirebaseStructure.Training.trainingDatabase).observe(.childChanged) { [weak self] (_) in
+        Database.database().reference().child(FirebaseStructure.usersLocation).child(authUser.uid).child(FirebaseStructure.Training.trainingDatabase).observe(.childAdded) { [weak self] (_) in
             guard self != nil else { return }
             print("~>Training history updated")
+            ConversationManager.shared.progress = FirebaseModel.shared.charmUser.trainingData.conversationLevel.progress
             NotificationCenter.default.post(name: FirebaseNotification.trainingHistoryUpdated, object: nil)
         }
         
@@ -286,10 +305,9 @@ class FirebaseModel {
             Database.database().reference().child(FirebaseStructure.Training.trainingDatabase).observeSingleEvent(of: .value) { [weak self] (snapshot) in
                 guard let self = self else { return }
                 do {
-                    
-                // FIXME: Fix this
-         //       self.trainingModel = try TrainingData(snapshot: snapshot)
-           //     NotificationCenter.default.post(name: FirebaseNotification.trainingModelLoaded, object: nil)
+                self.trainingModel = try TrainingData(snapshot: snapshot)
+                ConversationManager.shared.loadPhrases()
+                NotificationCenter.default.post(name: FirebaseNotification.trainingModelLoaded, object: nil)
             } catch let error {
                 NotificationCenter.default.post(name: FirebaseNotification.trainingModelFailedToLoad, object: nil)
                 print("~>There was an error: \(error)")

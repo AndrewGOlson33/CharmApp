@@ -342,82 +342,42 @@ extension ConversationTrainingViewController: UITableViewDelegate, UITableViewDa
             let strength = trainingViewModel.strength
             cell.lblDescription.text = "Phrase Strength"
             cell.lblScore.text = "\(strength.score)"
-            
-            if !cell.sliderView.isSetup {
-                cell.sliderView.setup(for: .fixed, atPosition: CGFloat(strength.position), barStart: 0.4, end: 1.0, color: #colorLiteral(red: 0.4862745098, green: 0.7098039216, blue: 0.9254901961, alpha: 1))
-            } else if cell.sliderView.position != CGFloat(strength.position) {
-                cell.sliderView.updatePosition(to: CGFloat(strength.position))
-            }
+            cell.sliderView.progress = Float(strength.position)
         case 1:
             let length = trainingViewModel.length
             cell.lblDescription.text = "Phrase Length"
             cell.lblScore.text = "\(length.score)"
-            
-            if !cell.sliderView.isSetup {
-                cell.sliderView.setup(for: .fixed, atPosition: CGFloat(length.position), barStart: 0.4, end: 1.0, color: #colorLiteral(red: 0.4862745098, green: 0.7098039216, blue: 0.9254901961, alpha: 1))
-            } else if cell.sliderView.position != CGFloat(length.position) {
-                cell.sliderView.updatePosition(to: CGFloat(length.position))
-            }
+            cell.sliderView.progress = Float(length.position)
         case 2:
             let concrete = trainingViewModel.concrete
             cell.lblDescription.text = "Concrete Details"
             cell.lblScore.text = "\(concrete.score)"
-            
-            if !cell.sliderView.isSetup {
-                cell.sliderView.setup(for: .fixed, atPosition: CGFloat(concrete.position), barStart: 0.4, end: 1.0, color: #colorLiteral(red: 0.4862745098, green: 0.7098039216, blue: 0.9254901961, alpha: 1))
-            } else if cell.sliderView.position != CGFloat(concrete.position) {
-                cell.sliderView.updatePosition(to: CGFloat(concrete.position))
-            }
+            cell.sliderView.progress = Float(concrete.position)
         case 3:
             let abstract = trainingViewModel.abstract
             cell.lblDescription.text = "Abstract Ideas"
             cell.lblScore.text = "\(abstract.score)"
-            
-            if !cell.sliderView.isSetup {
-                cell.sliderView.setup(for: .fixed, atPosition: CGFloat(abstract.position), barStart: 0.4, end: 1.0, color: #colorLiteral(red: 0.4862745098, green: 0.7098039216, blue: 0.9254901961, alpha: 1))
-            } else if cell.sliderView.position != CGFloat(abstract.position) {
-                cell.sliderView.updatePosition(to: CGFloat(abstract.position))
-            }
+            cell.sliderView.progress = Float(abstract.position)
         case 4:
             let first = trainingViewModel.first
             cell.lblDescription.text = "First Person (\"I/\"Me\")"
             cell.lblScore.text = "\(first.score)"
-            
-            if !cell.sliderView.isSetup {
-                cell.sliderView.setup(for: .fixed, atPosition: CGFloat(first.position), barStart: 0.4, end: 1.0, color: #colorLiteral(red: 0.4862745098, green: 0.7098039216, blue: 0.9254901961, alpha: 1))
-            } else if cell.sliderView.position != CGFloat(first.position) {
-                cell.sliderView.updatePosition(to: CGFloat(first.position))
-            }
+            cell.sliderView.progress = Float(first.position)
         case 5:
             let second = trainingViewModel.second
             cell.lblDescription.text = "Second Person (\"You\")"
             cell.lblScore.text = "\(second.score)"
-            
-            if !cell.sliderView.isSetup {
-                cell.sliderView.setup(for: .fixed, atPosition: CGFloat(second.position), barStart: 0.4, end: 1.0, color: #colorLiteral(red: 0.4862745098, green: 0.7098039216, blue: 0.9254901961, alpha: 1))
-            } else if cell.sliderView.position != CGFloat(second.position) {
-                cell.sliderView.updatePosition(to: CGFloat(second.position))
-            }
+            cell.sliderView.progress = Float(second.position)
         case 6:
             let positive = trainingViewModel.positive
             cell.lblDescription.text = "Positive Word Score"
             cell.lblScore.text = "\(positive.score)"
-            
-            if !cell.sliderView.isSetup {
-                cell.sliderView.setup(for: .fixed, atPosition: CGFloat(positive.position), barStart: 0.667, end: 1.0, color: #colorLiteral(red: 0.4862745098, green: 0.7098039216, blue: 0.9254901961, alpha: 1))
-            } else if cell.sliderView.position != CGFloat(positive.position) {
-                cell.sliderView.updatePosition(to: CGFloat(positive.position))
-            }
+            cell.sliderView.progress = Float(positive.position)
         case 7:
             let negative = trainingViewModel.negative
             cell.lblDescription.text = "Negative Word Score"
             cell.lblScore.text = "\(negative.score)"
-            
-            if !cell.sliderView.isSetup {
-                cell.sliderView.setup(for: .fixed, atPosition: CGFloat(negative.position), barStart: 0.667, end: 1.0, color: #colorLiteral(red: 0.8509803922, green: 0.3490196078, blue: 0.3490196078, alpha: 1))
-            } else if cell.sliderView.position != CGFloat(negative.position) {
-                cell.sliderView.updatePosition(to: CGFloat(negative.position))
-            }
+            cell.sliderView.progress = Float(negative.position)
         default:
             print("~>Should not be possible to get here.")
         }

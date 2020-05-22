@@ -87,10 +87,17 @@
 		7851C0F82463316C00D17458 /* SiriWaveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7851C0F62463316C00D17458 /* SiriWaveView.swift */; };
 		7851C0FD246340CE00D17458 /* MainTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7851C0FC246340CE00D17458 /* MainTabBarController.swift */; };
 		7851C0FF2463629600D17458 /* OldScreens.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7851C0FE2463629600D17458 /* OldScreens.storyboard */; };
+		785DF6DE247320170088B1E4 /* PracticePartner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 785DF6DD247320170088B1E4 /* PracticePartner.swift */; };
+		785DF6E1247334190088B1E4 /* PracticeVideoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 785DF6E0247334190088B1E4 /* PracticeVideoCell.swift */; };
+		785DF6E3247334CF0088B1E4 /* PartnersListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 785DF6E2247334CF0088B1E4 /* PartnersListViewController.swift */; };
+		785DF6E6247343900088B1E4 /* PracticeVideoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 785DF6E5247343900088B1E4 /* PracticeVideoViewController.swift */; };
+		78876BD0246EE509006ECEC4 /* SnapshotCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78876BCF246EE509006ECEC4 /* SnapshotCell.swift */; };
+		78876BD2246F4E10006ECEC4 /* PracticeVideoManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78876BD1246F4E10006ECEC4 /* PracticeVideoManager.swift */; };
 		78BE1F492465E03B004588F4 /* TutorialCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78BE1F482465E03B004588F4 /* TutorialCell.swift */; };
 		78BE1F4B2466156D004588F4 /* ContactCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78BE1F4A2466156D004588F4 /* ContactCell.swift */; };
 		78C4F3912447827C00D47CCF /* OnboardingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78C4F3902447827C00D47CCF /* OnboardingViewController.swift */; };
 		78C4F3942447865E00D47CCF /* OnboardingCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78C4F3932447865E00D47CCF /* OnboardingCell.swift */; };
+		78D2DC5C2475C9B000B13C4F /* CheckmarkView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78D2DC5B2475C9B000B13C4F /* CheckmarkView.swift */; };
 		78D8DD4E244787A100DD66CF /* OnboardinItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78D8DD4D244787A100DD66CF /* OnboardinItem.swift */; };
 		78D8DD50244788C700DD66CF /* ViewEmbbeder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78D8DD4F244788C700DD66CF /* ViewEmbbeder.swift */; };
 		78F5C13C24474D2500421C7B /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78F5C13B24474D2500421C7B /* SceneDelegate.swift */; };
@@ -181,10 +188,17 @@
 		7851C0F62463316C00D17458 /* SiriWaveView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SiriWaveView.swift; sourceTree = "<group>"; };
 		7851C0FC246340CE00D17458 /* MainTabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabBarController.swift; sourceTree = "<group>"; };
 		7851C0FE2463629600D17458 /* OldScreens.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = OldScreens.storyboard; sourceTree = "<group>"; };
+		785DF6DD247320170088B1E4 /* PracticePartner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PracticePartner.swift; sourceTree = "<group>"; };
+		785DF6E0247334190088B1E4 /* PracticeVideoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PracticeVideoCell.swift; sourceTree = "<group>"; };
+		785DF6E2247334CF0088B1E4 /* PartnersListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PartnersListViewController.swift; sourceTree = "<group>"; };
+		785DF6E5247343900088B1E4 /* PracticeVideoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PracticeVideoViewController.swift; sourceTree = "<group>"; };
+		78876BCF246EE509006ECEC4 /* SnapshotCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnapshotCell.swift; sourceTree = "<group>"; };
+		78876BD1246F4E10006ECEC4 /* PracticeVideoManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PracticeVideoManager.swift; sourceTree = "<group>"; };
 		78BE1F482465E03B004588F4 /* TutorialCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TutorialCell.swift; sourceTree = "<group>"; };
 		78BE1F4A2466156D004588F4 /* ContactCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactCell.swift; sourceTree = "<group>"; };
 		78C4F3902447827C00D47CCF /* OnboardingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingViewController.swift; sourceTree = "<group>"; };
 		78C4F3932447865E00D47CCF /* OnboardingCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingCell.swift; sourceTree = "<group>"; };
+		78D2DC5B2475C9B000B13C4F /* CheckmarkView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CheckmarkView.swift; sourceTree = "<group>"; };
 		78D8DD4D244787A100DD66CF /* OnboardinItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardinItem.swift; sourceTree = "<group>"; };
 		78D8DD4F244788C700DD66CF /* ViewEmbbeder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewEmbbeder.swift; sourceTree = "<group>"; };
 		78F5C13B24474D2500421C7B /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -280,6 +294,7 @@
 				657330D922415EDC0066624B /* TranscriptTableViewCell.swift */,
 				65A1968B230AD883006CDC4E /* SnapshotSummaryTableViewCell.swift */,
 				65172715230B2AA300028E87 /* AIFeedbackTableViewCell.swift */,
+				78876BCF246EE509006ECEC4 /* SnapshotCell.swift */,
 			);
 			path = Cells;
 			sourceTree = "<group>";
@@ -354,6 +369,7 @@
 				7851C0F42463315600D17458 /* SiriWave */,
 				657330CD22411A2D0066624B /* LabelBubbleViewController.swift */,
 				657330D1224120A30066624B /* ScaleBar.swift */,
+				78D2DC5B2475C9B000B13C4F /* CheckmarkView.swift */,
 				6590F59A225B931F00CF4854 /* LableBubbleView.swift */,
 				65172713230B006800028E87 /* UIPaddedLabel.swift */,
 			);
@@ -372,6 +388,8 @@
 		657E72002243DF2D001EE828 /* Training */ = {
 			isa = PBXGroup;
 			children = (
+				785DF6E4247343800088B1E4 /* Videos */,
+				785DF6DF247333FE0088B1E4 /* Cells */,
 				6561E82B23E89B0B001466DC /* CreatingConversationViewController.swift */,
 				657E72012243DF50001EE828 /* ConcreteFlashcardsViewController.swift */,
 				650E9F522245443A000EADEE /* ConversationTrainingViewController.swift */,
@@ -427,6 +445,8 @@
 				65F1C19A2260C38C00F0BD69 /* CharmBugReports.swift */,
 				6517FB442367137400BEAE2E /* FirebaseModel.swift */,
 				65CE0DBE236C93B7006377EB /* FirebaseConstant.swift */,
+				78876BD1246F4E10006ECEC4 /* PracticeVideoManager.swift */,
+				785DF6DD247320170088B1E4 /* PracticePartner.swift */,
 			);
 			path = Firebase;
 			sourceTree = "<group>";
@@ -480,6 +500,23 @@
 				7851C0FC246340CE00D17458 /* MainTabBarController.swift */,
 			);
 			path = TabBar;
+			sourceTree = "<group>";
+		};
+		785DF6DF247333FE0088B1E4 /* Cells */ = {
+			isa = PBXGroup;
+			children = (
+				785DF6E0247334190088B1E4 /* PracticeVideoCell.swift */,
+			);
+			path = Cells;
+			sourceTree = "<group>";
+		};
+		785DF6E4247343800088B1E4 /* Videos */ = {
+			isa = PBXGroup;
+			children = (
+				785DF6E2247334CF0088B1E4 /* PartnersListViewController.swift */,
+				785DF6E5247343900088B1E4 /* PracticeVideoViewController.swift */,
+			);
+			path = Videos;
 			sourceTree = "<group>";
 		};
 		78C4F3922447864800D47CCF /* Onboarding */ = {
@@ -650,7 +687,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				785DF6E1247334190088B1E4 /* PracticeVideoCell.swift in Sources */,
 				6517FB452367137400BEAE2E /* FirebaseModel.swift in Sources */,
+				785DF6E3247334CF0088B1E4 /* PartnersListViewController.swift in Sources */,
 				657330DC224164490066624B /* ConnectionViewController.swift in Sources */,
 				65C55C2122318BE300336243 /* VideoCallViewController.swift in Sources */,
 				65F1C1972260BB3B00F0BD69 /* InfoModuleViewController.swift in Sources */,
@@ -662,8 +701,11 @@
 				65F1C19B2260C38C00F0BD69 /* CharmBugReports.swift in Sources */,
 				65C7FB1B22383D7500A150BF /* ChatFriendListTableViewCell.swift in Sources */,
 				78BE1F4B2466156D004588F4 /* ContactCell.swift in Sources */,
+				78876BD2246F4E10006ECEC4 /* PracticeVideoManager.swift in Sources */,
+				785DF6E6247343900088B1E4 /* PracticeVideoViewController.swift in Sources */,
 				650D400C223957B30023D983 /* ArchiveSession.swift in Sources */,
 				6528D85222565F540058D0DC /* EmotionFlashcardsViewController.swift in Sources */,
+				78D2DC5C2475C9B000B13C4F /* CheckmarkView.swift in Sources */,
 				65C4379B226F92EF00977C4E /* CharmLaunchpointViewController.swift in Sources */,
 				6578BB6722578B90000439C3 /* VideoTableViewCell.swift in Sources */,
 				65A1968C230AD883006CDC4E /* SnapshotSummaryTableViewCell.swift in Sources */,
@@ -679,6 +721,7 @@
 				65EADDD722303A1C00593F9D /* CharmSignInViewController.swift in Sources */,
 				657E72022243DF50001EE828 /* ConcreteFlashcardsViewController.swift in Sources */,
 				65057C2622CD3A6500495E7C /* IntroViewController.swift in Sources */,
+				78876BD0246EE509006ECEC4 /* SnapshotCell.swift in Sources */,
 				657330D822414C9C0066624B /* ScaleBarTableViewCell.swift in Sources */,
 				65C1705C223FCD030081B55F /* CharmData.swift in Sources */,
 				0792039424056591005FBF5B /* ViewController.swift in Sources */,
@@ -705,6 +748,7 @@
 				0792039624056603005FBF5B /* TableViewController.swift in Sources */,
 				657330D622414A0E0066624B /* DetailChartViewController.swift in Sources */,
 				78D8DD4E244787A100DD66CF /* OnboardinItem.swift in Sources */,
+				785DF6DE247320170088B1E4 /* PracticePartner.swift in Sources */,
 				78C4F3912447827C00D47CCF /* OnboardingViewController.swift in Sources */,
 				78C4F3942447865E00D47CCF /* OnboardingCell.swift in Sources */,
 				65B872A822302BE0001705B3 /* CharmUser.swift in Sources */,

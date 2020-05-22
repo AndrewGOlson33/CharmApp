@@ -49,7 +49,7 @@ struct Snapshot: FirebaseItem, Codable {
         guard let date = date else { return "" }
         
         let dFormatter = DateFormatter()
-        dFormatter.dateStyle = .medium
+        dFormatter.dateStyle = .short
         dFormatter.timeStyle = .short
         
         return dFormatter.string(from: date)
@@ -168,10 +168,6 @@ struct Snapshot: FirebaseItem, Codable {
         return [:]
     }
     
-    // snapshots cannot be saved
-    func save() {
-        return
-    }
     
     // Snapshot Value Getters
     

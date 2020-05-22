@@ -9,7 +9,7 @@
 import UIKit
 import Firebase
 
-class ChatTableViewController: UIViewController {
+class ChatTableViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
     // MARK: - IBOutlets
     
@@ -69,6 +69,8 @@ class ChatTableViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        charmLevelLabel.text = "Charm \(ConversationManager.shared.levelDetail ?? "Error :(")"
+        progressBar.progress = Float(ConversationManager.shared.progress)
         
     }
     // MARK: - Private Helper Functions
@@ -139,7 +141,7 @@ class ChatTableViewController: UIViewController {
             return tableView.dequeueReusableCell(withIdentifier: CellID.emptyChatList)!
         }
         
-        var cell = tableView.dequeueReusableCell(withIdentifier: CellID.chatList, for: indexPath) as! ChatFriendListTableViewCell
+        var cell = tableView.dequeueReusableCell(withIdentifier: "ContactCell", for: indexPath) as! ContactCell
 
         cell = viewModel.configureCell(atIndex: indexPath.row, withCell: cell, filtered: isFiltering())
         
@@ -223,7 +225,7 @@ class ChatTableViewController: UIViewController {
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 60
+        return 80.0
     }
     
     // MARK: - Segue (start call)

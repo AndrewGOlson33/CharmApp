@@ -94,7 +94,7 @@ class LearningVideo: FirebaseItem {
     
     // image to display
     func getThumbnailImage(completion: @escaping(_ image: UIImage?)->Void) {
-        DispatchQueue.global(qos: .background).async {
+        DispatchQueue.global(qos: .userInitiated).async {
             
             let storageRef = Storage.storage()
             

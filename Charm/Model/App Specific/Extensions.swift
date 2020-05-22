@@ -109,3 +109,45 @@ extension Date {
         return Int((self.timeIntervalSince1970 * 1000.0).rounded())
     }
 }
+
+
+extension UIImage {
+    static func generateImageWithInitials(initials: String) -> UIImage? {
+        let label = UILabel()
+        label.frame.size = CGSize(width: 100.0, height: 100.0)
+        label.font = UIFont.boldSystemFont(ofSize: 28.0)
+        label.text = initials
+        label.textAlignment = NSTextAlignment.center
+        label.layer.cornerRadius = 5
+        
+        UIGraphicsBeginImageContext(label.frame.size)
+        label.layer.render(in: UIGraphicsGetCurrentContext()!)
+        let image = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        return image
+    }
+}
+
+
+extension URL {
+
+    mutating func appending(_ queryItem: String, value: String?) {
+        
+        guard var urlComponents = URLComponents(string: absoluteString) else { return }
+        
+        // Create array of existing query items
+        var queryItems: [URLQueryItem] = urlComponents.queryItems ??  []
+        
+        // Create query item
+        let queryItem = URLQueryItem(name: queryItem, value: value)
+        
+        // Append the new query item in the existing query items array
+        queryItems.append(queryItem)
+        
+        // Append updated query items array in the url component object
+        urlComponents.queryItems = queryItems
+        
+        // Returns the url from new url components
+        self = urlComponents.url!
+    }
+}

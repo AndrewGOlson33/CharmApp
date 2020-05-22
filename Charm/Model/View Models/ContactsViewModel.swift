@@ -159,16 +159,18 @@ class ContactsViewModel: NSObject {
     
     // MARK: - Data Access
     
-    func configureCell(atIndex index: Int, withCell cell: ChatFriendListTableViewCell, filtered: Bool) -> ChatFriendListTableViewCell {
+    func configureCell(atIndex index: Int, withCell cell: ContactCell, filtered: Bool) -> ContactCell {
         
         let friend = filtered ? filteredFriends[index] : currentFriends[index]
         
-        cell.lblName.text = "\(friend.firstName) \(friend.lastName)"
+        cell.nameLabel.text = "\(friend.firstName) \(friend.lastName)"
         
         // check to see if contacts has an image
         
         if let image = getPhoto(forFriend: friend) {
-            cell.imgProfile.image = image
+            cell.profileImageView.image = image
+        }  else {
+            cell.profileImageView.image = UIImage(named: "icnTempProfile")
         }
         
         return cell
@@ -343,19 +345,7 @@ class ContactsViewModel: NSObject {
     }
     
     private func generateImageWithInitials(for contact: Friend) -> UIImage? {
-        let label = UILabel()
-        label.frame.size = CGSize(width: 60.0, height: 60.0)
-        label.textColor = UIColor.white
-        label.text = String(contact.firstName.first ?? "?") + String(contact.lastName.first ?? "?")
-        label.textAlignment = NSTextAlignment.center
-        label.backgroundColor = UIColor.black
-        label.layer.cornerRadius = 5
-        
-        UIGraphicsBeginImageContext(label.frame.size)
-        label.layer.render(in: UIGraphicsGetCurrentContext()!)
-        let image = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-        return image
+        return UIImage.generateImageWithInitials(initials: String(contact.firstName.first ?? " ") + String(contact.lastName.first ?? " "))
     }
     
     // MARK: - Search Filtering
@@ -507,6 +497,7 @@ class ContactsViewModel: NSObject {
         
         // load contact list
         guard !isLoading, !hasLoaded else { return }
+        //FIXME: Contacts
         loadContacts()
     }
 }
@@ -678,7 +669,7 @@ extension ContactsViewModel: FriendManagementDelegate {
     private func checkFriendList(for id: String, atLocation location: ContactType) {
         let ref = Database.database().reference().child(FirebaseStructure.usersLocation).child(id).child(FirebaseStructure.CharmUser.friendListLocation)
         
-        DispatchQueue.global(qos: .userInitiated).async {
+        DispatchQueue.global(qos: .background).async {
             ref.observeSingleEvent(of: .value) { (snapshot) in
                 if !snapshot.exists() { return }
 
@@ -776,44 +767,42 @@ extension ContactsViewModel: FriendManagementDelegate {
     // MARK: - Private Helper Functions that do the heavy lifting for friend adding
     
     func sendEmailRequest(toFriend friend: Friend) {
-        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
-            guard let self = self, let user = FirebaseModel.shared.charmUser, let friendId = friend.id, let myId = user.id else { return }
-            guard var meAsFriend = FirebaseModel.shared.meAsFriend else { return }
-            var friend = friend
-            // get the friend user
-            guard var friendUser = self.allUsers.first(where: { (user) -> Bool in
-                user.id == friendId
-            }) else {
-                DispatchQueue.main.async { [weak self] in
-                    guard let self = self else { return }
-                    self.showAlert(title: "Error", message: "An error occurred while trying to add the user.  Please force close the app, and try again.")
-                }
-                return
+        guard let user = FirebaseModel.shared.charmUser, let friendId = friend.id, let myId = user.id else { return }
+        guard var meAsFriend = FirebaseModel.shared.meAsFriend else { return }
+        var friend = friend
+        // get the friend user
+        guard var friendUser = self.allUsers.first(where: { (user) -> Bool in
+            user.id == friendId
+        }) else {
+            DispatchQueue.main.async { [weak self] in
+                guard let self = self else { return }
+                self.showAlert(title: "Error", message: "An error occurred while trying to add the user.  Please force close the app, and try again.")
             }
-            
-            if friendUser.friendList == nil { friendUser.friendList = FriendList() }
-            else if let myList = user.friendList, let received = myList.pendingReceivedApproval, received.contains(where: { (friend) -> Bool in
-                friend.id == friendUser.id
-            }) {
-                DispatchQueue.main.async { [weak self] in
-                    guard let self = self else { return }
-                    self.showAlert(title: "Pending Request", message: "This user has already sent you a friend request.  Please accept their request to add as a friend.")
-                }
-                return
-            }
-            
-            let usersRef = Database.database().reference().child(FirebaseStructure.usersLocation)
-            let meAsFriendRef = usersRef.child(friendId).child(FirebaseStructure.CharmUser.friendListLocation).child(FirebaseStructure.CharmUser.FriendList.pendingReceivedApproval).child(myId)
-            let friendRef = usersRef.child(myId).child(FirebaseStructure.CharmUser.friendListLocation).child(FirebaseStructure.CharmUser.FriendList.pendingSentApproval).child(friendId)
-            
-            friend.ref = friendRef
-            meAsFriend.ref = meAsFriendRef
-            
-            friend.save()
-            meAsFriend.save()
-            
-            self.resetFriendLists()
+            return
         }
+        
+        if friendUser.friendList == nil { friendUser.friendList = FriendList() }
+        else if let myList = user.friendList, let received = myList.pendingReceivedApproval, received.contains(where: { (friend) -> Bool in
+            friend.id == friendUser.id
+        }) {
+            DispatchQueue.main.async { [weak self] in
+                guard let self = self else { return }
+                self.showAlert(title: "Pending Request", message: "This user has already sent you a friend request.  Please accept their request to add as a friend.")
+            }
+            return
+        }
+        
+        let usersRef = Database.database().reference().child(FirebaseStructure.usersLocation)
+        let meAsFriendRef = usersRef.child(friendId).child(FirebaseStructure.CharmUser.friendListLocation).child(FirebaseStructure.CharmUser.FriendList.pendingReceivedApproval).child(myId)
+        let friendRef = usersRef.child(myId).child(FirebaseStructure.CharmUser.friendListLocation).child(FirebaseStructure.CharmUser.FriendList.pendingSentApproval).child(friendId)
+        
+        friend.ref = friendRef
+        meAsFriend.ref = meAsFriendRef
+        
+        friend.save()
+        meAsFriend.save()
+        
+        self.resetFriendLists()
     }
     
     func resetFriendLists() {
@@ -926,9 +915,7 @@ extension ContactsViewModel: FriendManagementDelegate {
     }
     
     fileprivate func updateSentText(with friendList: FriendList, forUid uid: String) {
-        DispatchQueue.global(qos: .userInitiated).async {
-            friendList.save()
-        }
+        friendList.save()
     }
     
     fileprivate func showAlert(title: String, message: String) {

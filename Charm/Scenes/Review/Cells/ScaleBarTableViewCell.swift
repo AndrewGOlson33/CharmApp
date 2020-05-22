@@ -12,12 +12,10 @@ class ScaleBarTableViewCell: UITableViewCell {
     
     // MARK: - IBOutlets
     
-    @IBOutlet weak var sliderView: SliderView!
+    @IBOutlet weak var sliderView: UIProgressView!
     @IBOutlet weak var lblDescription: UILabel!
     @IBOutlet weak var lblHint: UILabel!
     @IBOutlet weak var lblScore: UILabel!
-    @IBOutlet weak var separatorView: UIView!
-    @IBOutlet weak var backgroundImageView: UIImageView!
     
     override func awakeFromNib() {
         super.awakeFromNib()

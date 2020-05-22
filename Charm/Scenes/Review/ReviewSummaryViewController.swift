@@ -60,7 +60,7 @@ class ReviewSummaryViewController: UIViewController {
     // MARK: - Properties
     
     // data chart will be built with
-    var snapshot: Snapshot!
+    var snapshot: Snapshot! = FirebaseModel.shared.selectedSnapshot
     var cellInfo: [SummaryCellInfo] = []
     
     // calculated averages
@@ -71,9 +71,6 @@ class ReviewSummaryViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        // setup notification for new snapshots
-        NotificationCenter.default.addObserver(self, selector: #selector(gotNotification(_:)), name: FirebaseNotification.SnapshotLoaded, object: nil)
         
         // round corners of connecting view
         viewLoading.layer.cornerRadius = 20
@@ -121,13 +118,9 @@ class ReviewSummaryViewController: UIViewController {
         setupSnapshotData()
     }
     
-    deinit {
-        NotificationCenter.default.removeObserver(self)
-    }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        removeSnapshotObserver()
     }
     
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -457,9 +450,6 @@ class ReviewSummaryViewController: UIViewController {
         setupSnapshotData()
     }
     
-    fileprivate func removeSnapshotObserver() {
-        NotificationCenter.default.removeObserver(self, name: FirebaseNotification.SnapshotLoaded, object: nil)
-    }
         
     // MARK: - Handle Button Actions
     

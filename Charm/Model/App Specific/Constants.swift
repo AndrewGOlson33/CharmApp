@@ -245,9 +245,12 @@ enum FirebaseNotification {
     static let trainingHistoryUpdated = Notification.Name("notificationTrainingHistoryHasUpdates")
     static let GotFriendFromLink = Notification.Name("notificationGotFriendFromLink")
     static let SnapshotLoaded = Notification.Name("notificationSnapshotDataLoaded")
+    static let SnapshotLoadFailed = Notification.Name("SnapshotLoadFailed")
     static let NewSnapshot = Notification.Name("notificationnewSnapshotNotificationReceived")
     static let connectionStatusChanged = Notification.Name("notificationConnectionStatusChanged")
     static let showContactListFromNotification = Notification.Name("notificationShowContactListFromNotification")
+    static let didUpdatePracticeVideos = Notification.Name("didUpdatePracticeVideos")
+    static let didFailToUpdatePracticeVideos = Notification.Name("didFailToUpdatePracticeVideos")
 }
 
 // MARK: - Database Constants
@@ -301,4 +304,17 @@ enum Defaults {
     static let validLicense = "_validLicense"
     static let notFirstLaunch = "_notFirstLaunch"
     static let hasMigrated = "_hasMigrated"
+}
+
+
+
+var didShowSampleAlert: Bool {
+    set {
+        let defaults = UserDefaults.standard
+        defaults.setValue(newValue, forKey: "didShowSampleAlert")
+    }
+    get {
+        let defaults = UserDefaults.standard
+        return defaults.bool(forKey: "didShowSampleAlert")
+    }
 }

@@ -593,17 +593,17 @@ struct TrainingLevel: FirebaseItem {
     }
     
     var levelDetail: String {
-        switch currentLevel {
-        case 1...6:
-            return "Level \(currentLevel): Novice"
-        case 7...16:
-            return "Level \(currentLevel): Beginner"
-        case 17...22:
-            return "Level \(currentLevel): Advanced"
-        case 23...30:
-            return "Level \(currentLevel): Ninja"
+        switch experience {
+        case 0...20:
+            return "Level Novice"
+        case 20...100:
+            return "Level Beginner"
+        case 100...250:
+            return "Level Advanced"
+        case 250...500:
+            return "Level Ninja"
         default:
-            return "Level \(currentLevel): Ninja Master"
+            return "Level Ninja Master"
         }
     }
     
@@ -612,12 +612,26 @@ struct TrainingLevel: FirebaseItem {
     }
     
     var progress: Double {
-        let thisLevel: Int = currentLevel == 1 ? 0 : calculateExperience(forLevel: currentLevel - 1)
-        let nextLevel: Int = calculateExperience(forLevel: currentLevel)
-        let difference: Double = Double(nextLevel - thisLevel)
-        let progress: Double = Double(experience - thisLevel)
+        switch experience {
+        case 0...20:
+            return Double(experience) / Double(20)
+        case 20...100:
+            return Double(experience) / Double(100)
+        case 100...250:
+            return Double(experience) / Double(250)
+        case 250...500:
+            return Double(experience) / Double(500)
+        default:
+            return Double(1.0)
+        }
         
-        return progress / difference
+//
+//        let thisLevel: Int = currentLevel == 1 ? 0 : calculateExperience(forLevel: currentLevel - 1)
+//        let nextLevel: Int = calculateExperience(forLevel: currentLevel)
+//        let difference: Double = Double(nextLevel - thisLevel)
+//        let progress: Double = Double(experience - thisLevel)
+//
+//        return progress / difference
     }
     
     init(snapshot: DataSnapshot) throws {
@@ -650,7 +664,7 @@ struct TrainingLevel: FirebaseItem {
     
     fileprivate func calculateExperience(forLevel level: Int) -> Int {
         let lvl = Double(level) + 0.75
-        return Int((log(lvl * lvl) * log(lvl * lvl)) * 25)
+        return Int((log(lvl * lvl) * log(lvl * lvl)) * 2)
     }
     
     func toAny() -> [AnyHashable : Any] {

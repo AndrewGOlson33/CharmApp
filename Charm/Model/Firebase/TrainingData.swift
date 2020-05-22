@@ -104,16 +104,17 @@ struct TrainingData: FirebaseItem {
 //            guard let snapshot = child as? DataSnapshot else { continue }
 //            conversationPrompts.append(try ConversationPrompt(snapshot: snapshot))
 //        }
-        // FIXME: REMOVE THIS
-        let phrasesSnap = snapshot.childSnapshot(forPath: "conversationPhrases")
-        do {
-            conversationPhrases = try ConversationPhrases(snapshot: phrasesSnap)
-            phrasesLoaded = true
-        } catch let error {
-            print("~>Got an error loading conversation phrases: \(error)")
-            conversationPhrases = nil
-            phrasesLoaded = true
-        }
+        
+        // FIXME: REMOVE THIS - no phrases in video
+//        let phrasesSnap = snapshot.childSnapshot(forPath: "conversationPhrases")
+//        do {
+//            conversationPhrases = try ConversationPhrases(snapshot: phrasesSnap)
+//            phrasesLoaded = true
+//        } catch let error {
+//            print("~>Got an error loading conversation phrases: \(error)")
+//            conversationPhrases = nil
+//            phrasesLoaded = true
+//        }
         
         if let unclassifiedValues = snapshot.childSnapshot(forPath: "unclassifiedNouns").value as? [String:String] {
             var unclass: [String] = []

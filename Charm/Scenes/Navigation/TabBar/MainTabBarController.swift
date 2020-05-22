@@ -62,6 +62,7 @@ class MainTabBarController: UITabBarController {
         
         // Setup open friend list observer
         NotificationCenter.default.addObserver(self, selector: #selector(addFriend(_:)), name: FirebaseNotification.showContactListFromNotification, object: nil)
+        
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -339,11 +340,11 @@ extension MainTabBarController: UITabBarControllerDelegate {
         case 0:
             navigationItem.title = "SELECT YOUR PARTNER"
         case 1:
-             navigationItem.title = "YOUR CALLS"
+             navigationItem.title = "CONTACTS"
         case 2:
              navigationItem.title = "SELECT A TUTORIAL"
         case 3:
-             navigationItem.title = "SELECT YOUR PARTNER"
+             navigationItem.title = "YOUR CALLS"
         case 4:
              navigationItem.title = "SETTINGS"
         default:

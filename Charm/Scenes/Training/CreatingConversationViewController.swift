@@ -87,7 +87,6 @@ class CreatingConversationViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        navigationController?.navigationItem.title = "SELECT YOUR PARTNER"
         
         NotificationCenter.default.addObserver(self,
                                                selector : #selector(keyboardWillAppear(notification:)),
@@ -97,7 +96,7 @@ class CreatingConversationViewController: UIViewController {
                                                selector : #selector(keyboardWillDisappear(notification:)),
                                                name     : UIResponder.keyboardWillHideNotification,
                                                object   : nil)
-       // loadModel()
+        loadModel()
     }
     
     override func viewDidAppear(_ animated: Bool) {

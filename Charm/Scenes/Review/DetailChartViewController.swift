@@ -19,9 +19,14 @@ class DetailChartViewController: UIViewController {
     // Layout Constraint for Chart View
     @IBOutlet weak var chartViewHeight: NSLayoutConstraint!
     
+    @IBOutlet weak var spinner: UIActivityIndicatorView!
     // MARK: - Properties
     
-    var navTitle: String = ""
+    var navTitle: String = "" {
+        didSet {
+            navigationItem.title = navTitle
+        }
+    }
     var chartShowsText: String = ""
     
     // data chart will be built with
@@ -40,7 +45,11 @@ class DetailChartViewController: UIViewController {
     let dFormatter = DateFormatter()
     
     // chart type (used to figure out which data to present)
-    var chartType: ChartType!
+    var chartType: ChartType = .conversation {
+        didSet {
+            typeDidChanged()
+        }
+    }
     
     // data used for creating chart
     var chartData: [HIPoint] = []
@@ -71,25 +80,17 @@ class DetailChartViewController: UIViewController {
         
         // setup date formatter
         dFormatter.dateStyle = .medium
+        navigationItem.title = "Conversation Flow"
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
-        tabBarController?.navigationItem.title = navTitle
-        tabBarController?.navigationItem.rightBarButtonItem = nil
+
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        
-//        if let delegate = UIApplication.shared.delegate as? AppDelegate, let window = delegate.window, let nav = window.rootViewController as? UINavigationController {
-//            let constant = nav.navigationBar.frame.height
-//            chartViewHeight.constant = constant
-//            view.setNeedsLayout()
-//            view.layoutIfNeeded()
-//        }
-        
+    
         // load summary data
         if let data = FirebaseModel.shared.selectedSnapshot {
             snapshot = data
@@ -100,19 +101,36 @@ class DetailChartViewController: UIViewController {
         guard snapshot != nil else { return }
         loadData()
         
-//        setupChart()
-//
-//        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-//            self.viewHasAppeared = true
-//            self.tableView.reloadData()
-//        }
     }
+    
+    @IBAction func chartTypeSelected(_ sender: UIButton) {
+        var selectedType: ChartType = .connection
+        switch sender.tag {
+        case 0:
+            selectedType = .conversation
+        case 1:
+            selectedType = .ideaEngagement
+        case 2:
+            selectedType = .connection
+        case 3:
+            selectedType = .emotions
+        default:
+            break
+        }
+        
+        if chartType != selectedType {
+            chartType = selectedType
+        }
+        
+
+    }
+    
     
     @objc private func infoButtonTapped() {
         guard let info = storyboard?.instantiateViewController(withIdentifier: StoryboardID.info) as? InfoDetailViewController else { return }
         var type: InfoDetail = .connection
         
-        switch chartType! {
+        switch chartType {
         case .connection:
             type = .connection
         case .conversation:
@@ -127,15 +145,34 @@ class DetailChartViewController: UIViewController {
         tabBarController?.navigationController?.pushViewController(info, animated: true)
     }
     
+    private func typeDidChanged() {
+        switch chartType {
+        case .ideaEngagement:
+            navTitle = "Word Clarity"
+        case .conversation:
+            navTitle = "Conversation Flow"
+        case .connection:
+            navTitle = "Personal Bond"
+        case .emotions:
+            navTitle = "Emotional Journey"
+        }
+        guard snapshot != nil else { return }
+        loadData()
+    }
+    
     private func loadData() {
+        chartView.redraw()
+        spinner.startAnimating()
         // clear any old values
         chartData = []
         sliderData = []
         transcript = []
         calloutInfo = []
+        posData = nil
+        negData = nil
         
         // setup data based on type
-        switch chartType! {
+        switch chartType {
         case .ideaEngagement:
             let ideaEngagement = snapshot.ideaEngagement
             chartShowsText = FirebaseModel.shared.constants.metricDescWord
@@ -459,6 +496,7 @@ class DetailChartViewController: UIViewController {
         }
         
         self.setupChart()
+        spinner.stopAnimating()
     }
     
     private func setupChart() {
@@ -481,7 +519,7 @@ class DetailChartViewController: UIViewController {
         var upperBoundLabel: String = "\"Upper Bound\""
         var lowerBoundLabel: String = "\"Lower Bound\""
         
-        switch chartType! {
+        switch chartType {
         case .ideaEngagement:
             colorArray = [
 //                [NSNumber(value: 0), "rgb(242, 0, 0, 1)"],
@@ -677,6 +715,8 @@ class DetailChartViewController: UIViewController {
             negArea.data = neg
             
             // setup interaction for pos and neg graphs
+            print(posArea.data.count)
+            print(negArea.data.count)
             for point in posArea.data {
                 guard let point = point as? HIPoint else {
                     continue
@@ -738,6 +778,8 @@ class DetailChartViewController: UIViewController {
         
         viewHasAppeared = true
         
+       // chartView.redraw()
+        
         tableView.reloadData()
     }
 }
@@ -779,37 +821,11 @@ extension DetailChartViewController: UITableViewDelegate, UITableViewDataSource 
             let info = sliderData[indexPath.row]
             cell.lblDescription.text = info.title.description
             cell.lblHint.text = info.title.hint
-            
-            if !cell.sliderView.isSetup && viewHasAppeared {
-                cell.sliderView.setup(for: info.details.type, atPosition: info.position, barStart: info.details.startValue, end: info.details.endValue, color: info.details.color)
-        
-                cell.sliderView.setNeedsLayout()
-                
-                UIView.animate(withDuration: 0.5) {
-                    cell.sliderView.alpha = 1.0
-                }
-            } else if !viewHasAppeared {
-                cell.sliderView.alpha = 0.0
-            }
+            cell.sliderView.alpha = 1.0
+            cell.sliderView.progress = Float(info.position)
             
             // setup score label
             cell.lblScore.text = info.positionPercent
-            
-            // setup background image
-            cell.backgroundImageView?.image = info.backgroundImage.withRenderingMode(.alwaysTemplate)
-            
-            if #available(iOS 13.0, *) {
-                cell.backgroundImageView?.tintColor = .label
-            } else {
-                cell.backgroundImageView?.tintColor = .black
-            }
-            
-            // if this is the last cell, just return it
-            if indexPath.row == (sliderData.count - 1) {
-                cell.separatorView.isHidden = true
-            } else {
-                cell.separatorView.isHidden = false
-            }
             
             return cell
         default:
@@ -819,78 +835,68 @@ extension DetailChartViewController: UITableViewDelegate, UITableViewDataSource 
             cell.setup(with: info)
             return cell
         }
-        
-//        switch indexPath.section {
-//        case 0:
-//            let cell = tableView.dequeueReusableCell(withIdentifier: CellID.chartTypeDetail, for: indexPath)
-//            cell.detailTextLabel?.text = chartShowsText
-//            return cell
-//        case 1:
-//            // setup scalebar
-//            let cell = tableView.dequeueReusableCell(withIdentifier: CellID.scaleBar, for: indexPath) as! ScaleBarTableViewCell
-//            let info = sliderData[indexPath.row]
-//            cell.lblDescription.text = info.title.description
-//            cell.lblHint.text = info.title.hint
-//
-//            if !cell.sliderView.isSetup && viewHasAppeared {
-//                cell.sliderView.setup(for: info.details.type, atPosition: info.position, barStart: info.details.startValue, end: info.details.endValue, color: info.details.color)
-//                cell.sliderView.setNeedsLayout()
-//
-//                UIView.animate(withDuration: 0.5) {
-//                    cell.sliderView.alpha = 1.0
-//                }
-//            } else if !viewHasAppeared {
-//                cell.sliderView.alpha = 0.0
-//            }
-//
-//            cell.lblScore.text = info.positionPercent
-//
-//            // if this is the last cell, just return it
-//            if indexPath.row == (sliderData.count - 1) {
-//                cell.separatorView.isHidden = true
-//            } else {
-//                cell.separatorView.isHidden = false
-//            }
-//
-//
-//            return cell
-//        case 2:
-//            if feedback == nil { fallthrough }
-//            let cell = tableView.dequeueReusableCell(withIdentifier: CellID.aiFeedbback, for: indexPath) as! AIFeedbackTableViewCell
-//            guard let feedback = self.feedback else { return cell }
-//            cell.feedbackText = feedback
-//            cell.recommendedTrainingText = feedbackTrainingText
-//            return cell
-//        default:
-//            // setup transcript
-//            let cell = tableView.dequeueReusableCell(withIdentifier: CellID.transcript, for: indexPath) as! TranscriptTableViewCell
-//            let info = transcript[indexPath.row]
-//            cell.setup(with: info)
-//            return cell
-//        }
-
     }
     
-    func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
-        let view = UIView(frame: CGRect(origin: .zero, size: CGSize(width: tableView.frame.width, height: 2)))
-        let color: UIColor
-        if #available(iOS 13.0, *) {
-            color = .systemBackground
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        
+        let text: String
+        let spacing: CGFloat
+        if section == 0 {
+            spacing = 60
+            text = "Metrics of Charm"
         } else {
-            color = .white
+            spacing = 40
+            text = "Transcript"
         }
+        let mainView = UIView(frame: CGRect(origin: .zero, size: CGSize(width: tableView.frame.width, height: 21)))
         
-        view.backgroundColor = color
-        let barView = UIView(frame: CGRect(x: 16, y: 0, width: view.frame.width - 32, height: view.frame.height))
-        barView.backgroundColor = #colorLiteral(red: 0.7959883809, green: 0.7961289883, blue: 0.7959899306, alpha: 1)
-        barView.layer.cornerRadius = 1
-        view.addSubview(barView)
-        return view
+        let separatorWidth = ((tableView.frame.width - 16.0) / 2.0) - spacing
+        
+        let leftSeparator = UIView(frame: CGRect(origin: CGPoint(x: 16, y: 10), size: CGSize(width: ((tableView.frame.width - 16.0) / 2.0) - spacing, height: 1)))
+        let rightSeparator = UIView(frame: CGRect(origin: CGPoint(x: ((tableView.frame.width - 16.0) / 2.0) + spacing, y: 10), size: CGSize(width: separatorWidth, height: 1)))
+        
+        if #available(iOS 13.0, *) {
+            leftSeparator.backgroundColor = .separator
+            rightSeparator.backgroundColor = .separator
+        } else {
+            leftSeparator.backgroundColor = .black
+            rightSeparator.backgroundColor = .black
+            leftSeparator.alpha = 0.2
+            rightSeparator.alpha = 0.2
+        }
+        let label = UILabel()
+        label.font = UIFont.systemFont(ofSize: 12.0)
+        if #available(iOS 13.0, *) {
+            label.textColor = .secondaryLabel
+        } else {
+            label.textColor = .lightText
+        }
+        label.text = text
+        label.sizeToFit()
+        label.frame.origin = CGPoint(x: mainView.bounds.midX - (label.bounds.width / 2.0), y: 2.0)
+        
+        
+        mainView.addSubview(leftSeparator)
+        mainView.addSubview(rightSeparator)
+        mainView.addSubview(label)
+        
+        return mainView
     }
     
-    func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-        return tableviewSpacing
+    
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return 21
     }
+    
+//    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+//        if section == 0 {
+//           return "Metrics of Charm"
+//        } else {
+//            return "Transcript"
+//        }
+//    }
+//
+
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: false)

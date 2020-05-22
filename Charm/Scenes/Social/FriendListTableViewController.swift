@@ -86,14 +86,16 @@ class FriendListTableViewController: UITableViewController {
             activityView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             activityView.centerYAnchor.constraint(equalTo: view.centerYAnchor)])
         
+        
+        let refreshControl = UIRefreshControl()
+        refreshControl.addTarget(self, action: #selector(refreshContacts), for: .valueChanged)
+        tableView.refreshControl = refreshControl
+        
         showActivity(viewModel.isLoading)
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
-        // Reset friend list
-        viewModel.resetFriendLists()
     }
     
     // MARK: - Button Handling
@@ -116,6 +118,11 @@ class FriendListTableViewController: UITableViewController {
         tableView.reloadData()
     }
     
+    @objc func refreshContacts() {
+        viewModel.resetFriendLists()
+        tableView.refreshControl?.endRefreshing()
+    }
+    
     // MARK: - Table view data source
 
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
@@ -128,11 +135,6 @@ class FriendListTableViewController: UITableViewController {
         default:
             return isFiltering() ? viewModel.filteredUsersToInvite.count == 0 ? "" : "Add by Phone Number" : viewModel.usersToInvite.count == 0 ? "" : "Add by Phone Number"
         }
-    }
-    
-    override func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
-        guard let header = view as? UITableViewHeaderFooterView else { return }
-        header.textLabel?.textColor = #colorLiteral(red: 0.1323429346, green: 0.1735357642, blue: 0.2699699998, alpha: 1)
     }
 
     override func numberOfSections(in tableView: UITableView) -> Int {
@@ -192,6 +194,10 @@ class FriendListTableViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
         return 1
+    }
+    
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 81.0
     }
     
     // MARK: - Handle Deleting Friends
