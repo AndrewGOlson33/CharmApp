@@ -26,6 +26,7 @@ class PracticeVideoViewController: UIViewController {
     @IBOutlet weak var checkmarkView: CheckmarkView!
     @IBOutlet weak var progressBar: UIProgressView!
     @IBOutlet weak var promptLabel: UILabel!
+    @IBOutlet weak var promptExampleLabel: UILabel!
     @IBOutlet weak var siriWaveView: SiriWaveView!
     @IBOutlet weak var userTextLabel: UILabel!
     @IBOutlet weak var stateButton: UIButton!
@@ -434,20 +435,26 @@ class PracticeVideoViewController: UIViewController {
         promptType = viewModel.getType(video: currentVideoType)
         
         var labelText: String = ""
+        var labelExampleText: String = ""
         switch promptType {
         case .specific:
-            labelText = "Reply With Some Specifics"
+            labelText = "Say Something concrete"
+            labelExampleText = "For example: duck, train, David"
         case .connection:
-            labelText = "Create a Connection"
+            labelText = "Say something about \"you and me\""
+            labelExampleText = "For example: I like you… I think you…. You are like me…"
         case .positive:
-            labelText = "Share an Emotion"
+            labelText = "Say Something Positive"
+            labelExampleText = "For example: love, hope, excited"
         case .negative:
-            labelText = "Share an Emotion"
+            labelText = "Say something Negative"
+            labelExampleText = "For example: bad, terrible, sad"
         case .none:
             break
         }
         resultLabel.text = ""
         promptLabel.text = labelText
+        promptExampleLabel.text = labelExampleText
     }
     
     // MARK: - Recognition

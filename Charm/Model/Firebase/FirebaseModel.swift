@@ -14,6 +14,8 @@ class FirebaseModel {
     // shared model
     static let shared = FirebaseModel()
     
+    static var hasShared = false
+    
     // constants
     var constants: FirebaseConstants!
     
@@ -55,6 +57,7 @@ class FirebaseModel {
     }
     
     init() {
+        FirebaseModel.hasShared = true
         setupConnectionObserver()
         setupUserObserver()
         setupTrainingHistoryObserver()
