@@ -151,3 +151,7 @@ extension URL {
         self = urlComponents.url!
     }
 }
+
+extension Collection {
+    func choose(_ n: Int) -> ArraySlice<Element> { shuffled().prefix(n) }
+}

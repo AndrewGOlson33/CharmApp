@@ -393,7 +393,7 @@ class PracticeVideoViewController: UIViewController {
             checkmarkView.isGood = false
             checkmarkView.isSpinning = false
             viewModel.add(experience: -1)
-            phase = .start
+            phase = .scored
         }
         resultLabel.text = score.feedback
         checkmarkView.animate(checked: checkmarkView.isGood)
@@ -438,17 +438,35 @@ class PracticeVideoViewController: UIViewController {
         var labelExampleText: String = ""
         switch promptType {
         case .specific:
-            labelText = "Say Something concrete"
-            labelExampleText = "For example: duck, train, David"
+            labelText = "Say Something Concrete"
+            let concreteWords = FirebaseModel.shared.trainingModel?.concreteNouns ?? []
+            if concreteWords.count > 3 {
+                let randomConcreteWords = concreteWords.choose(3)
+                labelExampleText = "For example: \(randomConcreteWords[0].word), \(randomConcreteWords[1].word), \(randomConcreteWords[2].word)"
+            } else {
+                labelExampleText = "For example: duck, train, David"
+            }
         case .connection:
             labelText = "Say something about \"you and me\""
             labelExampleText = "For example: I like you… I think you…. You are like me…"
         case .positive:
             labelText = "Say Something Positive"
-            labelExampleText = "For example: love, hope, excited"
+            let positiveWords = FirebaseModel.shared.trainingModel?.positiveWords ?? []
+            if positiveWords.count > 3 {
+                let randomPositiveWords = positiveWords.choose(3)
+                labelExampleText = "For example: \(randomPositiveWords[0].word), \(randomPositiveWords[1].word), \(randomPositiveWords[2].word)"
+            } else {
+                labelExampleText = "For example: love, hope, excited"
+            }
         case .negative:
             labelText = "Say something Negative"
-            labelExampleText = "For example: bad, terrible, sad"
+            let negativeWords = FirebaseModel.shared.trainingModel?.negativeWords ?? []
+            if negativeWords.count > 3 {
+                let randomNegativeWords = negativeWords.choose(3)
+                labelExampleText = "For example: \(randomNegativeWords[0].word), \(randomNegativeWords[1].word), \(randomNegativeWords[2].word)"
+            } else {
+                labelExampleText = "For example: bad, terrible, sad"
+            }            
         case .none:
             break
         }

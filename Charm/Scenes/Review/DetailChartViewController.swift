@@ -14,6 +14,7 @@ class DetailChartViewController: UIViewController {
     // MARK: - IBOutlets
     
     @IBOutlet weak var chartView: HIChartView!
+    @IBOutlet weak var chartDescriptionLabel: UILabel!
     @IBOutlet weak var tableView: UITableView!
     
     // Layout Constraint for Chart View
@@ -27,6 +28,13 @@ class DetailChartViewController: UIViewController {
             navigationItem.title = navTitle
         }
     }
+    
+    var chartDescription: String = "" {
+        didSet {
+            chartDescriptionLabel.text = chartDescription
+        }
+    }
+    
     var chartShowsText: String = ""
     
     // data chart will be built with
@@ -122,7 +130,25 @@ class DetailChartViewController: UIViewController {
             chartType = selectedType
         }
         
-
+        for subview in sender.superview!.subviews {
+            if let subview = subview as? UIButton {
+                if subview.tag == sender.tag {
+                    subview.setTitleColor(UIColor(hex: "6533B7"), for: .normal)
+                } else {
+                    subview.setTitleColor(.white, for: .normal)
+                }
+            }
+        }
+        
+        for subview in sender.superview!.superview!.subviews {
+            if subview.tag != 10 {
+                if subview.tag == sender.tag {
+                    subview.isHidden = false
+                } else {
+                    subview.isHidden = true
+                }
+            }
+        }
     }
     
     
@@ -149,12 +175,16 @@ class DetailChartViewController: UIViewController {
         switch chartType {
         case .ideaEngagement:
             navTitle = "Word Clarity"
+            chartDescription = "This shows where you are talking too much or not enough"
         case .conversation:
             navTitle = "Conversation Flow"
+            chartDescription = "This shows where you are being vague or too specific"
         case .connection:
             navTitle = "Personal Bond"
+            chartDescription = "This shows where you are talking about yourself or talking about others"
         case .emotions:
             navTitle = "Emotional Journey"
+            chartDescription = "This shows where you are being positive, negative or bland"
         }
         guard snapshot != nil else { return }
         loadData()
@@ -180,13 +210,13 @@ class DetailChartViewController: UIViewController {
             
             // setup slider bar data
             if let position = snapshot.getTopLevelRawValue(forSummaryItem: .concrete), let score = snapshot.getTopLevelRankValue(forSummaryItem: .concrete) {
-                let cellInfo = SliderCellInfo(details: SliderDetails(type: .fixed, valueType: .percent, start: 0.55, end: 0.75, color: #colorLiteral(red: 0.4862745098, green: 0.7098039216, blue: 0.9254901961, alpha: 1)), title: SliderCellTitle(description: "How Clearly You Are Understood", hint: "Recommended Range: 55% to 75%"), score: score, position: CGFloat(position), backgroundImage: UIImage(named: "detail_concrete")!)
+                let cellInfo = SliderCellInfo(details: SliderDetails(type: .fixed, valueType: .percent, start: 0.55, end: 0.75, color: #colorLiteral(red: 0.4862745098, green: 0.7098039216, blue: 0.9254901961, alpha: 1)), title: SliderCellTitle(description: "Vague Nouns", hint: "Recommended Range: 55% to 75%"), score: score, position: CGFloat(position), summaryItem: .concrete, backgroundImage: UIImage(named: "detail_concrete")!)
                     
                 sliderData.append(cellInfo)
             }
             
             if let position = snapshot.getTopLevelRawValue(forSummaryItem: .ideaEngagement), let score = snapshot.getTopLevelScoreValue(forSummaryItem: .ideaEngagement) {
-                let cellInfo = SliderCellInfo(details: SliderDetails(type: .standard, color: #colorLiteral(red: 0.4862745098, green: 0.7098039216, blue: 0.9254901961, alpha: 1)), title: SliderCellTitle(description: "Engagement", hint: "Compared With the World’s Most Beloved Comedians"), score: score, position: CGFloat(position), backgroundImage: UIImage(named: "detail_word_clarity")!)
+                let cellInfo = SliderCellInfo(details: SliderDetails(type: .standard, color: #colorLiteral(red: 0.4862745098, green: 0.7098039216, blue: 0.9254901961, alpha: 1)), title: SliderCellTitle(description: "Noun Engagement", hint: "Compared With the World’s Most Beloved Comedians"), score: score, position: CGFloat(position), summaryItem: .ideaEngagement, backgroundImage: UIImage(named: "detail_word_clarity")!)
                 
                 sliderData.append(cellInfo)
             }
@@ -259,12 +289,12 @@ class DetailChartViewController: UIViewController {
             
             // setup slider bar data
             if let position = snapshot.getTopLevelRawValue(forSummaryItem: .talkingPercentage), let score = snapshot.getTopLevelRankValue(forSummaryItem: .talkingPercentage) {
-                let cellInfo = SliderCellInfo(details: SliderDetails(type: .fixed, valueType: .percent, start: 0.42, end: 58, color: #colorLiteral(red: 0.4862745098, green: 0.7098039216, blue: 0.9254901961, alpha: 1)), title: SliderCellTitle(description: "How Much You Spoke", hint: "Recommended Range: 42% to 58%"), score: score, position: CGFloat(position), backgroundImage: UIImage(named: "detail_talking_percentage")!)
+                let cellInfo = SliderCellInfo(details: SliderDetails(type: .fixed, valueType: .percent, start: 0.42, end: 58, color: #colorLiteral(red: 0.4862745098, green: 0.7098039216, blue: 0.9254901961, alpha: 1)), title: SliderCellTitle(description: "Talking Time", hint: "Recommended Range: 42% to 58%"), score: score, position: CGFloat(position), summaryItem: .talkingPercentage, backgroundImage: UIImage(named: "detail_talking_percentage")!)
                 sliderData.append(cellInfo)
             }
             
             if let position = snapshot.getTopLevelRawValue(forSummaryItem: .conversationEngagement), let score = snapshot.getTopLevelScoreValue(forSummaryItem: .conversationEngagement) {
-                let cellInfo = SliderCellInfo(details: SliderDetails(type: .standard, color: #colorLiteral(red: 0.4862745098, green: 0.7098039216, blue: 0.9254901961, alpha: 1)), title: SliderCellTitle(description: "Engagement", hint: "Compared With World's Most Beloved Television Shows"), score: score, position: CGFloat(position), backgroundImage: UIImage(named: "detail_conversation_flow")!)
+                let cellInfo = SliderCellInfo(details: SliderDetails(type: .standard, color: #colorLiteral(red: 0.4862745098, green: 0.7098039216, blue: 0.9254901961, alpha: 1)), title: SliderCellTitle(description: "Conversation Engagement", hint: "Compared With World's Most Beloved Television Shows"), score: score, position: CGFloat(position), summaryItem: .conversationEngagement, backgroundImage: UIImage(named: "detail_conversation_flow")!)
                 sliderData.append(cellInfo)
             }
             
@@ -322,12 +352,12 @@ class DetailChartViewController: UIViewController {
         case .connection:
             // setup slider bar data
             if let position = snapshot.getTopLevelRawValue(forSummaryItem: .firstPerson), let score = snapshot.getTopLevelRankValue(forSummaryItem: .firstPerson) {
-                let cellInfo = SliderCellInfo(details: SliderDetails(type: .fixed, valueType: .percent, start: 0.41, end: 0.59, color: #colorLiteral(red: 0.4862745098, green: 0.7098039216, blue: 0.9254901961, alpha: 1)), title: SliderCellTitle(description: "Who You Focused the Conversation On", hint: "Recommended Range: 41% to 59%"), score: score, position: CGFloat(position), backgroundImage: UIImage(named: "detail_first_percentage")!)
+                let cellInfo = SliderCellInfo(details: SliderDetails(type: .fixed, valueType: .percent, start: 0.41, end: 0.59, color: #colorLiteral(red: 0.4862745098, green: 0.7098039216, blue: 0.9254901961, alpha: 1)), title: SliderCellTitle(description: "Second Person Pronouns", hint: "Recommended Range: 41% to 59%"), score: score, position: CGFloat(position), summaryItem: .firstPerson, backgroundImage: UIImage(named: "detail_first_percentage")!)
                 sliderData.append(cellInfo)
             }
             
             if let position = snapshot.getTopLevelRawValue(forSummaryItem: .personalConnection), let score = snapshot.getTopLevelScoreValue(forSummaryItem: .personalConnection) {
-                let cellInfo = SliderCellInfo(details: SliderDetails(type: .standard, color: #colorLiteral(red: 0.8509803922, green: 0.3490196078, blue: 0.3490196078, alpha: 1)), title: SliderCellTitle(description: "Connection", hint: "Compared With World’s Most Beloved Movie Scenes"), score: score, position: CGFloat(position), backgroundImage: UIImage(named: "detail_personal_bond")!)
+                let cellInfo = SliderCellInfo(details: SliderDetails(type: .standard, color: #colorLiteral(red: 0.8509803922, green: 0.3490196078, blue: 0.3490196078, alpha: 1)), title: SliderCellTitle(description: "Noun Engagement", hint: "Compared With World’s Most Beloved Movie Scenes"), score: score, position: CGFloat(position), summaryItem: .personalConnection, backgroundImage: UIImage(named: "detail_personal_bond")!)
                 sliderData.append(cellInfo)
             }
             
@@ -403,18 +433,18 @@ class DetailChartViewController: UIViewController {
             let toneGraph = snapshot.graphTone
             
             // setup scale bar data
-            if let position = snapshot.getTopLevelRawValue(forSummaryItem: .positiveWords), let score = snapshot.getTopLevelRankValue(forSummaryItem: .positiveWords) {
-                let cellInfo = SliderCellInfo(details: SliderDetails(type: .fixed, valueType: .percent, start: 0.60, end: 1.0, color: #colorLiteral(red: 0.4862745098, green: 0.7098039216, blue: 0.9254901961, alpha: 1)), title: SliderCellTitle(description: "Positivity", hint: "Recommended Range: Greater Than 60%"), score: score, position: CGFloat(position), backgroundImage: UIImage(named: "detail_positive")!)
+            if let positionPositive = snapshot.getTopLevelRawValue(forSummaryItem: .positiveWords), let positionNegative = snapshot.getTopLevelRawValue(forSummaryItem: .negativeWords) {
+                let cellInfo = SliderCellInfo(details: SliderDetails(type: .fixed, valueType: .percent, start: 0.60, end: 1.0, color: #colorLiteral(red: 0.4862745098, green: 0.7098039216, blue: 0.9254901961, alpha: 1)), title: SliderCellTitle(description: "Emotion", hint: "Recommended Range: Greater Than 60%"), score: positionPositive, position: CGFloat(positionNegative), summaryItem: .positiveWords, backgroundImage: UIImage(named: "detail_positive")!)
                 sliderData.append(cellInfo)
             }
-            
-            if let position = snapshot.getTopLevelRawValue(forSummaryItem: .negativeWords), let score = snapshot.getTopLevelRankValue(forSummaryItem: .negativeWords) {
-                let cellInfo = SliderCellInfo(details: SliderDetails(type: .fixed, valueType: .percent, start: 0.9, end: 1.0, color: #colorLiteral(red: 0.8509803922, green: 0.3490196078, blue: 0.3490196078, alpha: 1)), title: SliderCellTitle(description: "Negativity", hint: "Recommended Range: Balance Out Positivity"), score: score, position: CGFloat(position), backgroundImage: UIImage(named: "detail_negative")!)
-                sliderData.append(cellInfo)
-            }
-            
+//            
+//            if let position = snapshot.getTopLevelRawValue(forSummaryItem: .negativeWords), let score = snapshot.getTopLevelRankValue(forSummaryItem: .negativeWords) {
+//                let cellInfo = SliderCellInfo(details: SliderDetails(type: .fixed, valueType: .percent, start: 0.9, end: 1.0, color: #colorLiteral(red: 0.8509803922, green: 0.3490196078, blue: 0.3490196078, alpha: 1)), title: SliderCellTitle(description: "Negativity", hint: "Recommended Range: Balance Out Positivity"), score: score, position: CGFloat(position), summaryItem: .negativeWords, backgroundImage: UIImage(named: "detail_negative")!)
+//                sliderData.append(cellInfo)
+//            }
+//            
             if let position = snapshot.getTopLevelRawValue(forSummaryItem: .emotionalConnection), let score = snapshot.getTopLevelScoreValue(forSummaryItem: .emotionalConnection) {
-                let cellInfo = SliderCellInfo(details: SliderDetails(type: .standard, color: #colorLiteral(red: 0.8509803922, green: 0.3490196078, blue: 0.3490196078, alpha: 1)), title: SliderCellTitle(description: "Connection", hint: "Compared With World’s Most Beloved Politicians"), score: score, position: CGFloat(position), backgroundImage: UIImage(named: "detail_emotional_journey")!)
+                let cellInfo = SliderCellInfo(details: SliderDetails(type: .standard, color: #colorLiteral(red: 0.8509803922, green: 0.3490196078, blue: 0.3490196078, alpha: 1)), title: SliderCellTitle(description: "Conversation Engagement", hint: "Compared With World’s Most Beloved Politicians"), score: score, position: CGFloat(position), summaryItem: .emotionalConnection, backgroundImage: UIImage(named: "detail_emotional_journey")!)
                 sliderData.append(cellInfo)
             }
             

@@ -152,6 +152,7 @@ class ContactsViewModel: NSObject {
             }
             
             print("~>Loaded user list.")
+            FirebaseModel.shared.setupSnapshotObserver()
             self.setupAddFriendsArrays()
         }
         

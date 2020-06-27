@@ -314,10 +314,13 @@ struct FriendList: FirebaseItem {
                 if let childSnap = child as? DataSnapshot {
                     do {
                         let friend = try Friend(snapshot: childSnap)
-                        if !sentText!.contains(where: { (existing) -> Bool in
-                            friend.id == existing.id
-                        }) {
-                            sentText?.append(friend)
+                        if friend.id != "N/A"
+                        {
+                            if !sentText!.contains(where: { (existing) -> Bool in
+                                friend.id == existing.id
+                            }) {
+                                sentText?.append(friend)
+                            }
                         }
                     } catch let error {
                         print("~>Got an error trying to convert: \(error)")
@@ -366,29 +369,33 @@ struct FriendList: FirebaseItem {
     }
     
     func toAny() -> [AnyHashable : Any] {
-        var current: [Any] = []
-        var pendingSent: [Any] = []
-        var pendingReceived: [Any] = []
-        var sentTextNSArray: [Any] = []
+        var current: [AnyHashable : Any] = [:]
+        var pendingSent: [AnyHashable : Any] = [:]
+        var pendingReceived: [AnyHashable : Any] = [:]
+        var sentTextNSArray: [AnyHashable : Any] = [:]
         
         if let currentArray = currentFriends {
             for element in currentArray {
-                current.append(element.toAny())
+//                current.append(element.toAny())
+                current[element.id!] = element.toAny()
             }
         }
         if let pendingSentArray = pendingSentApproval {
             for element in pendingSentArray {
-                pendingSent.append(element.toAny())
+//                pendingSent.append(element.toAny())
+                pendingSent[element.id!] = element.toAny()
             }
         }
         if let pendingReceivedArray = pendingReceivedApproval {
             for element in pendingReceivedArray {
-                pendingReceived.append(element.toAny())
+//                pendingReceived.append(element.toAny())
+                pendingReceived[element.id!] = element.toAny()
             }
         }
         if let sentTextArray = sentText {
             for element in sentTextArray {
-                sentTextNSArray.append(element.toAny())
+//                sentTextNSArray.append(element.toAny())
+                sentTextNSArray[element.id!] = element.toAny()
             }
         }
         

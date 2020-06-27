@@ -556,6 +556,8 @@ struct SliderCellInfo {
     
     private var formatter = NumberFormatter()
     
+    var summaryItem: SummaryItem
+    
     var percentString: String {
         let percentScore = score * 100
         let percentValue = Double(round(percentScore * 100) / 100)
@@ -569,14 +571,144 @@ struct SliderCellInfo {
         return "\(value)%"
     }
     
-    init(details: SliderDetails, title: SliderCellTitle, score: Double, position: CGFloat, backgroundImage: UIImage) {
+    init(details: SliderDetails, title: SliderCellTitle, score: Double, position: CGFloat, summaryItem: SummaryItem, backgroundImage: UIImage) {
         self.details = details
-        self.title = title
         self.score = score
         self.position = position
         self.backgroundImage = backgroundImage
-        
+        self.summaryItem = summaryItem
         formatter.maximumSignificantDigits = 3
+        
+        var hintText: String = title.hint
+        let scoreValue = score == 1.0 ? 100 : Int(round(score * 100.0))
+        switch summaryItem {
+        case .talkingPercentage:
+            if scoreValue < 44 {
+                hintText = "Not Enough (\(scoreValue - 44)%)"
+            } else if scoreValue < 56 {
+                hintText = "In the Zone (\(scoreValue)%)"
+            } else {
+                hintText = "Too Much (+\(scoreValue - 56)%)"
+            }
+            self.position = CGFloat(score)
+        case .conversationEngagement:
+            switch score {
+            case 5:
+                hintText = "Low (40%)"
+                self.position = 0.4
+            case 6:
+                hintText = "Medium (55%)"
+                self.position = 0.55
+            case 7:
+                hintText = "Medium-High (70%)"
+                self.position = 0.7
+            case 8:
+                hintText = "High (80%)"
+                self.position = 0.8
+            case 9:
+                hintText = "Very High (90%)"
+                self.position = 0.9
+            default:
+                hintText = "Low (40%)"
+                self.position = 0.4
+            }
+        case .firstPerson:
+            if scoreValue < 42 {
+                hintText = "Not Enough (\(scoreValue - 44)%)"
+            } else if scoreValue < 56 {
+                hintText = "In the Zone (\(scoreValue)%)"
+            } else {
+                hintText = "Too Much (+\(scoreValue - 56)%)"
+            }
+            self.position = CGFloat(score)
+        case .personalConnection:
+            switch score {
+            case 5:
+                hintText = "Low (40%)"
+                self.position = 0.4
+            case 6:
+                hintText = "Medium (55%)"
+                self.position = 0.55
+            case 7:
+                hintText = "Medium-High (70%)"
+                self.position = 0.7
+            case 8:
+                hintText = "High (80%)"
+                self.position = 0.8
+            case 9:
+                hintText = "Very High (90%)"
+                self.position = 0.9
+            default:
+                hintText = "Low (40%)"
+                self.position = 0.4
+            }
+        case .positiveWords:
+            let positiveValue = scoreValue
+            let negativeValue = position == 1.0 ? 100 : Int(round(position * 100.0))
+            if positiveValue > 30, Double(positiveValue) > Double(negativeValue) * 1.5 {
+                hintText = "Positive (+\(positiveValue)%, -\(negativeValue)%)"
+            } else if negativeValue > 30, Double(negativeValue) > Double(positiveValue) * 1.5 {
+                hintText = "Negative (+\(positiveValue)%, -\(negativeValue)%)"
+            } else if positiveValue > 70, negativeValue > 70 {
+                hintText = "Passionate (+\(positiveValue)%, -\(negativeValue)%)"
+            } else {
+                hintText = "Indifferent (+\(positiveValue)%, -\(negativeValue)%)"
+            }
+            self.position = CGFloat(score)
+        case .emotionalConnection:
+            switch score {
+            case 5:
+                hintText = "Low (40%)"
+                self.position = 0.4
+            case 6:
+                hintText = "Medium (55%)"
+                self.position = 0.55
+            case 7:
+                hintText = "Medium-High (70%)"
+                self.position = 0.7
+            case 8:
+                hintText = "High (80%)"
+                self.position = 0.8
+            case 9:
+                hintText = "Very High (90%)"
+                self.position = 0.9
+            default:
+                hintText = "Low (40%)"
+                self.position = 0.4
+            }
+        case .concrete:
+            if scoreValue < 50 {
+                hintText = "Not Enough (\(scoreValue - 50)%)"
+            } else {
+                hintText = "In The Zone (\(scoreValue)%)"
+            }
+            self.position = CGFloat(score)
+        case .ideaEngagement:
+            switch score {
+            case 5:
+                hintText = "Low (50%)"
+                self.position = 0.5
+            case 6:
+                hintText = "Medium (55%)"
+                self.position = 0.55
+            case 7:
+                hintText = "Medium-High (70%)"
+                self.position = 0.7
+            case 8:
+                hintText = "High (80%)"
+                self.position = 0.8
+            case 9:
+                hintText = "Very High (90%)"
+                self.position = 0.9
+            default:
+                hintText = "Low (50%)"
+                self.position = 0.5
+            }
+        default:
+            break
+        }
+        
+        self.title = SliderCellTitle(description: title.description, hint: hintText)
     }
 }
 

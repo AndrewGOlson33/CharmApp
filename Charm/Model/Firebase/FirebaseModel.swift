@@ -61,7 +61,7 @@ class FirebaseModel {
         setupConnectionObserver()
         setupUserObserver()
         setupTrainingHistoryObserver()
-        setupSnapshotObserver()
+//        setupSnapshotObserver()
         setupTrainingModel()
         setupCallObserver()
         setupConstants()
@@ -101,12 +101,13 @@ class FirebaseModel {
     
     // MARK: - Snapshots Observer
     
-    private func setupSnapshotObserver() {
+    func setupSnapshotObserver() {
         guard let authUser = Auth.auth().currentUser else { return }
         SnapshotsLoading.shared.isLoading = true
         
-        Database.database().reference().child(FirebaseStructure.usersLocation).child(authUser.uid).child(FirebaseStructure.CharmUser.snapshotLocation).observe(.value) { [weak self] (snapshot) in
+        Database.database().reference().child(FirebaseStructure.userDataLocation).child(authUser.uid).child(FirebaseStructure.CharmUser.snapshotLocation).observe(.value) { [weak self] (snapshot) in
             guard let self = self else { return }
+            NotificationCenter.default.post(name: FirebaseNotification.SnapshotLoaded, object: nil)
             guard snapshot.exists() else { print("~>No snapshots, perhaps no data exists"); return }
             do {
                 var result: [Snapshot] = []

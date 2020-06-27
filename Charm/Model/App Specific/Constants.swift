@@ -110,7 +110,8 @@ enum FirebaseStructure {
         static let metricTrainingEmotions = "Metric_Training_Emotions"
     }
     
-    static let usersLocation = "users"
+    static let usersLocation = "user"
+    static let userDataLocation = "userData"
     enum CharmUser {
         static let id = "id"
         

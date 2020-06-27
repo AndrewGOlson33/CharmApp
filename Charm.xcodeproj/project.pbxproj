@@ -101,6 +101,7 @@
 		78D8DD4E244787A100DD66CF /* OnboardinItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78D8DD4D244787A100DD66CF /* OnboardinItem.swift */; };
 		78D8DD50244788C700DD66CF /* ViewEmbbeder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78D8DD4F244788C700DD66CF /* ViewEmbbeder.swift */; };
 		78F5C13C24474D2500421C7B /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78F5C13B24474D2500421C7B /* SceneDelegate.swift */; };
+		9E8B78CD249DE64900571A15 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9E8B78CC249DE64800571A15 /* UIKit.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -203,6 +204,7 @@
 		78D8DD4F244788C700DD66CF /* ViewEmbbeder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewEmbbeder.swift; sourceTree = "<group>"; };
 		78F5C13B24474D2500421C7B /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		8377468A8AA94E55700BA449 /* Pods-Charm.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Charm.debug.xcconfig"; path = "Target Support Files/Pods-Charm/Pods-Charm.debug.xcconfig"; sourceTree = "<group>"; };
+		9E8B78CC249DE64800571A15 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -211,6 +213,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				6534C2D6226A16170051F6D1 /* StoreKit.framework in Frameworks */,
+				9E8B78CD249DE64900571A15 /* UIKit.framework in Frameworks */,
 				54FBFBEEED71C64E2D0F4136 /* Pods_Charm.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -230,6 +233,7 @@
 		12F3C6D9AF2251B510EFA490 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				9E8B78CC249DE64800571A15 /* UIKit.framework */,
 				6534C2D5226A16170051F6D1 /* StoreKit.framework */,
 				551F07646EE3BF85158543B3 /* Pods_Charm.framework */,
 			);
@@ -922,7 +926,7 @@
 				CODE_SIGN_ENTITLEMENTS = Charm/Charm.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 7;
 				DEVELOPMENT_TEAM = XQ7XD4KVM7;
 				INFOPLIST_FILE = Charm/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
@@ -947,7 +951,7 @@
 				CODE_SIGN_ENTITLEMENTS = Charm/Charm.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 7;
 				DEVELOPMENT_TEAM = XQ7XD4KVM7;
 				INFOPLIST_FILE = Charm/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;

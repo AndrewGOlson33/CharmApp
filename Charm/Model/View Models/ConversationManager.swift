@@ -263,9 +263,14 @@ class ConversationManager: NSObject {
         
         switch words.count {
         case 0:
-            return PhraseScore(feedback: "We're sorry, we were unable to detect a specific concrete word. Try again.\n(Examples: duck, train, David)", formattedText: highlightedPhrase, status: .incomplete)
+            return PhraseScore(feedback: "We're sorry, we were unable to detect a specific concrete word.", formattedText: highlightedPhrase, status: .incomplete)
         case 1:
-            return PhraseScore(feedback: "Great Job!\n \(words[0]) is a specific word!", formattedText: highlightedPhrase, status: .complete)
+            if words[0].count < 5 {
+                return PhraseScore(feedback: "Please reply with a phrase of 5 or more words. This signals you are adding enough to the conversation", formattedText: highlightedPhrase, status: .incomplete)
+            } else {
+                return PhraseScore(feedback: "Great Job!\n \(words[0]) is a specific word!", formattedText: highlightedPhrase, status: .complete)
+            }
+            
         default:
             var feedback: String = "Great Job! "
             let lastIndex = words.count - 1
@@ -310,7 +315,7 @@ class ConversationManager: NSObject {
         
         switch (firstWords.count, secondWords.count ) {
         case (0, 0):
-            return PhraseScore(feedback: "We're sorry, we were unable to detect any first or second person words. Try again.\n(Examples: I(first), You(second))", formattedText: highlightedPhrase, status: .incomplete)
+            return PhraseScore(feedback: "We're sorry, we were unable to detect any first or second person words.", formattedText: highlightedPhrase, status: .incomplete)
         case (1, 0):
             return PhraseScore(feedback: "\(firstWords[0]) is a first person word, but you also need to include at least one second person word.\n(Example: You)", formattedText: highlightedPhrase, status: .incomplete)
         case (0, 1):
@@ -361,9 +366,13 @@ class ConversationManager: NSObject {
         
         switch words.count {
         case 0:
-            return PhraseScore(feedback: "We're sorry, we were unable to detect any positive words. Try again.\n(Examples: love, hope, excited)", formattedText: highlightedPhrase, status: .incomplete)
+            return PhraseScore(feedback: "We're sorry, we were unable to detect any positive words.", formattedText: highlightedPhrase, status: .incomplete)
         case 1:
-            return PhraseScore(feedback: "Great Job! \n \(words[0]) signals positivity!", formattedText: highlightedPhrase, status: .complete)
+            if words[0].count < 5 {
+                return PhraseScore(feedback: "Please reply with a phrase of 5 or more words. This signals you are adding enough to the conversation", formattedText: highlightedPhrase, status: .incomplete)
+            } else {
+                return PhraseScore(feedback: "Great Job! \n \(words[0]) signals positivity!", formattedText: highlightedPhrase, status: .complete)
+            }
         default:
             var feedback: String = "Great Job! "
             let lastIndex = words.count - 1
@@ -401,9 +410,13 @@ class ConversationManager: NSObject {
         
         switch words.count {
         case 0:
-            return PhraseScore(feedback: "We're sorry, we were unable to detect any negative words. Try again.\n(Examples: bad, terrible, sad)", formattedText: highlightedPhrase, status: .incomplete)
+            return PhraseScore(feedback: "We're sorry, we were unable to detect any negative words.", formattedText: highlightedPhrase, status: .incomplete)
         case 1:
-            return PhraseScore(feedback: "Great Job! \(words[0]) is a negative word. Learning to identify negative words will help you balance your speech by not coming across as too positive, or too negative.", formattedText: highlightedPhrase, status: .complete)
+            if words[0].count < 5 {
+                return PhraseScore(feedback: "Please reply with a phrase of 5 or more words. This signals you are adding enough to the conversation", formattedText: highlightedPhrase, status: .incomplete)
+            } else {
+                return PhraseScore(feedback: "Great Job! \(words[0]) is a negative word. Learning to identify negative words will help you balance your speech by not coming across as too positive, or too negative.", formattedText: highlightedPhrase, status: .complete)
+            }
         default:
             var feedback: String = "Great Job! "
             let lastIndex = words.count - 1
