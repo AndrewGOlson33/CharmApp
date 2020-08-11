@@ -102,6 +102,11 @@
 		78D8DD50244788C700DD66CF /* ViewEmbbeder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78D8DD4F244788C700DD66CF /* ViewEmbbeder.swift */; };
 		78F5C13C24474D2500421C7B /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78F5C13B24474D2500421C7B /* SceneDelegate.swift */; };
 		9E8B78CD249DE64900571A15 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9E8B78CC249DE64800571A15 /* UIKit.framework */; };
+		9E93423624BF9F2600C2B48C /* SelectTraningIntensityViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E93423524BF9F2600C2B48C /* SelectTraningIntensityViewController.swift */; };
+		9E93423824C0F71200C2B48C /* TrainingIntensityCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E93423724C0F71200C2B48C /* TrainingIntensityCell.swift */; };
+		9E93423A24C2E2DC00C2B48C /* SessionSummaryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E93423924C2E2DC00C2B48C /* SessionSummaryViewController.swift */; };
+		9E93423C24C3A80700C2B48C /* TrainingIntensityViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E93423B24C3A80700C2B48C /* TrainingIntensityViewModel.swift */; };
+		9E93423E24C3A87B00C2B48C /* TrainingPhrase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E93423D24C3A87A00C2B48C /* TrainingPhrase.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -205,6 +210,11 @@
 		78F5C13B24474D2500421C7B /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		8377468A8AA94E55700BA449 /* Pods-Charm.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Charm.debug.xcconfig"; path = "Target Support Files/Pods-Charm/Pods-Charm.debug.xcconfig"; sourceTree = "<group>"; };
 		9E8B78CC249DE64800571A15 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		9E93423524BF9F2600C2B48C /* SelectTraningIntensityViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectTraningIntensityViewController.swift; sourceTree = "<group>"; };
+		9E93423724C0F71200C2B48C /* TrainingIntensityCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainingIntensityCell.swift; sourceTree = "<group>"; };
+		9E93423924C2E2DC00C2B48C /* SessionSummaryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionSummaryViewController.swift; sourceTree = "<group>"; };
+		9E93423B24C3A80700C2B48C /* TrainingIntensityViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainingIntensityViewModel.swift; sourceTree = "<group>"; };
+		9E93423D24C3A87A00C2B48C /* TrainingPhrase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainingPhrase.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -432,6 +442,8 @@
 				657E72052243F41B001EE828 /* FlashcardsViewModel.swift */,
 				650E9F54224550AA000EADEE /* ChatTrainingViewModel.swift */,
 				650E9F5622455885000EADEE /* ScorePhrase.swift */,
+				9E93423B24C3A80700C2B48C /* TrainingIntensityViewModel.swift */,
+				9E93423D24C3A87A00C2B48C /* TrainingPhrase.swift */,
 				65030B7D224951A600079AFC /* SpeechRecognitionModel.swift */,
 				653CE6EC23E8ACC900D3CDA0 /* ConversationManager.swift */,
 			);
@@ -510,6 +522,7 @@
 			isa = PBXGroup;
 			children = (
 				785DF6E0247334190088B1E4 /* PracticeVideoCell.swift */,
+				9E93423724C0F71200C2B48C /* TrainingIntensityCell.swift */,
 			);
 			path = Cells;
 			sourceTree = "<group>";
@@ -518,7 +531,9 @@
 			isa = PBXGroup;
 			children = (
 				785DF6E2247334CF0088B1E4 /* PartnersListViewController.swift */,
+				9E93423524BF9F2600C2B48C /* SelectTraningIntensityViewController.swift */,
 				785DF6E5247343900088B1E4 /* PracticeVideoViewController.swift */,
+				9E93423924C2E2DC00C2B48C /* SessionSummaryViewController.swift */,
 			);
 			path = Videos;
 			sourceTree = "<group>";
@@ -727,6 +742,7 @@
 				65057C2622CD3A6500495E7C /* IntroViewController.swift in Sources */,
 				78876BD0246EE509006ECEC4 /* SnapshotCell.swift in Sources */,
 				657330D822414C9C0066624B /* ScaleBarTableViewCell.swift in Sources */,
+				9E93423624BF9F2600C2B48C /* SelectTraningIntensityViewController.swift in Sources */,
 				65C1705C223FCD030081B55F /* CharmData.swift in Sources */,
 				0792039424056591005FBF5B /* ViewController.swift in Sources */,
 				65C55C1C22315EED00336243 /* FriendListTableViewController.swift in Sources */,
@@ -740,7 +756,9 @@
 				65057C2122CD138200495E7C /* SubscriptionsTableViewController.swift in Sources */,
 				65057C2822CD4F0700495E7C /* StartupSubscriptionsViewController.swift in Sources */,
 				6534C2D3226A15E00051F6D1 /* Subscription.swift in Sources */,
+				9E93423C24C3A80700C2B48C /* TrainingIntensityViewModel.swift in Sources */,
 				65030B78224948FE00079AFC /* ConcreteChatViewController.swift in Sources */,
+				9E93423E24C3A87B00C2B48C /* TrainingPhrase.swift in Sources */,
 				6572642222300640008D9ED4 /* MainMenuViewController.swift in Sources */,
 				7851C0F82463316C00D17458 /* SiriWaveView.swift in Sources */,
 				6534C2D2226A15E00051F6D1 /* CharmLicenseService.swift in Sources */,
@@ -751,6 +769,7 @@
 				657264262230081B008D9ED4 /* Constants.swift in Sources */,
 				0792039624056603005FBF5B /* TableViewController.swift in Sources */,
 				657330D622414A0E0066624B /* DetailChartViewController.swift in Sources */,
+				9E93423A24C2E2DC00C2B48C /* SessionSummaryViewController.swift in Sources */,
 				78D8DD4E244787A100DD66CF /* OnboardinItem.swift in Sources */,
 				785DF6DE247320170088B1E4 /* PracticePartner.swift in Sources */,
 				78C4F3912447827C00D47CCF /* OnboardingViewController.swift in Sources */,
@@ -763,6 +782,7 @@
 				6561E82C23E89B0B001466DC /* CreatingConversationViewController.swift in Sources */,
 				656544022240103600C207EA /* SummaryMetricTableViewCell.swift in Sources */,
 				65DDF9872236E25300554D39 /* ContactsViewModel.swift in Sources */,
+				9E93423824C0F71200C2B48C /* TrainingIntensityCell.swift in Sources */,
 				656543E1223FE9D100C207EA /* ReviewSummaryViewController.swift in Sources */,
 				650E9F532245443A000EADEE /* ConversationTrainingViewController.swift in Sources */,
 				65F1C195225FA9A600F0BD69 /* SettingsTableViewController.swift in Sources */,
@@ -926,7 +946,7 @@
 				CODE_SIGN_ENTITLEMENTS = Charm/Charm.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 7;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = XQ7XD4KVM7;
 				INFOPLIST_FILE = Charm/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
@@ -934,7 +954,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.4;
+				MARKETING_VERSION = 1.6;
 				PRODUCT_BUNDLE_IDENTIFIER = com.charismaanalytics.Charm;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -951,7 +971,7 @@
 				CODE_SIGN_ENTITLEMENTS = Charm/Charm.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 7;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = XQ7XD4KVM7;
 				INFOPLIST_FILE = Charm/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
@@ -959,7 +979,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.4;
+				MARKETING_VERSION = 1.6;
 				PRODUCT_BUNDLE_IDENTIFIER = com.charismaanalytics.Charm;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

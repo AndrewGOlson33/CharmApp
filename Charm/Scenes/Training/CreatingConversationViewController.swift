@@ -366,7 +366,7 @@ class CreatingConversationViewController: UIViewController {
             self.txtUserResponse.isHidden = true
             
             self.buttonActivityView.startAnimating()
-            viewModel.getScore(for: PhraseInfo(phrase: currentPhrase, type: prompt.type)) { [weak self] (score) in
+            viewModel.getScore(for: PhraseInfo(phrase: currentPhrase, type: prompt.type), isPrompt: true) { [weak self] (score) in
                 guard let self = self else { return }
                 self.handle(score: score)
             }

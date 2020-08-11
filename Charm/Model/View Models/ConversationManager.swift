@@ -219,17 +219,17 @@ class ConversationManager: NSObject {
     
     // MARK: Scoring Model
     
-    func getScore(for phrase: PhraseInfo, completion: @escaping(_ score: PhraseScore) -> Void) {
+    func getScore(for phrase: PhraseInfo, isPrompt: Bool, completion: @escaping(_ score: PhraseScore) -> Void) {
         let score: PhraseScore
         switch phrase.type {
         case .specific:
-            score = scoreSpecific(phrase: phrase)
+            score = scoreSpecific(phrase: phrase, isPrompt: isPrompt)
         case .connection:
-            score = scoreConnection(phrase: phrase)
+            score = scoreConnection(phrase: phrase, isPrompt: isPrompt)
         case .positive:
-            score = scorePositive(phrase: phrase)
+            score = scorePositive(phrase: phrase, isPrompt: isPrompt)
         case .negative:
-            score = scoreNegative(phrase: phrase)
+            score = scoreNegative(phrase: phrase, isPrompt: isPrompt)
         }
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) { [weak self] in
@@ -240,14 +240,19 @@ class ConversationManager: NSObject {
         }
     }
     
-    private func scoreSpecific(phrase: PhraseInfo) -> PhraseScore {
+    private func getRandomSuccessPrompt() -> String {
+        let candidates: [String] = ["Great Job!", "Excellent!", "Perfecto!", "Amazing!"]
+        return "\(candidates.choose(1)[0])\n"
+    }
+    
+    private func scoreSpecific(phrase: PhraseInfo, isPrompt: Bool) -> PhraseScore {
         var words: [String] = []
         let highlightedPhrase: NSMutableAttributedString = NSMutableAttributedString()
         
         for (index, current) in phrase.phrase.components(separatedBy: " ").enumerated() {
+            words.append(current)
             let attributes: [NSAttributedString.Key : Any]
             if concreteWords.contains(where: { $0.word.lowercased() == current.lowercased() }) {
-                words.append(current)
                 attributes = [
                     .foregroundColor : UIColor.black,
                     .backgroundColor : #colorLiteral(red: 0.6784313725, green: 0.5803921569, blue: 0, alpha: 1)
@@ -261,36 +266,43 @@ class ConversationManager: NSObject {
             if index < (phrase.phrase.count - 1) { highlightedPhrase.append(NSAttributedString(string: " ")) }
         }
         
-        switch words.count {
-        case 0:
-            return PhraseScore(feedback: "We're sorry, we were unable to detect a specific concrete word.", formattedText: highlightedPhrase, status: .incomplete)
-        case 1:
-            if words[0].count < 5 {
-                return PhraseScore(feedback: "Please reply with a phrase of 5 or more words. This signals you are adding enough to the conversation", formattedText: highlightedPhrase, status: .incomplete)
+        var randomConcreteWord = "dog"
+        let concreteWords = FirebaseModel.shared.trainingModel?.concreteNouns ?? []
+        if concreteWords.count > 1 {
+            randomConcreteWord = "\(concreteWords.choose(1)[0].word)"
+        }
+        
+        if isPrompt {
+            switch words.count {
+            case 0:
+                return PhraseScore(feedback: "We were unable to detect a specific word. Saying specific things, such as \(randomConcreteWord), puts your ideas into other peoples minds.", formattedText: highlightedPhrase, status: .incomplete)
+            case 1:
+                if words.count < 5 {
+                    return PhraseScore(feedback: "Saying a complete phrase (5 or more words) means you are adding enough to the conversation.", formattedText: highlightedPhrase, status: .incomplete)
+                } else {
+                    return PhraseScore(feedback: "\(getRandomSuccessPrompt())Saying specific things, such as \(randomConcreteWord), puts your ideas into other peoples minds", formattedText: highlightedPhrase, status: .complete)
+                }
+
+            default:
+                return PhraseScore(feedback: "\(getRandomSuccessPrompt())Saying specific things, such as \(randomConcreteWord), puts your ideas into other peoples minds", formattedText: highlightedPhrase, status: .complete)
+            }
+        } else {
+            if words.count < 5 {
+                return PhraseScore(feedback: "Saying a complete phrase (5 or more words) means you are adding enough to the conversation.", formattedText: highlightedPhrase, status: .incomplete)
             } else {
-                return PhraseScore(feedback: "Great Job!\n \(words[0]) is a specific word!", formattedText: highlightedPhrase, status: .complete)
+                return PhraseScore(feedback: "\(getRandomSuccessPrompt())Saying specific things, such as \(randomConcreteWord), puts your ideas into other peoples minds", formattedText: highlightedPhrase, status: .complete)
             }
-            
-        default:
-            var feedback: String = "Great Job! "
-            let lastIndex = words.count - 1
-            let andIndex = words.count - 2
-            
-            for (index, current) in words.enumerated() {
-                feedback.append("\(current), ")
-                if index == andIndex { feedback.append("and ") } else if index == lastIndex { feedback.append("are specific words!") }
-            }
-            
-            return PhraseScore(feedback: feedback, formattedText: highlightedPhrase, status: .complete)
         }
     }
     
-    private func scoreConnection(phrase: PhraseInfo) -> PhraseScore {
+    private func scoreConnection(phrase: PhraseInfo, isPrompt: Bool) -> PhraseScore {
+        var words: [String] = []
         var firstWords: [String] = []
         var secondWords: [String] = []
         let highlightedPhrase: NSMutableAttributedString = NSMutableAttributedString()
         
         for (index, current) in phrase.phrase.components(separatedBy: " ").enumerated() {
+            words.append(current)
             let attributes: [NSAttributedString.Key : Any]
             if firstPersonWords.contains(where: { $0.lowercased() == current.lowercased() }) {
                 firstWords.append(current)
@@ -313,44 +325,54 @@ class ConversationManager: NSObject {
             if index < (phrase.phrase.count - 1) { highlightedPhrase.append(NSAttributedString(string: " ")) }
         }
         
-        switch (firstWords.count, secondWords.count ) {
-        case (0, 0):
-            return PhraseScore(feedback: "We're sorry, we were unable to detect any first or second person words.", formattedText: highlightedPhrase, status: .incomplete)
-        case (1, 0):
-            return PhraseScore(feedback: "\(firstWords[0]) is a first person word, but you also need to include at least one second person word.\n(Example: You)", formattedText: highlightedPhrase, status: .incomplete)
-        case (0, 1):
-            return PhraseScore(feedback: "\(secondWords[0]) is a second person word, but you also need to include at least one first person word.\n(Example: Me)", formattedText: highlightedPhrase, status: .incomplete)
-        case (1, 1):
-            return PhraseScore(feedback: "Great Job!\n \(firstWords[0]) is a first person word, and using \(secondWords[0]) implies a connection!", formattedText: highlightedPhrase, status: .complete)
-        default:
-            var feedback: String = "Great Job! "
-            let lastIndexOfFirst = firstWords.count - 1
-            let andIndexOfFirst = firstWords.count - 2
-            let lastIndexOfSecond = secondWords.count - 1
-            let andIndexOfSecond = secondWords.count - 2
-            
-            for (index, current) in firstWords.enumerated() {
-                feedback.append("\(current), ")
-                if index == andIndexOfFirst { feedback.append("and ") } else if index == lastIndexOfFirst { feedback.append("are first person words, and using ") }
+        var randomFirstPerson = "I"
+        var randomSecondPerson = "You"
+        let firstPersons = FirebaseModel.shared.trainingModel?.firstPerson ?? []
+        if firstPersons.count > 1 {
+            randomFirstPerson = "\(firstPersons.choose(1)[0])"
+        }
+        
+        let secondPersons = FirebaseModel.shared.trainingModel?.secondPerson ?? []
+        if secondPersons.count > 1 {
+            randomSecondPerson = "\(secondPersons.choose(1)[0])"
+        }
+        
+        if isPrompt {
+            switch (firstWords.count, secondWords.count ) {
+            case (0, 0), (0, 1):
+                return PhraseScore(feedback: "We were unable to detect a first person pronoun. Saying first person pronouns, such as \(randomFirstPerson), focuses the conversation on yourself.", formattedText: highlightedPhrase, status: .incomplete)
+            case (1, 0):
+                return PhraseScore(feedback: "We were unable to detect a second person pronoun. Saying second person pronouns, such as \(randomSecondPerson), focuses the conversation on other people.", formattedText: highlightedPhrase, status: .incomplete)
+            default:
+                let random = Int(arc4random_uniform(2))
+                if random == 0 {
+                    return PhraseScore(feedback: "\(getRandomSuccessPrompt())Saying first person pronouns, such as \(randomFirstPerson), focuses the conversation on yourself", formattedText: highlightedPhrase, status: .complete)
+                } else {
+                    return PhraseScore(feedback: "\(getRandomSuccessPrompt())Saying second person pronouns, such as \(randomSecondPerson), focuses the conversation on other people", formattedText: highlightedPhrase, status: .complete)
+                }
             }
-            
-            for (index, current) in secondWords.enumerated() {
-                feedback.append("\(current), ")
-                if index == andIndexOfSecond { feedback.append("and ") } else if index == lastIndexOfSecond { feedback.append("implies a connection!") }
+        } else {
+            if words.count < 5 {
+                return PhraseScore(feedback: "Saying a complete phrase (5 or more words) means you are adding enough to the conversation.", formattedText: highlightedPhrase, status: .incomplete)
+            } else {
+                let random = Int(arc4random_uniform(2))
+                if random == 0 {
+                    return PhraseScore(feedback: "\(getRandomSuccessPrompt())Saying first person pronouns, such as \(randomFirstPerson), focuses the conversation on yourself", formattedText: highlightedPhrase, status: .complete)
+                } else {
+                    return PhraseScore(feedback: "\(getRandomSuccessPrompt())Saying second person pronouns, such as \(randomSecondPerson), focuses the conversation on other people", formattedText: highlightedPhrase, status: .complete)
+                }
             }
-            
-            return PhraseScore(feedback: feedback, formattedText: highlightedPhrase, status: .complete)
         }
     }
 
-    private func scorePositive(phrase: PhraseInfo) -> PhraseScore {
+    private func scorePositive(phrase: PhraseInfo, isPrompt: Bool) -> PhraseScore {
         var words: [String] = []
         let highlightedPhrase: NSMutableAttributedString = NSMutableAttributedString()
         
         for (index, current) in phrase.phrase.components(separatedBy: " ").enumerated() {
+            words.append(current)
             let attributes: [NSAttributedString.Key : Any]
             if positiveWords.contains(where: { $0.word.lowercased() == current.lowercased() }) {
-                words.append(current)
                 attributes = [
                     .foregroundColor : UIColor.black,
                     .backgroundColor : #colorLiteral(red: 0, green: 0.7043033838, blue: 0.4950237274, alpha: 1)
@@ -364,37 +386,40 @@ class ConversationManager: NSObject {
             if index < (phrase.phrase.count - 1) { highlightedPhrase.append(NSAttributedString(string: " ")) }
         }
         
-        switch words.count {
-        case 0:
-            return PhraseScore(feedback: "We're sorry, we were unable to detect any positive words.", formattedText: highlightedPhrase, status: .incomplete)
-        case 1:
-            if words[0].count < 5 {
-                return PhraseScore(feedback: "Please reply with a phrase of 5 or more words. This signals you are adding enough to the conversation", formattedText: highlightedPhrase, status: .incomplete)
+        var randomPositiveWord = "ability"
+        let positiveWords = FirebaseModel.shared.trainingModel?.positiveWords ?? []
+        if positiveWords.count > 1 {
+            randomPositiveWord = "\(positiveWords.choose(1)[0].word)"
+        }
+        
+        if isPrompt {
+            switch words.count {
+            case 0:
+                return PhraseScore(feedback: "We were unable to detect a positive word. Saying positive things, such as \(randomPositiveWord), makes others feel happy.", formattedText: highlightedPhrase, status: .incomplete)
+            default:
+                if words.count < 5 {
+                    return PhraseScore(feedback: "Saying a complete phrase (5 or more words) means you are adding enough to the conversation.", formattedText: highlightedPhrase, status: .incomplete)
+                } else {
+                    return PhraseScore(feedback: "\(getRandomSuccessPrompt())Saying positive things, such as \(randomPositiveWord), makes others feel happy", formattedText: highlightedPhrase, status: .complete)
+                }
+            }
+        } else {
+            if words.count < 5 {
+                return PhraseScore(feedback: "Saying a complete phrase (5 or more words) means you are adding enough to the conversation.", formattedText: highlightedPhrase, status: .incomplete)
             } else {
-                return PhraseScore(feedback: "Great Job! \n \(words[0]) signals positivity!", formattedText: highlightedPhrase, status: .complete)
+                return PhraseScore(feedback: "\(getRandomSuccessPrompt())Saying positive things, such as \(randomPositiveWord), makes others feel happy", formattedText: highlightedPhrase, status: .complete)
             }
-        default:
-            var feedback: String = "Great Job! "
-            let lastIndex = words.count - 1
-            let andIndex = words.count - 2
-            
-            for (index, current) in words.enumerated() {
-                feedback.append("\(current), ")
-                if index == andIndex { feedback.append("and ") } else if index == lastIndex { feedback.append("signals positivity!") }
-            }
-            
-            return PhraseScore(feedback: feedback, formattedText: highlightedPhrase, status: .complete)
         }
     }
 
-    private func scoreNegative(phrase: PhraseInfo) -> PhraseScore {
+    private func scoreNegative(phrase: PhraseInfo, isPrompt: Bool) -> PhraseScore {
         var words: [String] = []
         let highlightedPhrase: NSMutableAttributedString = NSMutableAttributedString()
         
         for (index, current) in phrase.phrase.components(separatedBy: " ").enumerated() {
+            words.append(current)
             let attributes: [NSAttributedString.Key : Any]
             if negativeWords.contains(where: { $0.word.lowercased() == current.lowercased() }) {
-                words.append(current)
                 attributes = [
                     .foregroundColor : UIColor.black,
                     .backgroundColor : #colorLiteral(red: 0.8509803922, green: 0.3490196078, blue: 0.3490196078, alpha: 1)
@@ -408,26 +433,30 @@ class ConversationManager: NSObject {
             if index < (phrase.phrase.count - 1) { highlightedPhrase.append(NSAttributedString(string: " ")) }
         }
         
-        switch words.count {
-        case 0:
-            return PhraseScore(feedback: "We're sorry, we were unable to detect any negative words.", formattedText: highlightedPhrase, status: .incomplete)
-        case 1:
-            if words[0].count < 5 {
-                return PhraseScore(feedback: "Please reply with a phrase of 5 or more words. This signals you are adding enough to the conversation", formattedText: highlightedPhrase, status: .incomplete)
+        var randomNegativeWord = "accuse"
+        let negativeWords = FirebaseModel.shared.trainingModel?.negativeWords ?? []
+        if negativeWords.count > 1 {
+            randomNegativeWord = "\(negativeWords.choose(1)[0].word)"
+        }
+        
+        if isPrompt {
+            switch words.count {
+            case 0:
+                return PhraseScore(feedback: "We were unable to detect a negative word. Saying negative things, such as \(randomNegativeWord), makes others alert and focused.", formattedText: highlightedPhrase, status: .incomplete)
+
+            default:
+                if words.count < 5 {
+                    return PhraseScore(feedback: "Saying a complete phrase (5 or more words) means you are adding enough to the conversation.", formattedText: highlightedPhrase, status: .incomplete)
+                } else {
+                    return PhraseScore(feedback: "\(getRandomSuccessPrompt())Saying negative things, such as \(randomNegativeWord), makes others alert and focused", formattedText: highlightedPhrase, status: .complete)
+                }
+            }
+        } else {
+            if words.count < 5 {
+                return PhraseScore(feedback: "Saying a complete phrase (5 or more words) means you are adding enough to the conversation.", formattedText: highlightedPhrase, status: .incomplete)
             } else {
-                return PhraseScore(feedback: "Great Job! \(words[0]) is a negative word. Learning to identify negative words will help you balance your speech by not coming across as too positive, or too negative.", formattedText: highlightedPhrase, status: .complete)
+                return PhraseScore(feedback: "\(getRandomSuccessPrompt())Saying negative things, such as \(randomNegativeWord), makes others alert and focused", formattedText: highlightedPhrase, status: .complete)
             }
-        default:
-            var feedback: String = "Great Job! "
-            let lastIndex = words.count - 1
-            let andIndex = words.count - 2
-            
-            for (index, current) in words.enumerated() {
-                feedback.append("\(current), ")
-                if index == andIndex { feedback.append("and ") } else if index == lastIndex { feedback.append("are negative words. Learning to identify negative words will help you balance your speech by not coming across as too positive, or too negative.") }
-            }
-            
-            return PhraseScore(feedback: feedback, formattedText: highlightedPhrase, status: .complete)
         }
     }
     

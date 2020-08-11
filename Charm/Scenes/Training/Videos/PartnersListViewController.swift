@@ -35,7 +35,7 @@ class PartnersListViewController: UIViewController {
         super.viewWillAppear(animated)
         charmLevelLabel.text = "Charm \(ConversationManager.shared.levelDetail ?? "Error :(")"
         progressBar.progress = Float(ConversationManager.shared.progress)
-
+        navigationController?.setNavigationBarHidden(false, animated: false)
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -114,16 +114,19 @@ extension PartnersListViewController: UITableViewDelegate, UITableViewDataSource
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 140.0
+        return 280.0
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if canStartPractice {
             let partner = PracticeVideoManager.shared.partners[indexPath.row]
             // Show videos
-            guard let vc = storyboard?.instantiateViewController(withIdentifier: "PracticeVideoViewController") as? PracticeVideoViewController else { return }
+//            guard let vc = storyboard?.instantiateViewController(withIdentifier: "PracticeVideoViewController") as? PracticeVideoViewController else { return }
+//            vc.partner = partner
+//            present(vc, animated: true, completion: nil)
+            guard let vc = storyboard?.instantiateViewController(withIdentifier: "SelectTraningIntensityViewController") as? SelectTraningIntensityViewController else { return }
             vc.partner = partner
-            present(vc, animated: true, completion: nil)
+            navigationController?.pushViewController(vc, animated: true)
         } else {
             showInfoAlert(title: "Loading data..", message: "Loading training data, please wait a moment.")
         }

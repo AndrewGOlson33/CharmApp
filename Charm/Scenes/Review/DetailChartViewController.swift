@@ -861,8 +861,10 @@ extension DetailChartViewController: UITableViewDelegate, UITableViewDataSource 
         default:
             // setup transcript
             let cell = tableView.dequeueReusableCell(withIdentifier: CellID.transcript, for: indexPath) as! TranscriptTableViewCell
-            let info = transcript[indexPath.row]
-            cell.setup(with: info)
+            if transcript.count > indexPath.row {
+                let info = transcript[indexPath.row]
+                cell.setup(with: info)
+            }
             return cell
         }
     }

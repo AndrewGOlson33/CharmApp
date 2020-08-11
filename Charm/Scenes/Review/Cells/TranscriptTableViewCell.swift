@@ -29,6 +29,16 @@ class TranscriptTableViewCell: UITableViewCell {
         if info.isUser { setupForUser() } else { setupForOther() }
     }
     
+    func setup(withPhrase phrase: TrainingPhrase) {
+        // setup things in the ui that will be the same
+        lblTranscriptText.text = phrase.text
+        lblTranscriptText.textColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1)
+        viewBubble.backgroundColor = #colorLiteral(red: 0.921431005, green: 0.9214526415, blue: 0.9214410186, alpha: 1)
+        viewBubble.layer.cornerRadius = 16
+        
+        setupForUser()
+    }
+    
     private func setupForUser() {
         lblTranscriptText.textAlignment = .right
 //        viewBubble.backgroundColor = #colorLiteral(red: 0.4139811397, green: 0.7173617482, blue: 0.9456090331, alpha: 1)

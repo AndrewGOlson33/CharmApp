@@ -338,7 +338,7 @@ extension MainTabBarController: UITabBarControllerDelegate {
         let tabBarIndex = tabBarController.selectedIndex
         switch tabBarIndex {
         case 0:
-            navigationItem.title = "SELECT YOUR PARTNER"
+            navigationItem.title = "PRACTICE"
         case 1:
              navigationItem.title = "CONTACTS"
         case 2:

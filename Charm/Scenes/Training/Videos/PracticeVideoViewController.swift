@@ -32,6 +32,7 @@ class PracticeVideoViewController: UIViewController {
     @IBOutlet weak var stateButton: UIButton!
     @IBOutlet weak var answerTextView: UIView!
     @IBOutlet weak var resultLabel: UILabel!
+    @IBOutlet weak var repliedLabel: UILabel!
     @IBOutlet weak var tryAgainButton: UIButton!
     @IBOutlet weak var hintLabel: UILabel!
     
@@ -52,11 +53,21 @@ class PracticeVideoViewController: UIViewController {
     var partner: PracticePartner!
     var player: AVPlayer?
     var videoLayer: AVPlayerLayer?
+    var currentTrainingIntensity: TrainingIntensity = .regular {
+        didSet {
+            blankCount = currentTrainingIntensity.blanks
+        }
+    }
     
+    private var trainingIntensityViewModel = TrainingIntensityViewModel()
     private var timer: Timer?
     
     private var questionVideo: PracticeVideo?
     private var answerVideo: PracticeVideo?
+    
+    private var blankCount: Int = 0
+    private var progressTimer: Timer?
+    private var playingSeconds: Int = 0
     
     fileprivate let viewModel: ConversationManager = ConversationManager.shared
     fileprivate let speechModel: SpeechRecognitionModel = SpeechRecognitionModel()
@@ -108,6 +119,7 @@ class PracticeVideoViewController: UIViewController {
         } catch {
             // handle errors
         }
+        navigationController?.setNavigationBarHidden(true, animated: false)
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -127,6 +139,10 @@ class PracticeVideoViewController: UIViewController {
         videoLayer = nil
         timer?.invalidate()
         timer = nil
+        
+        progressTimer?.invalidate()
+        progressTimer = nil
+        navigationController?.setNavigationBarHidden(false, animated: false)
     }
     
     
@@ -149,6 +165,7 @@ class PracticeVideoViewController: UIViewController {
             answerTextView.isHidden = true
             checkmarkView.isHidden = true
             resultLabel.isHidden = true
+            repliedLabel.isHidden = true
             siriWaveView.isHidden = true
             tryAgainButton.isHidden = true
         case .start:
@@ -189,7 +206,7 @@ class PracticeVideoViewController: UIViewController {
             checkmarkView.isHidden = false
             checkmarkView.animate(checked: !checkmarkView.boolValue)
             checkmarkView.isSpinning = true
-            viewModel.getScore(for: PhraseInfo(phrase: currentPhrase, type: promptType)) { [weak self] (score) in
+            viewModel.getScore(for: PhraseInfo(phrase: currentPhrase, type: promptType), isPrompt: blankCount == currentTrainingIntensity.blanks) { [weak self] (score) in
                 guard let self = self else { return }
                 self.update(score: score)
             }
@@ -220,6 +237,9 @@ class PracticeVideoViewController: UIViewController {
         self.dismiss(animated: true, completion: nil)
     }
     
+    @IBAction func backButtonClicked(_ sender: Any) {
+        self.gotoSummaryView()
+    }
     // MARK: - Methods
     
     private func initialSetup() {
@@ -233,12 +253,22 @@ class PracticeVideoViewController: UIViewController {
         hintLabel.isHidden = true
         tryAgainButton.isHidden = true
         resultLabel.isHidden = true
+        repliedLabel.isHidden = true
         
-        progressBar.progress = Float(viewModel.progress)
+//        progressBar.progress = Float(viewModel.progress)
+        progressBar.progress = 0
         
         let recognizer = UITapGestureRecognizer(target: self, action: #selector(stopListening))
         recognizer.numberOfTapsRequired = 1
         siriWaveView.addGestureRecognizer(recognizer)
+        
+        progressTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { (timer) in
+            self.playingSeconds += 1
+            if self.playingSeconds == TrainingIntensity.seconds {
+                timer.invalidate()
+                self.gotoSummaryView()
+            }
+        })
     }
     
     @objc private func stopListening() {
@@ -269,6 +299,7 @@ class PracticeVideoViewController: UIViewController {
             //            checkmarkView.isHidden = true
             tryAgainButton.isHidden = true
             resultLabel.isHidden = false
+            repliedLabel.isHidden = false
             
         case .recording:
             UIView.animate(withDuration: 0.25) {
@@ -279,6 +310,7 @@ class PracticeVideoViewController: UIViewController {
             tryAgainButton.isHidden = true
             checkmarkView.isHidden = true
             resultLabel.isHidden = true
+            repliedLabel.isHidden = true
             
         case .pendingSubmit:
             UIView.animate(withDuration: 0.25) {
@@ -289,6 +321,7 @@ class PracticeVideoViewController: UIViewController {
             tryAgainButton.isHidden = true
             checkmarkView.isHidden = true
             resultLabel.isHidden = true
+            repliedLabel.isHidden = true
             
         case .scored:
             UIView.animate(withDuration: 0.25) {
@@ -298,10 +331,16 @@ class PracticeVideoViewController: UIViewController {
             answerTextView.isHidden = true
             tryAgainButton.isHidden = true
             resultLabel.isHidden = false
+            repliedLabel.isHidden = false
       //      checkmarkView.isHidden = true
         }
     }
     
+    private func gotoSummaryView() {
+        guard let vc = storyboard?.instantiateViewController(withIdentifier: "SessionSummaryViewController") as? SessionSummaryViewController else { return }
+        vc.trainingModel = trainingIntensityViewModel
+        self.navigationController?.pushViewController(vc, animated: true)
+    }
     
     private func nextStep() {
         switch currentVideoType {
@@ -389,6 +428,7 @@ class PracticeVideoViewController: UIViewController {
             checkmarkView.isSpinning = false
             viewModel.add(experience: 2)
             phase = .scored
+            playingSeconds += 30
         case .incomplete:
             checkmarkView.isGood = false
             checkmarkView.isSpinning = false
@@ -396,7 +436,10 @@ class PracticeVideoViewController: UIViewController {
             phase = .scored
         }
         resultLabel.text = score.feedback
+        repliedLabel.text = currentPhrase
         checkmarkView.animate(checked: checkmarkView.isGood)
+        trainingIntensityViewModel.addPhrase(currentPhrase)
+        updateProgress()
     }
     
     // MARK: - Siri Wave
@@ -431,46 +474,71 @@ class PracticeVideoViewController: UIViewController {
         timer = nil
     }
     
+    private func updateProgress() {
+        progressBar.progress = Float(playingSeconds) / Float(TrainingIntensity.seconds)
+    }
+    
     fileprivate func updatePrompt() {
         promptType = viewModel.getType(video: currentVideoType)
         
+        if currentTrainingIntensity == .freeform {
+            return
+        }
+        else if blankCount != 0 {
+            blankCount -= 1
+            resultLabel.text = ""
+            repliedLabel.text = ""
+            promptLabel.text = ""
+            return
+        }
+        
+        blankCount = currentTrainingIntensity.blanks
         var labelText: String = ""
         var labelExampleText: String = ""
-        switch promptType {
-        case .specific:
-            labelText = "Say Something Concrete"
-            let concreteWords = FirebaseModel.shared.trainingModel?.concreteNouns ?? []
-            if concreteWords.count > 3 {
-                let randomConcreteWords = concreteWords.choose(3)
-                labelExampleText = "For example: \(randomConcreteWords[0].word), \(randomConcreteWords[1].word), \(randomConcreteWords[2].word)"
-            } else {
-                labelExampleText = "For example: duck, train, David"
+
+        if let prompt = trainingIntensityViewModel.getPrompt() {
+            promptType = prompt.phraseType
+            labelText = prompt.prompt
+        } else {
+            switch promptType {
+            case .specific:
+                labelText = "Say Something Specific"
+                let concreteWords = FirebaseModel.shared.trainingModel?.concreteNouns ?? []
+                if concreteWords.count > 3 {
+                    let randomConcreteWords = concreteWords.choose(3)
+                    labelExampleText = "For example: \(randomConcreteWords[0].word), \(randomConcreteWords[1].word), \(randomConcreteWords[2].word)"
+                } else {
+                    labelExampleText = "For example: duck, train, David"
+                }
+            case .connection:
+                let random = Int(arc4random_uniform(2))
+                labelText = random == 0 ? "Say Something About Them" : "Say Something About Yourself"
+                labelExampleText = "For example: I like you… I think you…. You are like me…"
+            case .positive:
+                labelText = "Say Something Positive"
+                let positiveWords = FirebaseModel.shared.trainingModel?.positiveWords ?? []
+                if positiveWords.count > 3 {
+                    let randomPositiveWords = positiveWords.choose(3)
+                    labelExampleText = "For example: \(randomPositiveWords[0].word), \(randomPositiveWords[1].word), \(randomPositiveWords[2].word)"
+                } else {
+                    labelExampleText = "For example: love, hope, excited"
+                }
+            case .negative:
+                labelText = "Say Something Negative"
+                let negativeWords = FirebaseModel.shared.trainingModel?.negativeWords ?? []
+                if negativeWords.count > 3 {
+                    let randomNegativeWords = negativeWords.choose(3)
+                    labelExampleText = "For example: \(randomNegativeWords[0].word), \(randomNegativeWords[1].word), \(randomNegativeWords[2].word)"
+                } else {
+                    labelExampleText = "For example: bad, terrible, sad"
+                }
+            case .none:
+                break
             }
-        case .connection:
-            labelText = "Say something about \"you and me\""
-            labelExampleText = "For example: I like you… I think you…. You are like me…"
-        case .positive:
-            labelText = "Say Something Positive"
-            let positiveWords = FirebaseModel.shared.trainingModel?.positiveWords ?? []
-            if positiveWords.count > 3 {
-                let randomPositiveWords = positiveWords.choose(3)
-                labelExampleText = "For example: \(randomPositiveWords[0].word), \(randomPositiveWords[1].word), \(randomPositiveWords[2].word)"
-            } else {
-                labelExampleText = "For example: love, hope, excited"
-            }
-        case .negative:
-            labelText = "Say something Negative"
-            let negativeWords = FirebaseModel.shared.trainingModel?.negativeWords ?? []
-            if negativeWords.count > 3 {
-                let randomNegativeWords = negativeWords.choose(3)
-                labelExampleText = "For example: \(randomNegativeWords[0].word), \(randomNegativeWords[1].word), \(randomNegativeWords[2].word)"
-            } else {
-                labelExampleText = "For example: bad, terrible, sad"
-            }            
-        case .none:
-            break
-        }
+        }        
+
         resultLabel.text = ""
+        repliedLabel.text = ""
         promptLabel.text = labelText
         promptExampleLabel.text = labelExampleText
     }
@@ -548,10 +616,10 @@ extension PracticeVideoViewController: SpeechRecognitionDelegate {
 
 extension PracticeVideoViewController: LevelUpDelegate {
     func updated(progress: Double) {
-        progressBar.progress = Float(progress)
+//        progressBar.progress = Float(progress)
     }
     
     func updated(level: Int, detail: String, progress: Double) {
-        progressBar.progress = Float(progress)
+//        progressBar.progress = Float(progress)
     }
 }

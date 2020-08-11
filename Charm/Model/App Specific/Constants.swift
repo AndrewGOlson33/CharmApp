@@ -305,6 +305,7 @@ enum Defaults {
     static let validLicense = "_validLicense"
     static let notFirstLaunch = "_notFirstLaunch"
     static let hasMigrated = "_hasMigrated"
+    static let neverShowPracticeDescription = "_neverShowPracticeDescription"
 }
 
 
